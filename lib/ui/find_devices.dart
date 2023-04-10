@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +40,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
 import '../utils/bluetooth.dart';
@@ -88,6 +90,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
   FitnessEquipment? _fitnessEquipment;
   TextStyle _captionStyle = const TextStyle();
   TextStyle _subtitleStyle = const TextStyle();
+  double _mediaSizeMin = 0;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
+  bool _landscape = false;
+  bool _twoColumnLayout = twoColumnLayoutDefault;
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   final RegExp _colonRegex = RegExp(r':');
@@ -168,6 +175,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
   }
 
   Future<void> _readDeviceSports() async {
@@ -792,6 +800,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = Get.mediaQuery.size;
+    if (size.width != _mediaWidth || size.height != _mediaHeight) {
+      _mediaWidth = size.width;
+      _mediaHeight = size.height;
+      _landscape = _mediaWidth > _mediaHeight;
+    }
+
+    final mediaSizeMin =
+        _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
+    if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
+      _mediaSizeMin = mediaSizeMin;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
@@ -934,6 +955,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         return ScanResultTile(
                           result: r,
                           deviceSport: _deviceSport[r.device.id.id] ?? "",
+                          mediaWidth: _mediaSizeMin,
                           onEquipmentTap: () async {
                             if (!await bluetoothCheck(false, _logLevel)) {
                               return;
