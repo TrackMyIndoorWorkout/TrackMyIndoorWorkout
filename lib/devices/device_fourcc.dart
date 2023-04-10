@@ -64,6 +64,7 @@ List<String> allFourCC = [
 
 List<String> multiSportFourCCs = [
   kayakProGenesisPortFourCC,
+  kayakFirstFourCC,
   genericFTMSRowerFourCC,
 ];
 
