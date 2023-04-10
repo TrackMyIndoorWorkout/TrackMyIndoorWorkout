@@ -98,13 +98,11 @@ class ScanResultTile extends StatelessWidget {
 
     final logoSize = captionStyle.fontSize! * 2.5;
     final deviceIcon = result.getIcon([], deviceSport);
+    final logoAndBanner =
+        result.getLogoAndBanner([], deviceSport, logoSize, mediaWidth, themeManager);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
-      leading: Icon(
-        deviceIcon,
-        size: captionStyle.fontSize! * 2.5,
-        color: themeManager.getProtagonistColor(),
-      ),
+      leading: logoAndBanner.item1,
       trailing: themeManager.getIconFab(
         result.advertisementData.connectable
             ? themeManager.getBlueColor()
@@ -115,6 +113,7 @@ class ScanResultTile extends StatelessWidget {
             : null,
       ),
       children: [
+        logoAndBanner.item2,
         _buildAdvRow(
           'Complete Name',
           result.advertisementData.localName,
