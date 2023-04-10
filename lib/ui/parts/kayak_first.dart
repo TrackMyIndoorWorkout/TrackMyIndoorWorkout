@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:pref/pref.dart';
@@ -96,6 +97,11 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SvgPicture.asset(
+                  "assets/equipment/KayakFirst_banner.svg",
+                  width: mediaWidth,
+                  semanticsLabel: "Kayak First Banner",
+                ),
                 const Text(athleteBodyWeight),
                 NumberSelector(
                   current: _athleteWeight,
