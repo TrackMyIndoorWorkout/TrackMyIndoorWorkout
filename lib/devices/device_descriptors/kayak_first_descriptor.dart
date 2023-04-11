@@ -12,6 +12,7 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
+import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
 import '../gatt/kayak_first.dart';
@@ -229,14 +230,19 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
+    const smallDelay = Duration(milliseconds: uiIntermittentDelay);
+    await Future.delayed(smallDelay);
     final prefService = Get.find<BasePrefService>();
     final blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
+    await Future.delayed(smallDelay);
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
+    await Future.delayed(smallDelay);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
+    await Future.delayed(smallDelay);
   }
 }
