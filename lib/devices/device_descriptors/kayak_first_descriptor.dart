@@ -9,6 +9,7 @@ import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
+import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
@@ -26,6 +27,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const handshakeCommand = "2";
   static const newHandshakeCommand = "${handshakeCommand}1";
   static const configurationCommand = "3";
+  static const displayConfigurationCommand = "5";
   static const pollDataCommand = "6";
   static const parametersCommand = "8";
   static const startCommand = "9;1";
@@ -205,6 +207,22 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     await _executeControlOperationCore(controlPoint, fullCommand, logLevel);
   }
 
+  Future<void> configureDisplay(BluetoothCharacteristic? controlPoint, int logLevel) async {
+    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+      return;
+    }
+
+    String command = displayConfigurationCommand;
+    final prefService = Get.find<BasePrefService>();
+
+    for (final displaySlot in kayakFirstDisplaySlots) {
+      final slotChoice = prefService.get<int>(displaySlot.item2) ?? displaySlot.item4;
+      command += ";$slotChoice";
+    }
+
+    await _executeControlOperationCore(controlPoint, command, logLevel);
+  }
+
   @override
   Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
     if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
@@ -218,5 +236,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
+    // 3. Display Configuration
+    await configureDisplay(controlPoint, logLevel);
   }
 }
