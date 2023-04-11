@@ -1,3 +1,14 @@
+## 1.1.142
+* Kayak First ergometer support
+* Fundamental changes of the connection and core logic: connection preserving logic instead of
+  disconnection favoring principles (please report me if you experience any connection related
+  anomalies)
+* Fundamental changes of the data collection routines: connect immediately always while on the
+  Recording screen (and beyond), just not utilize the packets if not in measurement
+* Upgrading to Material 3 UI, changing UI to conform more to Material 3
+* Using Flex Color Scheme (along with Material 3)
+* Upgrading a lot of Flutter plugins
+
 ## 1.1.141
 * Contains the build 140 production hotfix
 * Upgrading a few Flutter plugins
