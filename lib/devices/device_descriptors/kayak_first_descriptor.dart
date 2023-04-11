@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -131,15 +130,14 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       await controlPoint.write(utf8.encode(command));
       // Response could be picked up in the subscription listener
     } on PlatformException catch (e, stack) {
-      Logging.log(
+      Logging.logException(
         logLevel,
-        logLevelError,
         "KayakFirst",
         "_executeControlOperationCore",
         "${e.message}",
+        e,
+        stack,
       );
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 

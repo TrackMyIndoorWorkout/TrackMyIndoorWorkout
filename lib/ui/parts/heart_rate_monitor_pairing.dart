@@ -50,14 +50,13 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     try {
       FlutterBluePlus.instance.stopScan();
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging.logException(
         _logLevel,
-        logLevelError,
-        "FIND_DEVICES",
+        "HRM_PAIRING",
         "dispose",
         "${e.message}",
+        e,
+        stack,
       );
     }
 
@@ -82,14 +81,13 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
         _isScanning = false;
       });
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging.logException(
         _logLevel,
-        logLevelError,
-        "HRM_PAIRING",
+        "HEART_RATE_MONITOR_PAIRING",
         "_startScan",
         "${e.message}",
+        e,
+        stack,
       );
     }
 
@@ -110,6 +108,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   void initState() {
     super.initState();
     final prefService = Get.find<BasePrefService>();
+    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _scanDuration = prefService.get<int>(scanDurationTag) ?? scanDurationDefault;
     _captionStyle = Get.textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
@@ -117,7 +116,6 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _scanStreamSubscription =
         _throttledScanStream.listen((scanResults) => _scanStreamController.add(scanResults));
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _startScan();
     });

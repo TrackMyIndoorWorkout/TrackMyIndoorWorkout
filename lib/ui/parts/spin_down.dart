@@ -13,10 +13,12 @@ import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt/ftms.dart';
 import '../../devices/gatt/generic.dart';
 import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/log_level.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
+import '../../utils/logging.dart';
 import '../../utils/theme_manager.dart';
 import 'spinner_input.dart';
 
@@ -75,6 +77,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   bool _isLight = true;
   int _preferencesWeight = athleteBodyWeightDefault;
+  int _logLevel = logLevelDefault;
 
   bool get _spinDownPossible =>
       (_fitnessEquipment?.supportsSpinDown ?? false) &&
@@ -95,6 +98,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   @override
   void initState() {
+    _logLevel = _prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _si = _prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _preferencesWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
@@ -159,8 +163,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _weightData?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        _logLevel,
+        "SPIN_DOWN",
+        "_prepareSpinDownCore _weightData.setNotifyValue",
+        "${e.message}",
+        e,
+        stack,
+      );
     }
 
     _weightDataSubscription = _weightData?.value
@@ -200,8 +210,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
         } on PlatformException catch (e, stack) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
+          Logging.logException(
+            _logLevel,
+            "SPIN_DOWN",
+            "_prepareSpinDownCore _weightData.write",
+            "${e.message}",
+            e,
+            stack,
+          );
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -325,8 +341,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        _logLevel,
+        "SPIN_DOWN",
+        "_onWeightInputButtonPressed",
+        "${e.message}",
+        e,
+        stack,
+      );
       setState(() {
         _calibrationState = CalibrationState.weighInProblem;
       });
@@ -390,8 +412,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        _logLevel,
+        "SPIN_DOWN",
+        "onCalibrationButtonPressed",
+        "${e.message}",
+        e,
+        stack,
+      );
     }
 
     _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value

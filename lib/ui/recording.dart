@@ -1047,15 +1047,13 @@ class RecordingState extends State<RecordingScreen> {
         await _fitnessEquipment?.stopWorkout();
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging.logException(
         _logLevel,
-        logLevelError,
-        "RECORD",
-        "_stopMeasurement stopWorkout",
+        "RECORDING",
+        "_stopMeasurement stopWorkout Equipment got turned off?",
         "${e.message}",
+        e,
+        stack,
       );
     }
 

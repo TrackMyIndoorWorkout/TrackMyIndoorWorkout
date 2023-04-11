@@ -616,8 +616,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           return params;
         }
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.logException(
+          logLevel,
+          "FITNESS_EQUIPMENT",
+          "getWriteSupportParameters",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
     }
 
@@ -692,8 +698,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "FITNESS_EQUIPMENT",
+        "_fitnessMachineFeature",
+        "${e.message}",
+        e,
+        stack,
+      );
     }
   }
 
@@ -780,21 +792,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       manufacturerName = String.fromCharCodes(nameBytes);
       return manufacturerName;
     } on PlatformException catch (e, stack) {
-      if (logLevel > logLevelNone) {
-        Logging.logException(
-          logLevel,
-          "FITNESS_EQUIPMENT",
-          "discover",
-          "Could not read name${secondTry ? ' 2nd try' : ''}",
-          e,
-          stack,
-        );
-      }
-
-      if (kDebugMode) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+      Logging.logException(
+        logLevel,
+        "FITNESS_EQUIPMENT",
+        "discover",
+        "Could not read name${secondTry ? ' 2nd try' : ''}",
+        e,
+        stack,
+      );
       return null;
     }
   }

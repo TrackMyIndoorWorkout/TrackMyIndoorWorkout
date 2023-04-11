@@ -85,6 +85,11 @@ class Logging {
     Exception e,
     StackTrace stack,
   ) {
+    if (kDebugMode) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
     if (!initialized || logLevelThreshold == logLevelNone) {
       return;
     }
