@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_color.dart';
@@ -7,11 +8,13 @@ import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
+import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/measurement_sink_address.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
 import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
 import '../../utils/preferences.dart';
+import 'kayak_first_display_slot.dart';
 import 'pref_color.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -147,7 +150,36 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
           return null;
         },
       ),
+      PrefLabel(
+        title: Text(kayakFirstDisplay, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
     ];
+
+    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
+      kayakFirstDisplaySlot1Tag,
+      kayakFirstDisplaySlot1,
+      kayakFirstDisplaySlot1Description,
+    ));
+    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
+      kayakFirstDisplaySlot2Tag,
+      kayakFirstDisplaySlot2,
+      kayakFirstDisplaySlot2Description,
+    ));
+    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
+      kayakFirstDisplaySlot3Tag,
+      kayakFirstDisplaySlot3,
+      kayakFirstDisplaySlot3Description,
+    ));
+    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
+      kayakFirstDisplaySlot4Tag,
+      kayakFirstDisplaySlot4,
+      kayakFirstDisplaySlot4Description,
+    ));
+    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
+      kayakFirstDisplaySlot5Tag,
+      kayakFirstDisplaySlot5,
+      kayakFirstDisplaySlot5Description,
+    ));
 
     return Scaffold(
       appBar: AppBar(title: Text(EquipmentPreferencesScreen.title)),

@@ -32,6 +32,7 @@ import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/kayak_first_display_configuration.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -189,6 +190,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
         });
       }
     }
+  }
+
+  for (final kayakFirstDisplaySlot in kayakFirstDisplaySlots) {
+    prefDefaults.addAll({kayakFirstDisplaySlot.item2: kayakFirstDisplaySlot.item4});
   }
 
   return prefDefaults;
