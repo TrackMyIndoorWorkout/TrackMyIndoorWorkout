@@ -780,16 +780,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      Get.to(() => RecordingScreen(
+      await Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
             initialState: initialState,
             size: Get.mediaQuery.size,
             sport: descriptor.sport,
-          ))?.then((_) {
-        setState(() {
-          _goingToRecording = false;
-        });
+          ));
+      setState(() {
+        _goingToRecording = false;
       });
     } else {
       setState(() {
