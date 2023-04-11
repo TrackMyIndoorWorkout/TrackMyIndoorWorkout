@@ -39,6 +39,10 @@ abstract class DataHandler {
 
   bool isDataProcessable(List<int> data);
 
+  bool isClosingPacket(List<int> data) {
+    return true;
+  }
+
   void initFlag() {
     clearMetrics();
     featuresFlag = -1;
