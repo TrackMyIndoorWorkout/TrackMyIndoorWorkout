@@ -241,6 +241,6 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     await Future.delayed(smallDelay);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
-    await Future.delayed(smallDelay);
+    await Future.delayed(const Duration(milliseconds: spinDownThreshold));
   }
 }
