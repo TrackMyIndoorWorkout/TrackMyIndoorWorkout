@@ -1,3 +1,15 @@
+## 1.1.141
+* Contains the build 140 production hotfix
+* Upgrading a few Flutter plugins
+
+## 1.1.140
+* Hotfix app hanging of the time zone migration when custom time zone is selected
+
+## 1.1.139
+* Adjusting some track elevations, naming, and one water track location
+* Simplify closest time zone's track search
+* Upgrading Flutter version
+
 ## 1.1.138
 * Adding track for biking, cycling, water sport activities for almost all time zones
 * Making GPS tracks more precise (Haversine and Vincenty measurement formulas - thanks ChatGPT)

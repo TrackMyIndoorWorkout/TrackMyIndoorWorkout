@@ -33,25 +33,25 @@ List<PortalChoiceDescriptor> getPortalChoices(ThemeManager themeManager) {
   return [
     PortalChoiceDescriptor(
       portalNames[0],
-      "assets/${portalLogos[0]}",
+      "assets/integration/${portalLogos[0]}",
       themeManager.getOrangeColor(),
       1.0,
     ),
     PortalChoiceDescriptor(
       portalNames[1],
-      "assets/${portalLogos[1]}",
+      "assets/integration/${portalLogos[1]}",
       themeManager.getSuuntoRedColor(),
       1.5,
     ),
     PortalChoiceDescriptor(
       portalNames[2],
-      "assets/${portalLogos[2]}",
+      "assets/integration/${portalLogos[2]}",
       themeManager.getSuuntoRedColor(),
       1.5,
     ),
     PortalChoiceDescriptor(
       portalNames[3],
-      "assets/${portalLogos[3]}",
+      "assets/integration/${portalLogos[3]}",
       themeManager.getBlueColor(),
       1.5,
     ),

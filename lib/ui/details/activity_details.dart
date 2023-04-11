@@ -17,7 +17,6 @@ import '../../persistence/models/activity.dart';
 import '../../persistence/models/record.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/unit_system.dart';
-import '../../track/track_manager.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/statistics_accumulator.dart';
@@ -664,10 +663,11 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         IconButton(
           icon: const Icon(Icons.build),
           onPressed: () async {
-            final tm = TrackManager();
-            final track = await tm.getTrack(widget.activity.sport);
-            debugPrint(track.name);
-            // final database = Get.find<AppDatabase>();
+            // final tm = TrackManager();
+            // final track = await tm.getTrack(widget.activity.sport);
+            // debugPrint(track.name);
+            final database = Get.find<AppDatabase>();
+            await database.finalizeActivity(widget.activity);
             // await database.recalculateDistance(widget.activity, true);
           },
         ),

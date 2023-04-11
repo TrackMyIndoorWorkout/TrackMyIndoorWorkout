@@ -8,6 +8,7 @@ import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/bike_color.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_signal_start_stop.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
@@ -31,6 +32,7 @@ import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/kayak_first_display_configuration.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -118,7 +120,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
-    rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
     useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
     useHeartRateBasedCalorieCountingTag: useHeartRateBasedCalorieCountingDefault,
     athleteAgeTag: athleteAgeDefault,
@@ -154,6 +155,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
+    bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -188,6 +190,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
         });
       }
     }
+  }
+
+  for (final kayakFirstDisplaySlot in kayakFirstDisplaySlots) {
+    prefDefaults.addAll({kayakFirstDisplaySlot.item2: kayakFirstDisplaySlot.item4});
   }
 
   return prefDefaults;
