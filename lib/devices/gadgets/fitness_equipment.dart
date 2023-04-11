@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -223,7 +224,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       logLevel,
       logLevelInfo,
       "FITNESS_EQUIPMENT",
-      "listenToData",
+      "_throttlingTimerCallback",
       "Timer expire induced handling",
     );
 
@@ -292,7 +293,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
-        "listenToData",
+        "_listenToData",
         "attached $attached characteristic $characteristic descriptor $descriptor",
       );
     }
@@ -305,8 +306,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
-          "measuring $measuring calibrating $calibrating",
+          "_listenToData loop",
+          "measuring $measuring calibrating $calibrating $byteList",
         );
       }
 
@@ -316,16 +317,45 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       if (descriptor?.fragmentedPackets ?? false) {
         final fragLength = packetFragment.length;
         final listLength = byteList.length;
+        if (logLevel >= logLevelInfo) {
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "_listenToData loop",
+            "Kayak First: ${utf8.decode(byteList)}",
+          );
+        }
+
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          // repeat packet fragment => discard!
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "_listenToData loop",
+              "Repeat packet fragment => discard!",
+            );
+          }
+
           continue;
         }
 
         packetFragment.addAll(byteList);
         if (descriptor?.isClosingPacket(byteList) ?? true) {
           byteListPrep.addAll(packetFragment);
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "_listenToData loop",
+              "Kayak First complete packet: ${utf8.decode(packetFragment)}",
+            );
+          }
+
           packetFragment.clear();
         } else {
           continue;
@@ -340,7 +370,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
+          "_listenToData loop",
           "key $key byteListPrep $byteListPrep",
         );
       }
@@ -353,7 +383,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
-              "listenToData",
+              "_listenToData loop",
               "Cloning handler for $key",
             );
           }
@@ -374,7 +404,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
+          "_listenToData loop",
           "Processable $processable, timerActive $timerActive",
         );
       }
