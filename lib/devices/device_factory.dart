@@ -6,6 +6,7 @@ import 'device_descriptors/cycling_power_meter_descriptor.dart';
 import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/kayak_first_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
@@ -231,6 +232,19 @@ class DeviceFactory {
     );
   }
 
+  static RowerDeviceDescriptor getVirtufitUltimatePro2() {
+    return RowerDeviceDescriptor(
+      sport: deviceSportDescriptors[virtufitUltimatePro2FourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[virtufitUltimatePro2FourCC]!.isMultiSport,
+      fourCC: virtufitUltimatePro2FourCC,
+      vendorName: "Virtufit",
+      modelName: "Ultimate Pro 2",
+      manufacturerNamePart: "XEBEX", // And not Wahoo Fitness, LLC
+      manufacturerFitId: wahooFitnessFitId,
+      model: "Ultimate Pro 2",
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -286,6 +300,10 @@ class DeviceFactory {
         return Concept2Rower();
       case merachMr667FourCC:
         return getMerachMr667();
+      case virtufitUltimatePro2FourCC:
+        return getVirtufitUltimatePro2();
+      case kayakFirstFourCC:
+        return KayakFirstDescriptor();
     }
 
     return DeviceFactory.getGenericFTMSBike();

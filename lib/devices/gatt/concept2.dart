@@ -24,5 +24,5 @@ const c2RowingAdditionalSplitIntervalDataUuid = '0038'; // 19 bytes (elapsed tim
 const c2RowingWorkoutSummaryDataUuid = '0039'; // 20 bytes
 const c2RowingWorkoutAdditionalSummaryDataUuid = '003a'; // 19 bytes
 const c2RowingHRBeltInformationUuid = '003b'; // 6 bytes
-const c2ForceCurveDataUuid = '003b'; // 2-288 bytes
+const c2ForceCurveDataUuid = '003d'; // 2-288 bytes
 const c2MultiplexedInformationUuid = '0080'; // up to 20 bytes

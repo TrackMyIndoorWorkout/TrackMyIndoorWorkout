@@ -25,7 +25,7 @@ import 'models/workout_summary.dart';
 
 part 'database.g.dart'; // the generated code is in that file
 
-@Database(version: 17, entities: [
+@Database(version: 18, entities: [
   Activity,
   Record,
   DeviceUsage,
@@ -165,14 +165,45 @@ abstract class AppDatabase extends FloorDatabase {
       updated++;
     }
 
+    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
     if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
       activity.elapsed = lastRecord.elapsed!;
       updated++;
     }
 
-    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
-      activity.end = lastRecord.timeStamp!;
-      updated++;
+    if (activity.elapsed == 0 && activity.end != 0) {
+      final elapsedMillis = activity.end - activity.start;
+      if (elapsedMillis >= 1000) {
+        activity.elapsed = elapsedMillis ~/ 1000;
+        updated++;
+      }
+    }
+
+    if (activity.movingTime == 0) {
+      final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
+      if (records.length <= 1) {
+        return false;
+      }
+
+      double movingMillis = 0;
+      var previousRecord = records.first;
+      for (final record in records.skip(1)) {
+        if (!record.isNotMoving()) {
+          final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
+          movingMillis += dTMillis;
+        }
+
+        previousRecord = record;
+      }
+
+      if (movingMillis > 0) {
+        activity.movingTime = movingMillis.toInt();
+        updated++;
+      }
     }
 
     if (updated > 0) {
@@ -346,4 +377,9 @@ final migration16to17 = Migration(16, 17, (database) async {
       "ALTER TABLE `$workoutSummariesTableName` ADD COLUMN `moving_time` INTEGER NOT NULL DEFAULT 0");
 
   AppDatabase.additional16to17Migration = true;
+});
+
+final migration17to18 = Migration(17, 18, (database) async {
+  await database.execute(
+      "ALTER TABLE `$activitiesTableName` ADD COLUMN `training_peaks_file_tracking_uuid` TEXT NOT NULL DEFAULT ''");
 });

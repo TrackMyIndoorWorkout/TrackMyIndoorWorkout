@@ -15,6 +15,10 @@ import 'fitness_equipment_start_stop_workout_test.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<BluetoothDevice>()])
 void main() {
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
+
   test('startWorkout blanks out leftover lastRecord', () async {
     final rnd = Random();
     await initPrefServiceForTest();
@@ -61,7 +65,8 @@ void main() {
 
   group('stopWorkout blanks out calorie helper variables', () {
     final rnd = Random();
-    getRandomInts(smallRepetition, 300, rnd).forEach((calories) {
+    getRandomInts(smallRepetition, 300, rnd).forEach((caloriesRnd) {
+      final calories = caloriesRnd + 1;
       test('$calories', () async {
         final hrBasedCalories = rnd.nextBool();
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
@@ -99,7 +104,7 @@ void main() {
 
         expect(equipment.lastPositiveCalories, closeTo(calories, eps));
 
-        equipment.stopWorkout();
+        await equipment.stopWorkout();
 
         expect(equipment.residueCalories, closeTo(0.0, eps));
         expect(equipment.lastPositiveCalories, closeTo(0.0, eps));

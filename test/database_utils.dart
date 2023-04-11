@@ -123,7 +123,7 @@ class InMemoryRecordDao extends RecordDao {
     return records
         .where((element) => element.activityId == activityId)
         .sortedByCompare<int?>(
-            (element) => element.timeStamp, (int? e1, int? e2) => (e1 ?? 0) - (e2 ?? 0))
+            (element) => element.timeStamp, (int? e1, int? e2) => (e1 ?? 0).compareTo(e2 ?? 0))
         .last;
   }
 

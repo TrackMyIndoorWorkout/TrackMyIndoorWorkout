@@ -120,6 +120,7 @@ class ThemeManager {
       heroTag: null,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
+      shape: const CircleBorder(),
       onPressed: onPressed,
       child: widget,
     );
@@ -164,16 +165,6 @@ class ThemeManager {
 
   Widget getGreenFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
     return getIconFabWKey(getGreenColor(), icon, onPressed, key);
-  }
-
-  Widget getGreenGenericFab(Widget widget, VoidCallback? onPressed) {
-    return _getFabCore(
-      getAntagonistColor(),
-      getGreenColor(),
-      widget,
-      onPressed,
-      null,
-    );
   }
 
   Widget getGreyFab(IconData icon, VoidCallback? onPressed) {

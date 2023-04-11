@@ -89,6 +89,7 @@ abstract class Upload {
         await database.activityDao.updateActivity(activity);
         debugPrint('id ${decodedResponse.id}');
 
+        await Future<void>.delayed(const Duration(milliseconds: 500));
         final reqCheckUpgrade = '$uploadsEndpoint/${decodedResponse.id}';
         final uri = Uri.parse(reqCheckUpgrade);
         String? reasonPhrase = StravaStatusText.processed;
@@ -125,6 +126,7 @@ abstract class Upload {
 
             if (reasonPhrase.compareTo(StravaStatusText.processed) == 0) {
               debugPrint('---> try another time');
+              await Future<void>.delayed(const Duration(milliseconds: 200));
             }
           } else {
             debugPrint('---> Unknown error');

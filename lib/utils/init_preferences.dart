@@ -8,6 +8,7 @@ import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/bike_color.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_signal_start_stop.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
@@ -31,6 +32,7 @@ import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/kayak_first_display_configuration.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -64,6 +66,7 @@ import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
 import '../utils/logging.dart';
 import '../utils/preferences.dart';
+import '../utils/time_zone.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -116,9 +119,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     rankTrackVisualizationTag: rankTrackVisualizationDefault,
     rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
-    zoneIndexDisplayColoringTag: zoneIndexDisplayColoringDefault,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
-    rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
     useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
     useHeartRateBasedCalorieCountingTag: useHeartRateBasedCalorieCountingDefault,
     athleteAgeTag: athleteAgeDefault,
@@ -154,6 +155,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
+    bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -175,9 +177,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
   }
 
   for (var prefSpec in MetricSpec.preferencesSpecs) {
-    prefDefaults.addAll({
-      "${prefSpec.metric}_${MetricSpec.zoneIndexDisplayTagPostfix}": prefSpec.indexDisplayDefault
-    });
+    prefDefaults.addAll({prefSpec.zoneIndexTag: prefSpec.indexDisplayDefault});
+    prefDefaults.addAll({prefSpec.coloringByZoneTag: prefSpec.coloringByZoneDefault});
   }
 
   for (final lightOrDark in [false, true]) {
@@ -189,6 +190,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
         });
       }
     }
+  }
+
+  for (final kayakFirstDisplaySlot in kayakFirstDisplaySlots) {
+    prefDefaults.addAll({kayakFirstDisplaySlot.item2: kayakFirstDisplaySlot.item4});
   }
 
   return prefDefaults;
@@ -359,6 +364,37 @@ Future<BasePrefService> initPreferences() async {
         prefService.set<String>(dataConnectionAddressesTag, newAddresses);
       }
     }
+  }
+
+  // Convert the single zone coloring setting to per metric
+  if (prefVersion <= preferencesVersionPerMetricColoringByZone) {
+    final deprecatedZoneIndexColoring =
+        prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
+      bool perMetricDefault = deprecatedZoneIndexColoring;
+      if (prefSpec.metric != "speed") {
+        bool zoneIndexDisplay =
+            prefService.get<bool>(prefSpec.zoneIndexTag) ?? prefSpec.indexDisplayDefault;
+        perMetricDefault = perMetricDefault && zoneIndexDisplay;
+      }
+
+      prefService.set<bool>(prefSpec.coloringByZoneTag, perMetricDefault);
+    }
+  }
+
+  if (prefVersion <= preferencesVersionDefaultingOldTimeZone) {
+    final enforcedTimeZone =
+        prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
+
+    if (enforcedTimeZone != enforcedTimeZoneDefault) {
+      final closestTimeZone = getClosestTimeZone(enforcedTimeZone);
+      if (closestTimeZone != enforcedTimeZone) {
+        prefService.set<String>(enforcedTimeZoneTag, closestTimeZone);
+      }
+    }
+
+    // Activities have stored timeZone, but we would need to convert those
+    // only if TrackManager.getTrack would get the timeZone besides the sport
   }
 
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);

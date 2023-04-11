@@ -1,3 +1,38 @@
+## 1.1.141
+* Contains the build 140 production hotfix
+* Upgrading a few Flutter plugins
+
+## 1.1.140
+* Hotfix app hanging of the time zone migration when custom time zone is selected
+
+## 1.1.139
+* Adjusting some track elevations, naming, and one water track location
+* Simplify closest time zone's track search
+* Upgrading Flutter version
+
+## 1.1.138
+* Adding track for biking, cycling, water sport activities for almost all time zones
+* Making GPS tracks more precise (Haversine and Vincenty measurement formulas - thanks ChatGPT)
+* Narrowing down the list of selectable time zones to be able to match the closest track
+* Upgrading numerous Flutter plugins
+
+## 1.1.137
+* Fixing false 65534 reported calories when 0 calorie workout is uploaded to Strava
+  (some portals don't interpret FIT InvalidValue in that case, so we'll zero it)
+* Fixing UX alignment of workout detail when watt output reaches 1K Watts
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
+## 1.1.136
+* Supporting Virtufit Ultimate Pro 2i rower (XEBEX console)
+* Confirmed Magene cycling speed and cadence sensor support
+* Workaround Android 13 glitch causing some devices showing up without Bluetooth names
+  (Particularly certain Yesoul S3 which have Huawei console and not Fujian)
+* Per metric control of coloring by zones
+* Several fixes to coloring by zones
+* Upgrading Flutter version
+* Upgrading numerous Flutter plugins
+
 ## 1.1.135
 * Determine CSC sensor type (cadence / speed / both) by pre-connecting and polling the feature endpoint
 * Better support for FTMS machines which don't report their type in the Advertisement service data
