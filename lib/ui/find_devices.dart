@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
+import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
@@ -38,6 +40,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
 import '../utils/bluetooth.dart';
@@ -87,6 +90,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
   FitnessEquipment? _fitnessEquipment;
   TextStyle _captionStyle = const TextStyle();
   TextStyle _subtitleStyle = const TextStyle();
+  double _mediaSizeMin = 0;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
+  bool _landscape = false;
+  bool _twoColumnLayout = twoColumnLayoutDefault;
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   final RegExp _colonRegex = RegExp(r':');
@@ -167,6 +175,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
   }
 
   Future<void> _readDeviceSports() async {
@@ -179,42 +188,36 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      if (_logLevel >= logLevelInfo) {
-        Logging.log(
-          _logLevel,
-          logLevelInfo,
-          "FIND_DEVICES",
-          "startScan",
-          "Scan already in progress",
-        );
-      }
-
-      return;
-    }
-
-    if (!await bluetoothCheck(silent, _logLevel)) {
-      if (_logLevel >= logLevelInfo) {
-        Logging.log(
-          _logLevel,
-          logLevelInfo,
-          "FIND_DEVICES",
-          "startScan",
-          "bluetooth check failed",
-        );
-      }
-
-      return;
-    }
-
-    if (_logLevel >= logLevelInfo) {
       Logging.log(
         _logLevel,
         logLevelInfo,
         "FIND_DEVICES",
         "startScan",
-        "Scan initiated",
+        "Scan already in progress",
       );
+
+      return;
     }
+
+    if (!await bluetoothCheck(silent, _logLevel)) {
+      Logging.log(
+        _logLevel,
+        logLevelInfo,
+        "FIND_DEVICES",
+        "startScan",
+        "bluetooth check failed",
+      );
+
+      return;
+    }
+
+    Logging.log(
+      _logLevel,
+      logLevelInfo,
+      "FIND_DEVICES",
+      "startScan",
+      "Scan initiated",
+    );
 
     _readPreferencesValues();
     await _readDeviceSports();
@@ -251,15 +254,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
               _lastEquipmentIds.isNotEmpty &&
               lasts.isNotEmpty &&
               !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-        if (_logLevel > logLevelNone) {
-          Logging.log(
-            _logLevel,
-            logLevelWarning,
-            "FIND_DEVICES",
-            "_startScan finished pre auto-connect",
-            "advertisementCache miss",
-          );
-        }
+        Logging.log(
+          _logLevel,
+          logLevelWarning,
+          "FIND_DEVICES",
+          "_startScan finished pre auto-connect",
+          "advertisementCache miss",
+        );
       } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
         if (_fitnessEquipment != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -453,6 +454,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(concept2RowerFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
@@ -632,15 +635,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
         if (inferredSport == null) {
           Get.snackbar("Error", "Could not infer sport of the device");
-          if (_logLevel > logLevelNone) {
-            Logging.log(
-              _logLevel,
-              logLevelError,
-              "FIND_DEVICES",
-              "goToRecording",
-              "Could not infer sport of the device",
-            );
-          }
+          Logging.log(
+            _logLevel,
+            logLevelError,
+            "FIND_DEVICES",
+            "goToRecording",
+            "Could not infer sport of the device",
+          );
 
           setState(() {
             _goingToRecording = false;
@@ -664,7 +665,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
 
       final prefService = Get.find<BasePrefService>();
-
       if (descriptor.isMultiSport && !pickedAlready) {
         final multiSportSupport =
             prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
@@ -677,7 +677,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   Expanded(
                     child: Center(
                       child: SportPickerBottomSheet(
-                        sportChoices: waterSports,
+                        sportChoices:
+                            descriptor.fourCC == kayakFirstFourCC ? paddleSports : waterSports,
                         initialSport: initialSport,
                       ),
                     ),
@@ -747,10 +748,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           fitnessEquipment.characteristicId == descriptor.dataCharacteristicId) {
         fitnessEquipment.descriptor = descriptor;
       } else {
-        fitnessEquipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: device,
-        );
+        fitnessEquipment = FitnessEquipment(descriptor: descriptor, device: device);
       }
 
       Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
@@ -802,6 +800,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = Get.mediaQuery.size;
+    if (size.width != _mediaWidth || size.height != _mediaHeight) {
+      _mediaWidth = size.width;
+      _mediaHeight = size.height;
+      _landscape = _mediaWidth > _mediaHeight;
+    }
+
+    final mediaSizeMin =
+        _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
+    if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
+      _mediaSizeMin = mediaSizeMin;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
@@ -850,15 +861,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 BluetoothDeviceState.connected) {
                               Get.snackbar("Info", "HRM Already connected");
 
-                              if (_logLevel > logLevelNone) {
-                                Logging.log(
-                                  _logLevel,
-                                  logLevelWarning,
-                                  "FIND_DEVICES",
-                                  "HRM click",
-                                  "HRM Already connected",
-                                );
-                              }
+                              Logging.log(
+                                _logLevel,
+                                logLevelWarning,
+                                "FIND_DEVICES",
+                                "HRM click",
+                                "HRM Already connected",
+                              );
                             } else {
                               setState(() {
                                 _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
@@ -946,6 +955,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         return ScanResultTile(
                           result: r,
                           deviceSport: _deviceSport[r.device.id.id] ?? "",
+                          mediaWidth: _mediaSizeMin,
                           onEquipmentTap: () async {
                             if (!await bluetoothCheck(false, _logLevel)) {
                               return;

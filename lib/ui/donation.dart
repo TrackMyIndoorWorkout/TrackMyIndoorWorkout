@@ -16,7 +16,7 @@ class DonationScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
           child: SvgPicture.asset(
-            "assets/$logoSvgPath.svg",
+            "assets/donation/$logoSvgPath.svg",
             height: Get.textTheme.displayMedium!.fontSize!,
             semanticsLabel: "$vendorName Button",
           ),
@@ -41,7 +41,7 @@ class DonationScreen extends StatelessWidget {
               children: [
                 const SizedBox(width: 40, height: 40),
                 SvgPicture.asset(
-                  "assets/$logoSvgPath.svg",
+                  "assets/donation/$logoSvgPath.svg",
                   height: Get.textTheme.displayMedium!.fontSize!,
                   semanticsLabel: "$vendorName Button",
                 ),
