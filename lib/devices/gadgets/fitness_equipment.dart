@@ -248,7 +248,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void _startThrottlingTimer() {
-    _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+    // When we are polling there's no need for throttling, we are in control
+    if (!(descriptor?.isPolling ?? false)) {
+      _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+    }
   }
 
   /// Data streaming with custom multi-type packet aware throttling logic
@@ -409,7 +412,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
 
-      if (!timerActive) {
+      if (!timerActive || (descriptor?.isPolling ?? false)) {
         // Bad or useless data packets shouldn't count against rate limit.
         // But now we let the code flow reach here so they can trigger
         // a yield though.
