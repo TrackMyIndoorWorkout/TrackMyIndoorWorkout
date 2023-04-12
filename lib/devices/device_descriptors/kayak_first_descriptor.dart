@@ -87,12 +87,6 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   @override
   KayakFirstDescriptor clone() => KayakFirstDescriptor();
 
-  int separatorCount(List<int> data) {
-    return data
-        .map((element) => element == separator ? 1 : 0)
-        .reduce((value, element) => value + element);
-  }
-
   @override
   bool isDataProcessable(List<int> data) {
     return data.isNotEmpty;
