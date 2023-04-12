@@ -78,7 +78,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       distance: double.tryParse(dataParts[9]),
       elapsed: int.tryParse(dataParts[22]),
       power: int.tryParse(dataParts[21]),
-      speed: double.tryParse(dataParts[11]) ?? 0.0 * DeviceDescriptor.ms2kmh,
+      speed: (double.tryParse(dataParts[11]) ?? 0.0) * DeviceDescriptor.ms2kmh,
       cadence: int.tryParse(dataParts[13]),
       sport: sport,
     );
