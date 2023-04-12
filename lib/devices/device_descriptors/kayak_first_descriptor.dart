@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -11,7 +12,6 @@ import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
-import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
 import '../gatt/kayak_first.dart';
@@ -24,17 +24,29 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const dataStreamFlag = 0x36; // ASCII 6
   static const separator = 0x3B; // ASCII ;
   static const resetCommand = "1";
+  static const resetByte = 0x31;
   static const handshakeCommand = "2";
+  static const handshakeByte = 0x32;
   static const newHandshakeCommand = "${handshakeCommand}1";
   static const configurationCommand = "3";
   static const displayConfigurationCommand = "5";
+  static const displayConfigurationByte = 0x35;
   static const pollDataCommand = "6";
   static const parametersCommand = "8";
   static const startCommand = "9;1";
   static const stopCommand = "9;3";
+  static const startStopByte = 0x39;
   static const crLf = "\r\n";
-  static const responseChunkSize = 20;
   static const boatWeightDefault = 12;
+  static const responseQueueSize = 10;
+  static const responseWatchDelayMs = 50; // ms
+  static const responseWatchDelay = Duration(milliseconds: responseWatchDelayMs);
+  static const responseWatchTimeoutMs = 1000; // ms
+  static const commandShortDelayMs = 250; // ms
+  static const commandShortDelay = Duration(milliseconds: commandShortDelayMs);
+  static const commandLongDelayMs = 2000; // ms
+  static const commandLongDelay = Duration(milliseconds: commandLongDelayMs);
+  ListQueue<int> responses = ListQueue<int>();
 
   KayakFirstDescriptor()
       : super(
@@ -63,7 +75,9 @@ class KayakFirstDescriptor extends DeviceDescriptor {
           powerMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
           cadenceMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
           distanceMetric: ThreeByteMetricDescriptor(lsb: 0, msb: 0), // dummy
-        );
+        ) {
+    responses.add(separator);
+  }
 
   @override
   void processFlag(int flag) {
@@ -221,19 +235,63 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
-    const smallDelay = Duration(milliseconds: uiIntermittentDelay);
-    await Future.delayed(smallDelay);
+    await Future.delayed(commandShortDelay);
     final prefService = Get.find<BasePrefService>();
     final blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-    await Future.delayed(smallDelay);
+    await waitForResponse(resetByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
-    await Future.delayed(smallDelay);
+    await waitForResponse(handshakeByte, responseWatchTimeoutMs, commandShortDelay, logLevel);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
-    await Future.delayed(const Duration(milliseconds: spinDownThreshold));
+    await waitForResponse(
+        displayConfigurationByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
+  }
+
+  Future<bool> waitForResponse(
+      int responseByte, int timeout, Duration? postDelay, int logLevel) async {
+    final entry = DateTime.now();
+    while (responses.last != responseByte) {
+      await Future.delayed(responseWatchDelay);
+      if (DateTime.now().difference(entry).inMilliseconds > timeout) {
+        break;
+      }
+    }
+
+    final seenIt = responses.last == responseByte;
+    if (postDelay != null) {
+      await Future.delayed(postDelay);
+    }
+
+    Logging.log(
+      logLevel,
+      logLevelInfo,
+      "KAYAK_FIRST_DESCRIPTOR",
+      "waitForResponse",
+      "$seenIt",
+    );
+    return seenIt;
+  }
+
+  @override
+  void registerResponse(int key, int logLevel) {
+    if (responses.last != key) {
+      responses.add(key);
+
+      if (responses.length > responseQueueSize) {
+        responses.removeFirst();
+      }
+
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "KAYAK_FIRST_DESCRIPTOR",
+        "registerResponse",
+        "$responses",
+      );
+    }
   }
 }

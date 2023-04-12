@@ -303,6 +303,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (!attached || characteristic == null || descriptor == null) return;
 
+    final fragmentedPackets = descriptor?.fragmentedPackets ?? false;
     await for (final byteList in characteristic!.value) {
       if (logLevel >= logLevelInfo) {
         Logging.log(
@@ -314,10 +315,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
 
-      if (!measuring && !calibrating) continue;
+      if (!measuring && !calibrating && !fragmentedPackets) continue;
 
       List<int> byteListPrep = [];
-      if (descriptor?.fragmentedPackets ?? false) {
+      if (fragmentedPackets) {
         final fragLength = packetFragment.length;
         final listLength = byteList.length;
         if (logLevel >= logLevelInfo) {
@@ -348,6 +349,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
         packetFragment.addAll(byteList);
         if (descriptor?.isWholePacket(packetFragment) ?? true) {
+          descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
           if (logLevel >= logLevelInfo) {
             Logging.log(
@@ -366,6 +368,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       } else {
         byteListPrep.addAll(byteList);
       }
+
+      // Repeat shortcut for fragmentedPackets devices
+      if (!measuring && !calibrating) continue;
 
       final key = keySelector(byteListPrep);
       if (logLevel >= logLevelInfo) {

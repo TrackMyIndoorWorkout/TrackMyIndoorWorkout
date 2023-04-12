@@ -125,4 +125,17 @@ abstract class DeviceDescriptor extends DataHandler {
       "Not implemented!",
     );
   }
+
+  /// Register response keys / command bytes.
+  /// Gets significance for polling style devices where the listening
+  /// logic is decoupled from the polling and commands.
+  void registerResponse(int key, int logLevel) {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "registerResponse",
+      "Not implemented!",
+    );
+  }
 }
