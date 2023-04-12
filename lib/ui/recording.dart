@@ -267,17 +267,13 @@ class RecordingState extends State<RecordingScreen> {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       await _fitnessEquipment?.additionalSensorsOnDemand();
-
       await _fitnessEquipment?.attach();
-
+      _startPumpingData();
+      await _fitnessEquipment?.postPumpStart();
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         await _startMeasurement();
       }
-
-      _startPumpingData();
-
-      await _fitnessEquipment?.postPumpStart();
     } else {
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
@@ -1051,15 +1047,13 @@ class RecordingState extends State<RecordingScreen> {
         await _fitnessEquipment?.stopWorkout();
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging.logException(
         _logLevel,
-        logLevelError,
-        "RECORD",
-        "_stopMeasurement stopWorkout",
+        "RECORDING",
+        "_stopMeasurement stopWorkout Equipment got turned off?",
         "${e.message}",
+        e,
+        stack,
       );
     }
 

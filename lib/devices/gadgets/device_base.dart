@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -156,8 +155,14 @@ abstract class DeviceBase {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.logException(
+          logLevel,
+          "DEVICE_BASE",
+          "connectToControlPoint",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
 
       controlPointSubscription = controlPoint?.value
@@ -221,10 +226,14 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on PlatformException catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "discover",
+        "${e.message}",
+        e,
+        stack,
+      );
 
       discovering = false;
       if (retry) {
@@ -301,10 +310,14 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
-        if (kDebugMode) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
+        Logging.logException(
+          logLevel,
+          "DEVICE_BASE",
+          "detach",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
 
       attached = false;
@@ -316,7 +329,19 @@ abstract class DeviceBase {
   Future<void> disconnect() async {
     if (!uxDebug) {
       await detach();
-      await device?.disconnect();
+      try {
+        await device?.disconnect();
+      } on PlatformException catch (e, stack) {
+        Logging.logException(
+          logLevel,
+          "DEVICE_BASE",
+          "discover",
+          "Could not disconnect",
+          e,
+          stack,
+        );
+      }
+
       characteristic = null;
       services = [];
       service = null;
@@ -372,8 +397,14 @@ abstract class DeviceBase {
     try {
       return await _readBatteryLevelCore();
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "discover",
+        "Could not disconnect",
+        e,
+        stack,
+      );
       return -1;
     }
   }
@@ -417,8 +448,14 @@ abstract class DeviceBase {
     try {
       return await _cscSensorTypeCore();
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "cscSensorType",
+        "_cscSensorTypeCore call catch",
+        e,
+        stack,
+      );
       return DeviceCategory.smartDevice;
     }
   }
@@ -466,8 +503,14 @@ abstract class DeviceBase {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
       await characteristic?.write(utf8.encode(commandCrLf));
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "sendKayakFirstCommand",
+        "characteristic.write",
+        e,
+        stack,
+      );
       return -1;
     }
 

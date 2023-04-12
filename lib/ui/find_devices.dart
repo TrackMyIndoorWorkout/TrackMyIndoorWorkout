@@ -106,14 +106,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
       try {
         FlutterBluePlus.instance.stopScan();
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-        Logging.log(
+        Logging.logException(
           _logLevel,
-          logLevelError,
           "FIND_DEVICES",
           "dispose",
           "${e.message}",
+          e,
+          stack,
         );
       }
     }
@@ -299,14 +298,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
         }
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging.logException(
         _logLevel,
-        logLevelError,
         "FIND_DEVICES",
         "_startScan",
         "${e.message}",
+        e,
+        stack,
       );
     }
   }
@@ -424,7 +422,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return false;
     }
 
-    _goingToRecording = true;
+    setState(() {
+      _goingToRecording = true;
+    });
     _scanStreamSubscription?.pause();
     _autoConnectLatch = false;
 
@@ -728,13 +728,25 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (fitnessEquipment != null) {
         if (fitnessEquipment.device?.id.id != device.id.id) {
           try {
-            await fitnessEquipment.detach();
-            if (!_circuitWorkout) {
-              await fitnessEquipment.disconnect();
+            final deviceState = await fitnessEquipment.device?.state.first
+                    .timeout(const Duration(milliseconds: spinDownThreshold * 2)) ??
+                BluetoothDeviceState.disconnected;
+            if (deviceState != BluetoothDeviceState.disconnecting &&
+                deviceState != BluetoothDeviceState.disconnected) {
+              await fitnessEquipment.detach();
+              if (!_circuitWorkout) {
+                await fitnessEquipment.disconnect();
+              }
             }
           } on PlatformException catch (e, stack) {
-            debugPrint("$e");
-            debugPrintStack(stackTrace: stack, label: "trace:");
+            Logging.logException(
+              _logLevel,
+              "FIND_DEVICES",
+              "goToRecording preConnectLogic",
+              "${e.message}",
+              e,
+              stack,
+            );
           }
 
           fitnessEquipment = null;
@@ -776,16 +788,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
         await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
       }
 
-      Get.to(() => RecordingScreen(
+      await Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
             initialState: initialState,
             size: Get.mediaQuery.size,
             sport: descriptor.sport,
-          ))?.then((_) {
-        setState(() {
-          _goingToRecording = false;
-        });
+          ));
+      setState(() {
+        _goingToRecording = false;
       });
     } else {
       setState(() {

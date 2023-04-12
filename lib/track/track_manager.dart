@@ -249,7 +249,7 @@ class TrackManager {
       ),
     },
     // Central European Time, UTC+1
-    "Europe/Budapest": {
+    /* "Europe/Budapest": {
       TrackKind.forLand: TrackDescriptor(
         name: "HeroesSquare",
         kind: TrackKind.forLand,
@@ -267,6 +267,27 @@ class TrackManager {
         horizontalMeter: 0.000013345944953074666,
         verticalMeter: 0.000009010649504293554,
         altitude: 97.0,
+      ),
+    },*/
+    // Central European Time, UTC+1
+    "Europe/Berlin": {
+      TrackKind.forLand: TrackDescriptor(
+        name: "FlughafenTemplehofenFeld",
+        kind: TrackKind.forLand,
+        center: const Offset(13.390212, 52.478910),
+        radiusBoost: 1.1,
+        horizontalMeter: 0.000014755074926940898,
+        verticalMeter: 0.000009005610631341033,
+        altitude: 37.0,
+      ),
+      TrackKind.forWater: TrackDescriptor(
+        name: "GroserMueggelsee",
+        kind: TrackKind.forWater,
+        center: const Offset(13.646848, 52.437737),
+        radiusBoost: 1.2,
+        horizontalMeter: 0.000014741387208870937,
+        verticalMeter: 0.000009005652670950831,
+        altitude: 31.0,
       ),
     },
     // Eastern European Time, UTC+2
