@@ -1,3 +1,10 @@
+## 1.1.143
+* Correct Kayak First pace display
+* Correct Kayak First recording when Instant Measurement Start is on
+* Correct machine switching when the previous machine gets powered off
+* Correct water sport track visualization to be 500m
+* Other adjustments
+
 ## 1.1.142
 * Kayak First ergometer support
 * Fundamental changes of the connection and core logic: connection preserving logic instead of
