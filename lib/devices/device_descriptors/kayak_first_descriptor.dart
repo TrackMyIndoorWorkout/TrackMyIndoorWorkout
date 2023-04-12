@@ -93,9 +93,8 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   }
 
   @override
-  bool isClosingPacket(List<int> data) {
-    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D ||
-        data.length < responseChunkSize;
+  bool isWholePacket(List<int> data) {
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
   }
 
   @override

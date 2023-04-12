@@ -347,7 +347,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         }
 
         packetFragment.addAll(byteList);
-        if (descriptor?.isClosingPacket(byteList) ?? true) {
+        if (descriptor?.isWholePacket(packetFragment) ?? true) {
           byteListPrep.addAll(packetFragment);
           if (logLevel >= logLevelInfo) {
             Logging.log(
@@ -355,7 +355,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               logLevelInfo,
               "FITNESS_EQUIPMENT",
               "_listenToData loop",
-              "Kayak First complete packet: ${utf8.decode(packetFragment)}",
+              "Complete packet: ${utf8.decode(packetFragment)}",
             );
           }
 
