@@ -422,7 +422,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return false;
     }
 
-    _goingToRecording = true;
+    setState(() {
+      _goingToRecording = true;
+    });
     _scanStreamSubscription?.pause();
     _autoConnectLatch = false;
 
@@ -726,9 +728,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (fitnessEquipment != null) {
         if (fitnessEquipment.device?.id.id != device.id.id) {
           try {
-            await fitnessEquipment.detach();
-            if (!_circuitWorkout) {
-              await fitnessEquipment.disconnect();
+            final deviceState = await fitnessEquipment.device?.state.first
+                    .timeout(const Duration(milliseconds: spinDownThreshold * 2)) ??
+                BluetoothDeviceState.disconnected;
+            if (deviceState != BluetoothDeviceState.disconnecting &&
+                deviceState != BluetoothDeviceState.disconnected) {
+              await fitnessEquipment.detach();
+              if (!_circuitWorkout) {
+                await fitnessEquipment.disconnect();
+              }
             }
           } on PlatformException catch (e, stack) {
             Logging.logException(
