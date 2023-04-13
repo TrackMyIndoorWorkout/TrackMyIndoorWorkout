@@ -728,8 +728,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (fitnessEquipment != null) {
         if (fitnessEquipment.device?.id.id != device.id.id) {
           try {
-            final deviceState = await fitnessEquipment.device?.state.first
-                    .timeout(const Duration(milliseconds: spinDownThreshold * 2)) ??
+            final deviceState = await fitnessEquipment.device?.state.first.timeout(
+                    const Duration(milliseconds: spinDownThreshold * 2),
+                    onTimeout: () => BluetoothDeviceState.disconnected) ??
                 BluetoothDeviceState.disconnected;
             if (deviceState != BluetoothDeviceState.disconnecting &&
                 deviceState != BluetoothDeviceState.disconnected) {
