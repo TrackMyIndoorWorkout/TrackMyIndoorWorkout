@@ -154,7 +154,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       {int? controlInfo}) async {
     Logging.log(
       logLevel,
-      logLevelError,
+      logLevelInfo,
       "KayakFirst",
       "executeControlOperation",
       "$opCode",
