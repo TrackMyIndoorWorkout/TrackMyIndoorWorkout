@@ -42,6 +42,8 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const responseWatchDelayMs = 50; // ms
   static const responseWatchDelay = Duration(milliseconds: responseWatchDelayMs);
   static const responseWatchTimeoutMs = 1000; // ms
+  static const responseWatchTimeoutGuardMs = 1200; // ms
+  static const responseWatchTimeoutGuard = Duration(milliseconds: responseWatchTimeoutGuardMs);
   static const commandShortDelayMs = 250; // ms
   static const commandShortDelay = Duration(milliseconds: commandShortDelayMs);
   static const commandLongDelayMs = 2000; // ms
@@ -154,7 +156,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       {int? controlInfo}) async {
     Logging.log(
       logLevel,
-      logLevelError,
+      logLevelInfo,
       "KayakFirst",
       "executeControlOperation",
       "$opCode",
@@ -241,31 +243,29 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-    await waitForResponse(resetByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
+    await _waitForResponse(resetByte, responseWatchTimeoutMs, logLevel)
+        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandLongDelay);
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
-    await waitForResponse(handshakeByte, responseWatchTimeoutMs, commandShortDelay, logLevel);
+    await _waitForResponse(handshakeByte, responseWatchTimeoutMs, logLevel)
+        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandShortDelay);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
-    await waitForResponse(
-        displayConfigurationByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
+    await _waitForResponse(displayConfigurationByte, responseWatchTimeoutMs, logLevel)
+        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandLongDelay);
   }
 
-  Future<bool> waitForResponse(
-      int responseByte, int timeout, Duration? postDelay, int logLevel) async {
-    final entry = DateTime.now();
-    while (responses.last != responseByte) {
+  Future<bool> _waitForResponse(int responseByte, int timeout, int logLevel) async {
+    final iterationCount = timeout ~/ responseWatchDelayMs;
+    int i = 0;
+    for (; i < iterationCount && responses.last != responseByte; i++) {
       await Future.delayed(responseWatchDelay);
-      if (DateTime.now().difference(entry).inMilliseconds > timeout) {
-        break;
-      }
     }
 
-    final seenIt = responses.last == responseByte;
-    if (postDelay != null) {
-      await Future.delayed(postDelay);
-    }
-
+    final seenIt = i < iterationCount;
     Logging.log(
       logLevel,
       logLevelInfo,

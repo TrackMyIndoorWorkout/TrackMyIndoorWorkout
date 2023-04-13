@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -51,7 +50,6 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
       "processFlag",
       "Not implemented!",
     );
-    debugPrint("Schwinn AC Perf+ processFlag Not implemented!");
   }
 
   @override
@@ -65,7 +63,6 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
       "stubRecord",
       "Not implemented!",
     );
-    debugPrint("Schwinn AC Perf+ stubRecord Not implemented!");
     return null;
   }
 
@@ -80,7 +77,6 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
       "stopWorkout",
       "Not implemented!",
     );
-    debugPrint("Schwinn AC Perf+ stopWorkout Not implemented!");
   }
 
   @override
@@ -94,6 +90,5 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
       "executeControlOperation",
       "Not implemented!",
     );
-    debugPrint("Schwinn AC Perf+ executeControlOperation Not implemented!");
   }
 }
