@@ -1,3 +1,6 @@
+## 1.1.145
+* Kayak First delay logic refactoring
+
 ## 1.1.144
 * Kayak First data acquisition changes, timing adjustments
 * Display hourglass on the Recording screen now that attach, discovery and actions happen
