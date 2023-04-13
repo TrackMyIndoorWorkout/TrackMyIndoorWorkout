@@ -241,17 +241,17 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-    await waitForResponse(resetByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
+    await _waitForResponse(resetByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
-    await waitForResponse(handshakeByte, responseWatchTimeoutMs, commandShortDelay, logLevel);
+    await _waitForResponse(handshakeByte, responseWatchTimeoutMs, commandShortDelay, logLevel);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
-    await waitForResponse(
+    await _waitForResponse(
         displayConfigurationByte, responseWatchTimeoutMs, commandLongDelay, logLevel);
   }
 
-  Future<bool> waitForResponse(
+  Future<bool> _waitForResponse(
       int responseByte, int timeout, Duration? postDelay, int logLevel) async {
     final entry = DateTime.now();
     while (responses.last != responseByte) {
