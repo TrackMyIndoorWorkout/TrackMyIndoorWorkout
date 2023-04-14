@@ -39,6 +39,12 @@ abstract class DataHandler {
 
   bool isDataProcessable(List<int> data);
 
+  /// It tells if a gathered packet is the whole packet.
+  /// Gets significance for fragmented packet devices.
+  bool isWholePacket(List<int> data) {
+    return true;
+  }
+
   void initFlag() {
     clearMetrics();
     featuresFlag = -1;

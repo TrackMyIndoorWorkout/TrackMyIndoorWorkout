@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
@@ -116,7 +115,6 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
       "executeControlOperation",
       "Not implemented!",
     );
-    debugPrint("$tag executeControlOperation Not implemented!");
   }
 
   @override

@@ -1,3 +1,43 @@
+## 1.1.145
+* Kayak First delay logic refactoring
+
+## 1.1.144
+* Kayak First data acquisition changes, timing adjustments
+* Display hourglass on the Recording screen now that attach, discovery and actions happen
+  right after connection and this can take seconds
+* Upgrading a few Flutter plugins
+
+## 1.1.143
+* Correct Kayak First pace display
+* Correct Kayak First recording when Instant Measurement Start is on
+* Correct machine switching when the previous machine gets powered off
+* Correct water sport track visualization to be 500m
+* CET timezone virtual tracks in Berlin, Germany with respect to the upcoming FIBO expo
+* Other adjustments
+
+## 1.1.142
+* Kayak First ergometer support
+* Fundamental changes of the connection and core logic: connection preserving logic instead of
+  disconnection favoring principles (please report me if you experience any connection related
+  anomalies)
+* Fundamental changes of the data collection routines: connect immediately always while on the
+  Recording screen (and beyond), just not utilize the packets if not in measurement
+* Upgrading to Material 3 UI, changing UI to conform more to Material 3
+* Using Flex Color Scheme (along with Material 3)
+* Upgrading a lot of Flutter plugins
+
+## 1.1.141
+* Contains the build 140 production hotfix
+* Upgrading a few Flutter plugins
+
+## 1.1.140
+* Hotfix app hanging of the time zone migration when custom time zone is selected
+
+## 1.1.139
+* Adjusting some track elevations, naming, and one water track location
+* Simplify closest time zone's track search
+* Upgrading Flutter version
+
 ## 1.1.138
 * Adding track for biking, cycling, water sport activities for almost all time zones
 * Making GPS tracks more precise (Haversine and Vincenty measurement formulas - thanks ChatGPT)

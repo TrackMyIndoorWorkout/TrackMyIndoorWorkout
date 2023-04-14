@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -32,6 +33,7 @@ import '../../utils/power_speed_mixin.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
+import '../device_descriptors/kayak_first_descriptor.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
@@ -66,6 +68,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   DeviceDescriptor? descriptor;
   Map<int, DataHandler> dataHandlers = {};
+  List<int> packetFragment = [];
   String? manufacturerName;
   double _residueCalories = 0.0;
   int _lastPositiveCadence = 0; // #101
@@ -156,6 +159,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return badKey;
     }
 
+    if (descriptor != null && descriptor is KayakFirstDescriptor) {
+      var selector = l[0];
+      if (l.length > 1 && l[1] != KayakFirstDescriptor.separator) {
+        selector += 256 * l[1];
+      }
+
+      return selector;
+    }
+
     if (l.length == 1 || descriptor?.flagByteSize == 1) {
       return l[0];
     }
@@ -178,15 +190,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         .toList(growable: false);
 
     if (values.isEmpty) {
-      if (logLevel >= logLevelInfo) {
-        Logging().log(
-          logLevel,
-          logLevelInfo,
-          "FITNESS_EQUIPMENT",
-          "mergedToYield",
-          "Skipping!!",
-        );
-      }
+      Logging().log(
+        logLevel,
+        logLevelInfo,
+        "FITNESS_EQUIPMENT",
+        "mergedToYield",
+        "Skipping!!",
+      );
       return null;
     }
 
@@ -212,15 +222,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   void _throttlingTimerCallback() {
     _throttleTimer = null;
-    if (logLevel >= logLevelInfo) {
-      Logging().log(
-        logLevel,
-        logLevelInfo,
-        "FITNESS_EQUIPMENT",
-        "listenToData",
-        "Timer expire induced handling",
-      );
-    }
+    Logging().log(
+      logLevel,
+      logLevelInfo,
+      "FITNESS_EQUIPMENT",
+      "_throttlingTimerCallback",
+      "Timer expire induced handling",
+    );
+
     if (_recordHandlerFunction != null) {
       final merged = _mergedForYield();
       if (merged != null) {
@@ -241,7 +250,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void _startThrottlingTimer() {
-    _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+    // When we are polling there's no need for throttling, we are in control
+    if (!(descriptor?.isPolling ?? false)) {
+      _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+    }
   }
 
   /// Data streaming with custom multi-type packet aware throttling logic
@@ -286,34 +298,93 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
-        "listenToData",
+        "_listenToData",
         "attached $attached characteristic $characteristic descriptor $descriptor",
       );
     }
+
     if (!attached || characteristic == null || descriptor == null) return;
 
+    final fragmentedPackets = descriptor?.fragmentedPackets ?? false;
     await for (final byteList in characteristic!.value) {
       if (logLevel >= logLevelInfo) {
         Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
-          "measuring $measuring calibrating $calibrating",
+          "_listenToData loop",
+          "measuring $measuring calibrating $calibrating $byteList",
         );
       }
+
+      if (!measuring && !calibrating && !fragmentedPackets) continue;
+
+      List<int> byteListPrep = [];
+      if (fragmentedPackets) {
+        final fragLength = packetFragment.length;
+        final listLength = byteList.length;
+        if (logLevel >= logLevelInfo) {
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "_listenToData loop",
+            "Kayak First: ${utf8.decode(byteList)}",
+          );
+        }
+
+        if (byteList.isNotEmpty &&
+            fragLength >= listLength &&
+            packetFragment.sublist(fragLength - listLength).equals(byteList)) {
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "_listenToData loop",
+              "Repeat packet fragment => discard!",
+            );
+          }
+
+          continue;
+        }
+
+        packetFragment.addAll(byteList);
+        if (descriptor?.isWholePacket(packetFragment) ?? true) {
+          descriptor?.registerResponse(packetFragment.first, logLevel);
+          byteListPrep.addAll(packetFragment);
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "_listenToData loop",
+              "Complete packet: ${utf8.decode(packetFragment)}",
+            );
+          }
+
+          packetFragment.clear();
+        } else {
+          continue;
+        }
+      } else {
+        byteListPrep.addAll(byteList);
+      }
+
+      // Repeat shortcut for fragmentedPackets devices
       if (!measuring && !calibrating) continue;
 
-      final key = keySelector(byteList);
+      final key = keySelector(byteListPrep);
       if (logLevel >= logLevelInfo) {
         Logging().log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
-          "key $key byteList $byteList",
+          "_listenToData loop",
+          "key $key byteListPrep $byteListPrep",
         );
       }
+
       bool processable = false;
       if (key >= 0 && descriptor!.isFlagValid(key)) {
         if (!dataHandlers.containsKey(key)) {
@@ -322,17 +393,18 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
-              "listenToData",
+              "_listenToData loop",
               "Cloning handler for $key",
             );
           }
+
           dataHandlers[key] = descriptor!.clone();
         }
 
         final dataHandler = dataHandlers[key]!;
-        processable = dataHandler.isDataProcessable(byteList);
+        processable = dataHandler.isDataProcessable(byteListPrep);
         if (processable) {
-          _listDeduplicationMap[key] = DataEntry(byteList);
+          _listDeduplicationMap[key] = DataEntry(byteListPrep);
         }
       }
 
@@ -342,11 +414,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
+          "_listenToData loop",
           "Processable $processable, timerActive $timerActive",
         );
       }
-      if (!timerActive) {
+
+      if (!timerActive || (descriptor?.isPolling ?? false)) {
         // Bad or useless data packets shouldn't count against rate limit.
         // But now we let the code flow reach here so they can trigger
         // a yield though.
@@ -370,6 +443,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void pumpData(RecordHandlerFunction recordHandlerFunction) {
+    subscription?.cancel();
     _recordHandlerFunction = recordHandlerFunction;
     if (uxDebug) {
       _timer = Timer(
@@ -507,6 +581,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     return success;
   }
 
+  Future<void> postPumpStart() async {
+    await descriptor?.postPumpStart(getControlPoint(), logLevel);
+  }
+
   /// Needed to check if any of the last seen data stubs for each
   /// combination indicated movement. #234 #259
   bool wasNotMoving() {
@@ -543,8 +621,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           return params;
         }
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.logException(
+          logLevel,
+          "FITNESS_EQUIPMENT",
+          "getWriteSupportParameters",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
     }
 
@@ -619,9 +703,19 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "FITNESS_EQUIPMENT",
+        "_fitnessMachineFeature",
+        "${e.message}",
+        e,
+        stack,
+      );
     }
+  }
+
+  BluetoothCharacteristic? getControlPoint() {
+    return descriptor?.fourCC == kayakFirstFourCC ? characteristic : controlPoint;
   }
 
   @override
@@ -633,7 +727,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await super.connectToControlPoint(obtainControl);
     if (obtainControl && !_blockSignalStartStop && descriptor != null) {
       await descriptor!.executeControlOperation(
-        controlPoint,
+        getControlPoint(),
         _blockSignalStartStop,
         logLevel,
         requestControl,
@@ -703,21 +797,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       manufacturerName = String.fromCharCodes(nameBytes);
       return manufacturerName;
     } on PlatformException catch (e, stack) {
-      if (logLevel > logLevelNone) {
-        Logging().logException(
-          logLevel,
-          "FITNESS_EQUIPMENT",
-          "discover",
-          "Could not read name${secondTry ? ' 2nd try' : ''}",
-          e,
-          stack,
-        );
-      }
-
-      if (kDebugMode) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+      Logging().logException(
+        logLevel,
+        "FITNESS_EQUIPMENT",
+        "discover",
+        "Could not read name${secondTry ? ' 2nd try' : ''}",
+        e,
+        stack,
+      );
       return null;
     }
   }
@@ -1295,6 +1382,17 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     refreshFactors();
   }
 
+  void _pollingTimerCallback() {
+    if (measuring) {
+      _startPollingTimer();
+    }
+  }
+
+  void _startPollingTimer() {
+    _timer = Timer(_throttleDuration, _pollingTimerCallback);
+    descriptor?.pollMeasurement(getControlPoint()!, logLevel);
+  }
+
   Future<void> startWorkout() async {
     readConfiguration();
     _residueCalories = 0.0;
@@ -1306,20 +1404,26 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if (!_blockSignalStartStop && descriptor != null) {
-      await descriptor!.executeControlOperation(
-        controlPoint,
-        _blockSignalStartStop,
-        logLevel,
-        startOrResumeControl,
-      );
+    if (descriptor != null) {
+      if (!_blockSignalStartStop) {
+        await descriptor!.executeControlOperation(
+          getControlPoint(),
+          _blockSignalStartStop,
+          logLevel,
+          startOrResumeControl,
+        );
+      }
+
+      if (descriptor?.isPolling ?? false) {
+        _startPollingTimer();
+      }
     }
   }
 
-  void stopWorkout() {
+  Future<void> stopWorkout() async {
     if (!_blockSignalStartStop && descriptor != null) {
-      descriptor!.executeControlOperation(
-        controlPoint,
+      await descriptor!.executeControlOperation(
+        getControlPoint(),
         _blockSignalStartStop,
         logLevel,
         stopOrPauseControl,

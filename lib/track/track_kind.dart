@@ -5,7 +5,6 @@ enum TrackKind {
   forRide,
   forLand,
   forWater,
-  forDisplay,
 }
 
 Map<String, List<TrackKind>> trackKindSportMap = {

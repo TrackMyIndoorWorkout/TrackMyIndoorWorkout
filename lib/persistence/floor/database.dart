@@ -109,6 +109,102 @@ abstract class AppDatabase extends FloorDatabase {
       debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
+
+  Future<bool> finalizeActivity(Activity activity) async {
+    final lastRecord = await recordDao.findLastRecordOfActivity(activity.id!);
+    if (lastRecord == null) {
+      return false;
+    }
+
+    int updated = 0;
+    if (lastRecord.calories != null && lastRecord.calories! > 0 && activity.calories == 0) {
+      activity.calories = lastRecord.calories!;
+      updated++;
+    }
+
+    if (lastRecord.distance != null && lastRecord.distance! > 0 && activity.distance == 0) {
+      activity.distance = lastRecord.distance!;
+      updated++;
+    }
+
+    if (lastRecord.timeStamp != null && lastRecord.timeStamp! > 0 && activity.end == 0) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
+    if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
+      activity.elapsed = lastRecord.elapsed!;
+      updated++;
+    }
+
+    if (activity.elapsed == 0 && activity.end != 0) {
+      final elapsedMillis = activity.end - activity.start;
+      if (elapsedMillis >= 1000) {
+        activity.elapsed = elapsedMillis ~/ 1000;
+        updated++;
+      }
+    }
+
+    if (activity.movingTime == 0) {
+      final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
+      if (records.length <= 1) {
+        return false;
+      }
+
+      double movingMillis = 0;
+      var previousRecord = records.first;
+      for (final record in records.skip(1)) {
+        if (!record.isNotMoving()) {
+          final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
+          movingMillis += dTMillis;
+        }
+
+        previousRecord = record;
+      }
+
+      if (movingMillis > 0) {
+        activity.movingTime = movingMillis.toInt();
+        updated++;
+      }
+    }
+
+    if (updated > 0) {
+      await activityDao.updateActivity(activity);
+    }
+
+    return updated > 0;
+  }
+
+  Future<bool> recalculateDistance(Activity activity, [force = false]) async {
+    final records = await recordDao.findAllActivityRecords(activity.id ?? 0);
+    if (records.length <= 1) {
+      return false;
+    }
+
+    var previousRecord = records.first;
+    for (final record in records.skip(1)) {
+      final dTMillis = record.timeStamp! - previousRecord.timeStamp!;
+      final dT = dTMillis / 1000.0;
+      if ((record.distance ?? 0.0) < eps || force) {
+        record.distance = (previousRecord.distance ?? 0.0);
+        if ((record.speed ?? 0.0) > 0 && dT > eps) {
+          // Speed already should have powerFactor effect
+          double dD = (record.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
+          record.distance = record.distance! + dD;
+          await recordDao.updateRecord(record);
+        }
+      }
+
+      previousRecord = record;
+    }
+
+    if ((previousRecord.distance ?? 0.0) > eps && (activity.distance < eps || force)) {
+      activity.distance = previousRecord.distance!;
+      await activityDao.updateActivity(activity);
+    }
+
+    return true;
+  }
 }
 
 final migration1to2 = Migration(1, 2, (database) async {

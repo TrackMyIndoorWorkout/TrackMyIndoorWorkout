@@ -1,12 +1,10 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../preferences/log_level.dart';
 import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
@@ -187,15 +185,14 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       try {
         await controlPoint.write(startHrStreamCommand);
       } on PlatformException catch (e, stack) {
-        Logging().log(
+        Logging().logException(
           logLevel,
-          logLevelError,
           "Sch x70",
           "executeControlOperation",
           "${e.message}",
+          e,
+          stack,
         );
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
       }
     }
   }

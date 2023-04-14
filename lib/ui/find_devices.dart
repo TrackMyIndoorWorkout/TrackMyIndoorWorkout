@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../devices/bluetooth_device_ex.dart';
@@ -22,6 +25,7 @@ import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
+import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
@@ -37,6 +41,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
 import '../utils/bluetooth.dart';
@@ -74,6 +79,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
+  final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
+  StreamSubscription<List<ScanResult>>? _scanStreamSubscription;
   final Map<String, String> _deviceSport = {};
   bool _goingToRecording = false;
   bool _autoConnectLatch = false;
@@ -85,6 +92,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
   FitnessEquipment? _fitnessEquipment;
   TextStyle _captionStyle = const TextStyle();
   TextStyle _subtitleStyle = const TextStyle();
+  double _mediaSizeMin = 0;
+  double _mediaHeight = 0;
+  double _mediaWidth = 0;
+  bool _landscape = false;
+  bool _twoColumnLayout = twoColumnLayoutDefault;
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   final RegExp _colonRegex = RegExp(r':');
@@ -96,14 +108,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
       try {
         FlutterBluePlus.instance.stopScan();
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-        Logging().log(
+        Logging().logException(
           _logLevel,
-          logLevelError,
           "FIND_DEVICES",
           "dispose",
           "${e.message}",
+          e,
+          stack,
         );
       }
     }
@@ -130,6 +141,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+    _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
   }
 
   Future<void> _readDeviceSports() async {
@@ -142,15 +154,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      if (_logLevel >= logLevelInfo) {
-        Logging().log(
-          _logLevel,
-          logLevelInfo,
-          "FIND_DEVICES",
-          "startScan",
-          "Scan already in progress",
-        );
-      }
+      Logging().log(
+        _logLevel,
+        logLevelInfo,
+        "FIND_DEVICES",
+        "startScan",
+        "Scan already in progress",
+      );
 
       return;
     }
@@ -176,47 +186,52 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
-      if (_logLevel >= logLevelInfo) {
-        Logging().log(
-          _logLevel,
-          logLevelInfo,
-          "FIND_DEVICES",
-          "startScan",
-          "bluetooth check failed",
-        );
-      }
-
-      return;
-    }
-
-    if (_logLevel >= logLevelInfo) {
       Logging().log(
         _logLevel,
         logLevelInfo,
         "FIND_DEVICES",
         "startScan",
-        "Scan initiated",
+        "bluetooth check failed",
       );
+
+      return;
     }
+
+    Logging().log(
+      _logLevel,
+      logLevelInfo,
+      "FIND_DEVICES",
+      "startScan",
+      "Scan initiated",
+    );
 
     _readPreferencesValues();
     await _readDeviceSports();
     _scannedDevices.clear();
+    setState(() {
+      _isScanning = true;
+    });
+
     _isScanning = true;
     _autoConnectLatch = true;
+
+    if (_scanStreamSubscription?.isPaused ?? false) {
+      _scanStreamSubscription?.resume();
+    }
+
     try {
-      FlutterBluePlus.instance
-          .startScan(timeout: Duration(seconds: _scanDuration))
-          .whenComplete(() => _isScanning = false);
+      await FlutterBluePlus.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      setState(() {
+        _isScanning = false;
+      });
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging().log(
+      Logging().logException(
         _logLevel,
-        logLevelError,
         "FIND_DEVICES",
         "_startScan",
         "${e.message}",
+        e,
+        stack,
       );
     }
   }
@@ -236,12 +251,25 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
   }
 
+  Stream<List<ScanResult>> get _throttledScanStream async* {
+    await for (var scanResults in FlutterBluePlus.instance.scanResults.throttleTime(
+      const Duration(milliseconds: uiIntermittentDelay),
+      leading: false,
+      trailing: true,
+    )) {
+      yield scanResults;
+    }
+  }
+
   @override
   void initState() {
     initializeDateFormatting();
     super.initState();
     _readPreferencesValues();
     _isScanning = false;
+    _scanStreamSubscription =
+        _throttledScanStream.listen((scanResults) => _scanStreamController.add(scanResults));
+
     _captionStyle = Get.textTheme.titleLarge!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
 
@@ -327,7 +355,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
       return false;
     }
 
-    _goingToRecording = true;
+    setState(() {
+      _goingToRecording = true;
+    });
+    _scanStreamSubscription?.pause();
     _autoConnectLatch = false;
 
     // Device determination logics
@@ -360,6 +391,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(concept2RowerFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
@@ -405,6 +438,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             _goingToRecording = false;
           });
 
+          _scanStreamSubscription?.resume();
           return false;
         }
       } else if (descriptor != null &&
@@ -463,6 +497,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             _goingToRecording = false;
           });
 
+          _scanStreamSubscription?.resume();
           return false;
         } else {
           // currentPrimarySensor, instantiate this primary and secondary sensor,
@@ -537,20 +572,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
         if (inferredSport == null) {
           Get.snackbar("Error", "Could not infer sport of the device");
-          if (_logLevel > logLevelNone) {
-            Logging().log(
-              _logLevel,
-              logLevelError,
-              "FIND_DEVICES",
-              "goToRecording",
-              "Could not infer sport of the device",
-            );
-          }
+          Logging().log(
+            _logLevel,
+            logLevelError,
+            "FIND_DEVICES",
+            "goToRecording",
+            "Could not infer sport of the device",
+          );
 
           setState(() {
             _goingToRecording = false;
           });
 
+          _scanStreamSubscription?.resume();
           return false;
         } else {
           descriptor = DeviceFactory.genericDescriptorForSport(inferredSport);
@@ -570,7 +604,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
 
       final prefService = Get.find<BasePrefService>();
-
       if (descriptor.isMultiSport && !pickedAlready) {
         final multiSportSupport =
             prefService.get<bool>(multiSportDeviceSupportTag) ?? multiSportDeviceSupportDefault;
@@ -583,7 +616,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   Expanded(
                     child: Center(
                       child: SportPickerBottomSheet(
-                        sportChoices: waterSports,
+                        sportChoices:
+                            descriptor.fourCC == kayakFirstFourCC ? paddleSports : waterSports,
                         initialSport: initialSport,
                       ),
                     ),
@@ -601,6 +635,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               _goingToRecording = false;
             });
 
+            _scanStreamSubscription?.resume();
             return false;
           }
 
@@ -638,13 +673,26 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (fitnessEquipment != null) {
         if (fitnessEquipment.device?.id.id != device.id.id) {
           try {
-            await fitnessEquipment.detach();
-            if (!_circuitWorkout) {
-              await fitnessEquipment.disconnect();
+            final deviceState = await fitnessEquipment.device?.state.first.timeout(
+                    const Duration(milliseconds: spinDownThreshold * 2),
+                    onTimeout: () => BluetoothDeviceState.disconnected) ??
+                BluetoothDeviceState.disconnected;
+            if (deviceState != BluetoothDeviceState.disconnecting &&
+                deviceState != BluetoothDeviceState.disconnected) {
+              await fitnessEquipment.detach();
+              if (!_circuitWorkout) {
+                await fitnessEquipment.disconnect();
+              }
             }
           } on PlatformException catch (e, stack) {
-            debugPrint("$e");
-            debugPrintStack(stackTrace: stack, label: "trace:");
+            Logging().logException(
+              _logLevel,
+              "FIND_DEVICES",
+              "goToRecording preConnectLogic",
+              "${e.message}",
+              e,
+              stack,
+            );
           }
 
           fitnessEquipment = null;
@@ -658,10 +706,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           fitnessEquipment.characteristicId == descriptor.dataCharacteristicId) {
         fitnessEquipment.descriptor = descriptor;
       } else {
-        fitnessEquipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: device,
-        );
+        fitnessEquipment = FitnessEquipment(descriptor: descriptor, device: device);
       }
 
       Get.put<FitnessEquipment>(fitnessEquipment, permanent: true);
@@ -691,21 +736,22 @@ class FindDevicesState extends State<FindDevicesScreen> {
         });
       }
 
-      Get.to(() => RecordingScreen(
+      await Get.to(() => RecordingScreen(
             device: device,
             descriptor: descriptor!,
             initialState: initialState,
             size: Get.mediaQuery.size,
             sport: descriptor.sport,
-          ))?.then((_) {
-        setState(() {
-          _goingToRecording = false;
-        });
+          ));
+      setState(() {
+        _goingToRecording = false;
       });
     } else {
       setState(() {
         _goingToRecording = false;
       });
+
+      _scanStreamSubscription?.resume();
     }
 
     return success;
@@ -713,96 +759,41 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = Get.mediaQuery.size;
+    if (size.width != _mediaWidth || size.height != _mediaHeight) {
+      _mediaWidth = size.width;
+      _mediaHeight = size.height;
+      _landscape = _mediaWidth > _mediaHeight;
+    }
+
+    final mediaSizeMin =
+        _landscape && _twoColumnLayout ? _mediaWidth / 2 : min(_mediaWidth, _mediaHeight);
+    if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
+      _mediaSizeMin = mediaSizeMin;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_filterDevices ? 'Supported Devices:' : 'Devices'),
         actions: [
-          StreamBuilder<bool>(
-            stream: FlutterBluePlus.instance.isScanning,
-            initialData: _instantScan,
-            builder: (c, snapshot) {
-              if (snapshot.data == null || snapshot.data!) {
-                return JumpingDotsProgressIndicator(
+          _isScanning
+              ? JumpingDotsProgressIndicator(
                   fontSize: 30.0,
-                  color: Colors.white,
-                );
-              } else {
-                _isScanning = false;
-                final lasts = _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
-                if (_fitnessEquipment != null &&
-                        !_advertisementCache
-                            .hasEntry(_fitnessEquipment!.device?.id.id ?? emptyMeasurement) ||
-                    _filterDevices &&
-                        _scannedDevices.length == 1 &&
-                        !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
-                    _scannedDevices.length > 1 &&
-                        _lastEquipmentIds.isNotEmpty &&
-                        lasts.isNotEmpty &&
-                        !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-                  Get.snackbar("Request", "Please scan again");
-                  if (_logLevel > logLevelNone) {
-                    Logging().log(
-                      _logLevel,
-                      logLevelWarning,
-                      "FIND_DEVICES",
-                      "build",
-                      "advertisementCache miss",
-                    );
-                  }
-                } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
-                  if (_fitnessEquipment != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      goToRecording(
-                        _fitnessEquipment!.device!,
-                        BluetoothDeviceState.connected,
-                        false,
-                      );
-                    });
-                  } else {
-                    if (_filterDevices && _scannedDevices.length == 1) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        goToRecording(
-                          _scannedDevices.first,
-                          BluetoothDeviceState.disconnected,
-                          false,
-                        );
-                      });
-                    } else if (_scannedDevices.length > 1 && _lastEquipmentIds.isNotEmpty) {
-                      final lasts = _scannedDevices
-                          .where((d) =>
-                              _lastEquipmentIds.contains(d.id.id) &&
-                              _advertisementCache.hasEntry(d.id.id))
-                          .toList(growable: false);
-                      if (lasts.isNotEmpty) {
-                        lasts.sort((a, b) {
-                          return _advertisementCache
-                              .getEntry(a.id.id)!
-                              .txPower
-                              .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
-                        });
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          goToRecording(lasts.last, BluetoothDeviceState.disconnected, false);
-                        });
-                      }
-                    }
-                  }
-                }
-                if (_goingToRecording || _pairingHrm) {
-                  return HeartbeatProgressIndicator(
-                    child: IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
-                  );
-                } else {
-                  return IconButton(
-                      icon: const Icon(Icons.refresh), onPressed: () => _startScan(false));
-                }
-              }
-            },
-          ),
+                  color: _themeManager.getProtagonistColor(),
+                )
+              : (_goingToRecording || _pairingHrm)
+                  ? HeartbeatProgressIndicator(
+                      child:
+                          IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                    )
+                  : IconButton(
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async => await _startScan(false))
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          _startScan(false);
+          await _startScan(false);
         },
         child: ListView(
           physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -822,34 +813,25 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               emptyMeasurement,
                           style: _subtitleStyle,
                         ),
-                        trailing: StreamBuilder<BluetoothDeviceState>(
-                          stream: _heartRateMonitor?.device?.state,
-                          initialData: BluetoothDeviceState.disconnected,
-                          builder: (c, snapshot) {
-                            if (snapshot.data == BluetoothDeviceState.connected) {
-                              return _themeManager.getGreenGenericFab(
-                                const Icon(Icons.favorite),
-                                () {
-                                  Get.snackbar("Info", "HRM Already connected");
+                        trailing: _themeManager.getGreenFab(
+                          Icons.favorite,
+                          () async {
+                            if (await _heartRateMonitor?.device?.state.first ==
+                                BluetoothDeviceState.connected) {
+                              Get.snackbar("Info", "HRM Already connected");
 
-                                  if (_logLevel > logLevelNone) {
-                                    Logging().log(
-                                      _logLevel,
-                                      logLevelWarning,
-                                      "FIND_DEVICES",
-                                      "HRM click",
-                                      "HRM Already connected",
-                                    );
-                                  }
-                                },
+                              Logging().log(
+                                _logLevel,
+                                logLevelWarning,
+                                "FIND_DEVICES",
+                                "HRM click",
+                                "HRM Already connected",
                               );
                             } else {
-                              return _themeManager.getGreyFab(Icons.bluetooth, () {
-                                setState(() {
-                                  _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
-                                      ? Get.find<HeartRateMonitor>()
-                                      : null;
-                                });
+                              setState(() {
+                                _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                    ? Get.find<HeartRateMonitor>()
+                                    : null;
                               });
                             }
                           },
@@ -871,38 +853,29 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               emptyMeasurement,
                           style: _subtitleStyle,
                         ),
-                        trailing: StreamBuilder<BluetoothDeviceState>(
-                          stream: _fitnessEquipment?.device?.state,
-                          initialData: BluetoothDeviceState.disconnected,
-                          builder: (c, snapshot) {
-                            if (snapshot.data == BluetoothDeviceState.connected) {
-                              return _themeManager.getGreenGenericFab(
-                                const Icon(Icons.open_in_new),
-                                () async {
-                                  if (_isScanning) {
-                                    await FlutterBluePlus.instance.stopScan();
-                                    await Future.delayed(
-                                        const Duration(milliseconds: uiIntermittentDelay));
-                                  }
+                        trailing: _themeManager.getGreenFab(
+                          Icons.open_in_new,
+                          () async {
+                            final deviceState = await _fitnessEquipment?.device?.state.first ??
+                                BluetoothDeviceState.disconnected;
+                            if (deviceState == BluetoothDeviceState.connected) {
+                              if (_isScanning) {
+                                await FlutterBluePlus.instance.stopScan();
+                                await Future.delayed(
+                                    const Duration(milliseconds: uiIntermittentDelay));
+                              }
 
-                                  await goToRecording(
-                                    _fitnessEquipment!.device!,
-                                    snapshot.data!,
-                                    true,
-                                  );
-                                },
+                              await goToRecording(
+                                _fitnessEquipment!.device!,
+                                deviceState,
+                                true,
                               );
                             } else {
-                              return _themeManager.getGreenFab(
-                                Icons.bluetooth_disabled,
-                                () {
-                                  setState(() {
-                                    _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
-                                        ? Get.find<FitnessEquipment>()
-                                        : null;
-                                  });
-                                },
-                              );
+                              setState(() {
+                                _fitnessEquipment = Get.isRegistered<FitnessEquipment>()
+                                    ? Get.find<FitnessEquipment>()
+                                    : null;
+                              });
                             }
                           },
                         ),
@@ -912,7 +885,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             ),
             const Divider(),
             StreamBuilder<List<ScanResult>>(
-              stream: FlutterBluePlus.instance.scanResults,
+              stream: _scanStreamController.stream,
               initialData: const [],
               builder: (c, snapshot) => snapshot.data == null
                   ? Container()
@@ -941,6 +914,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         return ScanResultTile(
                           result: r,
                           deviceSport: _deviceSport[r.device.id.id] ?? "",
+                          mediaWidth: _mediaSizeMin,
                           onEquipmentTap: () async {
                             if (!await bluetoothCheck(false, _logLevel)) {
                               return;
@@ -1097,24 +1071,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _themeManager.getBlueFab(Icons.list_alt, () {
             Get.to(() => const ActivitiesScreen());
           }),
-          StreamBuilder<bool>(
-            stream: FlutterBluePlus.instance.isScanning,
-            initialData: _instantScan,
-            builder: (c, snapshot) {
-              if (snapshot.data == null) {
-                return Container();
-              } else if (snapshot.data!) {
-                return _themeManager.getBlueFab(Icons.stop, () async {
+          _isScanning
+              ? _themeManager.getBlueFab(Icons.stop, () async {
                   if (_isScanning) {
                     await FlutterBluePlus.instance.stopScan();
                     await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                   }
-                });
-              } else {
-                return _themeManager.getGreenFab(Icons.search, () => _startScan(false));
-              }
-            },
-          ),
+                })
+              : _themeManager.getGreenFab(Icons.search, () async => await _startScan(false)),
           _themeManager.getBlueFab(
             Icons.settings,
             () async => Get.to(() => const PreferencesHubScreen()),

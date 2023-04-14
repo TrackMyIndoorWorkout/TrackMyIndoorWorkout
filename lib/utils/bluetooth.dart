@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
-import '../preferences/log_level.dart';
 import 'logging.dart';
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
@@ -55,14 +54,13 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
 
     return await FlutterBluePlus.instance.isOn;
   } on PlatformException catch (e, stack) {
-    debugPrint("$e");
-    debugPrintStack(stackTrace: stack, label: "trace:");
-    Logging().log(
+    Logging().logException(
       logLevel,
-      logLevelError,
       "bluetoothCheck",
       "bluetoothCheck",
       "${e.message}",
+      e,
+      stack,
     );
     return false;
   }

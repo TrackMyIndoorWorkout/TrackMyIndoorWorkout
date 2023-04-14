@@ -31,12 +31,12 @@ class Logging {
     String subTag,
     String message,
   ) {
-    if (logLevelThreshold == logLevelNone || testing) {
-      return;
-    }
-
     if (kDebugMode) {
       debugPrint("$tag | $subTag | $message");
+    }
+
+    if (logLevelThreshold == logLevelNone || testing) {
+      return;
     }
 
     if (logLevelThreshold >= logLevelInfo && logLevel >= logLevelInfo) {
@@ -56,6 +56,11 @@ class Logging {
     Exception e,
     StackTrace stack,
   ) {
+    if (kDebugMode) {
+      debugPrint("$e");
+      debugPrintStack(stackTrace: stack, label: "trace:");
+    }
+
     if (logLevelThreshold == logLevelNone) {
       return;
     }

@@ -1,5 +1,7 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../../preferences/log_level.dart';
+import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
 import 'data_handler.dart';
@@ -26,6 +28,8 @@ abstract class DeviceDescriptor extends DataHandler {
   final int manufacturerFitId;
   final String model;
   DeviceCategory deviceCategory;
+  final bool isPolling;
+  final bool fragmentedPackets;
   String dataServiceId;
   String dataCharacteristicId;
   String controlCharacteristicId;
@@ -46,6 +50,8 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
     required this.deviceCategory,
+    this.isPolling = false,
+    this.fragmentedPackets = false,
     this.dataServiceId = "",
     this.dataCharacteristicId = "",
     this.controlCharacteristicId = "",
@@ -94,4 +100,42 @@ abstract class DeviceDescriptor extends DataHandler {
   void setDevice(BluetoothDevice device, List<BluetoothService> services) {}
 
   void trimQueues() {}
+
+  /// Sends command to induce / signal a measurement polling operation to a
+  /// device which operates that way. The command will be sent to the
+  /// Bluetooth characteristic [controlPoint].
+  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "pollMeasurement",
+      "Not implemented!",
+    );
+  }
+
+  /// Perform extra operations after a successful connect,
+  /// service + characteristics discovery, attach, setNotifyValue(true)
+  Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "postPumpStart",
+      "Not implemented!",
+    );
+  }
+
+  /// Register response keys / command bytes.
+  /// Gets significance for polling style devices where the listening
+  /// logic is decoupled from the polling and commands.
+  void registerResponse(int key, int logLevel) {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "registerResponse",
+      "Not implemented!",
+    );
+  }
 }

@@ -34,6 +34,9 @@ void main() async {
   ]);
   Get.put<Isar>(isar, permanent: true);
 
+  final byteData = await rootBundle.load('assets/timezones_10y.tzf');
+  tz.initializeDatabase(byteData.buffer.asUint8List());
+
   final prefService = await initPreferences();
 
   final companyRegistry = CompanyRegistry();
@@ -46,10 +49,6 @@ void main() async {
     Get.put<PackageInfo>(packageInfo, permanent: true);
     Logging().logVersion(packageInfo);
   });
-
-  rootBundle
-      .load('assets/timezones_10y.tzf')
-      .then((byteData) => {tz.initializeDatabase(byteData.buffer.asUint8List())});
 
   runApp(TrackMyIndoorExerciseApp(prefService: prefService));
 }

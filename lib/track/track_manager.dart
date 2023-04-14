@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/painting.dart';
 import 'package:tuple/tuple.dart';
 
-import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'track_descriptor.dart';
 import 'track_kind.dart';
@@ -162,7 +161,7 @@ class TrackManager {
         radiusBoost: 1.2,
         horizontalMeter: 0.000009197603291524593,
         verticalMeter: 0.000009041645785188901,
-        altitude: 6.0,
+        altitude: 0.0,
       ),
     },
     // Atlantic Standard Time, UTC-4
@@ -250,7 +249,7 @@ class TrackManager {
       ),
     },
     // Central European Time, UTC+1
-    "Europe/Budapest": {
+    /* "Europe/Budapest": {
       TrackKind.forLand: TrackDescriptor(
         name: "HeroesSquare",
         kind: TrackKind.forLand,
@@ -268,6 +267,27 @@ class TrackManager {
         horizontalMeter: 0.000013345944953074666,
         verticalMeter: 0.000009010649504293554,
         altitude: 97.0,
+      ),
+    },*/
+    // Central European Time, UTC+1
+    "Europe/Berlin": {
+      TrackKind.forLand: TrackDescriptor(
+        name: "FlughafenTemplehofenFeld",
+        kind: TrackKind.forLand,
+        center: const Offset(13.390212, 52.478910),
+        radiusBoost: 1.1,
+        horizontalMeter: 0.000014755074926940898,
+        verticalMeter: 0.000009005610631341033,
+        altitude: 37.0,
+      ),
+      TrackKind.forWater: TrackDescriptor(
+        name: "GroserMueggelsee",
+        kind: TrackKind.forWater,
+        center: const Offset(13.646848, 52.437737),
+        radiusBoost: 1.2,
+        horizontalMeter: 0.000014741387208870937,
+        verticalMeter: 0.000009005652670950831,
+        altitude: 31.0,
       ),
     },
     // Eastern European Time, UTC+2
@@ -399,13 +419,13 @@ class TrackManager {
     // Indian Time, UTC+5.5
     "Asia/Kolkata": {
       TrackKind.forLand: TrackDescriptor(
-        name: "ShabbarVallabhbhaaiPatelAirportAhmedabadGujarat",
+        name: "SarbarVallabhbhaiPatelAirportAhmedabadGujarat",
         kind: TrackKind.forLand,
         center: const Offset(72.626126, 23.073872),
         radiusBoost: 1.1,
         horizontalMeter: 0.000009814941800312108,
         verticalMeter: 0.000009034395565263796,
-        altitude: 54.0,
+        altitude: 72.0,
       ),
       TrackKind.forWater: TrackDescriptor(
         name: "KankariaLakeAhmedabad",
@@ -414,7 +434,7 @@ class TrackManager {
         radiusBoost: 1.2,
         horizontalMeter: 0.000009810098106641359,
         verticalMeter: 0.000009034447056544187,
-        altitude: 47.0,
+        altitude: 67.0,
       ),
     },
     // Kazakhstan Time, UTC+6
@@ -450,13 +470,13 @@ class TrackManager {
         altitude: 10.0,
       ),
       TrackKind.forWater: TrackDescriptor(
-        name: "TuyetTinhCocHoaAn",
+        name: "HoDaLake",
         kind: TrackKind.forWater,
-        center: const Offset(106.795240, 10.927931),
+        center: const Offset(106.794638, 10.882972),
         radiusBoost: 1.2,
-        horizontalMeter: 0.000009207394376944713,
+        horizontalMeter: 0.000009206029433853195,
         verticalMeter: 0.000009041518993791423,
-        altitude: -53.0,
+        altitude: 10.0,
       ),
     },
     // Western Australia, UTC+8
@@ -594,39 +614,15 @@ class TrackManager {
       trackTimeZone = timeZoneName;
     } else {
       final timeOffset = timeZoneOffset(timeZoneName) + 5; // 5 is to break a tie
-      final timeZoneEntries = trackMaps.keys
-          .map<Tuple2<int, String>>((tzName) => Tuple2<int, String>(timeZoneOffset(tzName), tzName))
+      final timeZoneDiffSortedEntries = trackMaps.keys
+          .map<Tuple2<int, String>>(
+              (tzName) => Tuple2<int, String>((timeZoneOffset(tzName) - timeOffset).abs(), tzName))
           .sortedByCompare((tp) => tp.item1, (int t1, int t2) => t1.compareTo(t2))
           .toList(growable: false);
-      Tuple2<int, String> previousEntry = const Tuple2<int, String>(maxUint24, "");
-      Tuple2<int, String> currentEntry = const Tuple2<int, String>(maxUint24, "");
-      for (final timeZoneEntry in timeZoneEntries) {
-        currentEntry = timeZoneEntry;
-        if (timeZoneEntry.item1 > timeOffset) {
-          break;
-        }
 
-        previousEntry = timeZoneEntry;
-      }
-
-      Tuple2<int, String> closestEntry = const Tuple2<int, String>(maxUint24, "");
-      if (previousEntry.item1 != maxUint24 && currentEntry.item1 != maxUint24) {
-        if ((previousEntry.item1 - timeOffset).abs() < (currentEntry.item1 - timeOffset).abs()) {
-          closestEntry = previousEntry;
-        } else {
-          closestEntry = currentEntry;
-        }
-      }
-
-      if (closestEntry.item1 == maxUint24) {
-        // Default to GMT
-        closestEntry = timeZoneEntries.firstWhere((entry) => entry.item2 == "Europe/London");
-      } else {
-        // TODO: when there will be multiple track in the same time zone
-        // decide the closest one with Haversine or Vincenty distance
-      }
-
-      trackTimeZone = closestEntry.item2;
+      // TODO: when there will be multiple track in the same time zone
+      // decide the closest one with Haversine or Vincenty distance
+      trackTimeZone = timeZoneDiffSortedEntries.first.item2;
     }
 
     Map<TrackKind, TrackDescriptor> timeZoneTracks = trackMaps[trackTimeZone]!;

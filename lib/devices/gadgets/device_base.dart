@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -18,10 +18,13 @@ import '../gatt/battery.dart';
 import '../gatt/csc.dart';
 import '../gatt/concept2.dart';
 import '../gatt/ftms.dart';
+import '../gatt/kayak_first.dart';
 import '../gatt/precor.dart';
 import '../gatt/power_meter.dart';
 import '../gatt/schwinn_x70.dart';
 import '../bluetooth_device_ex.dart';
+
+typedef StringMetricProcessingFunction = Function(String measurement);
 
 abstract class DeviceBase {
   final String serviceId;
@@ -88,6 +91,7 @@ abstract class DeviceBase {
       connecting = false;
       connected = true;
     }
+
     return connected;
   }
 
@@ -151,8 +155,14 @@ abstract class DeviceBase {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.logException(
+          logLevel,
+          "DEVICE_BASE",
+          "connectToControlPoint",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
 
       controlPointSubscription = controlPoint?.value
@@ -188,15 +198,13 @@ abstract class DeviceBase {
               logMessage = "Stopped!";
               break;
           }
-          if (logLevel >= logLevelInfo) {
-            Logging().log(
-              logLevel,
-              logLevelInfo,
-              "FITNESS_EQUIPMENT",
-              "connectToControlPoint controlPointSubscription",
-              logMessage,
-            );
-          }
+          Logging().log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "connectToControlPoint controlPointSubscription",
+            logMessage,
+          );
         }
       });
     }
@@ -218,13 +226,20 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on PlatformException catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "discover",
+        "${e.message}",
+        e,
+        stack,
+      );
 
       discovering = false;
-      if (retry) return false;
+      if (retry) {
+        return false;
+      }
+
       await discover(retry: true);
     }
 
@@ -259,6 +274,8 @@ abstract class DeviceBase {
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
+    } else if (characteristicId == kayakFirstAllAroundUuid) {
+      sports.addAll([ActivityType.kayaking, ActivityType.canoeing]);
     }
 
     return sports;
@@ -293,10 +310,14 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
-        if (kDebugMode) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
+        Logging.logException(
+          logLevel,
+          "DEVICE_BASE",
+          "detach",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
 
       attached = false;
@@ -308,7 +329,19 @@ abstract class DeviceBase {
   Future<void> disconnect() async {
     if (!uxDebug) {
       await detach();
-      await device?.disconnect();
+      try {
+        await device?.disconnect();
+      } on PlatformException catch (e, stack) {
+        Logging.logException(
+          logLevel,
+          "DEVICE_BASE",
+          "discover",
+          "Could not disconnect",
+          e,
+          stack,
+        );
+      }
+
       characteristic = null;
       services = [];
       service = null;
@@ -364,8 +397,14 @@ abstract class DeviceBase {
     try {
       return await _readBatteryLevelCore();
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "discover",
+        "Could not disconnect",
+        e,
+        stack,
+      );
       return -1;
     }
   }
@@ -409,9 +448,79 @@ abstract class DeviceBase {
     try {
       return await _cscSensorTypeCore();
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "cscSensorType",
+        "_cscSensorTypeCore call catch",
+        e,
+        stack,
+      );
       return DeviceCategory.smartDevice;
     }
+  }
+
+  Future<void> listenToKayakFirst(StringMetricProcessingFunction? metricProcessingFunction) async {
+    if (characteristic == null || uxDebug) return;
+
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered || characteristic == null) return;
+
+    if (!attached) {
+      await attach();
+    }
+
+    controlPointSubscription = characteristic?.value.listen((byteList) {
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(utf8.decode(byteList));
+      }
+    });
+  }
+
+  Future<int> sendKayakFirstCommand(String command) async {
+    if (!connected || uxDebug) {
+      await connect();
+    }
+
+    if (!connected) return -1;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered || characteristic == null) return -1;
+
+    try {
+      final commandCrLf = command.contains("\n") ? command : "$command\r\n";
+      await characteristic?.write(utf8.encode(commandCrLf));
+    } on PlatformException catch (e, stack) {
+      Logging.logException(
+        logLevel,
+        "DEVICE_BASE",
+        "sendKayakFirstCommand",
+        "characteristic.write",
+        e,
+        stack,
+      );
+      return -1;
+    }
+
+    return 0;
+  }
+
+  Future<void> unListenKayakFirst() async {
+    if (characteristic == null || uxDebug || !connected || !discovered || !attached) return;
+
+    controlPointSubscription?.cancel();
+    controlPointSubscription = null;
   }
 }

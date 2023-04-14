@@ -34,11 +34,6 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         max: athleteBodyWeightMax,
       ),
       const PrefCheckbox(
-        title: Text(rememberAthleteBodyWeight),
-        subtitle: Text(rememberAthleteBodyWeightDescription),
-        pref: rememberAthleteBodyWeightTag,
-      ),
-      const PrefCheckbox(
         title: Text(useHeartRateBasedCalorieCounting),
         subtitle: Text(useHeartRateBasedCalorieCountingDescription),
         pref: useHeartRateBasedCalorieCountingTag,

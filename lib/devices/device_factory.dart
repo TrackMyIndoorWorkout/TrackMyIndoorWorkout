@@ -6,6 +6,7 @@ import 'device_descriptors/cycling_power_meter_descriptor.dart';
 import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/kayak_first_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
@@ -301,6 +302,8 @@ class DeviceFactory {
         return getMerachMr667();
       case virtufitUltimatePro2FourCC:
         return getVirtufitUltimatePro2();
+      case kayakFirstFourCC:
+        return KayakFirstDescriptor();
     }
 
     return DeviceFactory.getGenericFTMSBike();
