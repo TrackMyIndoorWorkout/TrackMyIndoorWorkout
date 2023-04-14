@@ -9,7 +9,6 @@ import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
-import '../preferences/bike_color.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_signal_start_stop.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
@@ -155,7 +154,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
     databaseMigrationNeededTag: databaseMigrationNeeded,
-    bikeColorOnConsoleTag: bikeColorOnConsoleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
