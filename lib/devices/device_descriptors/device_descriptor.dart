@@ -105,7 +105,7 @@ abstract class DeviceDescriptor extends DataHandler {
   /// device which operates that way. The command will be sent to the
   /// Bluetooth characteristic [controlPoint].
   Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "DEVICE_DESCRIPTOR",
@@ -117,7 +117,7 @@ abstract class DeviceDescriptor extends DataHandler {
   /// Perform extra operations after a successful connect,
   /// service + characteristics discovery, attach, setNotifyValue(true)
   Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "DEVICE_DESCRIPTOR",
@@ -130,7 +130,7 @@ abstract class DeviceDescriptor extends DataHandler {
   /// Gets significance for polling style devices where the listening
   /// logic is decoupled from the polling and commands.
   void registerResponse(int key, int logLevel) {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelError,
       "DEVICE_DESCRIPTOR",

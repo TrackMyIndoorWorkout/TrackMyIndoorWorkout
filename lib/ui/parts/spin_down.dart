@@ -163,7 +163,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _weightData?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         _logLevel,
         "SPIN_DOWN",
         "_prepareSpinDownCore _weightData.setNotifyValue",
@@ -210,7 +210,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
         } on PlatformException catch (e, stack) {
-          Logging.logException(
+          Logging().logException(
             _logLevel,
             "SPIN_DOWN",
             "_prepareSpinDownCore _weightData.write",
@@ -341,7 +341,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         _logLevel,
         "SPIN_DOWN",
         "_onWeightInputButtonPressed",
@@ -412,7 +412,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         _logLevel,
         "SPIN_DOWN",
         "onCalibrationButtonPressed",

@@ -324,7 +324,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         final fragLength = packetFragment.length;
         final listLength = byteList.length;
         if (logLevel >= logLevelInfo) {
-          Logging.log(
+          Logging().log(
             logLevel,
             logLevelInfo,
             "FITNESS_EQUIPMENT",
@@ -337,7 +337,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
           if (logLevel >= logLevelInfo) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
@@ -354,7 +354,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
           if (logLevel >= logLevelInfo) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
@@ -621,7 +621,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           return params;
         }
       } on PlatformException catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
           logLevel,
           "FITNESS_EQUIPMENT",
           "getWriteSupportParameters",
@@ -703,7 +703,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         logLevel,
         "FITNESS_EQUIPMENT",
         "_fitnessMachineFeature",

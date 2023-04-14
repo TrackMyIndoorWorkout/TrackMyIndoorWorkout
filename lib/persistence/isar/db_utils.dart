@@ -126,14 +126,45 @@ class DbUtils {
       updated++;
     }
 
+    if (lastRecord.timeStamp != null && activity.end != null) {
+      activity.end = lastRecord.timeStamp!;
+      updated++;
+    }
+
     if (lastRecord.elapsed != null && lastRecord.elapsed! > 0 && activity.elapsed == 0) {
       activity.elapsed = lastRecord.elapsed!;
       updated++;
     }
 
-    if (lastRecord.timeStamp != null && activity.end != null) {
-      activity.end = lastRecord.timeStamp!;
-      updated++;
+    if (activity.elapsed == 0 && activity.end != null) {
+      final elapsedMillis = activity.end!.difference(activity.start).inMilliseconds;
+      if (elapsedMillis >= 1000) {
+        activity.elapsed = elapsedMillis ~/ 1000;
+        updated++;
+      }
+    }
+
+    if (activity.movingTime == 0) {
+      final records = await getRecords(activity.id);
+      if (records.isEmpty) {
+        return false;
+      }
+
+      double movingMillis = 0;
+      var previousRecord = records.first;
+      for (final record in records.skip(1)) {
+        if (!record.isNotMoving()) {
+          final dTMillis = record.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
+          movingMillis += dTMillis;
+        }
+
+        previousRecord = record;
+      }
+
+      if (movingMillis > 0) {
+        activity.movingTime = movingMillis.toInt();
+        updated++;
+      }
     }
 
     if (updated > 0) {

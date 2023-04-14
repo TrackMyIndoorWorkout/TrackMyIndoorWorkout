@@ -61,6 +61,7 @@ class Activity {
   String suuntoWorkoutUrl;
   @ColumnInfo(name: 'training_peaks_workout_id')
   int trainingPeaksWorkoutId;
+  // Deprecated with v3 API
   @ColumnInfo(name: 'training_peaks_athlete_id')
   int trainingPeaksAthleteId;
   @ColumnInfo(name: 'training_peaks_file_tracking_uuid')

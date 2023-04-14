@@ -155,7 +155,7 @@ abstract class DeviceBase {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on PlatformException catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
           logLevel,
           "DEVICE_BASE",
           "connectToControlPoint",
@@ -226,7 +226,7 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         logLevel,
         "DEVICE_BASE",
         "discover",
@@ -310,7 +310,7 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
           logLevel,
           "DEVICE_BASE",
           "detach",
@@ -332,7 +332,7 @@ abstract class DeviceBase {
       try {
         await device?.disconnect();
       } on PlatformException catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
           logLevel,
           "DEVICE_BASE",
           "discover",
@@ -397,7 +397,7 @@ abstract class DeviceBase {
     try {
       return await _readBatteryLevelCore();
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         logLevel,
         "DEVICE_BASE",
         "discover",
@@ -448,7 +448,7 @@ abstract class DeviceBase {
     try {
       return await _cscSensorTypeCore();
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         logLevel,
         "DEVICE_BASE",
         "cscSensorType",
@@ -503,7 +503,7 @@ abstract class DeviceBase {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
       await characteristic?.write(utf8.encode(commandCrLf));
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         logLevel,
         "DEVICE_BASE",
         "sendKayakFirstCommand",

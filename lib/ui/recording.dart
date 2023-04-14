@@ -327,20 +327,22 @@ class RecordingState extends State<RecordingScreen> {
           (workoutState == WorkoutState.moving ||
               workoutState == WorkoutState.startedMoving ||
               workoutState == WorkoutState.justPaused)) {
-        await _database.recordDao.insertRecord(record);
+        _database.writeTxnSync(() {
+          _database.records.putSync(record);
+        });
       }
 
       setState(() {
         if (!_simplerUi) {
-          _graphData.add(record.display());
+          _graphData.add(DisplayRecord.fromRecord(record));
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
+            _graphAvgData.add(_accu.averageDisplayRecord(record.timeStamp));
           }
 
           if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
+            _graphMaxData.add(_accu.maximumDisplayRecord(record.timeStamp));
           }
 
           if (_pointCount > 0 && _graphData.length > _pointCount) {

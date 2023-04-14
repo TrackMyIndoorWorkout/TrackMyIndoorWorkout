@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
@@ -127,7 +127,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       command += crLf;
     }
 
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelInfo,
       "KayakFirst",
@@ -139,7 +139,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       await controlPoint.write(utf8.encode(command));
       // Response could be picked up in the subscription listener
     } on PlatformException catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
         logLevel,
         "KayakFirst",
         "_executeControlOperationCore",
@@ -154,7 +154,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelInfo,
       "KayakFirst",
@@ -266,7 +266,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     final seenIt = i < iterationCount;
-    Logging.log(
+    Logging().log(
       logLevel,
       logLevelInfo,
       "KAYAK_FIRST_DESCRIPTOR",
@@ -285,7 +285,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         responses.removeFirst();
       }
 
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         "KAYAK_FIRST_DESCRIPTOR",
