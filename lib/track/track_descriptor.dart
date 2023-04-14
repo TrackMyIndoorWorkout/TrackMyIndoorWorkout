@@ -38,7 +38,7 @@ class TrackDescriptor {
 
   factory TrackDescriptor.forDisplay(String sport) => TrackDescriptor(
         name: "ForDisplay",
-        kind: TrackKind.forDisplay,
+        kind: getTrackKindForSport(sport).first,
         radiusBoost: trackPaintingRadiusBoost,
       );
 }

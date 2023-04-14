@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../../preferences/log_level.dart';
+import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
 import 'data_handler.dart';
@@ -104,10 +105,37 @@ abstract class DeviceDescriptor extends DataHandler {
   /// device which operates that way. The command will be sent to the
   /// Bluetooth characteristic [controlPoint].
   Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
-    debugPrint("pollMeasurement Not implemented!");
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "pollMeasurement",
+      "Not implemented!",
+    );
   }
 
   /// Perform extra operations after a successful connect,
   /// service + characteristics discovery, attach, setNotifyValue(true)
-  Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {}
+  Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "postPumpStart",
+      "Not implemented!",
+    );
+  }
+
+  /// Register response keys / command bytes.
+  /// Gets significance for polling style devices where the listening
+  /// logic is decoupled from the polling and commands.
+  void registerResponse(int key, int logLevel) {
+    Logging.log(
+      logLevel,
+      logLevelError,
+      "DEVICE_DESCRIPTOR",
+      "registerResponse",
+      "Not implemented!",
+    );
+  }
 }

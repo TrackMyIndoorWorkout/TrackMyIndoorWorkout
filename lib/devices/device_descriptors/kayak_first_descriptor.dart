@@ -1,5 +1,5 @@
+import 'dart:collection';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -24,17 +24,31 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const dataStreamFlag = 0x36; // ASCII 6
   static const separator = 0x3B; // ASCII ;
   static const resetCommand = "1";
+  static const resetByte = 0x31;
   static const handshakeCommand = "2";
+  static const handshakeByte = 0x32;
   static const newHandshakeCommand = "${handshakeCommand}1";
   static const configurationCommand = "3";
   static const displayConfigurationCommand = "5";
+  static const displayConfigurationByte = 0x35;
   static const pollDataCommand = "6";
   static const parametersCommand = "8";
   static const startCommand = "9;1";
   static const stopCommand = "9;3";
+  static const startStopByte = 0x39;
   static const crLf = "\r\n";
-  static const responseChunkSize = 20;
   static const boatWeightDefault = 12;
+  static const responseQueueSize = 10;
+  static const responseWatchDelayMs = 50; // ms
+  static const responseWatchDelay = Duration(milliseconds: responseWatchDelayMs);
+  static const responseWatchTimeoutMs = 1000; // ms
+  static const responseWatchTimeoutGuardMs = 1200; // ms
+  static const responseWatchTimeoutGuard = Duration(milliseconds: responseWatchTimeoutGuardMs);
+  static const commandShortDelayMs = 250; // ms
+  static const commandShortDelay = Duration(milliseconds: commandShortDelayMs);
+  static const commandLongDelayMs = 2000; // ms
+  static const commandLongDelay = Duration(milliseconds: commandLongDelayMs);
+  ListQueue<int> responses = ListQueue<int>();
 
   KayakFirstDescriptor()
       : super(
@@ -63,7 +77,9 @@ class KayakFirstDescriptor extends DeviceDescriptor {
           powerMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
           cadenceMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
           distanceMetric: ThreeByteMetricDescriptor(lsb: 0, msb: 0), // dummy
-        );
+        ) {
+    responses.add(separator);
+  }
 
   @override
   void processFlag(int flag) {
@@ -78,7 +94,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       distance: double.tryParse(dataParts[9]),
       elapsed: int.tryParse(dataParts[22]),
       power: int.tryParse(dataParts[21]),
-      speed: double.tryParse(dataParts[11]) ?? 0.0 * DeviceDescriptor.ms2kmh,
+      speed: (double.tryParse(dataParts[11]) ?? 0.0) * DeviceDescriptor.ms2kmh,
       cadence: int.tryParse(dataParts[13]),
       sport: sport,
     );
@@ -87,21 +103,14 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   @override
   KayakFirstDescriptor clone() => KayakFirstDescriptor();
 
-  int separatorCount(List<int> data) {
-    return data
-        .map((element) => element == separator ? 1 : 0)
-        .reduce((value, element) => value + element);
-  }
-
   @override
   bool isDataProcessable(List<int> data) {
     return data.isNotEmpty;
   }
 
   @override
-  bool isClosingPacket(List<int> data) {
-    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D ||
-        data.length < responseChunkSize;
+  bool isWholePacket(List<int> data) {
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
   }
 
   @override
@@ -130,15 +139,14 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       await controlPoint.write(utf8.encode(command));
       // Response could be picked up in the subscription listener
     } on PlatformException catch (e, stack) {
-      Logging.log(
+      Logging.logException(
         logLevel,
-        logLevelError,
         "KayakFirst",
         "_executeControlOperationCore",
         "${e.message}",
+        e,
+        stack,
       );
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
     }
   }
 
@@ -148,7 +156,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       {int? controlInfo}) async {
     Logging.log(
       logLevel,
-      logLevelError,
+      logLevelInfo,
       "KayakFirst",
       "executeControlOperation",
       "$opCode",
@@ -229,14 +237,61 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
+    await Future.delayed(commandShortDelay);
     final prefService = Get.find<BasePrefService>();
     final blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
     await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
+    await _waitForResponse(resetByte, responseWatchTimeoutMs, logLevel)
+        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandLongDelay);
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
+    await _waitForResponse(handshakeByte, responseWatchTimeoutMs, logLevel)
+        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandShortDelay);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
+    await _waitForResponse(displayConfigurationByte, responseWatchTimeoutMs, logLevel)
+        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandLongDelay);
+  }
+
+  Future<bool> _waitForResponse(int responseByte, int timeout, int logLevel) async {
+    final iterationCount = timeout ~/ responseWatchDelayMs;
+    int i = 0;
+    for (; i < iterationCount && responses.last != responseByte; i++) {
+      await Future.delayed(responseWatchDelay);
+    }
+
+    final seenIt = i < iterationCount;
+    Logging.log(
+      logLevel,
+      logLevelInfo,
+      "KAYAK_FIRST_DESCRIPTOR",
+      "waitForResponse",
+      "$seenIt",
+    );
+    return seenIt;
+  }
+
+  @override
+  void registerResponse(int key, int logLevel) {
+    if (responses.last != key) {
+      responses.add(key);
+
+      if (responses.length > responseQueueSize) {
+        responses.removeFirst();
+      }
+
+      Logging.log(
+        logLevel,
+        logLevelInfo,
+        "KAYAK_FIRST_DESCRIPTOR",
+        "registerResponse",
+        "$responses",
+      );
+    }
   }
 }

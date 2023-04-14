@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -223,7 +224,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       logLevel,
       logLevelInfo,
       "FITNESS_EQUIPMENT",
-      "listenToData",
+      "_throttlingTimerCallback",
       "Timer expire induced handling",
     );
 
@@ -247,7 +248,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void _startThrottlingTimer() {
-    _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+    // When we are polling there's no need for throttling, we are in control
+    if (!(descriptor?.isPolling ?? false)) {
+      _throttleTimer ??= Timer(_throttleDuration, _throttlingTimerCallback);
+    }
   }
 
   /// Data streaming with custom multi-type packet aware throttling logic
@@ -292,40 +296,71 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         logLevel,
         logLevelInfo,
         "FITNESS_EQUIPMENT",
-        "listenToData",
+        "_listenToData",
         "attached $attached characteristic $characteristic descriptor $descriptor",
       );
     }
 
     if (!attached || characteristic == null || descriptor == null) return;
 
+    final fragmentedPackets = descriptor?.fragmentedPackets ?? false;
     await for (final byteList in characteristic!.value) {
       if (logLevel >= logLevelInfo) {
         Logging.log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
-          "measuring $measuring calibrating $calibrating",
+          "_listenToData loop",
+          "measuring $measuring calibrating $calibrating $byteList",
         );
       }
 
-      if (!measuring && !calibrating) continue;
+      if (!measuring && !calibrating && !fragmentedPackets) continue;
 
       List<int> byteListPrep = [];
-      if (descriptor?.fragmentedPackets ?? false) {
+      if (fragmentedPackets) {
         final fragLength = packetFragment.length;
         final listLength = byteList.length;
+        if (logLevel >= logLevelInfo) {
+          Logging.log(
+            logLevel,
+            logLevelInfo,
+            "FITNESS_EQUIPMENT",
+            "_listenToData loop",
+            "Kayak First: ${utf8.decode(byteList)}",
+          );
+        }
+
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          // repeat packet fragment => discard!
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "_listenToData loop",
+              "Repeat packet fragment => discard!",
+            );
+          }
+
           continue;
         }
 
         packetFragment.addAll(byteList);
-        if (descriptor?.isClosingPacket(byteList) ?? true) {
+        if (descriptor?.isWholePacket(packetFragment) ?? true) {
+          descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
+          if (logLevel >= logLevelInfo) {
+            Logging.log(
+              logLevel,
+              logLevelInfo,
+              "FITNESS_EQUIPMENT",
+              "_listenToData loop",
+              "Complete packet: ${utf8.decode(packetFragment)}",
+            );
+          }
+
           packetFragment.clear();
         } else {
           continue;
@@ -334,13 +369,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         byteListPrep.addAll(byteList);
       }
 
+      // Repeat shortcut for fragmentedPackets devices
+      if (!measuring && !calibrating) continue;
+
       final key = keySelector(byteListPrep);
       if (logLevel >= logLevelInfo) {
         Logging.log(
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
+          "_listenToData loop",
           "key $key byteListPrep $byteListPrep",
         );
       }
@@ -353,7 +391,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               logLevel,
               logLevelInfo,
               "FITNESS_EQUIPMENT",
-              "listenToData",
+              "_listenToData loop",
               "Cloning handler for $key",
             );
           }
@@ -374,12 +412,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           logLevel,
           logLevelInfo,
           "FITNESS_EQUIPMENT",
-          "listenToData",
+          "_listenToData loop",
           "Processable $processable, timerActive $timerActive",
         );
       }
 
-      if (!timerActive) {
+      if (!timerActive || (descriptor?.isPolling ?? false)) {
         // Bad or useless data packets shouldn't count against rate limit.
         // But now we let the code flow reach here so they can trigger
         // a yield though.
@@ -583,8 +621,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           return params;
         }
       } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+        Logging.logException(
+          logLevel,
+          "FITNESS_EQUIPMENT",
+          "getWriteSupportParameters",
+          "${e.message}",
+          e,
+          stack,
+        );
       }
     }
 
@@ -659,8 +703,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+      Logging.logException(
+        logLevel,
+        "FITNESS_EQUIPMENT",
+        "_fitnessMachineFeature",
+        "${e.message}",
+        e,
+        stack,
+      );
     }
   }
 
@@ -747,21 +797,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       manufacturerName = String.fromCharCodes(nameBytes);
       return manufacturerName;
     } on PlatformException catch (e, stack) {
-      if (logLevel > logLevelNone) {
-        Logging.logException(
-          logLevel,
-          "FITNESS_EQUIPMENT",
-          "discover",
-          "Could not read name${secondTry ? ' 2nd try' : ''}",
-          e,
-          stack,
-        );
-      }
-
-      if (kDebugMode) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+      Logging.logException(
+        logLevel,
+        "FITNESS_EQUIPMENT",
+        "discover",
+        "Could not read name${secondTry ? ' 2nd try' : ''}",
+        e,
+        stack,
+      );
       return null;
     }
   }

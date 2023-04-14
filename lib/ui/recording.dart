@@ -13,6 +13,7 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock/wakelock.dart';
@@ -143,6 +144,7 @@ class RecordingState extends State<RecordingScreen> {
   TrackCalculator? _trackCalculator;
   PaletteSpec? _paletteSpec;
   double _trackLength = 0; // Just default
+  bool _busy = false;
   bool _measuring = false;
   bool _onStage = false;
   int _pointCount = 0;
@@ -264,21 +266,29 @@ class RecordingState extends State<RecordingScreen> {
       return;
     }
 
+    setState(() {
+      _busy = true;
+    });
+
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       await _fitnessEquipment?.additionalSensorsOnDemand();
-
       await _fitnessEquipment?.attach();
-
+      _startPumpingData();
+      await _fitnessEquipment?.postPumpStart();
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         await _startMeasurement();
       }
 
-      _startPumpingData();
-
-      await _fitnessEquipment?.postPumpStart();
+      setState(() {
+        _busy = false;
+      });
     } else {
+      setState(() {
+        _busy = false;
+      });
+
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
         confirm: TextButton(
@@ -662,6 +672,7 @@ class RecordingState extends State<RecordingScreen> {
 
     Wakelock.enable();
 
+    _busy = false;
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _unitStyle = TextStyle(
@@ -1051,15 +1062,13 @@ class RecordingState extends State<RecordingScreen> {
         await _fitnessEquipment?.stopWorkout();
       }
     } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
+      Logging.logException(
         _logLevel,
-        logLevelError,
-        "RECORD",
-        "_stopMeasurement stopWorkout",
+        "RECORDING",
+        "_stopMeasurement stopWorkout Equipment got turned off?",
         "${e.message}",
+        e,
+        stack,
       );
     }
 
@@ -2339,8 +2348,12 @@ class RecordingState extends State<RecordingScreen> {
             await _database.activityDao.updateActivity(_activity!);
           }
         }),
-        _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
-          await startStopAction();
+        _themeManager.getBlueFab(
+            _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
+            () async {
+          if (!_busy) {
+            await startStopAction();
+          }
         }),
       ]);
     }
@@ -2402,12 +2415,17 @@ class RecordingState extends State<RecordingScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
               actions: [
-                IconButton(
-                  icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                  onPressed: () async {
-                    await startStopAction();
-                  },
-                ),
+                _busy
+                    ? HeartbeatProgressIndicator(
+                        child: IconButton(
+                            icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                      )
+                    : IconButton(
+                        icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+                        onPressed: () async {
+                          await startStopAction();
+                        },
+                      ),
               ],
             ),
             body: body,
