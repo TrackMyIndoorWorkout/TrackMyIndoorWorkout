@@ -11,7 +11,6 @@ import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
-import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
@@ -234,7 +233,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
-    if (controlPoint == null || await isBluetoothOff()) {
+    if (controlPoint == null) {
       return;
     }
 
