@@ -11,6 +11,7 @@ import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
+import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
@@ -162,7 +163,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       "$opCode",
     );
 
-    if (!await FlutterBluePlus.instance.isOn || controlPoint == null || opCode == requestControl) {
+    if (controlPoint == null || opCode == requestControl) {
       return;
     }
 
@@ -194,7 +195,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   }
 
   Future<void> handshake(BluetoothCharacteristic? controlPoint, bool isNew, int logLevel) async {
-    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+    if (controlPoint == null) {
       return;
     }
 
@@ -216,7 +217,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   }
 
   Future<void> configureDisplay(BluetoothCharacteristic? controlPoint, int logLevel) async {
-    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+    if (controlPoint == null) {
       return;
     }
 
@@ -233,7 +234,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
-    if (!await FlutterBluePlus.instance.isOn || controlPoint == null) {
+    if (controlPoint == null || await isBluetoothOff()) {
       return;
     }
 

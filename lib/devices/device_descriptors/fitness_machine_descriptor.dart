@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../../utils/bluetooth.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
@@ -177,7 +178,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
+    if (await isBluetoothOff()) {
       return;
     }
 

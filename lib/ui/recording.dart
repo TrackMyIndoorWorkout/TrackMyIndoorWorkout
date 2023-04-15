@@ -262,7 +262,7 @@ class RecordingState extends State<RecordingScreen> {
   Socket? _sinkSocket;
 
   Future<void> _connectOnDemand() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+    if (!(await bluetoothCheck(true, _logLevel))) {
       return;
     }
 
@@ -278,7 +278,7 @@ class RecordingState extends State<RecordingScreen> {
       await _fitnessEquipment?.postPumpStart();
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
-        await _startMeasurement();
+        await _startMeasurement(false);
       }
 
       setState(() {
@@ -445,8 +445,8 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.pumpData((record) async => await _recordHandlerFunction(record));
   }
 
-  Future<void> _startMeasurement() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+  Future<void> _startMeasurement(bool checkBluetooth) async {
+    if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return;
     }
 
@@ -629,8 +629,8 @@ class RecordingState extends State<RecordingScreen> {
     _chartTouchInteractionIndex = -1;
   }
 
-  Future<String> _initializeHeartRateMonitor() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+  Future<String> _initializeHeartRateMonitor(bool checkBluetooth) async {
+    if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return "";
     }
 
@@ -953,7 +953,7 @@ class RecordingState extends State<RecordingScreen> {
     _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
-    _initializeHeartRateMonitor();
+    _initializeHeartRateMonitor(false);
     _connectOnDemand();
     _database = Get.find<AppDatabase>();
     _isLocked = false;
@@ -1058,7 +1058,7 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     try {
-      if (await FlutterBluePlus.instance.isOn) {
+      if (await isBluetoothOn()) {
         await _fitnessEquipment?.stopWorkout();
       }
     } on PlatformException catch (e, stack) {
@@ -1753,7 +1753,7 @@ class RecordingState extends State<RecordingScreen> {
         await _stopMeasurement(false);
       }
     } else {
-      await _startMeasurement();
+      await _startMeasurement(true);
     }
   }
 
@@ -2341,7 +2341,7 @@ class RecordingState extends State<RecordingScreen> {
             isDismissible: false,
             enableDrag: false,
           );
-          String hrmId = await _initializeHeartRateMonitor();
+          String hrmId = await _initializeHeartRateMonitor(true);
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _activity!.hrmId = hrmId;
             _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);

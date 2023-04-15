@@ -4,7 +4,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
+import 'delays.dart';
 import 'logging.dart';
+
+Future<bool> isBluetoothOn() async {
+  final blueOn = await FlutterBluePlus.instance.isOn
+      .timeout(const Duration(milliseconds: spinDownThreshold), onTimeout: () => false);
+  return blueOn;
+}
+
+Future<bool> isBluetoothOff() async {
+  return !(await isBluetoothOn());
+}
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   try {
@@ -47,12 +58,12 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
       }
 
       await BluetoothEnable.enableBluetooth;
-      if (!await FlutterBluePlus.instance.isOn) {
+      if (await isBluetoothOff()) {
         await FlutterBluePlus.instance.turnOn();
       }
     }
 
-    return await FlutterBluePlus.instance.isOn;
+    return await isBluetoothOn();
   } on PlatformException catch (e, stack) {
     Logging.logException(
       logLevel,
