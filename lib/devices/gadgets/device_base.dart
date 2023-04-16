@@ -27,6 +27,7 @@ import '../bluetooth_device_ex.dart';
 typedef StringMetricProcessingFunction = Function(String measurement);
 
 abstract class DeviceBase {
+  final String tag;
   final String serviceId;
   String characteristicId;
   BluetoothDevice? device;
@@ -60,6 +61,7 @@ abstract class DeviceBase {
     required this.serviceId,
     required this.characteristicId,
     required this.device,
+    this.tag = "DEVICE_BASE",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
@@ -155,14 +157,7 @@ abstract class DeviceBase {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on PlatformException catch (e, stack) {
-        Logging.logException(
-          logLevel,
-          "DEVICE_BASE",
-          "connectToControlPoint",
-          "${e.message}",
-          e,
-          stack,
-        );
+        Logging.logException(logLevel, tag, "connectToControlPoint", "${e.message}", e, stack);
       }
 
       controlPointSubscription = controlPoint?.value
@@ -173,13 +168,8 @@ abstract class DeviceBase {
       )
           .listen((controlResponse) async {
         if (logLevel >= logLevelInfo) {
-          Logging.log(
-            logLevel,
-            logLevelInfo,
-            "FITNESS_EQUIPMENT",
-            "connectToControlPoint controlPointSubscription",
-            controlResponse.toString(),
-          );
+          Logging.log(logLevel, logLevelInfo, tag, "connectToControlPoint controlPointSubscription",
+              controlResponse.toString());
         }
 
         if (controlResponse.length >= 3 &&
@@ -198,13 +188,8 @@ abstract class DeviceBase {
               logMessage = "Stopped!";
               break;
           }
-          Logging.log(
-            logLevel,
-            logLevelInfo,
-            "FITNESS_EQUIPMENT",
-            "connectToControlPoint controlPointSubscription",
-            logMessage,
-          );
+          Logging.log(logLevel, logLevelInfo, tag, "connectToControlPoint controlPointSubscription",
+              logMessage);
         }
       });
     }
@@ -226,14 +211,7 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        logLevel,
-        "DEVICE_BASE",
-        "discover",
-        "${e.message}",
-        e,
-        stack,
-      );
+      Logging.logException(logLevel, tag, "discover", "${e.message}", e, stack);
 
       discovering = false;
       if (retry) {
@@ -310,14 +288,7 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on PlatformException catch (e, stack) {
-        Logging.logException(
-          logLevel,
-          "DEVICE_BASE",
-          "detach",
-          "${e.message}",
-          e,
-          stack,
-        );
+        Logging.logException(logLevel, tag, "detach", "${e.message}", e, stack);
       }
 
       attached = false;
@@ -332,14 +303,7 @@ abstract class DeviceBase {
       try {
         await device?.disconnect();
       } on PlatformException catch (e, stack) {
-        Logging.logException(
-          logLevel,
-          "DEVICE_BASE",
-          "discover",
-          "Could not disconnect",
-          e,
-          stack,
-        );
+        Logging.logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
       }
 
       characteristic = null;
@@ -355,13 +319,7 @@ abstract class DeviceBase {
 
   void logData(List<int> data, String tag) {
     if (logLevel >= logLevelInfo) {
-      Logging.log(
-        logLevel,
-        logLevelInfo,
-        tag,
-        "_listenToData",
-        data.toString(),
-      );
+      Logging.log(logLevel, logLevelInfo, tag, "_listenToData", data.toString());
     }
   }
 
@@ -397,14 +355,7 @@ abstract class DeviceBase {
     try {
       return await _readBatteryLevelCore();
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        logLevel,
-        "DEVICE_BASE",
-        "discover",
-        "Could not disconnect",
-        e,
-        stack,
-      );
+      Logging.logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
       return -1;
     }
   }
@@ -449,13 +400,7 @@ abstract class DeviceBase {
       return await _cscSensorTypeCore();
     } on PlatformException catch (e, stack) {
       Logging.logException(
-        logLevel,
-        "DEVICE_BASE",
-        "cscSensorType",
-        "_cscSensorTypeCore call catch",
-        e,
-        stack,
-      );
+          logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
       return DeviceCategory.smartDevice;
     }
   }
@@ -504,13 +449,7 @@ abstract class DeviceBase {
       await characteristic?.write(utf8.encode(commandCrLf));
     } on PlatformException catch (e, stack) {
       Logging.logException(
-        logLevel,
-        "DEVICE_BASE",
-        "sendKayakFirstCommand",
-        "characteristic.write",
-        e,
-        stack,
-      );
+          logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
       return -1;
     }
 

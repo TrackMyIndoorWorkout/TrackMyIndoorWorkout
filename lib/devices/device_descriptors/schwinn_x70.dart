@@ -54,6 +54,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
           model: "",
+          tag: "SCH_X70",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
           controlCharacteristicId: schwinnX70ControlUuid,
@@ -186,14 +187,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       try {
         await controlPoint.write(startHrStreamCommand);
       } on PlatformException catch (e, stack) {
-        Logging.logException(
-          logLevel,
-          "Sch x70",
-          "executeControlOperation",
-          "${e.message}",
-          e,
-          stack,
-        );
+        Logging.logException(logLevel, tag, "executeControlOperation", "${e.message}", e, stack);
       }
     }
   }

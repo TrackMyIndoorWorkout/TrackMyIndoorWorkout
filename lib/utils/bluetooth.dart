@@ -65,14 +65,7 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
 
     return await isBluetoothOn();
   } on PlatformException catch (e, stack) {
-    Logging.logException(
-      logLevel,
-      "bluetoothCheck",
-      "bluetoothCheck",
-      "${e.message}",
-      e,
-      stack,
-    );
+    Logging.logException(logLevel, "BLUETOOTH", "bluetoothCheck", "${e.message}", e, stack);
     return false;
   }
 }

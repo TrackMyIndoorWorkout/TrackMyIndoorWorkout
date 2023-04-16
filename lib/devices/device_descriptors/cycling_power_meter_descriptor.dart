@@ -20,7 +20,7 @@ class CyclingPowerMeterDescriptor extends CyclingSensorDescriptor {
           manufacturerFitId: manufacturerFitId,
           model: model,
           deviceCategory: DeviceCategory.primarySensor,
-          tag: "Cycling Power Meter Device",
+          tag: "CYCLING_POWER_METER",
           serviceUuid: CyclingPowerMeterSensor.serviceUuid,
           characteristicUuid: CyclingPowerMeterSensor.characteristicUuid,
         );

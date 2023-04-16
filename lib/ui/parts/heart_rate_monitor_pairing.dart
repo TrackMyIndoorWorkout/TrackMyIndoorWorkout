@@ -31,6 +31,7 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 
 class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
   static RegExp colonRegex = RegExp(r':');
+  static const String tag = "HRM_PAIRING";
 
   int _scanDuration = 4;
   TextStyle _captionStyle = const TextStyle();
@@ -50,14 +51,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     try {
       FlutterBluePlus.instance.stopScan();
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        _logLevel,
-        "HRM_PAIRING",
-        "dispose",
-        "${e.message}",
-        e,
-        stack,
-      );
+      Logging.logException(_logLevel, tag, "dispose", "${e.message}", e, stack);
     }
 
     super.dispose();
@@ -81,14 +75,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
         _isScanning = false;
       });
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        _logLevel,
-        "HEART_RATE_MONITOR_PAIRING",
-        "_startScan",
-        "${e.message}",
-        e,
-        stack,
-      );
+      Logging.logException(_logLevel, tag, "_startScan", "${e.message}", e, stack);
     }
 
     Logging.logVersion(Get.find<PackageInfo>());

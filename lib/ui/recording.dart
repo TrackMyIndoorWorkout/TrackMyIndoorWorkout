@@ -114,6 +114,7 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class RecordingState extends State<RecordingScreen> {
+  static const String tag = "RECORDING";
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
   static const int _unlockChoices = 6;
@@ -1062,14 +1063,8 @@ class RecordingState extends State<RecordingScreen> {
         await _fitnessEquipment?.stopWorkout();
       }
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        _logLevel,
-        "RECORDING",
-        "_stopMeasurement stopWorkout Equipment got turned off?",
-        "${e.message}",
-        e,
-        stack,
-      );
+      Logging.logException(_logLevel, tag, "_stopMeasurement stopWorkout Equipment got turned off?",
+          "${e.message}", e, stack);
     }
 
     final last = _fitnessEquipment?.lastRecord;

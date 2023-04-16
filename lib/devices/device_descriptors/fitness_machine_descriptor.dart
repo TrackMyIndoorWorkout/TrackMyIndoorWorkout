@@ -34,6 +34,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           manufacturerFitId: manufacturerFitId,
           model: model,
           deviceCategory: DeviceCategory.smartDevice,
+          tag: "FTMS",
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
           controlCharacteristicId: fitnessMachineControlPointUuid,
@@ -195,14 +196,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       await controlPoint.write(requestInfo);
       // Response could be picked up in the subscription listener
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        logLevel,
-        "FTMS",
-        "executeControlOperation",
-        "${e.message}",
-        e,
-        stack,
-      );
+      Logging.logException(logLevel, "FTMS", "executeControlOperation", "${e.message}", e, stack);
     }
   }
 }

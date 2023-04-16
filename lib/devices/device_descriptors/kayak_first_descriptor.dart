@@ -61,6 +61,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
           manufacturerFitId: stravaFitId,
           model: "Model",
           deviceCategory: DeviceCategory.smartDevice,
+          tag: "KAYAK_FIRST_DESCRIPTOR",
           isPolling: true,
           fragmentedPackets: true,
           dataServiceId: kayakFirstServiceUuid,
@@ -127,26 +128,13 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       command += crLf;
     }
 
-    Logging.log(
-      logLevel,
-      logLevelInfo,
-      "KayakFirst",
-      "_executeControlOperationCore command",
-      command,
-    );
+    Logging.log(logLevel, logLevelInfo, tag, "_executeControlOperationCore command", command);
 
     try {
       await controlPoint.write(utf8.encode(command));
       // Response could be picked up in the subscription listener
     } on PlatformException catch (e, stack) {
-      Logging.logException(
-        logLevel,
-        "KayakFirst",
-        "_executeControlOperationCore",
-        "${e.message}",
-        e,
-        stack,
-      );
+      Logging.logException(logLevel, tag, "_executeControlOperationCore", "${e.message}", e, stack);
     }
   }
 
@@ -154,13 +142,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(
-      logLevel,
-      logLevelInfo,
-      "KayakFirst",
-      "executeControlOperation",
-      "$opCode",
-    );
+    Logging.log(logLevel, logLevelInfo, tag, "executeControlOperation", "$opCode");
 
     if (controlPoint == null || opCode == requestControl) {
       return;
@@ -266,13 +248,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     final seenIt = i < iterationCount;
-    Logging.log(
-      logLevel,
-      logLevelInfo,
-      "KAYAK_FIRST_DESCRIPTOR",
-      "waitForResponse",
-      "$seenIt",
-    );
+    Logging.log(logLevel, logLevelInfo, tag, "waitForResponse", "$seenIt");
     return seenIt;
   }
 
@@ -285,13 +261,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         responses.removeFirst();
       }
 
-      Logging.log(
-        logLevel,
-        logLevelInfo,
-        "KAYAK_FIRST_DESCRIPTOR",
-        "registerResponse",
-        "$responses",
-      );
+      Logging.log(logLevel, logLevelInfo, tag, "registerResponse", "$responses");
     }
   }
 }

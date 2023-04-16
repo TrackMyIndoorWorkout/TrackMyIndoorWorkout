@@ -10,6 +10,7 @@ import '../preferences/log_level.dart';
 import '../utils/constants.dart';
 
 class Logging {
+  static const String tag = "LOGGING";
   static bool initialized = false;
   static String fileName = "DebugLog";
   static Completer completer = Completer<String>();
@@ -99,12 +100,7 @@ class Logging {
   }
 
   static void logVersion(PackageInfo packageInfo) {
-    Logging.log(
-      Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault,
-      logLevelError,
-      "logVersion",
-      "version",
-      "${packageInfo.version} build ${packageInfo.buildNumber}",
-    );
+    Logging.log(Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault, logLevelError,
+        tag, "version", "${packageInfo.version} build ${packageInfo.buildNumber}");
   }
 }
