@@ -5,8 +5,8 @@ publish_to: "none"
 version: 1.1.145+145
 
 environment:
-  sdk: ">=2.22.2"
-  flutter: ">=3.9.0-0.2.pre"
+  sdk: ">=2.23.1"
+  flutter: ">=3.10.0-1.1.pre"
 
 dependencies:
   assorted_layout_widgets: ^8.0.0
