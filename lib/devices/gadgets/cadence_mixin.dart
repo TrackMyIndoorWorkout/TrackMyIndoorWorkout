@@ -9,7 +9,7 @@ import '../../utils/logging.dart';
 import 'cadence_data.dart';
 
 class CadenceMixin {
-  static const String tag = "CADENCE_MIXIN";
+  static const String mixinTag = "CADENCE_MIXIN";
   static int defaultRevolutionSlidingWindow = 10; // Seconds
   static int defaultEventTimeOverflow = 64; // Overflows every 64 seconds
   static int defaultRevolutionOverflow = maxUint16;
@@ -109,7 +109,7 @@ class CadenceMixin {
 
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "computeCadence",
+      Logging.log(logLevel, logLevelInfo, mixinTag, "computeCadence",
           "cadenceData $cadenceData, $revDiff * 60 / $timeDiff");
     }
 

@@ -19,7 +19,6 @@ abstract class DeviceDescriptor extends DataHandler {
   static const double oldPowerCalorieFactorDefault = 3.6;
   static const double powerCalorieFactorDefault = 4.0;
 
-  final String tag;
   String sport;
   final bool isMultiSport;
   final String fourCC;
@@ -51,7 +50,6 @@ abstract class DeviceDescriptor extends DataHandler {
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
     required this.deviceCategory,
-    this.tag = "DEVICE_DESCRIPTOR",
     this.isPolling = false,
     this.fragmentedPackets = false,
     this.dataServiceId = "",
@@ -60,6 +58,7 @@ abstract class DeviceDescriptor extends DataHandler {
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
     this.canMeasureCalories = true,
+    tag = "DEVICE_DESCRIPTOR",
     hasFeatureFlags = true,
     flagByteSize = 2,
     heartRateByteIndex,
