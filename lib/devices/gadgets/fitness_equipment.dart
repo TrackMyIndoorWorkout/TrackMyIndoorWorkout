@@ -710,21 +710,37 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return null;
     }
 
-    return manufacturerName = await _readManufacturerNameFrom(nameCharacteristic) ??
-        await _readManufacturerNameFrom(nameCharacteristic, secondTry: true);
+    return manufacturerName = await _readManufacturerNameFrom(nameCharacteristic);
   }
 
-  Future<String?> _readManufacturerNameFrom(BluetoothCharacteristic nameCharacteristic,
-      {bool secondTry = false}) async {
+  Future<String?> _readManufacturerNameFromCore(BluetoothCharacteristic nameCharacteristic) async {
     try {
       final nameBytes = await nameCharacteristic.read();
-      manufacturerName = String.fromCharCodes(nameBytes);
-      return manufacturerName;
-    } on PlatformException catch (e, stack) {
-      Logging.logException(
-          logLevel, tag, "discover", "Could not read name${secondTry ? ' 2nd try' : ''}", e, stack);
+      final mfgName = String.fromCharCodes(nameBytes);
+      return mfgName;
+    } on Exception catch (e, stack) {
+      Logging.logException(logLevel, tag, "discover", "Could not read manufacturer name", e, stack);
       return null;
     }
+  }
+
+  Future<String?> _readManufacturerNameFrom(BluetoothCharacteristic nameCharacteristic) async {
+    String? mfgName = await _readManufacturerNameFromCore(nameCharacteristic);
+    if (mfgName != null) {
+      manufacturerName = mfgName;
+      return mfgName;
+    }
+
+    const someDelay = Duration(milliseconds: ftmsStatusThreshold);
+    await Future.delayed(someDelay);
+    await Future.delayed(someDelay);
+
+    mfgName = await _readManufacturerNameFromCore(nameCharacteristic);
+    if (mfgName != null) {
+      manufacturerName = mfgName;
+    }
+
+    return mfgName;
   }
 
   @visibleForTesting
