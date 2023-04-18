@@ -309,7 +309,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         }
 
         packetFragment.addAll(byteList);
-        if (descriptor?.isWholePacket(packetFragment) ?? true) {
+        if (descriptor?.isWholePacket(packetFragment) ?? false) {
           descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
           if (logLevel >= logLevelInfo) {
