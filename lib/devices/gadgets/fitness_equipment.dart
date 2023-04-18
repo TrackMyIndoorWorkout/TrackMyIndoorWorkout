@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import '../../preferences/athlete_age.dart';
@@ -303,10 +302,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          if (logLevel >= logLevelInfo) {
-            Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
-                "Repeat packet fragment => discard!");
-          }
+          Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+              "Repeat packet fragment => discard!");
 
           continue;
         }
@@ -559,8 +556,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           debugPrint("$description - ${params.minimum} / ${params.maximum} / ${params.increment}");
           return params;
         }
-      } on PlatformException catch (e, stack) {
-        Logging.logException(logLevel, tag, "getWriteSupportParameters", "${e.message}", e, stack);
+      } on Exception catch (e, stack) {
+        Logging.logException(
+            logLevel, tag, "getWriteSupportParameters", "writeTargets.read?", e, stack);
       }
     }
 
@@ -634,8 +632,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               "_powerLevels $_powerLevels supportsSpinDown $supportsSpinDown",
         );
       }
-    } on PlatformException catch (e, stack) {
-      Logging.logException(logLevel, tag, "_fitnessMachineFeature", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          logLevel, tag, "_fitnessMachineFeature", "getWriteSupportParameters?", e, stack);
     }
   }
 

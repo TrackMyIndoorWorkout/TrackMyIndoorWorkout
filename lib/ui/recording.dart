@@ -7,7 +7,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
@@ -1062,9 +1061,9 @@ class RecordingState extends State<RecordingScreen> {
       if (await isBluetoothOn()) {
         await _fitnessEquipment?.stopWorkout();
       }
-    } on PlatformException catch (e, stack) {
-      Logging.logException(_logLevel, tag, "_stopMeasurement stopWorkout Equipment got turned off?",
-          "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          _logLevel, tag, "_stopMeasurement", "_fitnessEquipment.stopWorkout()", e, stack);
     }
 
     final last = _fitnessEquipment?.lastRecord;

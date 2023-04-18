@@ -156,8 +156,9 @@ abstract class DeviceBase {
     if (listenOnControl && !controlNotification && controlPoint != null) {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
-      } on PlatformException catch (e, stack) {
-        Logging.logException(logLevel, tag, "connectToControlPoint", "${e.message}", e, stack);
+      } on Exception catch (e, stack) {
+        Logging.logException(
+            logLevel, tag, "connectToControlPoint", "controlPoint.setNotifyValue(true)", e, stack);
       }
 
       controlPointSubscription = controlPoint?.value
@@ -287,8 +288,9 @@ abstract class DeviceBase {
     if (attached) {
       try {
         await characteristic?.setNotifyValue(false);
-      } on PlatformException catch (e, stack) {
-        Logging.logException(logLevel, tag, "detach", "${e.message}", e, stack);
+      } on Exception catch (e, stack) {
+        Logging.logException(
+            logLevel, tag, "detach", "characteristic.setNotifyValue(false)", e, stack);
       }
 
       attached = false;
@@ -302,8 +304,8 @@ abstract class DeviceBase {
       await detach();
       try {
         await device?.disconnect();
-      } on PlatformException catch (e, stack) {
-        Logging.logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
+      } on Exception catch (e, stack) {
+        Logging.logException(logLevel, tag, "discover", "device.disconnect()", e, stack);
       }
 
       characteristic = null;
@@ -354,7 +356,7 @@ abstract class DeviceBase {
 
     try {
       return await _readBatteryLevelCore();
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging.logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
       return -1;
     }
@@ -398,7 +400,7 @@ abstract class DeviceBase {
 
     try {
       return await _cscSensorTypeCore();
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging.logException(
           logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
       return DeviceCategory.smartDevice;
@@ -447,7 +449,7 @@ abstract class DeviceBase {
     try {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
       await characteristic?.write(utf8.encode(commandCrLf));
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging.logException(
           logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
       return -1;

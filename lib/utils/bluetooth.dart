@@ -1,6 +1,5 @@
 import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
@@ -64,8 +63,9 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
     }
 
     return await isBluetoothOn();
-  } on PlatformException catch (e, stack) {
-    Logging.logException(logLevel, "BLUETOOTH", "bluetoothCheck", "${e.message}", e, stack);
+  } on Exception catch (e, stack) {
+    Logging.logException(
+        logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
     return false;
   }
 }

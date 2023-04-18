@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -133,8 +132,9 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     try {
       await controlPoint.write(utf8.encode(command));
       // Response could be picked up in the subscription listener
-    } on PlatformException catch (e, stack) {
-      Logging.logException(logLevel, tag, "_executeControlOperationCore", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          logLevel, tag, "_executeControlOperationCore", "controlPoint.write", e, stack);
     }
   }
 
@@ -248,7 +248,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     final seenIt = i < iterationCount;
-    Logging.log(logLevel, logLevelInfo, tag, "waitForResponse", "$seenIt");
+    Logging.log(logLevel, logLevelInfo, tag, "_waitForResponse", "$seenIt");
     return seenIt;
   }
 

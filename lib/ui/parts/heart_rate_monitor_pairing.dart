@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -50,8 +49,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _scanStreamSubscription?.pause();
     try {
       FlutterBluePlus.instance.stopScan();
-    } on PlatformException catch (e, stack) {
-      Logging.logException(_logLevel, tag, "dispose", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          _logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
     }
 
     super.dispose();
@@ -74,8 +74,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
       setState(() {
         _isScanning = false;
       });
-    } on PlatformException catch (e, stack) {
-      Logging.logException(_logLevel, tag, "_startScan", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
     }
 
     Logging.logVersion(Get.find<PackageInfo>());

@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../utils/bluetooth.dart';
@@ -195,8 +194,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     try {
       await controlPoint.write(requestInfo);
       // Response could be picked up in the subscription listener
-    } on PlatformException catch (e, stack) {
-      Logging.logException(logLevel, "FTMS", "executeControlOperation", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          logLevel, "FTMS", "executeControlOperation", "controlPoint.write", e, stack);
     }
   }
 }

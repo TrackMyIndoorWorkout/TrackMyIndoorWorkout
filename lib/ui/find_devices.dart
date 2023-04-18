@@ -106,8 +106,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (_isScanning) {
       try {
         FlutterBluePlus.instance.stopScan();
-      } on PlatformException catch (e, stack) {
-        Logging.logException(_logLevel, tag, "dispose", "${e.message}", e, stack);
+      } on Exception catch (e, stack) {
+        Logging.logException(
+            _logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
       }
     }
 
@@ -268,8 +269,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
           }
         }
       }
-    } on PlatformException catch (e, stack) {
-      Logging.logException(_logLevel, tag, "_startScan", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(
+          _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
     }
   }
 
@@ -698,9 +700,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 await fitnessEquipment.disconnect();
               }
             }
-          } on PlatformException catch (e, stack) {
-            Logging.logException(
-                _logLevel, tag, "goToRecording preConnectLogic", "${e.message}", e, stack);
+          } on Exception catch (e, stack) {
+            Logging.logException(_logLevel, tag, "goToRecording preConnectLogic",
+                "fitnessEquipment.disconnect", e, stack);
           }
 
           fitnessEquipment = null;
