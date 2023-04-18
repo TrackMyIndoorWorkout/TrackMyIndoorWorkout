@@ -97,10 +97,10 @@ abstract class DeviceBase {
     return connected;
   }
 
-  Future<bool> connectAndDiscover({retry = false}) async {
+  Future<bool> connectAndDiscover() async {
     await connect();
 
-    return await discover(retry: retry);
+    return await discover();
   }
 
   Future<bool> discoverCore() async {
@@ -196,7 +196,7 @@ abstract class DeviceBase {
     }
   }
 
-  Future<bool> discover({bool retry = false}) async {
+  Future<bool> discover() async {
     if (!connected) {
       return false;
     }
@@ -211,15 +211,21 @@ abstract class DeviceBase {
     discovering = true;
     try {
       services = await device!.discoverServices();
-    } on PlatformException catch (e, stack) {
-      Logging.logException(logLevel, tag, "discover", "${e.message}", e, stack);
+    } on Exception catch (e, stack) {
+      Logging.logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
 
-      discovering = false;
-      if (retry) {
+      const someDelay = Duration(milliseconds: ftmsStatusThreshold);
+      await Future.delayed(someDelay);
+      await Future.delayed(someDelay);
+
+      try {
+        services = await device!.discoverServices();
+      } on Exception catch (e, stack) {
+        Logging.logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
+
+        discovering = false;
         return false;
       }
-
-      await discover(retry: true);
     }
 
     final success = await discoverCore();

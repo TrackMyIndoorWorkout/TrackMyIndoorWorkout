@@ -660,10 +660,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   @override
-  Future<bool> discover({bool identify = false, bool retry = false}) async {
+  Future<bool> discover({bool identify = false}) async {
     if (uxDebug) return true;
 
-    final success = await super.discover(retry: retry);
+    final success = await super.discover();
     if (identify || !success) return success;
 
     if (_equipmentDiscovery || descriptor == null) return false;

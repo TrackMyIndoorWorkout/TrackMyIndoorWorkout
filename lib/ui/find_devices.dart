@@ -494,7 +494,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               success = await _fitnessEquipment?.connectOnDemand(identify: true) ?? false;
             } else {
               identifySensor = descriptor.getSensor(device);
-              success = await identifySensor?.connectAndDiscover(retry: true) ?? false;
+              success = await identifySensor?.connectAndDiscover() ?? false;
             }
 
             if (success) {
