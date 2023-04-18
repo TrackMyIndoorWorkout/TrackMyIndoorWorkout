@@ -40,10 +40,10 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const responseQueueSize = 10;
   static const responseWatchDelayMs = 50; // ms
   static const responseWatchDelay = Duration(milliseconds: responseWatchDelayMs);
-  static const responseWatchTimeoutMs = 1000; // ms
-  static const responseWatchTimeoutGuardMs = 1200; // ms
+  static const responseWatchTimeoutMs = 3000; // ms
+  static const responseWatchTimeoutGuardMs = responseWatchTimeoutMs + 250; // ms
   static const responseWatchTimeoutGuard = Duration(milliseconds: responseWatchTimeoutGuardMs);
-  static const commandShortDelayMs = 250; // ms
+  static const commandShortDelayMs = 500; // ms
   static const commandShortDelay = Duration(milliseconds: commandShortDelayMs);
   static const commandLongDelayMs = 2000; // ms
   static const commandLongDelay = Duration(milliseconds: commandLongDelayMs);
