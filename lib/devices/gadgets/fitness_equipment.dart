@@ -693,14 +693,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     }
 
-    if (descriptor!.manufacturerNamePart == "Unknown") {
+    if (descriptor!.manufacturerNamePart == "Unknown" || descriptor!.manufacturerNamePart.isEmpty) {
       return true;
     }
 
     return manufacturerName
             ?.toLowerCase()
             .contains(descriptor!.manufacturerNamePart.toLowerCase()) ??
-        false;
+        true;
   }
 
   Future<String?> _getManufacturerName(deviceInfo) async {
