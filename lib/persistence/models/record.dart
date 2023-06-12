@@ -21,6 +21,8 @@ const recordsTableName = 'records';
   Index(value: ['time_stamp'])
 ])
 class Record {
+  static const String tag = "RECORD";
+
   @PrimaryKey(autoGenerate: true)
   int? id;
   @ColumnInfo(name: 'activity_id')
@@ -164,7 +166,7 @@ class Record {
             Logging.log(
               logLevel,
               logLevelError,
-              "RECORD",
+              tag,
               "cumulativeDistanceEnforcement",
               "violation $distance < ${lastRecord.distance}",
             );
@@ -191,7 +193,7 @@ class Record {
             Logging.log(
               logLevel,
               logLevelError,
-              "RECORD",
+              tag,
               "cumulativeElapsedTimeEnforcement",
               "violation $elapsed < ${lastRecord.elapsed}",
             );
@@ -215,7 +217,7 @@ class Record {
         Logging.log(
           logLevel,
           logLevelError,
-          "RECORD",
+          tag,
           "cumulativeMovingTimeEnforcement",
           "violation $movingTime < ${lastRecord.movingTime}",
         );
@@ -238,7 +240,7 @@ class Record {
             Logging.log(
               logLevel,
               logLevelError,
-              "RECORD",
+              tag,
               "cumulativeCaloriesEnforcement",
               "violation $calories < ${lastRecord.calories}",
             );
@@ -260,13 +262,8 @@ class Record {
 
       if (distance! < 0.0) {
         if (logLevel >= logLevelError) {
-          Logging.log(
-            logLevel,
-            logLevelError,
-            "RECORD",
-            "nonNegativeEnforcement",
-            "negative distance $distance",
-          );
+          Logging.log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
+              "negative distance $distance");
         }
 
         distance = 0.0;
@@ -281,12 +278,7 @@ class Record {
       if (elapsed! < 0) {
         if (logLevel >= logLevelError) {
           Logging.log(
-            logLevel,
-            logLevelError,
-            "RECORD",
-            "nonNegativeEnforcement",
-            "negative elapsed $elapsed",
-          );
+              logLevel, logLevelError, tag, "nonNegativeEnforcement", "negative elapsed $elapsed");
         }
 
         elapsed = 0;
@@ -299,13 +291,8 @@ class Record {
 
     if (movingTime < 0) {
       if (logLevel >= logLevelError) {
-        Logging.log(
-          logLevel,
-          logLevelError,
-          "RECORD",
-          "nonNegativeEnforcement",
-          "negative movingTime $movingTime",
-        );
+        Logging.log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
+            "negative movingTime $movingTime");
       }
 
       movingTime = 0;
@@ -318,13 +305,8 @@ class Record {
 
       if (calories! < 0) {
         if (logLevel >= logLevelError) {
-          Logging.log(
-            logLevel,
-            logLevelError,
-            "RECORD",
-            "nonNegativeEnforcement",
-            "negative calories $calories",
-          );
+          Logging.log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
+              "negative calories $calories");
         }
 
         calories = 0;

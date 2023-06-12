@@ -21,7 +21,7 @@ class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
           model: model,
           deviceCategory: DeviceCategory.secondarySensor,
           flagByteSize: 1,
-          tag: "Cycling Speed and Cadence Device",
+          tag: "CSC_SENSOR",
           serviceUuid: CyclingSpeedAndCadenceSensor.serviceUuid,
           characteristicUuid: CyclingSpeedAndCadenceSensor.characteristicUuid,
         );

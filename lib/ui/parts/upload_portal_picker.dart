@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -80,6 +82,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     List<Widget> choiceRows = [
       uploadInProgress
           ? Row(
@@ -102,7 +105,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
             ),
     ];
     choiceRows.addAll(
-      getPortalChoices(_themeManager).asMap().entries.map(
+      getPortalChoices(false, _themeManager).asMap().entries.map(
             (e) => Column(
               children: [
                 Padding(
@@ -129,11 +132,21 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                                   ? _themeManager.getGreenColor()
                                   : _themeManager.getProtagonistColor(),
                             ),
-                            SvgPicture.asset(
-                              e.value.assetName,
-                              colorFilter: ColorFilter.mode(e.value.color, BlendMode.srcIn),
-                              height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
-                              semanticsLabel: '${e.value.name} Logo',
+                            SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Colors.white,
+                              ),
+                              height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                              width: mediaWidth - 130,
+                              padding: const EdgeInsets.all(5),
+                              child: SvgPicture.asset(
+                                e.value.assetName,
+                                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.darken),
+                                height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
+                                semanticsLabel: '${e.value.name} Logo',
+                              ),
                             ),
                           ],
                         ),
