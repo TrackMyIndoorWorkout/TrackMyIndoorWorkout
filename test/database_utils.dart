@@ -103,9 +103,10 @@ class InMemoryRecordDao extends RecordDao {
   }
 
   @override
-  Future<List<Record>> deleteAllActivityRecords(int activityId) async {
+  Future<int?> deleteAllActivityRecords(int activityId) async {
+    int numDeleted = records.where((element) => element.activityId == activityId).length;
     records.removeWhere((element) => element.activityId == activityId);
-    return [];
+    return numDeleted;
   }
 
   @override

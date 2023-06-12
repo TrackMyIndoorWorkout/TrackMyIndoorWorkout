@@ -36,13 +36,31 @@ void main() async {
 
     runApp(TrackMyIndoorExerciseApp(prefService: prefService));
   },
-      (error, stack) => Logging.logException(
-          Get.isRegistered<BasePrefService>()
-              ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
-              : logLevelDefault,
-          "MAIN",
-          "runZonedGuarded",
-          "pacman",
-          error as Exception,
-          stack));
+      (error, stack) => error is Exception
+          ? Logging.logException(
+              Get.isRegistered<BasePrefService>()
+                  ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
+                  : logLevelDefault,
+              "MAIN",
+              "runZonedGuarded",
+              "pacman",
+              error,
+              stack)
+          : (error is Error
+              ? Logging.log(
+                  Get.isRegistered<BasePrefService>()
+                      ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
+                      : logLevelDefault,
+                  logLevelError,
+                  "MAIN",
+                  "runZonedGuarded pacman",
+                  "$error; ${error.stackTrace}; $stack")
+              : Logging.log(
+                  Get.isRegistered<BasePrefService>()
+                      ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
+                      : logLevelDefault,
+                  logLevelError,
+                  "MAIN",
+                  "runZonedGuarded pacman",
+                  error.toString())));
 }
