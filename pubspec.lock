@@ -213,10 +213,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: f52ab3b76b36ede4d135aab80194df8925b553686f0fa12226b4e2d658e45903
+      sha256: "2c35b6d1682b028e42d07b3aee4b98fa62996c10bc12cb651ec856a80d6a761b"
       url: "https://pub.dev"
     source: hosted
-    version: "8.2.2"
+    version: "9.0.2"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -277,10 +277,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: b85eb92b175767fdaa0c543bf3b0d1f610fe966412ea72845fe5ba7801e763ff
+      sha256: b1729fc96627dd44012d0a901558177418818d6bd428df59dcfeb594e5f66432
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.10"
+    version: "5.3.2"
   fixnum:
     dependency: transitive
     description:
@@ -358,10 +358,11 @@ packages:
   flutter_layout_grid:
     dependency: "direct main"
     description:
-      name: flutter_layout_grid
-      sha256: "31728ce6e9c8eaa48f8a3f928a7c308da4b74ab867aec2dc5b80b0c9f9b79d0d"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: fe5816af6885b63df8ea3896cfbc68203dfd5af7
+      url: "https://github.com/CsabaConsulting/flutter_layout_grid.git"
+    source: git
     version: "2.0.3"
   flutter_lints:
     dependency: "direct dev"
@@ -374,10 +375,11 @@ packages:
   flutter_logs:
     dependency: "direct main"
     description:
-      name: flutter_logs
-      sha256: dd037783f0f22fe03f359b65f913af275aeac4a1474c18c41b2ed9fdbd4f83f1
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "99e43fc795870120fb04c2b3fe152716ea7d44dc"
+      url: "https://github.com/CsabaConsulting/flutter_logs.git"
+    source: git
     version: "2.1.10"
   flutter_plugin_android_lifecycle:
     dependency: transitive
@@ -412,10 +414,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_timezone
-      sha256: "9b179c76cbded894e3208b420d0c4286f6c9ab7178c063eba8bc4266a3ee1a3c"
+      sha256: "4508018aba499c837f723e2e718259eb677410490638b7ea669b11113d083e68"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "1.0.7"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -651,10 +653,10 @@ packages:
     dependency: "direct main"
     description:
       name: package_info_plus
-      sha256: "10259b111176fba5c505b102e3a5b022b51dd97e30522e906d6922c745584745"
+      sha256: ceb027f6bc6a60674a233b4a90a7658af1aebdea833da0b5b53c1e9821a78c7b
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.2"
+    version: "4.0.2"
   package_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -1112,18 +1114,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "5f868f5a82380ef1b3de416b7812e1ac7acce6a629f9281618adee81d90716cc"
+      sha256: "5177ac8fd2a171ed9ad3a48de1d715eb38271629d0f33a561eea85ff44f89c7e"
       url: "https://pub.dev"
     source: hosted
-    version: "21.2.10"
+    version: "22.1.37"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "8db8f55c77f56968681447d3837c10f27a9e861e238a898fda116c7531def979"
+      sha256: e2b49a16805a54714ba0712d62e9f3c6311081ec2bec835529b778cc5349430a
       url: "https://pub.dev"
     source: hosted
-    version: "21.2.10"
+    version: "22.1.37"
   synchronized:
     dependency: transitive
     description:
@@ -1312,10 +1314,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: f3743ca475e0c9ef71df4ba15eb2d7684eecd5c8ba20a462462e4e8b561b2e11
+      sha256: c620a6f783fa22436da68e42db7ebbf18b8c44b9a46ab911f666ff09ffd9153f
       url: "https://pub.dev"
     source: hosted
-    version: "11.6.0"
+    version: "11.7.1"
   wakelock:
     dependency: "direct main"
     description:
@@ -1364,6 +1366,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  web:
+    dependency: transitive
+    description:
+      name: web
+      sha256: dc8ccd225a2005c1be616fe02951e2e342092edf968cf0844220383757ef8f10
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4-beta"
   web_socket_channel:
     dependency: transitive
     description:
@@ -1381,13 +1391,21 @@ packages:
     source: hosted
     version: "3.0.2"
   win32:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: win32
       sha256: a6f0236dbda0f63aa9a25ad1ff9a9d8a4eaaa5012da0dc59d21afdb1dc361ca4
       url: "https://pub.dev"
     source: hosted
     version: "3.1.4"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: e4506d60b7244251bc59df15656a3093501c37fb5af02105a944d73eb95be4c9
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   xdg_directories:
     dependency: transitive
     description:
@@ -1413,5 +1431,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.0.0 <4.0.0"
+  dart: ">=3.1.0-185.0.dev <4.0.0"
   flutter: ">=3.10.0"
