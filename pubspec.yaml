@@ -25,9 +25,7 @@ dependencies:
   floor: ^1.4.2
   flutter_blue_plus: ^1.5.2
   flutter_circle_color_picker: ^0.3.0
-  flutter_layout_grid:
-    git:
-      url: https://github.com/CsabaConsulting/flutter_layout_grid.git
+  flutter_layout_grid: ^2.0.4
   flutter_logs:
     git:
       url: https://github.com/CsabaConsulting/flutter_logs.git

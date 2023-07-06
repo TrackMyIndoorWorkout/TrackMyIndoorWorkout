@@ -358,12 +358,11 @@ packages:
   flutter_layout_grid:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: fe5816af6885b63df8ea3896cfbc68203dfd5af7
-      url: "https://github.com/CsabaConsulting/flutter_layout_grid.git"
-    source: git
-    version: "2.0.3"
+      name: flutter_layout_grid
+      sha256: "3c03d28f884d816d6f483bdd64dd79663abfb00eea7cb27ffe98380e8357af95"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.4"
   flutter_lints:
     dependency: "direct dev"
     description:
