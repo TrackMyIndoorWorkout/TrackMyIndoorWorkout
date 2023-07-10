@@ -18,7 +18,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
-          channel: 'main'
+          channel: 'beta'
       - name: Install Flutter dependencies
         run: flutter pub get
       - name: Mock Secret File
