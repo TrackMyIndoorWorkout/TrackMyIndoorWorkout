@@ -14,7 +14,7 @@ import shared_preferences_foundation
 import soundpool_macos
 import sqflite
 import url_launcher_macos
-import wakelock_macos
+import wakelock_plus
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
@@ -26,5 +26,5 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   SwiftSoundpoolPlugin.register(with: registry.registrar(forPlugin: "SwiftSoundpoolPlugin"))
   SqflitePlugin.register(with: registry.registrar(forPlugin: "SqflitePlugin"))
   UrlLauncherPlugin.register(with: registry.registrar(forPlugin: "UrlLauncherPlugin"))
-  WakelockMacosPlugin.register(with: registry.registrar(forPlugin: "WakelockMacosPlugin"))
+  WakelockPlusMacosPlugin.register(with: registry.registrar(forPlugin: "WakelockPlusMacosPlugin"))
 }

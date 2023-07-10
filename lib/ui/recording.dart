@@ -15,7 +15,7 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../devices/bluetooth_device_ex.dart';
@@ -670,7 +670,7 @@ class RecordingState extends State<RecordingScreen> {
 
     size = widget.size;
 
-    Wakelock.enable();
+    WakelockPlus.enable();
 
     _busy = false;
     _themeManager = Get.find<ThemeManager>();
@@ -974,7 +974,7 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   void dispose() {
-    Wakelock.disable();
+    WakelockPlus.disable();
 
     super.dispose();
   }
