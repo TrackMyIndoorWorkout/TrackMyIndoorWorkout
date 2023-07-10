@@ -2401,7 +2401,6 @@ class RecordingState extends State<RecordingScreen> {
         },
         child: AbsorbPointer(
           absorbing: _isLocked,
-          ignoringSemantics: true,
           child: Scaffold(
             appBar: AppBar(
               title: TextOneLine(
