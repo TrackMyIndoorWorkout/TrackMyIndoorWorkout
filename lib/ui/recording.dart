@@ -1091,8 +1091,10 @@ class RecordingState extends State<RecordingScreen> {
           await _activityUpload(true);
         }
 
-        if (_instantExportLocation.isNotEmpty) {
-          await _activityExport();
+        if (_instantExport) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await _activityExport();
+          });
         }
       }
     }
