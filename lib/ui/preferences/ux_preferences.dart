@@ -101,11 +101,6 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         subtitle: Text(instantUploadDescription),
         pref: instantUploadTag,
       ),
-      const PrefCheckbox(
-        title: Text(instantExport),
-        subtitle: Text(instantExportDescription),
-        pref: instantExportTag,
-      ),
       // PrefLabel(
       //   title: Text(instantExportLocation, style: Get.textTheme.headlineSmall!, maxLines: 3),
       //   subtitle: const Text(instantExportLocationDescription),
@@ -127,6 +122,11 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
           }
         },
         child: const Text(instantExportLocationPickCommand),
+      ),
+      const PrefCheckbox(
+        title: Text(instantExport),
+        subtitle: Text(instantExportDescription),
+        pref: instantExportTag,
       ),
       const PrefCheckbox(
         title: Text(multiSportDeviceSupport),
