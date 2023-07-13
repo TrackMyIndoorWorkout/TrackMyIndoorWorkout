@@ -604,20 +604,9 @@ class _$RecordDao extends RecordDao {
   }
 
   @override
-  Future<List<Record>> deleteAllActivityRecords(int activityId) async {
-    return _queryAdapter.queryList('DELETE FROM `records` WHERE `activity_id` = ?1',
-        mapper: (Map<String, Object?> row) => Record(
-            id: row['id'] as int?,
-            activityId: row['activity_id'] as int?,
-            timeStamp: row['time_stamp'] as int?,
-            distance: row['distance'] as double?,
-            elapsed: row['elapsed'] as int?,
-            calories: row['calories'] as int?,
-            power: row['power'] as int?,
-            speed: row['speed'] as double?,
-            cadence: row['cadence'] as int?,
-            heartRate: row['heart_rate'] as int?),
-        arguments: [activityId]);
+  Future<int?> deleteAllActivityRecords(int activityId) async {
+    return _queryAdapter.query('DELETE FROM `records` WHERE `activity_id` = ?1',
+        mapper: (Map<String, Object?> row) => row.values.first as int, arguments: [activityId]);
   }
 
   @override

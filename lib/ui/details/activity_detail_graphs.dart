@@ -188,7 +188,7 @@ class ActivityDetailGraphs extends StatelessWidget {
             height: size.height / 3,
             child: charts.SfCircularChart(
               margin: const EdgeInsets.all(0),
-              legend: charts.Legend(isVisible: true, textStyle: pieChartLabelStyle),
+              legend: const charts.Legend(isVisible: true, textStyle: pieChartLabelStyle),
               series: tileConfiguration.histogramFn!(),
               palette: paletteSpec.getPiePalette(isLight, preferencesSpec),
               tooltipBehavior: tooltipBehavior,

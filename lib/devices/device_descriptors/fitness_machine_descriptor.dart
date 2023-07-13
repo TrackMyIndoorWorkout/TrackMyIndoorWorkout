@@ -1,6 +1,6 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../../utils/bluetooth.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
@@ -32,6 +32,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
           manufacturerFitId: manufacturerFitId,
           model: model,
           deviceCategory: DeviceCategory.smartDevice,
+          tag: "FTMS",
           dataServiceId: fitnessMachineUuid,
           dataCharacteristicId: dataCharacteristicId,
           controlCharacteristicId: fitnessMachineControlPointUuid,
@@ -176,7 +177,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
+    if (await isBluetoothOff()) {
       return;
     }
 
@@ -192,15 +193,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     try {
       await controlPoint.write(requestInfo);
       // Response could be picked up in the subscription listener
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging.logException(
-        logLevel,
-        "FTMS",
-        "executeControlOperation",
-        "${e.message}",
-        e,
-        stack,
-      );
+          logLevel, "FTMS", "executeControlOperation", "controlPoint.write", e, stack);
     }
   }
 }

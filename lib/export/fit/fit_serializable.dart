@@ -81,10 +81,7 @@ abstract class FitSerializable {
   }
 
   static int fitTimeStamp(int? unixMilliseconds) {
-    if (unixMilliseconds == null) {
-      return 0;
-    }
-
+    unixMilliseconds ??= DateTime.now().millisecondsSinceEpoch;
     return (unixMilliseconds - fitEpoch) ~/ 1000;
   }
 

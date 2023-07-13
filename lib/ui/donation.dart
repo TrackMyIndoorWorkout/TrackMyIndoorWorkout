@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qr_widget/qr_widget.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DonationScreen extends StatelessWidget {
@@ -47,12 +47,11 @@ class DonationScreen extends StatelessWidget {
                 ),
                 Expanded(
                   child: Center(
-                    child: QrImage(
+                    child: QrImageView(
                       data: "$url$qrPostfix",
                       version: QrVersions.auto,
                       size: min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 2 / 3,
                       backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
                     ),
                   ),
                 ),
