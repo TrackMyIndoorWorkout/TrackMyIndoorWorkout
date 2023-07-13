@@ -186,8 +186,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       try {
         await controlPoint.write(startHrStreamCommand);
       } on Exception catch (e, stack) {
-        Logging().logException(
-            logLevel, tag, "executeControlOperation", "controlPoint.write", e, stack);
+        Logging()
+            .logException(logLevel, tag, "executeControlOperation", "controlPoint.write", e, stack);
       }
     }
   }

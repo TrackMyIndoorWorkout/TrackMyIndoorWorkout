@@ -340,8 +340,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       if (key >= 0 && descriptor!.isFlagValid(key)) {
         if (!dataHandlers.containsKey(key)) {
           if (logLevel >= logLevelInfo) {
-            Logging().log(
-                logLevel, logLevelInfo, tag, "_listenToData loop", "Cloning handler for $key");
+            Logging()
+                .log(logLevel, logLevelInfo, tag, "_listenToData loop", "Cloning handler for $key");
           }
 
           dataHandlers[key] = descriptor!.clone();
@@ -719,7 +719,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       final mfgName = String.fromCharCodes(nameBytes);
       return mfgName;
     } on Exception catch (e, stack) {
-      Logging().logException(logLevel, tag, "discover", "Could not read manufacturer name", e, stack);
+      Logging()
+          .logException(logLevel, tag, "discover", "Could not read manufacturer name", e, stack);
       return null;
     }
   }

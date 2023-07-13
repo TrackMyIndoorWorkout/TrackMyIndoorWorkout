@@ -50,8 +50,8 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     try {
       FlutterBluePlus.instance.stopScan();
     } on Exception catch (e, stack) {
-      Logging().logException(
-          _logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
+      Logging()
+          .logException(_logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
     }
 
     super.dispose();

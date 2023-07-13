@@ -64,8 +64,8 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
 
     return await isBluetoothOn();
   } on Exception catch (e, stack) {
-    Logging().logException(
-        logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
+    Logging()
+        .logException(logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
     return false;
   }
 }

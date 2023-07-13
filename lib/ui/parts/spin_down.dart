@@ -204,8 +204,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
         } on Exception catch (e, stack) {
-          Logging().logException(
-              _logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
+          Logging()
+              .logException(_logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
