@@ -1,3 +1,11 @@
+## 1.1.146
+* Update Strava iconography to use official icons (Powered by Strava, Connect with Strava)
+  to please the Updated Developer Program
+* Upgrade a ton of packages
+* Location permission changes due to the newer version of Flutter Blue Plus
+  (require fine location even for newer Android)
+* No update to Dart 3.0 or AGP 8.5 yet
+
 ## 1.1.145
 * Kayak First delay logic refactoring
 

@@ -3,6 +3,7 @@ import '../../utils/constants.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 
 abstract class DataHandler {
+  final String tag;
   final bool hasFeatureFlags;
   final int flagByteSize;
   int featuresFlag = -1;
@@ -24,6 +25,7 @@ abstract class DataHandler {
   MetricDescriptor? caloriesPerMinuteMetric;
 
   DataHandler({
+    this.tag = "DATA_HANDLER",
     this.hasFeatureFlags = true,
     this.flagByteSize = 2,
     this.heartRateByteIndex,

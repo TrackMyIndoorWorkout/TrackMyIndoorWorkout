@@ -30,6 +30,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
           manufacturerNamePart: "Concept2",
           manufacturerFitId: concept2FitId,
           model: "PM5",
+          tag: "CONCEPT2",
           dataServiceId: c2RowingPrimaryServiceUuid,
           dataCharacteristicId: c2RowingGeneralStatusUuid,
           listenOnControl: false,
@@ -107,12 +108,6 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging().log(
-      logLevel,
-      logLevelError,
-      "Concept2",
-      "executeControlOperation",
-      "Not implemented!",
-    );
+    Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 }

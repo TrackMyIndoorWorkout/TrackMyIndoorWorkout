@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/isar/record.dart';
+import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
@@ -53,6 +53,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
           model: "",
+          tag: "SCH_X70",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
           controlCharacteristicId: schwinnX70ControlUuid,
@@ -161,7 +162,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
+    if (await isBluetoothOff()) {
       return;
     }
 
@@ -184,15 +185,9 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
       try {
         await controlPoint.write(startHrStreamCommand);
-      } on PlatformException catch (e, stack) {
+      } on Exception catch (e, stack) {
         Logging().logException(
-          logLevel,
-          "Sch x70",
-          "executeControlOperation",
-          "${e.message}",
-          e,
-          stack,
-        );
+            logLevel, tag, "executeControlOperation", "controlPoint.write", e, stack);
       }
     }
   }

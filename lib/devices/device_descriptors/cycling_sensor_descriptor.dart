@@ -11,7 +11,6 @@ import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
 abstract class CyclingSensorDescriptor extends DeviceDescriptor {
-  final String tag;
   final String serviceUuid;
   final String characteristicUuid;
   ComplexSensor? sensor;
@@ -24,7 +23,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     manufacturerFitId,
     model,
     required deviceCategory,
-    required this.tag,
+    tag,
     required this.serviceUuid,
     required this.characteristicUuid,
     flagByteSize = 2,
@@ -38,6 +37,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
           manufacturerFitId: manufacturerFitId,
           model: model,
           deviceCategory: deviceCategory,
+          tag: tag,
           dataServiceId: serviceUuid,
           dataCharacteristicId: characteristicUuid,
           controlCharacteristicId: "",
@@ -108,13 +108,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging().log(
-      logLevel,
-      logLevelError,
-      tag,
-      "executeControlOperation",
-      "Not implemented!",
-    );
+    Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 
   @override

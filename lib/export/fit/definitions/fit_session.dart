@@ -69,20 +69,20 @@ class FitSession extends FitDefinitionMessage {
   List<int> serializeData(dynamic parameter) {
     ExportModel model = parameter;
 
-    final first = model.records.first;
-    final last = model.records.last;
+    final first = model.records.isNotEmpty ? model.records.first : null;
+    final last = model.records.isNotEmpty ? model.records.last : null;
     var data = FitData();
     data.output = [localMessageType];
     data.addShort(0);
     if (exportTarget == ExportTarget.regular) {
-      data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
+      data.addLong(FitSerializable.fitTimeStamp(last?.record.timeStamp));
       data.addByte(FitEvent.session);
       data.addByte(FitEventType.stop);
     }
 
-    data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
-    if (exportTarget == ExportTarget.regular && outputGps) {
-      data.addGpsCoordinate(first.latitude);
+    data.addLong(FitSerializable.fitTimeStamp(first?.record.timeStamp));
+    if (exportTarget == ExportTarget.regular && outputGps && model.records.isNotEmpty) {
+      data.addGpsCoordinate(first!.latitude);
       data.addGpsCoordinate(first.longitude);
     }
 

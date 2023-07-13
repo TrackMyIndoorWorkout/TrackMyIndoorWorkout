@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -50,6 +49,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const stepCalibrating = 1;
   static const stepDone = 2;
   static const stepNotSupported = 3;
+  static const String tag = "SPIN_DOWN";
 
   FitnessEquipment? _fitnessEquipment;
   StreamSubscription? _controlPointSubscription;
@@ -162,15 +162,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     // #117 Attach the handler way ahead of the actual weight write
     try {
       await _weightData?.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging().logException(
-        _logLevel,
-        "SPIN_DOWN",
-        "_prepareSpinDownCore _weightData.setNotifyValue",
-        "${e.message}",
-        e,
-        stack,
-      );
+          _logLevel, tag, "_prepareSpinDownCore", "_weightData.setNotifyValue", e, stack);
     }
 
     _weightDataSubscription = _weightData?.value
@@ -209,15 +203,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       } else if (_calibrationState == CalibrationState.weightSubmitting) {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-        } on PlatformException catch (e, stack) {
+        } on Exception catch (e, stack) {
           Logging().logException(
-            _logLevel,
-            "SPIN_DOWN",
-            "_prepareSpinDownCore _weightData.write",
-            "${e.message}",
-            e,
-            stack,
-          );
+              _logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -340,15 +328,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       final weightKg = _weight * (_si ? 1.0 : lbToKg);
       await _prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging().logException(
-        _logLevel,
-        "SPIN_DOWN",
-        "_onWeightInputButtonPressed",
-        "${e.message}",
-        e,
-        stack,
-      );
+          _logLevel, tag, "_onWeightInputButtonPressed", "_weightData.write", e, stack);
       setState(() {
         _calibrationState = CalibrationState.weighInProblem;
       });
@@ -411,15 +393,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
-      Logging().logException(
-        _logLevel,
-        "SPIN_DOWN",
-        "onCalibrationButtonPressed",
-        "${e.message}",
-        e,
-        stack,
-      );
+    } on Exception catch (e, stack) {
+      Logging().logException(_logLevel, tag, "onCalibrationButtonPressed",
+          "controlPoint.write or status.setNotifyValue(true)", e, stack);
     }
 
     _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value

@@ -23,6 +23,7 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
           manufacturerNamePart: "Precor",
           manufacturerFitId: precorFitId,
           model: "1",
+          tag: "PSCP",
           dataServiceId: precorServiceUuid,
           dataCharacteristicId: precorMeasurementUuid,
           listenOnControl: false,
@@ -62,12 +63,6 @@ class PrecorSpinnerChronoPower extends FixedLayoutDeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging().log(
-      logLevel,
-      logLevelError,
-      "PSCP",
-      "executeControlOperation",
-      "Not implemented!",
-    );
+    Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 }

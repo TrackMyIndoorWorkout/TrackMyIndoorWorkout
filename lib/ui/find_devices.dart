@@ -72,6 +72,7 @@ class FindDevicesScreen extends StatefulWidget {
 }
 
 class FindDevicesState extends State<FindDevicesScreen> {
+  static const String tag = "FIND_DEVICES";
   bool _instantScan = instantScanDefault;
   int _scanDuration = scanDurationDefault;
   bool _autoConnect = autoConnectDefault;
@@ -107,15 +108,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (_isScanning) {
       try {
         FlutterBluePlus.instance.stopScan();
-      } on PlatformException catch (e, stack) {
+      } on Exception catch (e, stack) {
         Logging().logException(
-          _logLevel,
-          "FIND_DEVICES",
-          "dispose",
-          "${e.message}",
-          e,
-          stack,
-        );
+            _logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
       }
     }
 
@@ -154,13 +149,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      Logging().log(
-        _logLevel,
-        logLevelInfo,
-        "FIND_DEVICES",
-        "startScan",
-        "Scan already in progress",
-      );
+      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan already in progress");
 
       return;
     }
@@ -186,24 +175,12 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
-      Logging().log(
-        _logLevel,
-        logLevelInfo,
-        "FIND_DEVICES",
-        "startScan",
-        "bluetooth check failed",
-      );
+      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "bluetooth check failed");
 
       return;
     }
 
-    Logging().log(
-      _logLevel,
-      logLevelInfo,
-      "FIND_DEVICES",
-      "startScan",
-      "Scan initiated",
-    );
+    Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan initiated");
 
     _readPreferencesValues();
     await _readDeviceSports();
@@ -224,15 +201,64 @@ class FindDevicesState extends State<FindDevicesScreen> {
       setState(() {
         _isScanning = false;
       });
-    } on PlatformException catch (e, stack) {
+
+      if (!silent || !_autoConnect) {
+        return;
+      }
+
+      // Try auto-connect
+      final lasts = _scannedDevices.where((d) => _lastEquipmentIds.contains(d.id.id));
+      if (_fitnessEquipment != null &&
+              !_advertisementCache.hasEntry(_fitnessEquipment!.device?.id.id ?? emptyMeasurement) ||
+          _filterDevices &&
+              _scannedDevices.length == 1 &&
+              !_advertisementCache.hasEntry(_scannedDevices.first.id.id) ||
+          _scannedDevices.length > 1 &&
+              _lastEquipmentIds.isNotEmpty &&
+              lasts.isNotEmpty &&
+              !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
+        Logging().log(_logLevel, logLevelWarning, tag, "_startScan finished pre auto-connect",
+            "advertisementCache miss");
+      } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
+        if (_fitnessEquipment != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            goToRecording(
+              _fitnessEquipment!.device!,
+              BluetoothDeviceState.connected,
+              false,
+            );
+          });
+        } else {
+          if (_filterDevices && _scannedDevices.length == 1) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              goToRecording(
+                _scannedDevices.first,
+                BluetoothDeviceState.disconnected,
+                false,
+              );
+            });
+          } else if (_scannedDevices.length > 1 && _lastEquipmentIds.isNotEmpty) {
+            final lasts = _scannedDevices
+                .where((d) =>
+                    _lastEquipmentIds.contains(d.id.id) && _advertisementCache.hasEntry(d.id.id))
+                .toList(growable: false);
+            if (lasts.isNotEmpty) {
+              lasts.sort((a, b) {
+                return _advertisementCache
+                    .getEntry(a.id.id)!
+                    .txPower
+                    .compareTo(_advertisementCache.getEntry(b.id.id)!.txPower);
+              });
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                goToRecording(lasts.last, BluetoothDeviceState.disconnected, false);
+              });
+            }
+          }
+        }
+      }
+    } on Exception catch (e, stack) {
       Logging().logException(
-        _logLevel,
-        "FIND_DEVICES",
-        "_startScan",
-        "${e.message}",
-        e,
-        stack,
-      );
+          _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
     }
   }
 
@@ -465,7 +491,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               success = await _fitnessEquipment?.connectOnDemand(identify: true) ?? false;
             } else {
               identifySensor = descriptor.getSensor(device);
-              success = await identifySensor?.connectAndDiscover(retry: true) ?? false;
+              success = await identifySensor?.connectAndDiscover() ?? false;
             }
 
             if (success) {
@@ -572,13 +598,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
         if (inferredSport == null) {
           Get.snackbar("Error", "Could not infer sport of the device");
-          Logging().log(
-            _logLevel,
-            logLevelError,
-            "FIND_DEVICES",
-            "goToRecording",
-            "Could not infer sport of the device",
-          );
+          Logging().log(_logLevel, logLevelError, tag, "goToRecording",
+              "Could not infer sport of the device");
 
           setState(() {
             _goingToRecording = false;
@@ -684,15 +705,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 await fitnessEquipment.disconnect();
               }
             }
-          } on PlatformException catch (e, stack) {
-            Logging().logException(
-              _logLevel,
-              "FIND_DEVICES",
-              "goToRecording preConnectLogic",
-              "${e.message}",
-              e,
-              stack,
-            );
+          } on Exception catch (e, stack) {
+            Logging().logException(_logLevel, tag, "goToRecording preConnectLogic",
+                "fitnessEquipment.disconnect", e, stack);
           }
 
           fitnessEquipment = null;
@@ -820,13 +835,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 BluetoothDeviceState.connected) {
                               Get.snackbar("Info", "HRM Already connected");
 
-                              Logging().log(
-                                _logLevel,
-                                logLevelWarning,
-                                "FIND_DEVICES",
-                                "HRM click",
-                                "HRM Already connected",
-                              );
+                              Logging().log(_logLevel, logLevelWarning, tag, "HRM click",
+                                  "HRM Already connected");
                             } else {
                               setState(() {
                                 _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
@@ -893,13 +903,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
                         if (_logLevel >= logLevelInfo) {
-                          Logging().log(
-                            _logLevel,
-                            logLevelInfo,
-                            "FIND_DEVICES",
-                            "ScanResult",
-                            r.toString(),
-                          );
+                          Logging().log(_logLevel, logLevelInfo, tag, "ScanResult", r.toString());
                         }
 
                         if (_autoConnect && _lastEquipmentIds.contains(r.device.id.id)) {

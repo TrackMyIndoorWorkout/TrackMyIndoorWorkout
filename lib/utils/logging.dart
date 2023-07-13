@@ -87,7 +87,7 @@ class Logging {
     log(
       Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault,
       logLevelError,
-      "logVersion",
+      tag,
       "version",
       "${packageInfo.version} build ${packageInfo.buildNumber}",
     );

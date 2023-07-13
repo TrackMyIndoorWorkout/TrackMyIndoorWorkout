@@ -53,8 +53,8 @@
 -keepclassmembernames class name.avioli.unilinks.** { *; }
 -keep class io.flutter.plugins.urllauncher.** { *; }
 -keepclassmembernames class io.flutter.plugins.urllauncher.** { *; }
--keep class creativemaybeno.wakelock.** { *; }
--keepclassmembernames class creativemaybeno.wakelock.** { *; }
+-keep class dev.fluttercommunity.plus.wakelock.** { *; }
+-keepclassmembernames class dev.fluttercommunity.plus.wakelock.** { *; }
 # ] This is from iterating over GeneratedPLuginRegistrant.java
 
 -keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod

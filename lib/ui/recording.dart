@@ -7,7 +7,6 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
@@ -17,7 +16,7 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../devices/bluetooth_device_ex.dart';
@@ -115,6 +114,7 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class RecordingState extends State<RecordingScreen> {
+  static const String tag = "RECORDING";
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
   static const int _unlockChoices = 6;
@@ -263,7 +263,7 @@ class RecordingState extends State<RecordingScreen> {
   Socket? _sinkSocket;
 
   Future<void> _connectOnDemand() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+    if (!(await bluetoothCheck(true, _logLevel))) {
       return;
     }
 
@@ -279,7 +279,7 @@ class RecordingState extends State<RecordingScreen> {
       await _fitnessEquipment?.postPumpStart();
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
-        await _startMeasurement();
+        await _startMeasurement(false);
       }
 
       setState(() {
@@ -448,8 +448,8 @@ class RecordingState extends State<RecordingScreen> {
     _fitnessEquipment?.pumpData((record) async => await _recordHandlerFunction(record));
   }
 
-  Future<void> _startMeasurement() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+  Future<void> _startMeasurement(bool checkBluetooth) async {
+    if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return;
     }
 
@@ -638,8 +638,8 @@ class RecordingState extends State<RecordingScreen> {
     _chartTouchInteractionIndex = -1;
   }
 
-  Future<String> _initializeHeartRateMonitor() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+  Future<String> _initializeHeartRateMonitor(bool checkBluetooth) async {
+    if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return "";
     }
 
@@ -679,7 +679,7 @@ class RecordingState extends State<RecordingScreen> {
 
     size = widget.size;
 
-    Wakelock.enable();
+    WakelockPlus.enable();
 
     _busy = false;
     _themeManager = Get.find<ThemeManager>();
@@ -962,7 +962,7 @@ class RecordingState extends State<RecordingScreen> {
     _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
-    _initializeHeartRateMonitor();
+    _initializeHeartRateMonitor(false);
     _connectOnDemand();
     _isLocked = false;
     _unlockButtonIndex = 0;
@@ -982,7 +982,7 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   void dispose() {
-    Wakelock.disable();
+    WakelockPlus.disable();
 
     super.dispose();
   }
@@ -1064,18 +1064,12 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     try {
-      if (await FlutterBluePlus.instance.isOn) {
+      if (await isBluetoothOn()) {
         await _fitnessEquipment?.stopWorkout();
       }
-    } on PlatformException catch (e, stack) {
+    } on Exception catch (e, stack) {
       Logging().logException(
-        _logLevel,
-        "RECORDING",
-        "_stopMeasurement stopWorkout Equipment got turned off?",
-        "${e.message}",
-        e,
-        stack,
-      );
+          _logLevel, tag, "_stopMeasurement", "_fitnessEquipment.stopWorkout()", e, stack);
     }
 
     final last = _fitnessEquipment?.lastRecord;
@@ -1104,8 +1098,10 @@ class RecordingState extends State<RecordingScreen> {
           await _activityUpload(true);
         }
 
-        if (_instantExportLocation.isNotEmpty) {
-          await _activityExport();
+        if (_instantExport) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await _activityExport();
+          });
         }
       }
     }
@@ -1761,7 +1757,7 @@ class RecordingState extends State<RecordingScreen> {
         await _stopMeasurement(false);
       }
     } else {
-      await _startMeasurement();
+      await _startMeasurement(true);
     }
   }
 
@@ -2347,7 +2343,7 @@ class RecordingState extends State<RecordingScreen> {
             isDismissible: false,
             enableDrag: false,
           );
-          String hrmId = await _initializeHeartRateMonitor();
+          String hrmId = await _initializeHeartRateMonitor(true);
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _database.writeTxnSync(() async {
               _activity!.hrmId = hrmId;
@@ -2415,7 +2411,6 @@ class RecordingState extends State<RecordingScreen> {
         },
         child: AbsorbPointer(
           absorbing: _isLocked,
-          ignoringSemantics: true,
           child: Scaffold(
             appBar: AppBar(
               title: TextOneLine(
