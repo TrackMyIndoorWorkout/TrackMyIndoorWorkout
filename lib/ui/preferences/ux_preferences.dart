@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/activity_list_ui.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/instant_export.dart';
@@ -122,6 +123,19 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
           }
         },
         child: const Text(instantExportLocationPickCommand),
+      ),
+      PrefLabel(
+        title: Text(activityListAndDetails, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
+      const PrefCheckbox(
+        title: Text(activityListMachineNameInHeader),
+        subtitle: Text(activityListMachineNameInHeaderDescription),
+        pref: activityListMachineNameInHeaderTag,
+      ),
+      const PrefCheckbox(
+        title: Text(activityListBluetoothAddressInHeader),
+        subtitle: Text(activityListBluetoothAddressInHeaderDescription),
+        pref: activityListBluetoothAddressInHeaderTag,
       ),
       const PrefCheckbox(
         title: Text(instantExport),

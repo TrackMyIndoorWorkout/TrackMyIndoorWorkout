@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
@@ -20,6 +19,7 @@ import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/statistics_accumulator.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 import '../models/display_record.dart';
 import '../models/histogram_data.dart';
@@ -27,6 +27,9 @@ import '../models/measurement_counter.dart';
 import '../models/tile_configuration.dart';
 import '../about.dart';
 import 'activity_detail_graphs.dart';
+import 'activity_detail_row_fit_horizontal.dart';
+import 'activity_detail_row_w_unit.dart';
+import 'activity_detail_unit_row.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   final Activity activity;
@@ -525,125 +528,67 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     }
 
     final List<Widget> header = [
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault),
-            Expanded(
-              child: TextOneLine(
-                widget.activity.deviceName,
-                style: _textStyle,
-                textAlign: TextAlign.right,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: getSportIcon(widget.activity.sport),
+        iconSize: _sizeDefault,
+        text: widget.activity.deviceName,
+        textStyle: _textStyle,
+        unitText: "",
       ),
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-            const Spacer(),
-            Text(
-              widget.activity.movingTimeString,
-              style: _measurementStyle,
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.numbers,
+        iconSize: _sizeDefault,
+        text: widget.activity.deviceId.shortAddressString(),
+        textStyle: _textStyle,
+        unitText: "",
+      ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.timer,
+        iconSize: _sizeDefault,
+        text: widget.activity.movingTimeString,
+        textStyle: _measurementStyle,
+        unitText: "",
       ),
     ];
     if (widget.activity.movingTime ~/ 1000 < widget.activity.elapsed) {
       header.addAll([
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Spacer(),
-            Text(
-              "(Moving Time)",
-              style: _unitStyle,
-            ),
-          ],
+        ActivityDetailUnitRow(
+            themeManager: _themeManager, unitText: "(Moving Time)", unitStyle: _unitStyle),
+        ActivityDetailRowFitHorizontal(
+          themeManager: _themeManager,
+          icon: Icons.timer,
+          iconSize: _sizeDefault,
+          text: widget.activity.elapsedString,
+          textStyle: _measurementStyle,
+          unitText: "",
+          unitStyle: null,
         ),
-        FitHorizontally(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-              const Spacer(),
-              FitHorizontally(
-                child: Text(
-                  widget.activity.elapsedString,
-                  style: _measurementStyle,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Spacer(),
-            Text(
-              "(Total Time)",
-              style: _unitStyle,
-            ),
-          ],
-        ),
+        ActivityDetailUnitRow(
+            themeManager: _themeManager, unitText: "(Total Time)", unitStyle: _unitStyle),
       ]);
     }
 
     header.addAll([
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-            const Spacer(),
-            Text(
-              widget.activity.distanceString(_si, _highRes),
-              style: _measurementStyle,
-            ),
-            SizedBox(
-              width: _sizeDefault,
-              child: Text(
-                distanceUnit(_si, _highRes),
-                style: _unitStyle,
-              ),
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.add_road,
+        iconSize: _sizeDefault,
+        text: widget.activity.distanceString(_si, _highRes),
+        textStyle: _measurementStyle,
+        unitText: distanceUnit(_si, _highRes),
+        unitStyle: _unitStyle,
       ),
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-            const Spacer(),
-            FitHorizontally(
-              child: Text(
-                '${widget.activity.calories}',
-                style: _measurementStyle,
-              ),
-            ),
-            SizedBox(
-              width: _sizeDefault,
-              child: Text(
-                'cal',
-                style: _unitStyle,
-              ),
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.whatshot,
+        iconSize: _sizeDefault,
+        text: '${widget.activity.calories}',
+        textStyle: _measurementStyle,
+        unitText: 'cal',
+        unitStyle: _unitStyle,
       ),
     ]);
 
