@@ -43,6 +43,7 @@ import '../preferences/sport_spec.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
+import '../utils/address_names.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
@@ -145,6 +146,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     Get.put<AppDatabase>(database, permanent: true);
+
+    final addressNames = await database.getAddressNameDictionary();
+    Get.put<AddressNames>(addressNames);
 
     if (_instantScan) {
       await _startScan(true);

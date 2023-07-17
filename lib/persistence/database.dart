@@ -8,6 +8,7 @@ import 'package:tuple/tuple.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../utils/address_names.dart';
 import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
@@ -242,6 +243,19 @@ abstract class AppDatabase extends FloorDatabase {
     }
 
     return true;
+  }
+
+  Future<AddressNames> getAddressNameDictionary() async {
+    final addressNames = AddressNames();
+    for (var activity in await activityDao.findAllActivities()) {
+      if (activity.deviceId.isNotEmpty &&
+          activity.deviceName.isNotEmpty &&
+          activity.deviceName != unnamedDevice) {
+        addressNames.addAddressName(activity.deviceId, activity.deviceName);
+      }
+    }
+
+    return addressNames;
   }
 }
 
