@@ -138,6 +138,11 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         pref: activityListBluetoothAddressInHeaderTag,
       ),
       const PrefCheckbox(
+        title: Text(activityDetailsMedianDisplay),
+        subtitle: Text(activityDetailsMedianDisplayDescription),
+        pref: activityDetailsMedianDisplayTag,
+      ),
+      const PrefCheckbox(
         title: Text(instantExport),
         subtitle: Text(instantExportDescription),
         pref: instantExportTag,

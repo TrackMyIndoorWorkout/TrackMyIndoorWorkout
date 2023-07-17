@@ -9,11 +9,12 @@ import 'package:get/get.dart';
 import 'package:listview_utils/listview_utils.dart';
 import 'package:pref/pref.dart';
 import '../../persistence/database.dart';
+import '../../persistence/models/activity.dart';
+import '../../persistence/models/record.dart';
+import '../../preferences/activity_ui.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
@@ -57,6 +58,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   final List<String> _selectedValues = [];
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
+  bool _calculateMedian = activityDetailsMedianDisplayDefault;
   List<MetricSpec> _preferencesSpecs = [];
   PaletteSpec? _paletteSpec;
 
@@ -117,6 +119,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         calculateMaxCadence: measurementCounter.hasCadence,
         calculateAvgHeartRate: measurementCounter.hasHeartRate,
         calculateMaxHeartRate: measurementCounter.hasHeartRate,
+        calculateMedian: _calculateMedian,
       );
       for (var record in _allRecords) {
         accu.processRecord(record);
@@ -141,6 +144,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getPowerData,
           maxString: accu.maxPower.toStringAsFixed(2),
           avgString: accu.avgPower.toStringAsFixed(2),
+          medianString: accu.medianPower.toStringAsFixed(2),
         );
         prefSpec.calculateBounds(
           measurementCounter.minPower.toDouble(),
@@ -169,6 +173,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getSpeedData,
           maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
           avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
+          medianString: accu.medianSpeed.toStringAsFixed(2),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
@@ -197,6 +202,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getCadenceData,
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
+          medianString: "${accu.medianCadence}",
         );
         prefSpec.calculateBounds(
           measurementCounter.minCadence.toDouble(),
@@ -225,6 +231,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getHrData,
           maxString: "${accu.maxHeartRate}",
           avgString: "${accu.avgHeartRate}",
+          medianString: "${accu.medianHeartRate}",
         );
         prefSpec.calculateBounds(
           measurementCounter.minHr.toDouble(),
@@ -336,6 +343,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
+    _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
+        activityDetailsMedianDisplayDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
@@ -655,6 +664,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                   sizeDefault: _sizeDefault2,
                   paletteSpec: _paletteSpec!,
                   themeManager: _themeManager,
+                  displayMedian: _calculateMedian,
                 );
               },
             ),

@@ -157,6 +157,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     maximumChartColorTag: maximumChartColorDefault,
     activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
     activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
+    activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
