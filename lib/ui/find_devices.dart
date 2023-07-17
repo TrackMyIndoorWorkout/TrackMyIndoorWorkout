@@ -148,7 +148,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     Get.put<AppDatabase>(database, permanent: true);
 
     final addressNames = await database.getAddressNameDictionary();
-    Get.put<AddressNames>(addressNames);
+    Get.put<AddressNames>(addressNames, permanent: true);
 
     if (_instantScan) {
       await _startScan(true);
