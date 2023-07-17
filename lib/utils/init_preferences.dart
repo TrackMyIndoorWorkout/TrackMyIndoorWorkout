@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
@@ -154,6 +155,9 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
     databaseMigrationNeededTag: databaseMigrationNeeded,
+    activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
+    activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
+    activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

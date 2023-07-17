@@ -102,74 +102,73 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     ];
     choiceRows.addAll(
       getPortalChoices(false, _themeManager).asMap().entries.map(
-            (e) => Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: _largerTextStyle.fontSize! / 3,
-                    horizontal: 0.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          uploadActivity(e.value.name);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
-                              size: _largerTextStyle.fontSize! * 1.5,
-                              color: (uploadStates[e.value.name] ?? false)
-                                  ? _themeManager.getGreenColor()
-                                  : _themeManager.getProtagonistColor(),
-                            ),
-                            SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: Colors.white,
-                              ),
-                              height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
-                              width: mediaWidth - 130,
-                              padding: const EdgeInsets.all(5),
-                              child: SvgPicture.asset(
-                                e.value.assetName,
-                                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.darken),
-                                height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
-                                semanticsLabel: '${e.value.name} Logo',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      (uploadStates[e.value.name] ?? false)
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.open_in_new,
-                                size: _largerTextStyle.fontSize! * 1.5,
-                                color: widget.activity.isSpecificWorkoutUrl(e.value.name)
-                                    ? _themeManager.getProtagonistColor()
-                                    : _themeManager.getGreyColor(),
-                              ),
-                              onPressed: () async {
-                                final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                                if (await canLaunchUrlString(workoutUrl)) {
-                                  launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
-                                } else {
-                                  Get.snackbar("Attention", "Cannot open URL");
-                                }
-                              },
-                            )
-                          : Container(),
-                    ],
-                  ),
+            (e) => ListTile(
+              title: Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: _largerTextStyle.fontSize! / 3,
+                  horizontal: 0.0,
                 ),
-              ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        uploadActivity(e.value.name);
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
+                            size: _largerTextStyle.fontSize! * 1.5,
+                            color: (uploadStates[e.value.name] ?? false)
+                                ? _themeManager.getGreenColor()
+                                : _themeManager.getProtagonistColor(),
+                          ),
+                          SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.white,
+                            ),
+                            height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                            width: mediaWidth - 150,
+                            padding: const EdgeInsets.all(5),
+                            child: SvgPicture.asset(
+                              e.value.assetName,
+                              colorFilter:
+                                  const ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
+                              height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
+                              semanticsLabel: '${e.value.name} Logo',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    (uploadStates[e.value.name] ?? false)
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.open_in_new,
+                              size: _largerTextStyle.fontSize! * 1.5,
+                              color: widget.activity.isSpecificWorkoutUrl(e.value.name)
+                                  ? _themeManager.getProtagonistColor()
+                                  : _themeManager.getGreyColor(),
+                            ),
+                            onPressed: () async {
+                              final workoutUrl = widget.activity.workoutUrl(e.value.name);
+                              if (await canLaunchUrlString(workoutUrl)) {
+                                launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
+                              } else {
+                                Get.snackbar("Attention", "Cannot open URL");
+                              }
+                            },
+                          )
+                        : Container(),
+                  ],
+                ),
+              ),
             ),
           ),
     );

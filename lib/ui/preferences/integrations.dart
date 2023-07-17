@@ -118,7 +118,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
                       padding: const EdgeInsets.all(5),
                       child: SvgPicture.asset(
                         e.value.assetName,
-                        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.darken),
+                        colorFilter: const ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
                         height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
                         semanticsLabel: '${e.value.name} Logo',
                       ),

@@ -8,6 +8,7 @@ import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/device_factory.dart';
 import '../../devices/device_fourcc.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../utils/address_names.dart';
 import '../../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
 import 'dao/calorie_tune_dao.dart';

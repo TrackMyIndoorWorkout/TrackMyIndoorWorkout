@@ -17,4 +17,8 @@ extension StringEx on String {
 
     return colorString;
   }
+
+  String shortAddressString() {
+    return replaceAll(RegExp(r'[\W]+'), "");
+  }
 }

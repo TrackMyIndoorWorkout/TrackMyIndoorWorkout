@@ -34,4 +34,16 @@ void main() {
       });
     }
   });
+
+  group('String Ex shortAddressString test', () {
+    for (final testPair in [
+      const Tuple2("ED:7A:58:C4:CA:A0", "ED7A58C4CAA0"),
+      const Tuple2("Hello, world! i am 'foo'", "Helloworldiamfoo"),
+    ]) {
+      final expected = testPair.item1.shortAddressString();
+      test("${testPair.item1} -> $expected -> ${testPair.item2}", () async {
+        expect(expected, testPair.item2);
+      });
+    }
+  });
 }
