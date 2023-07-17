@@ -2,7 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../utils/address_names.dart';
 import '../../utils/constants.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
@@ -205,5 +207,23 @@ class DbUtils {
         .findAll();
 
     return floorIds.isNotEmpty ? floorIds.first : null;
+  }
+
+  Future<AddressNames> getAddressNameDictionary() async {
+    final addressNames = AddressNames();
+    for (var activity in await database.activitys
+        .where()
+        .filter()
+        .deviceNameIsNotEmpty()
+        .and()
+        .deviceIdIsNotEmpty()
+        .and()
+        .not()
+        .deviceNameEqualTo(unnamedDevice)
+        .findAll()) {
+      addressNames.addAddressName(activity.deviceId, activity.deviceName);
+    }
+
+    return addressNames;
   }
 }

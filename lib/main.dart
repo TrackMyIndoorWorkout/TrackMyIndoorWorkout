@@ -13,6 +13,7 @@ import 'preferences/log_level.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'persistence/isar/activity.dart';
 import 'persistence/isar/calorie_tune.dart';
+import 'persistence/isar/db_utils.dart';
 import 'persistence/isar/device_usage.dart';
 import 'persistence/isar/floor_migration.dart';
 import 'persistence/isar/floor_record_migration.dart';
@@ -20,6 +21,7 @@ import 'persistence/isar/power_tune.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'persistence/isar/record.dart';
 import 'persistence/isar/workout_summary.dart';
+import 'utils/address_names.dart';
 import 'utils/init_preferences.dart';
 import 'utils/logging.dart';
 
@@ -38,6 +40,9 @@ void main() async {
       WorkoutSummarySchema,
     ]);
     Get.put<Isar>(isar, permanent: true);
+
+    final addressNames = await DbUtils().getAddressNameDictionary();
+    Get.put<AddressNames>(addressNames, permanent: true);
 
     final byteData = await rootBundle.load('assets/timezones_10y.tzf');
     tz.initializeDatabase(byteData.buffer.asUint8List());
