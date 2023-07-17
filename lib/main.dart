@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -29,6 +30,7 @@ void main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    final dir = await getApplicationDocumentsDirectory();
     final isar = await Isar.open([
       ActivitySchema,
       CalorieTuneSchema,
@@ -38,7 +40,7 @@ void main() async {
       PowerTuneSchema,
       RecordSchema,
       WorkoutSummarySchema,
-    ]);
+    ], directory: dir.path);
     Get.put<Isar>(isar, permanent: true);
 
     final addressNames = await DbUtils().getAddressNameDictionary();
