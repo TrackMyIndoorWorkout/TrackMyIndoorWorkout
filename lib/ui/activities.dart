@@ -18,7 +18,7 @@ import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
-import '../preferences/activity_list_ui.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';

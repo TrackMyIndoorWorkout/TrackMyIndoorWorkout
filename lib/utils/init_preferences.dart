@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../preferences/activity_list_ui.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';

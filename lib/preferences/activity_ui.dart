@@ -13,3 +13,4 @@ const activityListBluetoothAddressInHeaderDefault = false;
 const activityListBluetoothAddressInHeaderDescription =
     "On: the Bluetooth Address will be displayed in the list header card. "
     "Off: Bluetooth Address will be displayed in the list card's detail body.";
+

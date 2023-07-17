@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../preferences/activity_list_ui.dart';
+import '../../preferences/activity_ui.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/instant_export.dart';
