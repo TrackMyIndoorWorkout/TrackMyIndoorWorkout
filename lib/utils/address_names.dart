@@ -1,5 +1,3 @@
-import 'package:get/get.dart';
-
 import 'constants.dart';
 
 class AddressNames {
