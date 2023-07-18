@@ -56,4 +56,18 @@ void main() {
     const address2 = "ED:7A:58:C4:CA:A0";
     expect(an.getAddressName(address2, ""), unnamedDevice);
   });
+
+  test('AddressNames can store two distinct associations', () async {
+    final an = AddressNames();
+    const address1 = "CC:01:76:19:A0:03";
+    const name1 = "Stages IC 021";
+    an.addAddressName(address1, name1);
+
+    const address2 = "ED:7A:58:C4:CA:A0";
+    const name2 = "Stages IC 020";
+    an.addAddressName(address2, name2);
+
+    expect(an.getAddressName(address1, ""), name1);
+    expect(an.getAddressName(address2, ""), name2);
+  });
 }

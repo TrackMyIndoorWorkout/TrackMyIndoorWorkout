@@ -14,7 +14,7 @@ class AddressNames {
       return false;
     }
 
-    _addressNames.assign(address, name);
+    _addressNames[address] = name;
 
     return true;
   }

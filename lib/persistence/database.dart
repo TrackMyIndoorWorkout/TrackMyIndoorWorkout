@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
+
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
@@ -98,7 +99,7 @@ abstract class AppDatabase extends FloorDatabase {
       for (var activity in await activityDao.findAllActivities()) {
         final deviceDescriptor = activity.deviceDescriptor();
         if (!deviceDescriptor.canMeasureCalories) {
-          noCalorieDevices.assign(activity.deviceId, true);
+          noCalorieDevices[activity.deviceId] = true;
           if (activity.calorieFactor > 1.0) {
             activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
             await activityDao.updateActivity(activity);
