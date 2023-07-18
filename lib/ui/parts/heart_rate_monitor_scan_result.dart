@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt/hrm.dart';
 import '../../utils/advertisement_data_ex.dart';
 import '../../utils/constants.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 extension HeartRateMonitorScanResult on ScanResult {
@@ -31,8 +33,6 @@ extension HeartRateMonitorScanResult on ScanResult {
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r':');
-
   const HeartRateMonitorScanResultTile({
     Key? key,
     required this.result,
@@ -43,7 +43,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   final VoidCallback onTap;
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
+    final deviceIdString = result.device.id.id.shortAddressString();
     if (result.device.name.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,

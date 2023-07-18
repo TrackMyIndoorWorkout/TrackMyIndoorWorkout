@@ -18,6 +18,7 @@ import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
 import '../persistence/models/activity.dart';
 import '../persistence/database.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -27,7 +28,12 @@ import '../preferences/unit_system.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
+import 'details/activity_detail_header_row.dart';
+import 'details/activity_detail_row_one_line.dart';
+import 'details/activity_detail_row_w_spacer.dart';
+import 'details/activity_detail_row_w_unit.dart';
 import 'calorie_tunes.dart';
 import 'device_usages.dart';
 import 'import_form.dart';
@@ -60,6 +66,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
   bool _leaderboardFeature = leaderboardFeatureDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _calculateGps = calculateGpsDefault;
+  bool _machineNameInHeader = activityListMachineNameInHeaderDefault;
+  bool _bluetoothAddressInHeader = activityListBluetoothAddressInHeaderDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
@@ -89,6 +97,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
+    _machineNameInHeader = prefService.get<bool>(activityListMachineNameInHeaderTag) ??
+        activityListMachineNameInHeaderDefault;
+    _bluetoothAddressInHeader = prefService.get<bool>(activityListBluetoothAddressInHeaderTag) ??
+        activityListBluetoothAddressInHeaderDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
@@ -475,6 +487,103 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
           final dateString = DateFormat.yMd().format(startStamp);
           final timeString = DateFormat.Hms().format(startStamp);
+          final List<Widget> header = [
+            ActivityDetailHeaderRow(
+              themeManager: _themeManager,
+              icon: Icons.calendar_today,
+              iconSize: _sizeDefault2,
+              text: dateString,
+              textStyle: _headerStyle,
+            ),
+            ActivityDetailHeaderRow(
+              themeManager: _themeManager,
+              icon: Icons.watch,
+              iconSize: _sizeDefault2,
+              text: timeString,
+              textStyle: _headerStyle,
+            ),
+          ];
+
+          if (_machineNameInHeader) {
+            header.add(
+              ActivityDetailHeaderRow(
+                themeManager: _themeManager,
+                icon: getSportIcon(activity.sport),
+                iconSize: _sizeDefault,
+                text: activity.deviceName,
+                textStyle: _headerStyle,
+              ),
+            );
+          }
+
+          if (_bluetoothAddressInHeader && activity.deviceId.isNotEmpty) {
+            header.add(
+              ActivityDetailHeaderRow(
+                themeManager: _themeManager,
+                icon: Icons.numbers,
+                iconSize: _sizeDefault,
+                text: activity.deviceId.shortAddressString(),
+                textStyle: _headerStyle,
+              ),
+            );
+          }
+
+          List<Widget> body = [];
+          if (!_machineNameInHeader) {
+            body.add(
+              ActivityDetailRowOneLine(
+                themeManager: _themeManager,
+                icon: getSportIcon(activity.sport),
+                iconSize: _sizeDefault,
+                text: activity.deviceName,
+                textStyle: _textStyle,
+              ),
+            );
+          }
+
+          if (!_bluetoothAddressInHeader && activity.deviceId.isNotEmpty) {
+            body.add(
+              ActivityDetailRowOneLine(
+                themeManager: _themeManager,
+                icon: Icons.numbers,
+                iconSize: _sizeDefault,
+                text: activity.deviceId.shortAddressString(),
+                textStyle: _textStyle,
+              ),
+            );
+          }
+
+          body.addAll([
+            ActivityDetailRowWithSpacer(
+              themeManager: _themeManager,
+              icon: Icons.timer,
+              iconSize: _sizeDefault,
+              text: _timeDisplayMode == timeDisplayModeElapsed
+                  ? activity.elapsedString
+                  : activity.movingTimeString,
+              textStyle: _measurementStyle,
+            ),
+            ActivityDetailRowWithUnit(
+              themeManager: _themeManager,
+              icon: Icons.add_road,
+              iconSize: _sizeDefault,
+              text: activity.distanceString(_si, _highRes),
+              textStyle: _measurementStyle,
+              unitText: distanceUnit(_si, _highRes),
+              unitStyle: _unitStyle,
+            ),
+            ActivityDetailRowWithUnit(
+              themeManager: _themeManager,
+              icon: Icons.whatshot,
+              iconSize: _sizeDefault,
+              text: '${activity.calories}',
+              textStyle: _measurementStyle,
+              unitText: 'cal',
+              unitStyle: _unitStyle,
+            ),
+            _actionButtonRow(activity, _sizeDefault2),
+          ]);
+
           return Card(
             elevation: 6,
             child: ExpandablePanel(
@@ -483,24 +592,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               header: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
-                      Text(dateString, style: _headerStyle),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
-                      Text(timeString, style: _headerStyle),
-                    ],
-                  ),
-                ],
+                children: header,
               ),
               collapsed: Container(),
               expanded: ListTile(
@@ -510,72 +602,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 onTap: () =>
                     Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(
-                  children: [
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
-                          Expanded(
-                            child: TextOneLine(
-                              activity.deviceName,
-                              style: _textStyle,
-                              textAlign: TextAlign.right,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                          const Spacer(),
-                          Text(
-                            _timeDisplayMode == timeDisplayModeElapsed
-                                ? activity.elapsedString
-                                : activity.movingTimeString,
-                            style: _measurementStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                          const Spacer(),
-                          Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
-                          SizedBox(
-                            width: _sizeDefault,
-                            child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
-                          ),
-                        ],
-                      ),
-                    ),
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                          const Spacer(),
-                          Text('${activity.calories}', style: _measurementStyle),
-                          SizedBox(
-                            width: _sizeDefault,
-                            child: Text('cal', style: _unitStyle),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _actionButtonRow(activity, _sizeDefault2),
-                  ],
+                  children: body,
                 ),
               ),
             ),

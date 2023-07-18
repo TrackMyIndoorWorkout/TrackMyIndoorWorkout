@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:tuple/tuple.dart';
+
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../utils/address_names.dart';
 import '../utils/constants.dart';
 import '../utils/time_zone.dart';
 import 'dao/activity_dao.dart';
@@ -97,7 +99,7 @@ abstract class AppDatabase extends FloorDatabase {
       for (var activity in await activityDao.findAllActivities()) {
         final deviceDescriptor = activity.deviceDescriptor();
         if (!deviceDescriptor.canMeasureCalories) {
-          noCalorieDevices.assign(activity.deviceId, true);
+          noCalorieDevices[activity.deviceId] = true;
           if (activity.calorieFactor > 1.0) {
             activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
             await activityDao.updateActivity(activity);
@@ -242,6 +244,16 @@ abstract class AppDatabase extends FloorDatabase {
     }
 
     return true;
+  }
+
+  Future<void> getAddressNameDictionary(AddressNames addressNames) async {
+    for (var activity in await activityDao.findAllActivities()) {
+      if (activity.deviceId.isNotEmpty &&
+          activity.deviceName.isNotEmpty &&
+          activity.deviceName != unnamedDevice) {
+        addressNames.addAddressName(activity.deviceId, activity.deviceName);
+      }
+    }
   }
 }
 

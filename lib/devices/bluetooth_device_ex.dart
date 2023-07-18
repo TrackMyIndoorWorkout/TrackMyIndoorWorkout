@@ -2,7 +2,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../persistence/database.dart';
-import '../utils/constants.dart';
+import '../utils/address_names.dart';
 import '../utils/guid_ex.dart';
 
 extension BluetoothDeviceEx on BluetoothDevice {
@@ -20,5 +20,6 @@ extension BluetoothDeviceEx on BluetoothDevice {
     return await database.getFactors(id.id);
   }
 
-  String get nonEmptyName => name.isNotEmpty ? name : unnamedDevice;
+  String get nonEmptyName =>
+      name.isNotEmpty ? name : Get.find<AddressNames>().getAddressName(name, id.id);
 }

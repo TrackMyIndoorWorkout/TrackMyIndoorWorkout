@@ -14,6 +14,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_factory.dart';
@@ -43,12 +44,14 @@ import '../preferences/sport_spec.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
+import '../utils/address_names.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
 import '../utils/logging.dart';
 import '../utils/machine_type.dart';
 import '../utils/scan_result_ex.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
@@ -98,7 +101,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _twoColumnLayout = twoColumnLayoutDefault;
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  final RegExp _colonRegex = RegExp(r':');
   bool _privacyStatementViews = false;
 
   @override
@@ -145,6 +147,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     Get.put<AppDatabase>(database, permanent: true);
+    final addressNames = Get.find<AddressNames>();
+    await database.getAddressNameDictionary(addressNames);
 
     if (_instantScan) {
       await _startScan(true);
@@ -817,8 +821,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               fontSizeFactor: fontSizeFactor),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
-                              emptyMeasurement,
+                          _heartRateMonitor?.device?.id.id.shortAddressString() ?? emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(
@@ -852,8 +855,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
-                              emptyMeasurement,
+                          _fitnessEquipment?.device?.id.id.shortAddressString() ?? emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(
