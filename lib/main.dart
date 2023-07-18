@@ -11,6 +11,7 @@ import 'devices/company_registry.dart';
 import 'preferences/log_level.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
+import 'utils/address_names.dart';
 import 'utils/init_preferences.dart';
 import 'utils/logging.dart';
 
@@ -28,6 +29,7 @@ void main() async {
     Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
     Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
+    Get.put<AddressNames>(AddressNames(), permanent: true);
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       Get.put<PackageInfo>(packageInfo, permanent: true);

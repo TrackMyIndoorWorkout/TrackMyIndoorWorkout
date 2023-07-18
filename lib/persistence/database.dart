@@ -246,8 +246,7 @@ abstract class AppDatabase extends FloorDatabase {
     return true;
   }
 
-  Future<AddressNames> getAddressNameDictionary() async {
-    final addressNames = AddressNames();
+  Future<void> getAddressNameDictionary(AddressNames addressNames) async {
     for (var activity in await activityDao.findAllActivities()) {
       if (activity.deviceId.isNotEmpty &&
           activity.deviceName.isNotEmpty &&
@@ -255,8 +254,6 @@ abstract class AppDatabase extends FloorDatabase {
         addressNames.addAddressName(activity.deviceId, activity.deviceName);
       }
     }
-
-    return addressNames;
   }
 }
 
