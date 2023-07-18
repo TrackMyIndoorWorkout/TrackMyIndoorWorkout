@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
+
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../preferences/log_level.dart';
@@ -16,6 +17,7 @@ import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/logging.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
@@ -29,7 +31,6 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
-  static RegExp colonRegex = RegExp(r':');
   static const String tag = "HRM_PAIRING";
 
   int _scanDuration = 4;
@@ -132,8 +133,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                           ),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
-                              emptyMeasurement,
+                          _heartRateMonitor?.device?.id.id.shortAddressString() ?? emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(Icons.favorite, () async {

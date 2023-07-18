@@ -59,7 +59,7 @@ abstract class AppDatabase extends FloorDatabase {
       for (var activity in await activityDao.findAllActivities()) {
         final deviceDescriptor = deviceDescriptorForActivity(activity);
         if (!deviceDescriptor.canMeasureCalories) {
-          noCalorieDevices.assign(activity.deviceId, true);
+          noCalorieDevices[activity.deviceId] = true;
           if (activity.calorieFactor > 1.0) {
             activity.calorieFactor /= DeviceDescriptor.oldPowerCalorieFactorDefault;
             await activityDao.updateActivity(activity);

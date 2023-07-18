@@ -43,9 +43,6 @@ void main() async {
     ], directory: dir.path);
     Get.put<Isar>(isar, permanent: true);
 
-    final addressNames = await DbUtils().getAddressNameDictionary();
-    Get.put<AddressNames>(addressNames, permanent: true);
-
     final byteData = await rootBundle.load('assets/timezones_10y.tzf');
     tz.initializeDatabase(byteData.buffer.asUint8List());
 
@@ -56,6 +53,7 @@ void main() async {
     Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
     Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
+    Get.put<AddressNames>(AddressNames(), permanent: true);
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       Get.put<PackageInfo>(packageInfo, permanent: true);

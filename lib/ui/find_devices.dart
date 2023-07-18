@@ -15,6 +15,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_factory.dart';
@@ -50,6 +51,7 @@ import '../utils/delays.dart';
 import '../utils/logging.dart';
 import '../utils/machine_type.dart';
 import '../utils/scan_result_ex.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
@@ -100,7 +102,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _twoColumnLayout = twoColumnLayoutDefault;
   final AdvertisementCache _advertisementCache = Get.find<AdvertisementCache>();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  final RegExp _colonRegex = RegExp(r':');
   bool _privacyStatementViews = false;
 
   @override
@@ -291,6 +292,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void initState() {
     initializeDateFormatting();
     super.initState();
+
+    final addressNames = Get.find<AddressNames>();
+    await database.getAddressNameDictionary(addressNames);
+
     _readPreferencesValues();
     _isScanning = false;
     _scanStreamSubscription =
@@ -824,8 +829,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                               fontSizeFactor: fontSizeFactor),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id.replaceAll(_colonRegex, '') ??
-                              emptyMeasurement,
+                          _heartRateMonitor?.device?.id.id.shortAddressString() ?? emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(
@@ -859,8 +863,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          _fitnessEquipment?.device?.id.id.replaceAll(_colonRegex, '') ??
-                              emptyMeasurement,
+                          _fitnessEquipment?.device?.id.id.shortAddressString() ?? emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(

@@ -1,4 +1,6 @@
 extension StringEx on String {
+  static RegExp nonAlphaNumFilterRegex = RegExp(r'[\W]+');
+
   String uuidString() {
     return substring(4, 8).toLowerCase();
   }
@@ -19,6 +21,6 @@ extension StringEx on String {
   }
 
   String shortAddressString() {
-    return replaceAll(RegExp(r'[\W]+'), "");
+    return replaceAll(nonAlphaNumFilterRegex, "");
   }
 }
