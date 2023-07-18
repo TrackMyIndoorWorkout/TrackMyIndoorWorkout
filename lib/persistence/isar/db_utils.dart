@@ -209,8 +209,7 @@ class DbUtils {
     return floorIds.isNotEmpty ? floorIds.first : null;
   }
 
-  Future<AddressNames> getAddressNameDictionary() async {
-    final addressNames = AddressNames();
+  Future<void> getAddressNameDictionary(AddressNames addressNames) async {
     for (var activity in await database.activitys
         .where()
         .filter()
@@ -223,7 +222,5 @@ class DbUtils {
         .findAll()) {
       addressNames.addAddressName(activity.deviceId, activity.deviceName);
     }
-
-    return addressNames;
   }
 }

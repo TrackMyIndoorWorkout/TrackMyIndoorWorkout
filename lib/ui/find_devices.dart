@@ -31,13 +31,14 @@ import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../devices/gatt_maps.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/device_usage.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/log_level.dart';
-import '../persistence/isar/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
@@ -45,6 +46,7 @@ import '../preferences/sport_spec.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
+import '../utils/address_names.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/delays.dart';
@@ -294,7 +296,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     super.initState();
 
     final addressNames = Get.find<AddressNames>();
-    await database.getAddressNameDictionary(addressNames);
+    DbUtils().getAddressNameDictionary(addressNames);
 
     _readPreferencesValues();
     _isScanning = false;
