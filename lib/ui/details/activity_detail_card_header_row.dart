@@ -1,5 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/widgets.dart';
+
+import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class ActivityDetailCardHeaderRow extends StatelessWidget {
@@ -27,6 +29,7 @@ class ActivityDetailCardHeaderRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FitHorizontally(
+      shrinkLimit: shrinkLimit,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
