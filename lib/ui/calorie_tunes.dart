@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils/listview_utils.dart';
+
 import '../persistence/models/calorie_tune.dart';
 import '../persistence/database.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
@@ -150,7 +152,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
               header: Column(
                 children: [
                   TextOneLine(
-                    calorieTune.mac,
+                    calorieTune.mac.shortAddressString(),
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
