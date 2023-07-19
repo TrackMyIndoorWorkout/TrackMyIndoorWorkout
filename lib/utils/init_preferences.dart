@@ -154,7 +154,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
-    databaseMigrationNeededTag: databaseMigrationNeeded,
+    databaseMigrationNeededTag: databaseMigrationNeededDefault,
     activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
     activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
     activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
