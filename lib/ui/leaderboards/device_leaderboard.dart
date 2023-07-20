@@ -104,7 +104,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.device.item2} Leaderboard')),
+      appBar: AppBar(title: Text('${widget.device.item1} Leaderboard')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
@@ -114,7 +114,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
           fetchItems: (int page, int limit) async {
             final data = await _database.workoutSummarys
                 .filter()
-                .deviceIdEqualTo(widget.device.item1)
+                .deviceIdEqualTo(widget.device.item2)
                 .sortBySpeedDesc()
                 .offset(page * limit)
                 .limit(limit)
