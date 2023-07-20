@@ -2345,9 +2345,9 @@ class RecordingState extends State<RecordingScreen> {
           );
           String hrmId = await _initializeHeartRateMonitor(true);
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+            _activity!.hrmId = hrmId;
+            _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
             _database.writeTxnSync(() async {
-              _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
               _database.activitys.putSync(_activity!);
             });
           }
