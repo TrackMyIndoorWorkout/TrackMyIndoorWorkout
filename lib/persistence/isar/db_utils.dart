@@ -32,7 +32,12 @@ class DbUtils {
   }
 
   Future<List<Record>> getRecords(Id activityId) async {
-    return await database.records.where().filter().activityIdEqualTo(activityId).findAll();
+    return await database.records
+        .where()
+        .filter()
+        .activityIdEqualTo(activityId)
+        .sortByTimeStamp()
+        .findAll();
   }
 
   Future<Record?> getLastRecord(Id activityId) async {
@@ -76,25 +81,36 @@ class DbUtils {
   }
 
   Future<List<Activity>> unfinishedDeviceActivities(String mac) async {
-    return database.activitys.where().filter().endIsNull().deviceIdEqualTo(mac).findAll();
+    return database.activitys
+        .where()
+        .filter()
+        .endIsNull()
+        .deviceIdEqualTo(mac)
+        .sortByStartDesc()
+        .findAll();
   }
 
   Future<List<Activity>> unfinishedActivities() async {
-    return database.activitys.where().filter().endIsNull().findAll();
+    return database.activitys.where().filter().endIsNull().sortByStartDesc().findAll();
   }
 
   Future<double> powerFactor(String deviceId) async {
-    final powerTune =
-        await database.powerTunes.where(sort: Sort.desc).filter().macEqualTo(deviceId).findFirst();
+    final powerTune = await database.powerTunes
+        .where()
+        .filter()
+        .macEqualTo(deviceId)
+        .sortByTimeDesc()
+        .findFirst();
     return powerTune?.powerFactor ?? 1.0;
   }
 
   Future<CalorieTune?> findCalorieTuneByMac(String mac, bool hrBased) async {
     return await database.calorieTunes
-        .where(sort: Sort.desc)
+        .where()
         .filter()
         .macEqualTo(mac)
         .hrBasedEqualTo(hrBased)
+        .sortByTimeDesc()
         .findFirst();
   }
 
@@ -200,9 +216,10 @@ class DbUtils {
     }
 
     final floorIds = await database.floorRecordMigrations
-        .where(sort: Sort.desc)
+        .where()
         .filter()
         .activityIdEqualTo(activityId)
+        .sortByFloorIdDesc()
         .floorIdProperty()
         .findAll();
 

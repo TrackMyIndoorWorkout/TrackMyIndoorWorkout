@@ -8,6 +8,7 @@ class PowerTune {
   @Index()
   final String mac;
   double powerFactor;
+  @Index()
   DateTime time;
 
   PowerTune({

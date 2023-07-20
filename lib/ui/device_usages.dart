@@ -132,7 +132,8 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final data = await _database.deviceUsages
-                .where(sort: Sort.desc)
+                .where()
+                .sortByTimeDesc()
                 .offset(page * limit)
                 .limit(limit)
                 .findAll();

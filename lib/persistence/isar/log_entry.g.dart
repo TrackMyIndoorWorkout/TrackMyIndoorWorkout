@@ -48,7 +48,21 @@ const LogEntrySchema = CollectionSchema(
   deserialize: _logEntryDeserialize,
   deserializeProp: _logEntryDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'timeStamp': IndexSchema(
+      id: 1365751510135348298,
+      name: r'timeStamp',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'timeStamp',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _logEntryGetId,
@@ -140,6 +154,14 @@ extension LogEntryQueryWhereSort on QueryBuilder<LogEntry, LogEntry, QWhere> {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterWhere> anyTimeStamp() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'timeStamp'),
+      );
+    });
+  }
 }
 
 extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
@@ -201,6 +223,94 @@ extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampEqualTo(DateTime timeStamp) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'timeStamp',
+        value: [timeStamp],
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampNotEqualTo(DateTime timeStamp) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeStamp',
+              lower: [],
+              upper: [timeStamp],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeStamp',
+              lower: [timeStamp],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeStamp',
+              lower: [timeStamp],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeStamp',
+              lower: [],
+              upper: [timeStamp],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampGreaterThan(
+    DateTime timeStamp, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeStamp',
+        lower: [timeStamp],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampLessThan(
+    DateTime timeStamp, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeStamp',
+        lower: [],
+        upper: [timeStamp],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampBetween(
+    DateTime lowerTimeStamp,
+    DateTime upperTimeStamp, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeStamp',
+        lower: [lowerTimeStamp],
+        includeLower: includeLower,
+        upper: [upperTimeStamp],
         includeUpper: includeUpper,
       ));
     });

@@ -56,6 +56,19 @@ const CalorieTuneSchema = CollectionSchema(
           caseSensitive: true,
         )
       ],
+    ),
+    r'time': IndexSchema(
+      id: -2250472054110640942,
+      name: r'time',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'time',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
     )
   },
   links: {},
@@ -140,6 +153,14 @@ extension CalorieTuneQueryWhereSort on QueryBuilder<CalorieTune, CalorieTune, QW
   QueryBuilder<CalorieTune, CalorieTune, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhere> anyTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'time'),
+      );
     });
   }
 }
@@ -250,6 +271,94 @@ extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhere
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeEqualTo(DateTime time) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'time',
+        value: [time],
+      ));
+    });
+  }
+
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeNotEqualTo(DateTime time) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [],
+              upper: [time],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [time],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [time],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [],
+              upper: [time],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeGreaterThan(
+    DateTime time, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'time',
+        lower: [time],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeLessThan(
+    DateTime time, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'time',
+        lower: [],
+        upper: [time],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeBetween(
+    DateTime lowerTime,
+    DateTime upperTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'time',
+        lower: [lowerTime],
+        includeLower: includeLower,
+        upper: [upperTime],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }

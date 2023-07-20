@@ -173,7 +173,21 @@ const ActivitySchema = CollectionSchema(
   deserialize: _activityDeserialize,
   deserializeProp: _activityDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'start': IndexSchema(
+      id: -5775659401471708833,
+      name: r'start',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'start',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _activityGetId,
@@ -371,6 +385,14 @@ extension ActivityQueryWhereSort on QueryBuilder<Activity, Activity, QWhere> {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<Activity, Activity, QAfterWhere> anyStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'start'),
+      );
+    });
+  }
 }
 
 extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
@@ -432,6 +454,94 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startEqualTo(DateTime start) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'start',
+        value: [start],
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startNotEqualTo(DateTime start) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [],
+              upper: [start],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [start],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [start],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [],
+              upper: [start],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startGreaterThan(
+    DateTime start, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'start',
+        lower: [start],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startLessThan(
+    DateTime start, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'start',
+        lower: [],
+        upper: [start],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startBetween(
+    DateTime lowerStart,
+    DateTime upperStart, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'start',
+        lower: [lowerStart],
+        includeLower: includeLower,
+        upper: [upperStart],
         includeUpper: includeUpper,
       ));
     });

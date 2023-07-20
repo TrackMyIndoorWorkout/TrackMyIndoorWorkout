@@ -77,11 +77,12 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
               final database = Get.find<Isar>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
               final calorieTune = await database.calorieTunes
-                  .where(sort: Sort.desc)
+                  .where()
                   .filter()
                   .macEqualTo(widget.deviceId)
                   .and()
                   .hrBasedEqualTo(widget.hrBased)
+                  .sortByTimeDesc()
                   .findFirst();
               if (calorieTune != null) {
                 database.writeTxnSync(() {

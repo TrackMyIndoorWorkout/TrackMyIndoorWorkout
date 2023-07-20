@@ -471,7 +471,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final data = await _database.activitys
-                .where(sort: Sort.desc)
+                .where()
+                .sortByStartDesc()
                 .offset(page * limit)
                 .limit(limit)
                 .findAll();

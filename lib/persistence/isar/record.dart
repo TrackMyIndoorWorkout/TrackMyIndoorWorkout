@@ -16,6 +16,7 @@ class Record {
 
   Id id;
   int activityId;
+  @Index()
   late DateTime? timeStamp;
   double? distance; // m
   int? elapsed; // s

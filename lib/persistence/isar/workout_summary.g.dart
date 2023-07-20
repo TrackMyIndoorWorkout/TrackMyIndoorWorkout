@@ -93,7 +93,21 @@ const WorkoutSummarySchema = CollectionSchema(
   deserialize: _workoutSummaryDeserialize,
   deserializeProp: _workoutSummaryDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'start': IndexSchema(
+      id: -5775659401471708833,
+      name: r'start',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'start',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _workoutSummaryGetId,
@@ -220,6 +234,14 @@ extension WorkoutSummaryQueryWhereSort on QueryBuilder<WorkoutSummary, WorkoutSu
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhere> anyStart() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'start'),
+      );
+    });
+  }
 }
 
 extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummary, QWhereClause> {
@@ -283,6 +305,94 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
         lower: lowerId,
         includeLower: includeLower,
         upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> startEqualTo(DateTime start) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'start',
+        value: [start],
+      ));
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> startNotEqualTo(DateTime start) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [],
+              upper: [start],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [start],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [start],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'start',
+              lower: [],
+              upper: [start],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> startGreaterThan(
+    DateTime start, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'start',
+        lower: [start],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> startLessThan(
+    DateTime start, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'start',
+        lower: [],
+        upper: [start],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> startBetween(
+    DateTime lowerStart,
+    DateTime upperStart, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'start',
+        lower: [lowerStart],
+        includeLower: includeLower,
+        upper: [upperStart],
         includeUpper: includeUpper,
       ));
     });

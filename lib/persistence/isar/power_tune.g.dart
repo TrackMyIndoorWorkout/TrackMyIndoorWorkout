@@ -51,6 +51,19 @@ const PowerTuneSchema = CollectionSchema(
           caseSensitive: true,
         )
       ],
+    ),
+    r'time': IndexSchema(
+      id: -2250472054110640942,
+      name: r'time',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'time',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
     )
   },
   links: {},
@@ -131,6 +144,14 @@ extension PowerTuneQueryWhereSort on QueryBuilder<PowerTune, PowerTune, QWhere> 
   QueryBuilder<PowerTune, PowerTune, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhere> anyTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'time'),
+      );
     });
   }
 }
@@ -240,6 +261,94 @@ extension PowerTuneQueryWhere on QueryBuilder<PowerTune, PowerTune, QWhereClause
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeEqualTo(DateTime time) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'time',
+        value: [time],
+      ));
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeNotEqualTo(DateTime time) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [],
+              upper: [time],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [time],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [time],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'time',
+              lower: [],
+              upper: [time],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeGreaterThan(
+    DateTime time, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'time',
+        lower: [time],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeLessThan(
+    DateTime time, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'time',
+        lower: [],
+        upper: [time],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeBetween(
+    DateTime lowerTime,
+    DateTime upperTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'time',
+        lower: [lowerTime],
+        includeLower: includeLower,
+        upper: [upperTime],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }

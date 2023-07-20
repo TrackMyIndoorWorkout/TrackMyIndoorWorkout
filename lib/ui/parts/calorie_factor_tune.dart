@@ -64,11 +64,12 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
               final database = Get.find<Isar>();
               final calorieFactor = _calorieFactorPercent / 100.0;
               final calorieTune = await database.calorieTunes
-                  .where(sort: Sort.desc)
+                  .where()
                   .filter()
                   .macEqualTo(widget.deviceId)
                   .and()
                   .hrBasedEqualTo(widget.hrBased)
+                  .sortByTimeDesc()
                   .findFirst();
               if (calorieTune != null) {
                 database.writeTxnSync(() {

@@ -408,9 +408,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     final database = Get.find<Isar>();
     var deviceUsage = await database.deviceUsages
-        .where(sort: Sort.desc)
+        .where()
         .filter()
         .macEqualTo(device.id.id)
+        .sortByTimeDesc()
         .findFirst();
     final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
 

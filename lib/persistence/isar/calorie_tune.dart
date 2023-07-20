@@ -9,6 +9,7 @@ class CalorieTune {
   final String mac;
   double calorieFactor;
   bool hrBased;
+  @Index()
   DateTime time;
 
   CalorieTune({

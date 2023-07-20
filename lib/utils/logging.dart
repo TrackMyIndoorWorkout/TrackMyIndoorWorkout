@@ -99,7 +99,7 @@ class Logging {
 
   void clearLogs() {
     database.writeTxnSync(() {
-      database.logEntrys.where().deleteAllSync();
+      database.logEntrys.clearSync();
     });
   }
 
@@ -107,7 +107,7 @@ class Logging {
     final sb = StringBuffer();
 
     sb.writeln("timeStamp,level,tag,subTag,message");
-    for (final logEntry in await database.logEntrys.where().findAll()) {
+    for (final logEntry in await database.logEntrys.where().sortByTimeStamp().findAll()) {
       sb.writeln(
           "${logEntry.timeStamp},${logEntry.level},${logEntry.tag},${logEntry.subTag},${logEntry.message}");
     }

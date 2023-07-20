@@ -16,6 +16,7 @@ class WorkoutSummary {
   final String deviceName;
   final String deviceId;
   final String manufacturer;
+  @Index()
   final DateTime start;
   final double distance; // m
   final int elapsed; // s

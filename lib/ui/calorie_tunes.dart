@@ -121,7 +121,8 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final data = await _database.calorieTunes
-                .where(sort: Sort.desc)
+                .where()
+                .sortByTimeDesc()
                 .offset(page * limit)
                 .limit(limit)
                 .findAll();

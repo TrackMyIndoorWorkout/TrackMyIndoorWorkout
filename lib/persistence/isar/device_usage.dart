@@ -12,6 +12,7 @@ class DeviceUsage {
   final String name;
   final String manufacturer;
   String? manufacturerName;
+  @Index()
   DateTime time;
 
   DeviceUsage({

@@ -124,7 +124,8 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
             final data = await _database.powerTunes
-                .where(sort: Sort.desc)
+                .where()
+                .sortByTimeDesc()
                 .offset(page * limit)
                 .limit(limit)
                 .findAll();
