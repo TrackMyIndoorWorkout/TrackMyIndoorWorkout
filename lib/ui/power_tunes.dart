@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
+
 import '../persistence/isar/power_tune.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';
 
@@ -156,7 +158,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
               header: Column(
                 children: [
                   TextOneLine(
-                    powerTune.mac,
+                    powerTune.mac.shortAddressString(),
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

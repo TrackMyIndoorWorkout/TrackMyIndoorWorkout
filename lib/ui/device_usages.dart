@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:listview_utils/listview_utils.dart';
+
 import '../persistence/isar/device_usage.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
@@ -169,7 +171,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
-                    deviceUsage.mac,
+                    deviceUsage.mac.shortAddressString(),
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

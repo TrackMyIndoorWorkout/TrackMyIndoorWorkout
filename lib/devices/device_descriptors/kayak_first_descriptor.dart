@@ -41,12 +41,14 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const responseWatchDelayMs = 50; // ms
   static const responseWatchDelay = Duration(milliseconds: responseWatchDelayMs);
   static const responseWatchTimeoutMs = 3000; // ms
-  static const responseWatchTimeoutGuardMs = responseWatchTimeoutMs + 250; // ms
-  static const responseWatchTimeoutGuard = Duration(milliseconds: responseWatchTimeoutGuardMs);
+  static const responseWatchTimeoutGuard = Duration(milliseconds: responseWatchTimeoutMs + 250);
   static const commandShortDelayMs = 500; // ms
   static const commandShortDelay = Duration(milliseconds: commandShortDelayMs);
   static const commandLongDelayMs = 2000; // ms
   static const commandLongDelay = Duration(milliseconds: commandLongDelayMs);
+  static const commandExtraLongDelayMs = 5000; // ms
+  static const commandExtraLongDelay = Duration(milliseconds: commandExtraLongDelayMs);
+  static const commandExtraLongTimeoutGuard = Duration(milliseconds: commandExtraLongDelayMs + 250);
   ListQueue<int> responses = ListQueue<int>();
 
   KayakFirstDescriptor()
@@ -224,10 +226,14 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     final blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
-    await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-    await _waitForResponse(resetByte, responseWatchTimeoutMs, logLevel)
-        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
-    await Future.delayed(commandLongDelay);
+    bool seenIt = false;
+    while (!seenIt) {
+      await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
+      seenIt = await _waitForResponse(resetByte, responseWatchTimeoutMs, logLevel)
+          .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+      await Future.delayed(commandLongDelay);
+    }
+
     // 2. Handshake
     await handshake(controlPoint, false, logLevel);
     await _waitForResponse(handshakeByte, responseWatchTimeoutMs, logLevel)
@@ -235,9 +241,9 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     await Future.delayed(commandShortDelay);
     // 3. Display Configuration
     await configureDisplay(controlPoint, logLevel);
-    await _waitForResponse(displayConfigurationByte, responseWatchTimeoutMs, logLevel)
-        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
-    await Future.delayed(commandLongDelay);
+    await _waitForResponse(displayConfigurationByte, commandExtraLongDelayMs, logLevel)
+        .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+    await Future.delayed(commandShortDelay);
   }
 
   Future<bool> _waitForResponse(int responseByte, int timeout, int logLevel) async {

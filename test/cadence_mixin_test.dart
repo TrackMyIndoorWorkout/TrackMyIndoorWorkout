@@ -20,7 +20,7 @@ void main() {
     final cadenceMixin = CadenceMixin();
 
     expect(cadenceMixin.cadenceData.isEmpty, true);
-    expect(cadenceMixin.computeCadence(), 0);
+    expect(cadenceMixin.computeCadence().toInt(), 0);
   });
 
   group('Cadence Mixin clearCadenceData clears cadence data', () {
@@ -37,7 +37,7 @@ void main() {
 
         cadenceMixin.clearCadenceData();
         expect(cadenceMixin.cadenceData.isEmpty, true);
-        expect(cadenceMixin.computeCadence(), 0);
+        expect(cadenceMixin.computeCadence().toInt(), 0);
       });
     }
   });

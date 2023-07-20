@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
+import '../../utils/string_ex.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                           overflow: TextOverflow.ellipsis,
                         ),
                         TextOneLine(
-                          widget.devices[index].item2,
+                          widget.devices[index].item2.shortAddressString(),
                           style: _subTextStyle,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,

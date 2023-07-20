@@ -170,7 +170,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getSpeedData,
           maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
           avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
-          medianString: accu.medianSpeed.toStringAsFixed(2),
+          medianString: speedOrPaceString(accu.medianSpeed, _si, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
