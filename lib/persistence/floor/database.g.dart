@@ -203,7 +203,7 @@ class _$ActivityDao extends ActivityDao {
 
   @override
   Future<List<Activity>> findAllActivities() async {
-    return _queryAdapter.queryList('SELECT * FROM `activities` ORDER BY `start` DESC',
+    return _queryAdapter.queryList('SELECT * FROM `activities` ORDER BY `id`',
         mapper: (Map<String, Object?> row) => Activity(
             id: row['id'] as int?,
             deviceName: row['device_name'] as String,
@@ -309,7 +309,7 @@ class _$DeviceUsageDao extends DeviceUsageDao {
 
   @override
   Future<List<DeviceUsage>> findAllDeviceUsages() async {
-    return _queryAdapter.queryList('SELECT * FROM `device_usage` ORDER BY `time` DESC',
+    return _queryAdapter.queryList('SELECT * FROM `device_usage` ORDER BY `id`',
         mapper: (Map<String, Object?> row) => DeviceUsage(
             id: row['id'] as int?,
             sport: row['sport'] as String,
@@ -348,7 +348,7 @@ class _$CalorieTuneDao extends CalorieTuneDao {
 
   @override
   Future<List<CalorieTune>> findAllCalorieTunes() async {
-    return _queryAdapter.queryList('SELECT * FROM `calorie_tune` ORDER BY `time` DESC',
+    return _queryAdapter.queryList('SELECT * FROM `calorie_tune` ORDER BY `id`',
         mapper: (Map<String, Object?> row) => CalorieTune(
             id: row['id'] as int?,
             mac: row['mac'] as String,
@@ -378,7 +378,7 @@ class _$PowerTuneDao extends PowerTuneDao {
 
   @override
   Future<List<PowerTune>> findAllPowerTunes() async {
-    return _queryAdapter.queryList('SELECT * FROM `power_tune` ORDER BY `time` DESC',
+    return _queryAdapter.queryList('SELECT * FROM `power_tune` ORDER BY `id`',
         mapper: (Map<String, Object?> row) => PowerTune(
             id: row['id'] as int?,
             mac: row['mac'] as String,

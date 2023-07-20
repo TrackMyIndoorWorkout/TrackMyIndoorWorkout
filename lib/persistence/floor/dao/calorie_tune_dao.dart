@@ -3,7 +3,7 @@ import '../models/calorie_tune.dart';
 
 @dao
 abstract class CalorieTuneDao {
-  @Query('SELECT * FROM `$calorieTuneTableName` ORDER BY `time` DESC')
+  @Query('SELECT * FROM `$calorieTuneTableName` ORDER BY `id`')
   Future<List<CalorieTune>> findAllCalorieTunes();
 
   @update

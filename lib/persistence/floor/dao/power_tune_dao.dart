@@ -3,6 +3,6 @@ import '../models/power_tune.dart';
 
 @dao
 abstract class PowerTuneDao {
-  @Query('SELECT * FROM `$powerTuneTableName` ORDER BY `time` DESC')
+  @Query('SELECT * FROM `$powerTuneTableName` ORDER BY `id`')
   Future<List<PowerTune>> findAllPowerTunes();
 }

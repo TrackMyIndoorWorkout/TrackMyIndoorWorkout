@@ -3,7 +3,7 @@ import '../models/activity.dart';
 
 @dao
 abstract class ActivityDao {
-  @Query('SELECT * FROM `$activitiesTableName` ORDER BY `start` DESC')
+  @Query('SELECT * FROM `$activitiesTableName` ORDER BY `id`')
   Future<List<Activity>> findAllActivities();
 
   @update
