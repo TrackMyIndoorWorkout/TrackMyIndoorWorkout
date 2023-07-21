@@ -363,15 +363,21 @@ class FindDevicesState extends State<FindDevicesScreen> {
           if (agreed) {
             prefService.set(welcomePresentedTag, true);
             if (_instantScan) {
-              _startScan(true);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _startScan(true);
+              });
             }
           }
         });
       } else if (_instantScan) {
-        _startScan(true);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _startScan(true);
+        });
       }
     } else if (_instantScan) {
-      _startScan(true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startScan(true);
+      });
     }
   }
 
