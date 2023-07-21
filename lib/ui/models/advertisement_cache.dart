@@ -7,7 +7,7 @@ class AdvertisementCache {
   final Map<String, AdvertisementDigest> _advertisementMap = {};
 
   void addEntry(ScanResult scanResult, String deviceSport) {
-    final id = scanResult.device.id.id;
+    final id = scanResult.device.remoteId.str;
     final serviceUuids = scanResult.serviceUuids;
     final machineByteFlag = scanResult.getFtmsServiceDataMachineByte(deviceSport);
     final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);

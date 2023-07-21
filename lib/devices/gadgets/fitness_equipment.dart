@@ -407,23 +407,23 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   void setHeartRateMonitor(HeartRateMonitor heartRateMonitor) {
     this.heartRateMonitor = heartRateMonitor;
-    final hrmId = heartRateMonitor.device?.id.id;
+    final hrmId = heartRateMonitor.device?.remoteId.str;
     if (hrmId == null) {
       return;
     }
 
-    if (_companionSensor?.device?.id.id == hrmId) {
+    if (_companionSensor?.device?.remoteId.str == hrmId) {
       // Remove companion because external initiated HRM's lifecycle
       // spans beyond the FitnessMachine (so we should prevent detach)
       _companionSensor = null;
     }
 
-    if (_additionalSensors.where((sensor) => sensor.device?.id.id == hrmId).isNotEmpty) {
+    if (_additionalSensors.where((sensor) => sensor.device?.remoteId.str == hrmId).isNotEmpty) {
       // Present as an additional sensor
       // Remove from additional sensor list, because the lifecycle
       // spans beyond the FitnessMachine (so we should prevent detach)
       _additionalSensors =
-          _additionalSensors.where((sensor) => sensor.device?.id.id != hrmId).toList();
+          _additionalSensors.where((sensor) => sensor.device?.remoteId.str != hrmId).toList();
     }
   }
 
@@ -432,15 +432,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     bool hadDetach = false;
     for (final sensor in _additionalSensors) {
-      if (sensor.device?.id.id != device?.id.id) {
+      if (sensor.device?.remoteId.str != device?.remoteId.str) {
         await sensor.detach();
         hadDetach = true;
       }
     }
 
     if (hadDetach) {
-      _additionalSensors =
-          _additionalSensors.where((sensor) => sensor.device?.id.id == device?.id.id).toList();
+      _additionalSensors = _additionalSensors
+          .where((sensor) => sensor.device?.remoteId.str == device?.remoteId.str)
+          .toList();
     }
 
     if (descriptor != null && device != null) {
@@ -458,7 +459,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     DeviceDescriptor companionDescriptor,
     BluetoothDevice companionDevice,
   ) async {
-    if (heartRateMonitor?.device?.id.id == companionDevice.id.id) {
+    if (heartRateMonitor?.device?.remoteId.str == companionDevice.remoteId.str) {
       // It's a HRM and already set
       return;
     }
@@ -1186,12 +1187,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     final database = Get.find<AppDatabase>();
-    final factors = await database.getFactors(device?.id.id ?? "");
+    final factors = await database.getFactors(device?.remoteId.str ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;
     _hrCalorieFactor = factors.item3;
     _hrmCalorieFactor =
-        await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+        await database.calorieFactorValue(heartRateMonitor?.device?.remoteId.str ?? "", true);
 
     initPower2SpeedConstants();
 

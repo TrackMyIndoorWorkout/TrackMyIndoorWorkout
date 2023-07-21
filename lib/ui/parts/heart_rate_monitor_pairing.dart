@@ -133,12 +133,13 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                           ),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id.shortAddressString() ?? emptyMeasurement,
+                          _heartRateMonitor?.device?.remoteId.str.shortAddressString() ??
+                              emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(Icons.favorite, () async {
-                          if (await _heartRateMonitor?.device?.state.first ==
-                              BluetoothDeviceState.connected) {
+                          if (await _heartRateMonitor?.device?.connectionState.first ==
+                              BluetoothConnectionState.connected) {
                             Get.snackbar("Info", "Already connected");
                           } else {
                             setState(() {
@@ -160,7 +161,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                   ? Container()
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
-                      _scanResults.add(r.device.id.id);
+                      _scanResults.add(r.device.remoteId.str);
                       return HeartRateMonitorScanResultTile(
                           result: r,
                           onTap: () async {
@@ -175,9 +176,11 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
-                            final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
-                            final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
-                            if (existingId != notAvailable && existingId != r.device.id.id) {
+                            final existingId =
+                                heartRateMonitor?.device?.remoteId.str ?? notAvailable;
+                            final storedId =
+                                _heartRateMonitor?.device?.remoteId.str ?? notAvailable;
+                            if (existingId != notAvailable && existingId != r.device.remoteId.str) {
                               final verdict = await Get.bottomSheet(
                                 const SafeArea(
                                   child: Column(
@@ -220,12 +223,12 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                               }
                             }
 
-                            if (heartRateMonitor != null && existingId != r.device.id.id) {
+                            if (heartRateMonitor != null && existingId != r.device.remoteId.str) {
                               await heartRateMonitor.detach();
                               await heartRateMonitor.disconnect();
                             }
 
-                            if (heartRateMonitor == null || existingId != r.device.id.id) {
+                            if (heartRateMonitor == null || existingId != r.device.remoteId.str) {
                               heartRateMonitor = HeartRateMonitor(r.device);
                               if (Get.isRegistered<HeartRateMonitor>()) {
                                 await Get.delete<HeartRateMonitor>(force: true);

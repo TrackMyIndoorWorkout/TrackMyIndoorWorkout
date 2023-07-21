@@ -95,7 +95,7 @@ enum TargetHrState {
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
   final DeviceDescriptor descriptor;
-  final BluetoothDeviceState initialState;
+  final BluetoothConnectionState initialState;
   final Size size;
   final String sport;
 
@@ -474,7 +474,7 @@ class RecordingState extends State<RecordingScreen> {
     var continued = false;
     if (!_uxDebug) {
       final unfinished =
-          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.remoteId.str);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
         if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
@@ -498,8 +498,8 @@ class RecordingState extends State<RecordingScreen> {
       _activity = Activity(
         fourCC: widget.descriptor.fourCC,
         deviceName: widget.device.nonEmptyName,
-        deviceId: widget.device.id.id,
-        hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
+        deviceId: widget.device.remoteId.str,
+        hrmId: _fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? "",
         start: now.millisecondsSinceEpoch,
         startDateTime: now,
         sport: widget.descriptor.sport,
@@ -530,7 +530,7 @@ class RecordingState extends State<RecordingScreen> {
             ? await _database.workoutSummaryDao
                 .findAllWorkoutSummariesBySport(widget.descriptor.sport)
             : await _database.workoutSummaryDao
-                .findAllWorkoutSummariesByDevice(widget.device.id.id);
+                .findAllWorkoutSummariesByDevice(widget.device.remoteId.str);
 
         if (_showPacer && _pacerWorkout != null) {
           int insertionPoint = 0;
@@ -637,8 +637,8 @@ class RecordingState extends State<RecordingScreen> {
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     if (discovered) {
-      if (_heartRateMonitor?.device?.id.id !=
-          (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? notAvailable)) {
+      if (_heartRateMonitor?.device?.remoteId.str !=
+          (_fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? notAvailable)) {
         _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
       _heartRateMonitor?.attach().then((_) async {
@@ -658,7 +658,7 @@ class RecordingState extends State<RecordingScreen> {
         });
       });
 
-      return _heartRateMonitor?.device?.id.id ?? "";
+      return _heartRateMonitor?.device?.remoteId.str ?? "";
     }
 
     return "";
@@ -701,7 +701,7 @@ class RecordingState extends State<RecordingScreen> {
         fontSizeFactor: _markerStyleSmallSizeAdjust);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
-      widget.device.id.id,
+      widget.device.remoteId.str,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();

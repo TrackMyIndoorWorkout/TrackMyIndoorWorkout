@@ -69,32 +69,32 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
   @override
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services
-        .firstWhereOrNull((service) => service.uuid.uuidString() == c2RowingPrimaryServiceUuid);
+    final requiredService = services.firstWhereOrNull(
+        (service) => service.serviceUuid.uuidString() == c2RowingPrimaryServiceUuid);
     if (requiredService == null) {
       return [];
     }
 
     List<ComplexSensor> additionalSensors = [];
 
-    final requiredCharacteristic1 = requiredService.characteristics
-        .firstWhereOrNull((ch) => ch.uuid.uuidString() == C2AdditionalStatus1.serviceUuid);
+    final requiredCharacteristic1 = requiredService.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus1.serviceUuid);
     if (requiredCharacteristic1 != null) {
       final additionalSensor = C2AdditionalStatus1(device);
       additionalSensor.services = services;
       additionalSensors.add(additionalSensor);
     }
 
-    final requiredCharacteristic2 = requiredService.characteristics
-        .firstWhereOrNull((ch) => ch.uuid.uuidString() == C2AdditionalStatus2.serviceUuid);
+    final requiredCharacteristic2 = requiredService.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus2.serviceUuid);
     if (requiredCharacteristic2 != null) {
       final additionalSensor = C2AdditionalStatus2(device);
       additionalSensor.services = services;
       additionalSensors.add(additionalSensor);
     }
 
-    final requiredCharacteristic3 = requiredService.characteristics
-        .firstWhereOrNull((ch) => ch.uuid.uuidString() == C2AdditionalStrokeData.serviceUuid);
+    final requiredCharacteristic3 = requiredService.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStrokeData.serviceUuid);
     if (requiredCharacteristic3 != null) {
       final additionalSensor = C2AdditionalStrokeData(device);
       additionalSensor.services = services;

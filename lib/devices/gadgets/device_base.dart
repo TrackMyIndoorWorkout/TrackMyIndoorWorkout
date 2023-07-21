@@ -106,7 +106,7 @@ abstract class DeviceBase {
   Future<bool> discoverCore() async {
     discovering = false;
     discovered = true;
-    service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+    service = services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceId);
 
     if (service == null) {
       characteristic = null;
@@ -128,11 +128,11 @@ abstract class DeviceBase {
     characteristicId = newCharacteristicId;
     if (characteristicId.isNotEmpty) {
       characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == characteristicId);
     } else {
-      characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
-      characteristicId = characteristic?.uuid.uuidString() ?? "";
+      characteristic = service!.characteristics.firstWhereOrNull(
+          (ch) => ftmsSportCharacteristics.contains(ch.characteristicUuid.uuidString()));
+      characteristicId = characteristic?.characteristicUuid.uuidString() ?? "";
     }
 
     await connectToControlPoint(true);
@@ -145,12 +145,12 @@ abstract class DeviceBase {
 
     if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
       controlPoint = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == controlCharacteristicId);
     }
 
     if (status == null && statusCharacteristicId.isNotEmpty) {
       status = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == statusCharacteristicId);
     }
 
     if (listenOnControl && !controlNotification && controlPoint != null) {
@@ -236,8 +236,8 @@ abstract class DeviceBase {
   List<String> inferSportsFromCharacteristicIds() {
     if (discovered) {
       return service!.characteristics
-          .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
-          .map((char) => uuidToSport[char.uuid.uuidString()]!)
+          .where((char) => ftmsSportCharacteristics.contains(char.characteristicUuid.uuidString()))
+          .map((char) => uuidToSport[char.characteristicUuid.uuidString()]!)
           .toSet()
           .toList(growable: false);
     }

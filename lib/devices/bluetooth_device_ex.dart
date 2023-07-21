@@ -7,19 +7,21 @@ import '../utils/guid_ex.dart';
 
 extension BluetoothDeviceEx on BluetoothDevice {
   static BluetoothService? filterService(List<BluetoothService> services, String identifier) {
-    return services.firstWhereOrNull((service) => service.uuid.uuidString() == identifier);
+    return services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == identifier);
   }
 
   static BluetoothCharacteristic? filterCharacteristic(
       List<BluetoothCharacteristic>? characteristics, String identifier) {
-    return characteristics?.firstWhereOrNull((ch) => ch.uuid.uuidString() == identifier);
+    return characteristics
+        ?.firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == identifier);
   }
 
   Future<Tuple3<double, double, double>> getFactors(AppDatabase? database) async {
     database ??= Get.find<AppDatabase>();
-    return await database.getFactors(id.id);
+    return await database.getFactors(remoteId.str);
   }
 
-  String get nonEmptyName =>
-      name.isNotEmpty ? name : Get.find<AddressNames>().getAddressName(name, id.id);
+  String get nonEmptyName => localName.isNotEmpty
+      ? localName
+      : Get.find<AddressNames>().getAddressName(localName, remoteId.str);
 }
