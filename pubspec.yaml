@@ -8,6 +8,9 @@ environment:
   sdk: ">=2.25.0"
   flutter: ">=3.13.0-0.2.pre"
 
+dependency_overrides:
+  http: 1.1.0
+
 dependencies:
   assorted_layout_widgets: ^8.0.4
   bluetooth_enable_fork: ^0.1.6
@@ -31,7 +34,7 @@ dependencies:
   flutter_timezone: ^1.0.7
   get: ^4.6.1
   group_button: ^5.3.0
-  http: ^0.13.6
+  http: ^1.1.0
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
   intl: ^0.18.1
