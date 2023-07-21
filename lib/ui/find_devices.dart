@@ -415,7 +415,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         .macEqualTo(device.remoteId.str)
         .sortByTimeDesc()
         .findFirst();
-    final advertisementDigest = _advertisementCache.getEntry(device.id.id)!;
+    final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
     // Or other dedicated workarounds
