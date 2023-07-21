@@ -139,7 +139,7 @@ abstract class DeviceBase {
   }
 
   Future<void> connectToControlPoint(bool obtainControl) async {
-    if (controlCharacteristicId.isEmpty) {
+    if (controlCharacteristicId.isEmpty || testing) {
       return;
     }
 
