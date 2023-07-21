@@ -195,14 +195,14 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   @override
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services
-        .firstWhereOrNull((service) => service.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    final requiredService = services.firstWhereOrNull(
+        (service) => service.serviceUuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
     if (requiredService == null) {
       return [];
     }
 
-    final requiredCharacteristic = requiredService.characteristics
-        .firstWhereOrNull((ch) => ch.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    final requiredCharacteristic = requiredService.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
     if (requiredCharacteristic == null) {
       return [];
     }

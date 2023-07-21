@@ -16,7 +16,7 @@ extension HeartRateMonitorScanResult on ScanResult {
       return false;
     }
 
-    if (device.id.id.isEmpty) {
+    if (device.remoteId.str.isEmpty) {
       return false;
     }
 
@@ -43,8 +43,8 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   final VoidCallback onTap;
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.shortAddressString();
-    if (result.device.name.isNotEmpty) {
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
+    if (result.device.localName.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +77,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         style: captionStyle.apply(fontFamily: fontFamily),
       ),
       trailing: themeManager.getIconFab(
-        (heartRateMonitor?.device?.id.id ?? notAvailable) == result.device.id.id
+        (heartRateMonitor?.device?.remoteId.str ?? notAvailable) == result.device.remoteId.str
             ? themeManager.getGreenColor()
             : themeManager.getBlueColor(),
         Icons.favorite,

@@ -93,8 +93,8 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
-    final requiredService =
-        services.firstWhereOrNull((service) => service.uuid.uuidString() == heartRateServiceUuid);
+    final requiredService = services
+        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == heartRateServiceUuid);
     if (requiredService == null) {
       return [];
     }
@@ -118,7 +118,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     }
 
     final requiredService =
-        services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceUuid);
+        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceUuid);
     if (requiredService == null) {
       return;
     }

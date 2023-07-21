@@ -26,7 +26,7 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.shortAddressString();
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
