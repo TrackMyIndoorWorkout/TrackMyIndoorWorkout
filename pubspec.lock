@@ -245,10 +245,10 @@ packages:
     dependency: "direct main"
     description:
       name: easy_folder_picker
-      sha256: "817301514633919102378d11b5bbff706188b0b365804c6690bd4e49461c7be9"
+      sha256: ccaf2d0ddc4c3f20790892e88ba71ea783bf4d1919be2cc4dca404f98de6d97b
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.3.1"
   edit_distance:
     dependency: "direct main"
     description:
@@ -354,10 +354,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: "4fd1afc93eb40f14fcf3acc4b479648e4f7d4aaf0cc98f8397dc32e93e2ff70c"
+      sha256: "077d6d0d7fe7b0401499f39b425027fa06f17d1478ad7fa4be5c9333040ef1ea"
       url: "https://pub.dev"
     source: hosted
-    version: "1.8.7"
+    version: "1.8.8"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
@@ -478,10 +478,10 @@ packages:
     dependency: "direct main"
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.1.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -591,14 +591,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  listview_utils:
+  listview_utils_plus:
     dependency: "direct main"
     description:
-      name: listview_utils
-      sha256: d8cc763efb803954c390fc1d5562222e2768898d11bd0b51dfad12d34f9064f7
+      name: listview_utils_plus
+      sha256: "2b221ba25b179b7c2bced55b981a3c24122b602cd4897631411dae825914baa7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0-nullsafety"
+    version: "0.0.1"
   loading_overlay:
     dependency: "direct main"
     description:

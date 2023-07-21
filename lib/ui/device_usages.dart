@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 
 import '../persistence/isar/device_usage.dart';
 import '../utils/constants.dart';
