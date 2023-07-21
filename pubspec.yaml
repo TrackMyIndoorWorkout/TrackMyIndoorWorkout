@@ -35,7 +35,7 @@ dependencies:
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
   intl: ^0.18.1
-  listview_utils: ^1.0.0-nullsafety
+  listview_utils_plus: ^0.0.1
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
   package_info_plus: ^4.0.2
