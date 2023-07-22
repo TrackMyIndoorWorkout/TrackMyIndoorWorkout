@@ -109,8 +109,8 @@ LogEntry _logEntryDeserialize(
     message: reader.readString(offsets[1]),
     subTag: reader.readString(offsets[2]),
     tag: reader.readString(offsets[3]),
+    timeStamp: reader.readDateTime(offsets[4]),
   );
-  object.timeStamp = reader.readDateTime(offsets[4]);
   return object;
 }
 

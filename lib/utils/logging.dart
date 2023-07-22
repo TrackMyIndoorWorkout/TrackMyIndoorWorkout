@@ -75,11 +75,15 @@ class Logging {
     String message,
   ) {
     database.writeTxnSync(() {
-      database.logEntrys.putSync(LogEntry(
+      database.logEntrys.putSync(
+        LogEntry(
+          timeStamp: DateTime.now(),
           level: levelToDescription[logLevel] ?? "UNK",
           tag: tag,
           subTag: subTag,
-          message: message));
+          message: message,
+        ),
+      );
     });
   }
 

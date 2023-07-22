@@ -14,11 +14,10 @@ class LogEntry {
 
   LogEntry({
     this.id = Isar.autoIncrement,
+    required this.timeStamp,
     required this.level,
     required this.tag,
     required this.subTag,
     required this.message,
-  }) {
-    timeStamp = DateTime.now();
-  }
+  });
 }
