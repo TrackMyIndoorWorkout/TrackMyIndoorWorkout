@@ -10,3 +10,9 @@ const databaseLocationDescription =
 
 const databaseLocationPickCommand = "Pick a DB Location Folder";
 const databaseLocationPasteCommand = "Paste an DB Location Folder";
+
+const dataExportImport = "Data Export / Import";
+const dataExportImportDescription =
+    "Including all data (activity, tunes, leaderboards, logs) and settings";
+const dataExport = "Export all data";
+const dataImport = "Export all data";

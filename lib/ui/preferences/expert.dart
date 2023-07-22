@@ -1,11 +1,24 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:track_my_indoor_exercise/preferences/database_location.dart';
 import 'package:track_my_indoor_exercise/ui/parts/pick_directory.dart';
+import 'package:track_my_indoor_exercise/utils/export.dart';
+
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/calorie_tune.dart';
+import '../../persistence/isar/device_usage.dart';
+import '../../persistence/isar/log_entry.dart';
+import '../../persistence/isar/power_tune.dart';
+import '../../persistence/isar/record.dart';
+import '../../persistence/isar/workout_summary.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
@@ -187,6 +200,116 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           }
         },
         child: const Text(databaseLocationPickCommand),
+      ),
+      PrefLabel(
+        title: Text(dataExportImport, style: Get.textTheme.headlineSmall!, maxLines: 3),
+        subtitle: const Text(dataExportImportDescription),
+      ),
+      PrefButton(
+        onTap: () async {
+          final database = Get.find<Isar>();
+          final allBytes = BytesBuilder(copy: false);
+          await database.records.where().exportJsonRaw((recordBytes) async {
+            allBytes.add(lengthToBytes(recordBytes.length));
+            allBytes.add(recordBytes);
+            await database.activitys.where().exportJsonRaw((activityBytes) async {
+              allBytes.add(lengthToBytes(activityBytes.length));
+              allBytes.add(activityBytes);
+              await database.logEntrys.where().exportJsonRaw((logBytes) async {
+                allBytes.add(lengthToBytes(logBytes.length));
+                allBytes.add(logBytes);
+                await database.workoutSummarys.where().exportJsonRaw((workoutBytes) async {
+                  allBytes.add(lengthToBytes(workoutBytes.length));
+                  allBytes.add(workoutBytes);
+                  await database.powerTunes.where().exportJsonRaw((powerBytes) async {
+                    allBytes.add(lengthToBytes(powerBytes.length));
+                    allBytes.add(powerBytes);
+                    await database.deviceUsages.where().exportJsonRaw((deviceBytes) async {
+                      allBytes.add(lengthToBytes(deviceBytes.length));
+                      allBytes.add(deviceBytes);
+                      await database.calorieTunes.where().exportJsonRaw((calorieBytes) async {
+                        allBytes.add(lengthToBytes(calorieBytes.length));
+                        allBytes.add(calorieBytes);
+
+                        final prefService = Get.find<BasePrefService>();
+                        final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
+                        allBytes.add(lengthToBytes(settingsBytes.length));
+                        allBytes.add(settingsBytes);
+
+                        final compressedBytes = GZipCodec(gzip: true).encode(allBytes.toBytes());
+                        final isoDateTime = DateTime.now().toUtc().toIso8601String();
+                        final title = "Data Export $isoDateTime";
+                        final fileName =
+                            "DataExport${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.bin.gz";
+                        ShareFilesAndScreenshotWidgets().shareFile(
+                          title,
+                          fileName,
+                          Uint8List.fromList(compressedBytes),
+                          'application/x-gzip',
+                          text: title,
+                        );
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        },
+        child: const Text(dataExport),
+      ),
+      PrefButton(
+        onTap: () async {
+          final result = await FilePicker.platform.pickFiles();
+          if (result != null && result.files.single.path != null) {
+            final file = File(result.files.single.path!);
+            final compressedContents = await file.readAsBytes();
+            final contents = GZipCodec(gzip: true).decode(compressedContents);
+            final database = Get.find<Isar>();
+
+            final recordLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final recordBytes =
+                Uint8List.fromList(contents.take(recordLength).toList(growable: false));
+            await database.records.importJsonRaw(recordBytes);
+
+            final activityLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final activityBytes =
+                Uint8List.fromList(contents.take(activityLength).toList(growable: false));
+            await database.activitys.importJsonRaw(activityBytes);
+
+            final logLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final logBytes = Uint8List.fromList(contents.take(logLength).toList(growable: false));
+            await database.logEntrys.importJsonRaw(logBytes);
+
+            final workoutLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final workoutBytes =
+                Uint8List.fromList(contents.take(workoutLength).toList(growable: false));
+            await database.workoutSummarys.importJsonRaw(workoutBytes);
+
+            final powerLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final powerBytes =
+                Uint8List.fromList(contents.take(powerLength).toList(growable: false));
+            await database.powerTunes.importJsonRaw(powerBytes);
+
+            final deviceLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final deviceBytes =
+                Uint8List.fromList(contents.take(deviceLength).toList(growable: false));
+            await database.deviceUsages.importJsonRaw(deviceBytes);
+
+            final calorieLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final calorieBytes =
+                Uint8List.fromList(contents.take(calorieLength).toList(growable: false));
+            await database.calorieTunes.importJsonRaw(calorieBytes);
+
+            final settingsLength = lengthBytesToInt(contents.take(4).toList(growable: false));
+            final settingsBytes =
+                Uint8List.fromList(contents.take(settingsLength).toList(growable: false));
+            final settingsJson = jsonDecode(utf8.decode(settingsBytes));
+            final prefService = Get.find<BasePrefService>();
+            prefService.fromMap(settingsJson);
+          }
+        },
+        child: const Text(dataImport),
       ),
     ];
 
