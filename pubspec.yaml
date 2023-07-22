@@ -3,6 +3,7 @@ description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
 version: 1.1.146+146
+isar_version: &isar_version ^3.1.0+1
 
 environment:
   sdk: ">=2.25.0"
@@ -28,9 +29,6 @@ dependencies:
       url: https://github.com/CsabaConsulting/flutter_blue_plus.git
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.4
-  flutter_logs:
-    git:
-      url: https://github.com/CsabaConsulting/flutter_logs.git
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.0.7
   flutter_timezone: ^1.0.7
@@ -40,6 +38,9 @@ dependencies:
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
   intl: ^0.18.1
+  is_first_run: ^1.0.0
+  isar: *isar_version
+  isar_flutter_libs: *isar_version
   listview_utils_plus: ^0.0.1
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
@@ -75,6 +76,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  isar_generator: *isar_version
   mockito: ^5.4.2
   mock_data: ^2.0.0
   yaml: ^3.1.2

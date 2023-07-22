@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:mock_data/mock_data.dart';
 import 'package:mockito/annotations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -13,21 +14,29 @@ import 'package:track_my_indoor_exercise/export/csv/csv_export.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/import/csv_importer.dart';
-import 'package:track_my_indoor_exercise/persistence/database.dart';
-import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/db_utils.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'database_utils.dart';
 import 'utils.dart';
+import 'database/in_memory_database.dart';
 
 @GenerateNiceMocks([MockSpec<PackageInfo>()])
 void main() {
+  setUpAll(() async {
+    Get.put<Isar>(InMemoryDatabase(mockUUID()), permanent: true);
+  });
+
   group('Migration CSV imports identically', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 300, rnd).forEach((recordCount) {
       recordCount += 20;
       test('$recordCount', () async {
+        final isar = Get.find<Isar>() as InMemoryDatabase;
+        isar.records.clearSync();
+        isar.activities.clearSync();
+
         final countChunk = recordCount ~/ 4;
         final movingCount = recordCount - 2 * countChunk;
         await initPrefServiceForTest();
@@ -38,16 +47,6 @@ void main() {
           version: "1.0.199",
         );
         Get.put<PackageInfo>(packageInfo);
-        final hasDB = Get.isRegistered<AppDatabase>();
-        final database = hasDB ? Get.find<AppDatabase>() : InMemoryDatabase();
-        if (hasDB) {
-          final inMemoryDB = database as InMemoryDatabase;
-          inMemoryDB.activityDaoImpl.activities = [];
-          inMemoryDB.recordDaoImpl.records = [];
-        } else {
-          Get.put<AppDatabase>(database);
-        }
-
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = DeviceFactory.getSchwinnIcBike();
         final calories = rnd.nextInt(1000);
@@ -59,8 +58,8 @@ void main() {
           deviceName: descriptor.modelName,
           deviceId: mPowerImportDeviceId,
           hrmId: mockName(),
-          start: oneSecondAgo.millisecondsSinceEpoch,
-          end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
+          start: oneSecondAgo,
+          end: oneSecondAgo.add(Duration(seconds: recordCount)),
           distance: distance,
           elapsed: recordCount,
           movingTime: movingCount * 1000,
@@ -72,13 +71,10 @@ void main() {
           trainingPeaksUploaded: rnd.nextBool(),
           stravaId: rnd.nextInt(1000000),
           uaWorkoutId: rnd.nextInt(1000000),
-          suuntoUploadId: rnd.nextInt(1000000),
           suuntoUploadIdentifier: mockUUID(),
           suuntoWorkoutUrl: mockUrl("https", true),
           trainingPeaksFileTrackingUuid: mockUUID(),
-          trainingPeaksAthleteId: rnd.nextInt(1000000),
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
-          startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.sport,
           powerFactor: rnd.nextDouble(),
@@ -96,7 +92,7 @@ void main() {
             record: Record(
               id: recordIdOffset + index,
               activityId: activity.id,
-              timeStamp: activity.start + index * 1000,
+              timeStamp: activity.start.add(Duration(seconds: index)),
               distance: 0.0,
               elapsed: index,
               calories: 0,
@@ -115,7 +111,7 @@ void main() {
             record: Record(
               id: recordIdOffset + index + countChunk,
               activityId: activity.id,
-              timeStamp: activity.start + (index + countChunk) * 1000,
+              timeStamp: activity.start.add(Duration(seconds: index + countChunk)),
               distance: distancePerTick * (index + countChunk),
               elapsed: index + countChunk,
               calories: (caloriesPerTick * (index + countChunk)).round(),
@@ -134,7 +130,7 @@ void main() {
             record: Record(
               id: recordIdOffset + index + countChunk + movingCount,
               activityId: activity.id,
-              timeStamp: activity.start + (index + countChunk + movingCount) * 1000,
+              timeStamp: activity.start.add(Duration(seconds: index + countChunk + movingCount)),
               distance: movingRecords.last.record.distance,
               elapsed: index + countChunk + movingCount,
               calories: movingRecords.last.record.calories,
@@ -176,9 +172,8 @@ void main() {
         expect(importedActivity!.deviceId, activity.deviceId);
         expect(importedActivity.deviceName, activity.deviceName);
         expect(importedActivity.hrmId, activity.hrmId);
-        expect(importedActivity.start, activity.start);
-        expect(importedActivity.startDateTime?.millisecondsSinceEpoch,
-            closeTo(activity.startDateTime?.millisecondsSinceEpoch ?? 0, 1000));
+        expect(
+            importedActivity.start.millisecondsSinceEpoch, activity.start.millisecondsSinceEpoch);
         expect(importedActivity.fourCC, activity.fourCC);
         expect(importedActivity.sport, activity.sport);
         expect(importedActivity.powerFactor, activity.powerFactor);
@@ -187,7 +182,7 @@ void main() {
         expect(importedActivity.hrmCalorieFactor, activity.hrmCalorieFactor);
         expect(importedActivity.hrBasedCalories, activity.hrBasedCalories);
         expect(importedActivity.timeZone, activity.timeZone);
-        expect(importedActivity.end, activity.end);
+        expect(importedActivity.end!.millisecondsSinceEpoch, activity.end!.millisecondsSinceEpoch);
         expect(importedActivity.distance, activity.distance);
         expect(importedActivity.elapsed, activity.elapsed);
         expect(importedActivity.calories, activity.calories);
@@ -198,21 +193,19 @@ void main() {
         expect(importedActivity.trainingPeaksUploaded, activity.trainingPeaksUploaded);
         expect(importedActivity.stravaId, activity.stravaId);
         expect(importedActivity.uaWorkoutId, activity.uaWorkoutId);
-        expect(importedActivity.suuntoUploadId, 0); // Not used any more
         expect(importedActivity.suuntoUploadIdentifier, activity.suuntoUploadIdentifier);
         expect(importedActivity.suuntoWorkoutUrl, activity.suuntoWorkoutUrl);
-        expect(importedActivity.trainingPeaksAthleteId, 0); // Not used any more
         expect(
             importedActivity.trainingPeaksFileTrackingUuid, activity.trainingPeaksFileTrackingUuid);
         expect(importedActivity.trainingPeaksWorkoutId, activity.trainingPeaksWorkoutId);
         expect(importedActivity.movingTime, activity.movingTime);
 
-        final importedRecords =
-            await database.recordDao.findAllActivityRecords(importedActivity.id!);
+        final importedRecords = await DbUtils().getRecords(importedActivity.id);
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);
-          expect(pairs[0].timeStamp, pairs[1].timeStamp);
+          expect(pairs[0].timeStamp!.millisecondsSinceEpoch,
+              pairs[1].timeStamp!.millisecondsSinceEpoch);
           expect(pairs[0].distance, closeTo(pairs[1].distance!, 1e-2));
           expect(pairs[0].elapsed, pairs[1].elapsed);
           expect(pairs[0].calories, pairs[1].calories);
@@ -222,6 +215,9 @@ void main() {
           expect(pairs[0].heartRate, pairs[1].heartRate);
           expect(pairs[0].sport, pairs[1].sport);
         }
+
+        isar.records.clearSync();
+        isar.activities.clearSync();
       });
     });
   });
@@ -231,6 +227,10 @@ void main() {
     getRandomInts(smallRepetition, 300, rnd).forEach((recordCount) {
       recordCount += 3;
       test('$recordCount', () async {
+        final isar = Get.find<Isar>() as InMemoryDatabase;
+        isar.records.clearSync();
+        isar.activities.clearSync();
+
         await initPrefServiceForTest();
         final packageInfo = PackageInfo(
           appName: "Track My Indoor Workout",
@@ -239,16 +239,6 @@ void main() {
           version: "1.0.199",
         );
         Get.put<PackageInfo>(packageInfo);
-        final hasDB = Get.isRegistered<AppDatabase>();
-        final database = hasDB ? Get.find<AppDatabase>() : InMemoryDatabase();
-        if (hasDB) {
-          final inMemoryDB = database as InMemoryDatabase;
-          inMemoryDB.activityDaoImpl.activities = [];
-          inMemoryDB.recordDaoImpl.records = [];
-        } else {
-          Get.put<AppDatabase>(database);
-        }
-
         final oneSecondAgo = DateTime.now().subtract(const Duration(seconds: 1));
         final descriptor = DeviceFactory.getSchwinnIcBike();
         final calories = rnd.nextInt(1000);
@@ -258,8 +248,8 @@ void main() {
           deviceName: descriptor.modelName,
           deviceId: mPowerImportDeviceId,
           hrmId: mockName(),
-          start: oneSecondAgo.millisecondsSinceEpoch,
-          end: oneSecondAgo.millisecondsSinceEpoch + recordCount * 1000,
+          start: oneSecondAgo,
+          end: oneSecondAgo.add(Duration(seconds: recordCount)),
           distance: distance,
           elapsed: recordCount,
           movingTime: recordCount * 1000,
@@ -271,13 +261,10 @@ void main() {
           trainingPeaksUploaded: rnd.nextBool(),
           stravaId: rnd.nextInt(1000000),
           uaWorkoutId: rnd.nextInt(1000000),
-          suuntoUploadId: rnd.nextInt(1000000),
           suuntoUploadIdentifier: mockUUID(),
           suuntoWorkoutUrl: mockUrl("https", true),
           trainingPeaksFileTrackingUuid: mockUUID(),
-          trainingPeaksAthleteId: rnd.nextInt(1000000),
           trainingPeaksWorkoutId: rnd.nextInt(1000000),
-          startDateTime: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.sport,
           powerFactor: rnd.nextDouble(),
@@ -338,9 +325,8 @@ void main() {
         expect(importedActivity!.deviceId, activity.deviceId);
         expect(importedActivity.deviceName, activity.deviceName);
         expect(importedActivity.hrmId, activity.hrmId);
-        expect(importedActivity.start, activity.start);
-        expect(importedActivity.startDateTime?.millisecondsSinceEpoch,
-            closeTo(activity.startDateTime?.millisecondsSinceEpoch ?? 0, 1000));
+        expect(
+            importedActivity.start.millisecondsSinceEpoch, activity.start.millisecondsSinceEpoch);
         expect(importedActivity.fourCC, activity.fourCC);
         expect(importedActivity.sport, activity.sport);
         expect(importedActivity.powerFactor, activity.powerFactor);
@@ -349,7 +335,7 @@ void main() {
         expect(importedActivity.hrmCalorieFactor, activity.hrmCalorieFactor);
         expect(importedActivity.hrBasedCalories, activity.hrBasedCalories);
         expect(importedActivity.timeZone, activity.timeZone);
-        expect(importedActivity.end, activity.end);
+        expect(importedActivity.end!.millisecondsSinceEpoch, activity.end!.millisecondsSinceEpoch);
         expect(importedActivity.distance, activity.distance);
         expect(importedActivity.elapsed, activity.elapsed);
         expect(importedActivity.calories, activity.calories);
@@ -360,21 +346,19 @@ void main() {
         expect(importedActivity.trainingPeaksUploaded, activity.trainingPeaksUploaded);
         expect(importedActivity.stravaId, activity.stravaId);
         expect(importedActivity.uaWorkoutId, activity.uaWorkoutId);
-        expect(importedActivity.suuntoUploadId, 0); // Not used any more
         expect(importedActivity.suuntoUploadIdentifier, activity.suuntoUploadIdentifier);
         expect(importedActivity.suuntoWorkoutUrl, activity.suuntoWorkoutUrl);
-        expect(importedActivity.trainingPeaksAthleteId, 0); // Not used any more
         expect(
             importedActivity.trainingPeaksFileTrackingUuid, activity.trainingPeaksFileTrackingUuid);
         expect(importedActivity.trainingPeaksWorkoutId, activity.trainingPeaksWorkoutId);
         expect(importedActivity.movingTime, activity.movingTime);
 
-        final importedRecords =
-            await database.recordDao.findAllActivityRecords(importedActivity.id!);
+        final importedRecords = await DbUtils().getRecords(importedActivity.id);
         expect(importedRecords.length, records.length);
         for (final pairs in IterableZip<Record>([importedRecords, records.map((e) => e.record)])) {
           expect(pairs[0].activityId, importedActivity.id);
-          expect(pairs[0].timeStamp, pairs[1].timeStamp);
+          expect(pairs[0].timeStamp!.millisecondsSinceEpoch,
+              pairs[1].timeStamp!.millisecondsSinceEpoch);
           expect(pairs[0].distance, pairs[1].distance);
           expect(pairs[0].elapsed, pairs[1].elapsed);
           expect(pairs[0].calories, pairs[1].calories);
@@ -384,6 +368,9 @@ void main() {
           expect(pairs[0].heartRate, pairs[1].heartRate);
           expect(pairs[0].sport, pairs[1].sport);
         }
+
+        isar.records.clearSync();
+        isar.activities.clearSync();
       });
     });
   });

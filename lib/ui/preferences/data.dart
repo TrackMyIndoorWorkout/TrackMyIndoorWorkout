@@ -4,12 +4,12 @@ import 'package:pref/pref.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/calculate_gps.dart';
-import '../../persistence/database.dart';
 import '../../preferences/data_stream_gap_sound_effect.dart';
 import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
+import '../../persistence/isar/db_utils.dart';
 import '../../utils/sound.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -73,11 +73,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
             "is still there under the hood. Use the button bellow to fix those "
             "activities."),
         onTap: () async {
-          final database = Get.find<AppDatabase>();
-          final unfinished = await database.activityDao.findUnfinishedActivities();
+          final dbUtils = DbUtils();
+          final unfinished = await dbUtils.unfinishedActivities();
           var counter = 0;
           for (final activity in unfinished) {
-            final finalized = await database.finalizeActivity(activity);
+            final finalized = await dbUtils.finalizeActivity(activity);
             if (finalized) {
               counter++;
             }

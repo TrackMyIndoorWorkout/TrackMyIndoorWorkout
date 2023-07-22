@@ -8,6 +8,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -30,13 +31,14 @@ import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../devices/gatt_maps.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/device_usage.dart';
 import '../preferences/auto_connect.dart';
-import '../persistence/database.dart';
+import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/log_level.dart';
-import '../persistence/models/device_usage.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
@@ -56,6 +58,7 @@ import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
 import 'parts/circular_menu.dart';
+import 'parts/database_migration.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
@@ -109,50 +112,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
       try {
         FlutterBluePlus.instance.stopScan();
       } on Exception catch (e, stack) {
-        Logging.logException(
-            _logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
+        Logging()
+            .logException(_logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
       }
     }
 
     _heartRateMonitor?.detach();
     super.dispose();
-  }
-
-  Future<void> _openDatabase() async {
-    final database = await $FloorAppDatabase.databaseBuilder('app_database.db').addMigrations([
-      migration1to2,
-      migration2to3,
-      migration3to4,
-      migration4to5,
-      migration5to6,
-      migration6to7,
-      migration7to8,
-      migration8to9,
-      migration9to10,
-      migration10to11,
-      migration11to12,
-      migration12to13,
-      migration13to14,
-      migration14to15,
-      migration15to16,
-      migration16to17,
-      migration17to18,
-    ]).build();
-    if (AppDatabase.additional15to16Migration) {
-      await database.correctCalorieFactors();
-    }
-
-    if (AppDatabase.additional16to17Migration) {
-      await database.initializeExistingActivityMovingTimes();
-    }
-
-    Get.put<AppDatabase>(database, permanent: true);
-    final addressNames = Get.find<AddressNames>();
-    await database.getAddressNameDictionary(addressNames);
-
-    if (_instantScan) {
-      await _startScan(true);
-    }
   }
 
   void _readPreferencesValues() {
@@ -178,26 +144,46 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _readDeviceSports() async {
     _deviceSport.clear();
-    final database = Get.find<AppDatabase>();
-    for (final deviceUsage in await database.deviceUsageDao.findAllDeviceUsages()) {
+    final database = Get.find<Isar>();
+    for (final deviceUsage in await database.deviceUsages.where().findAll()) {
       _deviceSport[deviceUsage.mac] = deviceUsage.sport;
     }
   }
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      Logging.log(_logLevel, logLevelInfo, tag, "startScan", "Scan already in progress");
+      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan already in progress");
 
       return;
+    }
+
+    final prefService = Get.find<BasePrefService>();
+    if (prefService.get<bool>(databaseMigrationNeededTag) ?? databaseMigrationNeededDefault) {
+      await Get.bottomSheet(
+        const SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: DatabaseMigrationBottomSheet(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        isScrollControlled: true,
+        ignoreSafeArea: false,
+        enableDrag: false,
+      );
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
-      Logging.log(_logLevel, logLevelInfo, tag, "startScan", "bluetooth check failed");
+      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "bluetooth check failed");
 
       return;
     }
 
-    Logging.log(_logLevel, logLevelInfo, tag, "startScan", "Scan initiated");
+    Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan initiated");
 
     _readPreferencesValues();
     await _readDeviceSports();
@@ -235,7 +221,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               _lastEquipmentIds.isNotEmpty &&
               lasts.isNotEmpty &&
               !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-        Logging.log(_logLevel, logLevelWarning, tag, "_startScan finished pre auto-connect",
+        Logging().log(_logLevel, logLevelWarning, tag, "_startScan finished pre auto-connect",
             "advertisementCache miss");
       } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
         if (_fitnessEquipment != null) {
@@ -276,7 +262,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         }
       }
     } on Exception catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
           _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
     }
   }
@@ -310,11 +296,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void initState() {
     initializeDateFormatting();
     super.initState();
+
+    final addressNames = Get.find<AddressNames>();
+    DbUtils().getAddressNameDictionary(addressNames);
+
     _readPreferencesValues();
     _isScanning = false;
     _scanStreamSubscription =
         _throttledScanStream.listen((scanResults) => _scanStreamController.add(scanResults));
-    _openDatabase();
 
     _captionStyle = Get.textTheme.titleLarge!;
     _subtitleStyle = _captionStyle.apply(fontFamily: fontFamily);
@@ -372,10 +361,23 @@ class FindDevicesState extends State<FindDevicesScreen> {
           );
 
           if (agreed) {
-            prefService.set(welcomePresentedTag, true);
+            prefService.set<bool>(welcomePresentedTag, true);
+            if (_instantScan) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _startScan(true);
+              });
+            }
           }
         });
+      } else if (_instantScan) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _startScan(true);
+        });
       }
+    } else if (_instantScan) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startScan(true);
+      });
     }
   }
 
@@ -384,7 +386,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     BluetoothConnectionState initialState,
     bool manual,
   ) async {
-    Logging.logVersion(Get.find<PackageInfo>());
+    Logging().logVersion(Get.find<PackageInfo>());
 
     if (!_advertisementCache.hasEntry(device.remoteId.str)) {
       return false;
@@ -412,8 +414,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
       }
     }
 
-    final database = Get.find<AppDatabase>();
-    var deviceUsage = await database.deviceUsageDao.findDeviceUsageByMac(device.remoteId.str);
+    final database = Get.find<Isar>();
+    var deviceUsage = await database.deviceUsages
+        .where()
+        .filter()
+        .macEqualTo(device.remoteId.str)
+        .sortByTimeDesc()
+        .findFirst();
     final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
@@ -607,7 +614,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
         if (inferredSport == null) {
           Get.snackbar("Error", "Could not infer sport of the device");
-          Logging.log(_logLevel, logLevelError, tag, "goToRecording",
+          Logging().log(_logLevel, logLevelError, tag, "goToRecording",
               "Could not infer sport of the device");
 
           setState(() {
@@ -624,9 +631,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
               mac: device.remoteId.str,
               name: device.nonEmptyName,
               manufacturer: advertisementDigest.manufacturer,
-              time: DateTime.now().millisecondsSinceEpoch,
+              time: DateTime.now(),
             );
-            await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage!);
+            });
           }
         }
       }
@@ -669,22 +678,28 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
           descriptor.sport = sportPick;
           if (deviceUsage != null) {
-            deviceUsage.sport = sportPick;
-            deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-            await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+            database.writeTxnSync(() {
+              deviceUsage!.sport = sportPick;
+              deviceUsage.time = DateTime.now();
+              database.deviceUsages.putSync(deviceUsage);
+            });
           } else {
             deviceUsage = DeviceUsage(
               sport: sportPick,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
               manufacturer: advertisementDigest.manufacturer,
-              time: DateTime.now().millisecondsSinceEpoch,
+              time: DateTime.now(),
             );
-            await database.deviceUsageDao.insertDeviceUsage(deviceUsage);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage!);
+            });
           }
         } else {
           descriptor.sport = deviceUsage.sport;
-          await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+          database.writeTxnSync(() {
+            database.deviceUsages.putSync(deviceUsage!);
+          });
         }
       }
 
@@ -707,7 +722,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               }
             }
           } on Exception catch (e, stack) {
-            Logging.logException(_logLevel, tag, "goToRecording preConnectLogic",
+            Logging().logException(_logLevel, tag, "goToRecording preConnectLogic",
                 "fitnessEquipment.disconnect", e, stack);
           }
 
@@ -746,8 +761,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (success && navigate) {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
-        deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-        await database.deviceUsageDao.updateDeviceUsage(deviceUsage);
+        database.writeTxnSync(() {
+          deviceUsage!.time = DateTime.now();
+          database.deviceUsages.putSync(deviceUsage);
+        });
       }
 
       await Get.to(() => RecordingScreen(
@@ -834,7 +851,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                 BluetoothConnectionState.connected) {
                               Get.snackbar("Info", "HRM Already connected");
 
-                              Logging.log(_logLevel, logLevelWarning, tag, "HRM click",
+                              Logging().log(_logLevel, logLevelWarning, tag, "HRM click",
                                   "HRM Already connected");
                             } else {
                               setState(() {
@@ -903,7 +920,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                       children: snapshot.data!.where((d) => d.isWorthy(_filterDevices)).map((r) {
                         addScannedDevice(r);
                         if (_logLevel >= logLevelInfo) {
-                          Logging.log(_logLevel, logLevelInfo, tag, "ScanResult", r.toString());
+                          Logging().log(_logLevel, logLevelInfo, tag, "ScanResult", r.toString());
                         }
 
                         if (_autoConnect && _lastEquipmentIds.contains(r.device.remoteId.str)) {
@@ -1075,11 +1092,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _themeManager.getBlueFab(Icons.coffee, () async {
             Get.to(() => const DonationScreen());
           }),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
-            final database = Get.find<AppDatabase>();
-            final hasLeaderboardData =
-                (await database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
-            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          _themeManager.getBlueFab(Icons.list_alt, () {
+            Get.to(() => const ActivitiesScreen());
           }),
           _isScanning
               ? _themeManager.getBlueFab(Icons.stop, () async {

@@ -9,6 +9,6 @@ class CadenceData {
 
   @override
   String toString() {
-    return "($time, $revolutions, ${timeStamp.millisecondsSinceEpoch})";
+    return "($time, $revolutions, $timeStamp)";
   }
 }

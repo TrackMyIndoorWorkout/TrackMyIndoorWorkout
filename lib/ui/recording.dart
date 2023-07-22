@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -23,10 +24,10 @@ import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../persistence/models/workout_summary.dart';
-import '../persistence/database.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
+import '../persistence/isar/workout_summary.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
@@ -186,7 +187,7 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
-  AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
@@ -326,20 +327,22 @@ class RecordingState extends State<RecordingScreen> {
           (workoutState == WorkoutState.moving ||
               workoutState == WorkoutState.startedMoving ||
               workoutState == WorkoutState.justPaused)) {
-        await _database.recordDao.insertRecord(record);
+        _database.writeTxnSync(() {
+          _database.records.putSync(record);
+        });
       }
 
       setState(() {
         if (!_simplerUi) {
-          _graphData.add(record.display());
+          _graphData.add(DisplayRecord.fromRecord(record));
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
+            _graphAvgData.add(_accu.averageDisplayRecord(record.timeStamp));
           }
 
           if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
+            _graphMaxData.add(_accu.maximumDisplayRecord(record.timeStamp));
           }
 
           if (_pointCount > 0 && _graphData.length > _pointCount) {
@@ -473,18 +476,18 @@ class RecordingState extends State<RecordingScreen> {
     final now = DateTime.now();
     var continued = false;
     if (!_uxDebug) {
-      final unfinished =
-          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.remoteId.str);
+      final dbUtils = DbUtils();
+      final unfinished = await dbUtils.unfinishedDeviceActivities(widget.device.remoteId.str);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
-        if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
+        if (unfinished.first.start.isAfter(yesterday)) {
           _activity = unfinished.first;
           continued = true;
         }
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await _database.finalizeActivity(activity);
+            await dbUtils.finalizeActivity(activity);
           }
         }
       }
@@ -500,8 +503,7 @@ class RecordingState extends State<RecordingScreen> {
         deviceName: widget.device.nonEmptyName,
         deviceId: widget.device.remoteId.str,
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? "",
-        start: now.millisecondsSinceEpoch,
-        startDateTime: now,
+        start: now,
         sport: widget.descriptor.sport,
         powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
         calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
@@ -514,8 +516,9 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (!continued) {
-        final id = await _database.activityDao.insertActivity(_activity!);
-        _activity!.id = id;
+        _database.writeTxnSync(() {
+          _database.activitys.putSync(_activity!);
+        });
       }
     }
 
@@ -527,10 +530,16 @@ class RecordingState extends State<RecordingScreen> {
       _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
-            ? await _database.workoutSummaryDao
-                .findAllWorkoutSummariesBySport(widget.descriptor.sport)
-            : await _database.workoutSummaryDao
-                .findAllWorkoutSummariesByDevice(widget.device.remoteId.str);
+            ? await _database.workoutSummarys
+                .filter()
+                .sportEqualTo(widget.descriptor.sport)
+                .sortBySpeedDesc()
+                .findAll()
+            : await _database.workoutSummarys
+                .filter()
+                .deviceIdEqualTo(widget.device.remoteId.str)
+                .sortBySpeedDesc()
+                .findAll();
 
         if (_showPacer && _pacerWorkout != null) {
           int insertionPoint = 0;
@@ -938,11 +947,11 @@ class RecordingState extends State<RecordingScreen> {
 
     _rankInfoColumnCount = 2;
     if (_displayLapCounter) {
-      _rankInfoColumnCount += 1;
+      _rankInfoColumnCount++;
     }
 
     if (_avgSpeedOnTrack) {
-      _rankInfoColumnCount += 1;
+      _rankInfoColumnCount++;
     }
 
     final isLight = !_themeManager.isDark();
@@ -955,7 +964,6 @@ class RecordingState extends State<RecordingScreen> {
 
     _initializeHeartRateMonitor(false);
     _connectOnDemand();
-    _database = Get.find<AppDatabase>();
     _isLocked = false;
     _unlockButtonIndex = 0;
     if (_unlockKeys.isEmpty) {
@@ -1028,11 +1036,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
-      records,
       false,
       _calculateGps,
       false,
@@ -1062,7 +1068,7 @@ class RecordingState extends State<RecordingScreen> {
         await _fitnessEquipment?.stopWorkout();
       }
     } on Exception catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
           _logLevel, tag, "_stopMeasurement", "_fitnessEquipment.stopWorkout()", e, stack);
     }
 
@@ -1076,15 +1082,16 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
-        await _database.workoutSummaryDao.insertWorkoutSummary(
-            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
+        final workoutSummary =
+            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
+        _database.writeTxnSync(() {
+          _database.workoutSummarys.putSync(workoutSummary);
+        });
       }
 
-      final retVal = await _database.activityDao.updateActivity(_activity!);
-      if (retVal <= 0 && !quick) {
-        Get.snackbar("Warning", "Could not save activity");
-        return;
-      }
+      _database.writeTxnSync(() {
+        _database.activitys.putSync(_activity!);
+      });
 
       if (!quick && _activity != null) {
         if (_instantUpload) {
@@ -1107,7 +1114,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1118,7 +1125,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.power,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1131,7 +1138,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.power,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1146,7 +1153,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
         animationDuration: 0,
@@ -1158,7 +1165,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1171,7 +1178,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1186,7 +1193,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1198,7 +1205,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.cadence,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1211,7 +1218,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.cadence,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1226,7 +1233,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1238,7 +1245,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.heartRate,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1251,7 +1258,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.heartRate,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1344,7 +1351,7 @@ class RecordingState extends State<RecordingScreen> {
         return Tuple2<int, double>(rank, averageSpeed);
       }
 
-      rank += 1;
+      rank++;
     }
 
     return Tuple2<int, double>(rank, averageSpeed);
@@ -1739,9 +1746,10 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final unfinished = await _database.activityDao.findUnfinishedActivities();
+            final dbUtils = DbUtils();
+            final unfinished = await dbUtils.unfinishedActivities();
             for (final activity in unfinished) {
-              await _database.finalizeActivity(activity);
+              await dbUtils.finalizeActivity(activity);
             }
           }
         }
@@ -2266,10 +2274,8 @@ class RecordingState extends State<RecordingScreen> {
           _themeManager.getBlueFab(Icons.cloud_upload, () async {
             await _activityUpload(false);
           }),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
-            final hasLeaderboardData =
-                (await _database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
-            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          _themeManager.getBlueFab(Icons.list_alt, () {
+            Get.to(() => const ActivitiesScreen());
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
@@ -2340,8 +2346,10 @@ class RecordingState extends State<RecordingScreen> {
           String hrmId = await _initializeHeartRateMonitor(true);
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _activity!.hrmId = hrmId;
-            _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
-            await _database.activityDao.updateActivity(_activity!);
+            _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+            _database.writeTxnSync(() async {
+              _database.activitys.putSync(_activity!);
+            });
           }
         }),
         _themeManager.getBlueFab(

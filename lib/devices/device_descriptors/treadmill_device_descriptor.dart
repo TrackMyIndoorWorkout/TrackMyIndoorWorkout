@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/guid_ex.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
@@ -115,7 +115,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     if (flag % 2 == 1) {
       // UInt8, km/min with 0.1 resolution
       paceMetric = ByteMetricDescriptor(lsb: byteCounter, divider: 10.0);
-      byteCounter += 1;
+      byteCounter++;
     }
 
     return advanceFlag(flag);

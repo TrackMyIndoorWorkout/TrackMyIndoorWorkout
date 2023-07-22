@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
@@ -130,7 +130,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       command += crLf;
     }
 
-    Logging.log(logLevel, logLevelInfo, tag, "_executeControlOperationCore command", command);
+    Logging().log(logLevel, logLevelInfo, tag, "_executeControlOperationCore command", command);
 
     final commandBytes = utf8.encode(command);
     int chunkBeginning = 0;
@@ -141,7 +141,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         // Response could be picked up in the subscription listener
         chunkBeginning += mtuSize;
       } on Exception catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
             logLevel, tag, "_executeControlOperationCore", "controlPoint.write", e, stack);
       }
     }
@@ -151,7 +151,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(logLevel, logLevelInfo, tag, "executeControlOperation", "$opCode");
+    Logging().log(logLevel, logLevelInfo, tag, "executeControlOperation", "$opCode");
 
     if (controlPoint == null || opCode == requestControl) {
       return;
@@ -261,7 +261,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     final seenIt = i < iterationCount;
-    Logging.log(logLevel, logLevelInfo, tag, "_waitForResponse", "$seenIt");
+    Logging().log(logLevel, logLevelInfo, tag, "_waitForResponse", "$seenIt");
     return seenIt;
   }
 
@@ -274,7 +274,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         responses.removeFirst();
       }
 
-      Logging.log(logLevel, logLevelInfo, tag, "registerResponse", "$responses");
+      Logging().log(logLevel, logLevelInfo, tag, "registerResponse", "$responses");
     }
   }
 }

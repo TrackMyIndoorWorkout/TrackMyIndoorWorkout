@@ -163,7 +163,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _weightData?.setNotifyValue(true);
     } on Exception catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
           _logLevel, tag, "_prepareSpinDownCore", "_weightData.setNotifyValue", e, stack);
     }
 
@@ -204,8 +204,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
         } on Exception catch (e, stack) {
-          Logging.logException(
-              _logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
+          Logging()
+              .logException(_logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -329,7 +329,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
     } on Exception catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
           _logLevel, tag, "_onWeightInputButtonPressed", "_weightData.write", e, stack);
       setState(() {
         _calibrationState = CalibrationState.weighInProblem;
@@ -394,7 +394,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
     } on Exception catch (e, stack) {
-      Logging.logException(_logLevel, tag, "onCalibrationButtonPressed",
+      Logging().logException(_logLevel, tag, "onCalibrationButtonPressed",
           "controlPoint.write or status.setNotifyValue(true)", e, stack);
     }
 

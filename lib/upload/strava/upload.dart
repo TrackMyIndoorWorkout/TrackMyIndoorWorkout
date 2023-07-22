@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:isar/isar.dart';
 import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import '../../persistence/isar/activity.dart';
 
 import 'constants.dart';
 import 'strava_status_code.dart';
@@ -84,9 +84,12 @@ abstract class Upload {
       final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
       if (decodedResponse.id > 0) {
-        final database = Get.find<AppDatabase>();
-        activity.markUploaded(decodedResponse.id);
-        await database.activityDao.updateActivity(activity);
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          activity.markUploaded(decodedResponse.id);
+          database.activitys.putSync(activity);
+        });
+
         debugPrint('id ${decodedResponse.id}');
 
         await Future<void>.delayed(const Duration(milliseconds: 500));

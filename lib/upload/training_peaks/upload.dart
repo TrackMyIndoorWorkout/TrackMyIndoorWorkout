@@ -6,10 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import '../../persistence/isar/activity.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../utils/constants.dart';
 
@@ -75,8 +75,8 @@ abstract class Upload {
         '"Data": "$fileContentString",'
         '"Title": "${persistenceValues["name"]}",'
         '"Comment": "${persistenceValues["description"]}",'
-        '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.startDateTime!)}",'
-        '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.startDateTime!)}",'
+        '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.start)}",'
+        '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.start)}",'
         '"SetWorkoutPublic": $workoutPublic,'
         '"Type": "${trainingPeaksSport(activity.sport)}"}';
     const uploadUrl = tpProductionApiUrlBase + uploadPath;
@@ -104,9 +104,11 @@ abstract class Upload {
       final fileTrackingUuid = statusUrl.split("/").last;
       debugPrint('trackingUUID $fileTrackingUuid');
       if (fileTrackingUuid.isNotEmpty) {
-        final database = Get.find<AppDatabase>();
-        activity.markTrainingPeaksUploading(fileTrackingUuid);
-        await database.activityDao.updateActivity(activity);
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          activity.markTrainingPeaksUploading(fileTrackingUuid);
+          database.activitys.putSync(activity);
+        });
 
         await Future<void>.delayed(const Duration(milliseconds: 500));
 
@@ -166,8 +168,10 @@ abstract class Upload {
                         .whereNotNull()
                         .toList(growable: false);
                     if (workoutIds.isNotEmpty) {
-                      activity.markTrainingPeaksUploaded(workoutIds.first);
-                      await database.activityDao.updateActivity(activity);
+                      database.writeTxnSync(() {
+                        activity.markTrainingPeaksUploaded(workoutIds.first);
+                        database.activitys.putSync(activity);
+                      });
                     }
                   }
                 }

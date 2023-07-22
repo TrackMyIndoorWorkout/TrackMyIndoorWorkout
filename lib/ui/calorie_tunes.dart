@@ -3,10 +3,10 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 
-import '../persistence/models/calorie_tune.dart';
-import '../persistence/database.dart';
+import '../persistence/isar/calorie_tune.dart';
 import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
@@ -19,7 +19,7 @@ class CalorieTunesScreen extends StatefulWidget {
 }
 
 class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
@@ -88,10 +88,12 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
               middleText: 'Are you sure to delete this Tune?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.calorieTuneDao.deleteCalorieTune(calorieTune);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.calorieTunes.deleteSync(calorieTune.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -118,8 +120,12 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.calorieTuneDao.findCalorieTunes(limit, offset);
+            final data = await _database.calorieTunes
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -139,9 +145,8 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         ),
         itemBuilder: (context, _, item) {
           final calorieTune = item as CalorieTune;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(calorieTune.time);
+          final timeString = DateFormat.Hms().format(calorieTune.time);
           final hrBasedString = calorieTune.hrBased ? "HR based" : "Non HR based";
           final caloriePercent = (calorieTune.calorieFactor * 100).round();
           return Card(

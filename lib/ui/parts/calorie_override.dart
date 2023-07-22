@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/calorie_tune.dart';
+import 'package:isar/isar.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -74,21 +74,31 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final database = Get.find<AppDatabase>();
+              final database = Get.find<Isar>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
-              final calorieTune =
-                  await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
+              final calorieTune = await database.calorieTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .and()
+                  .hrBasedEqualTo(widget.hrBased)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (calorieTune != null) {
-                calorieTune.calorieFactor = calorieFactor;
-                await database.calorieTuneDao.updateCalorieTune(calorieTune);
+                database.writeTxnSync(() {
+                  calorieTune.calorieFactor = calorieFactor;
+                  database.calorieTunes.putSync(calorieTune);
+                });
               } else {
-                final calorieTune = CalorieTune(
-                  mac: widget.deviceId,
-                  calorieFactor: calorieFactor,
-                  hrBased: widget.hrBased,
-                  time: DateTime.now().millisecondsSinceEpoch,
-                );
-                await database.calorieTuneDao.insertCalorieTune(calorieTune);
+                database.writeTxnSync(() {
+                  final calorieTune = CalorieTune(
+                    mac: widget.deviceId,
+                    calorieFactor: calorieFactor,
+                    hrBased: widget.hrBased,
+                    time: DateTime.now(),
+                  );
+                  database.calorieTunes.putSync(calorieTune);
+                });
               }
               Get.back(result: calorieFactor);
             }),

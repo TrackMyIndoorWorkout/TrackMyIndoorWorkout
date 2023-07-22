@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/concept2.dart';
 import '../metric_descriptors/metric_descriptor.dart';
@@ -46,7 +46,7 @@ class C2AdditionalStatus2 extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       calories: getCalories(data)?.toInt(),
       sport: ActivityType.rowing,
     );

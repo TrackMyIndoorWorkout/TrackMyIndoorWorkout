@@ -46,13 +46,13 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextOneLine(
-                          widget.devices[index].item2,
+                          widget.devices[index].item1,
                           style: _textStyle,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,
                         ),
                         TextOneLine(
-                          widget.devices[index].item1.shortAddressString(),
+                          widget.devices[index].item2.shortAddressString(),
                           style: _subTextStyle,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,

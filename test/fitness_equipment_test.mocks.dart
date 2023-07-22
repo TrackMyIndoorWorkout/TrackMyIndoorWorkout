@@ -261,18 +261,6 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
 /// See the documentation for Mockito's code generation for more information.
 class MockBluetoothService extends _i1.Mock implements _i2.BluetoothService {
   @override
-  _i2.Guid get serviceUuid => (super.noSuchMethod(
-        Invocation.getter(#serviceUuid),
-        returnValue: _FakeGuid_1(
-          this,
-          Invocation.getter(#serviceUuid),
-        ),
-        returnValueForMissingStub: _FakeGuid_1(
-          this,
-          Invocation.getter(#serviceUuid),
-        ),
-      ) as _i2.Guid);
-  @override
   _i2.DeviceIdentifier get remoteId => (super.noSuchMethod(
         Invocation.getter(#remoteId),
         returnValue: _FakeDeviceIdentifier_0(
@@ -284,6 +272,18 @@ class MockBluetoothService extends _i1.Mock implements _i2.BluetoothService {
           Invocation.getter(#remoteId),
         ),
       ) as _i2.DeviceIdentifier);
+  @override
+  _i2.Guid get serviceUuid => (super.noSuchMethod(
+        Invocation.getter(#serviceUuid),
+        returnValue: _FakeGuid_1(
+          this,
+          Invocation.getter(#serviceUuid),
+        ),
+        returnValueForMissingStub: _FakeGuid_1(
+          this,
+          Invocation.getter(#serviceUuid),
+        ),
+      ) as _i2.Guid);
   @override
   bool get isPrimary => (super.noSuchMethod(
         Invocation.getter(#isPrimary),
@@ -333,18 +333,6 @@ class MockBluetoothService extends _i1.Mock implements _i2.BluetoothService {
 /// See the documentation for Mockito's code generation for more information.
 class MockBluetoothCharacteristic extends _i1.Mock implements _i2.BluetoothCharacteristic {
   @override
-  _i2.Guid get characteristicUuid => (super.noSuchMethod(
-        Invocation.getter(#characteristicUuid),
-        returnValue: _FakeGuid_1(
-          this,
-          Invocation.getter(#characteristicUuid),
-        ),
-        returnValueForMissingStub: _FakeGuid_1(
-          this,
-          Invocation.getter(#characteristicUuid),
-        ),
-      ) as _i2.Guid);
-  @override
   _i2.DeviceIdentifier get remoteId => (super.noSuchMethod(
         Invocation.getter(#remoteId),
         returnValue: _FakeDeviceIdentifier_0(
@@ -366,6 +354,18 @@ class MockBluetoothCharacteristic extends _i1.Mock implements _i2.BluetoothChara
         returnValueForMissingStub: _FakeGuid_1(
           this,
           Invocation.getter(#serviceUuid),
+        ),
+      ) as _i2.Guid);
+  @override
+  _i2.Guid get characteristicUuid => (super.noSuchMethod(
+        Invocation.getter(#characteristicUuid),
+        returnValue: _FakeGuid_1(
+          this,
+          Invocation.getter(#characteristicUuid),
+        ),
+        returnValueForMissingStub: _FakeGuid_1(
+          this,
+          Invocation.getter(#characteristicUuid),
         ),
       ) as _i2.Guid);
   @override

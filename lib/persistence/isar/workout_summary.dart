@@ -1,49 +1,37 @@
 import 'dart:math';
 
-import 'package:floor/floor.dart';
-import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../utils/constants.dart';
-import '../../utils/display.dart';
+import 'package:isar/isar.dart';
 
-const workoutSummariesTableName = 'workout_summary';
+import '../../../devices/device_descriptors/device_descriptor.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/display.dart';
+
+part 'workout_summary.g.dart';
+
 const pacerIdentifier = "Pacer";
 
-@Entity(
-  tableName: workoutSummariesTableName,
-  indices: [
-    Index(value: ['sport']),
-    Index(value: ['device_id']),
-  ],
-)
+@Collection(inheritance: false)
 class WorkoutSummary {
-  @PrimaryKey(autoGenerate: true)
-  int? id;
-  @ColumnInfo(name: 'device_name')
+  Id id;
   final String deviceName;
-  @ColumnInfo(name: 'device_id')
   final String deviceId;
   final String manufacturer;
-  final int start; // ms since epoch
+  @Index()
+  final DateTime start;
   final double distance; // m
   final int elapsed; // s
-  @ColumnInfo(name: 'moving_time')
   int movingTime; // ms
   late double speed; // km/h
   final String sport;
-  @ColumnInfo(name: 'power_factor')
   final double powerFactor; // Unused
-  @ColumnInfo(name: 'calorie_factor')
   final double calorieFactor; // Unused
-
-  @ignore
-  late DateTime startDateTime;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
   bool get isPacer => manufacturer == pacerIdentifier;
 
   WorkoutSummary({
-    this.id,
+    this.id = Isar.autoIncrement,
     required this.deviceName,
     required this.deviceId,
     required this.manufacturer,
@@ -55,7 +43,6 @@ class WorkoutSummary {
     this.powerFactor = 1.0,
     this.calorieFactor = 1.0,
   }) {
-    startDateTime = DateTime.fromMillisecondsSinceEpoch(start);
     speed = elapsed > 0 ? distance / elapsed * DeviceDescriptor.ms2kmh : 0.0;
   }
 
@@ -92,7 +79,7 @@ class WorkoutSummary {
       deviceName: pacerIdentifier,
       deviceId: pacerIdentifier,
       manufacturer: pacerIdentifier,
-      start: DateTime.now().millisecondsSinceEpoch,
+      start: DateTime.now(),
       distance: 0.0,
       elapsed: 0,
       movingTime: 0,

@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
@@ -108,6 +108,6 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
+    Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 }

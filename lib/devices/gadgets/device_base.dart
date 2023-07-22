@@ -157,7 +157,7 @@ abstract class DeviceBase {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on Exception catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
             logLevel, tag, "connectToControlPoint", "controlPoint.setNotifyValue(true)", e, stack);
       }
 
@@ -169,8 +169,8 @@ abstract class DeviceBase {
       )
           .listen((controlResponse) async {
         if (logLevel >= logLevelInfo) {
-          Logging.log(logLevel, logLevelInfo, tag, "connectToControlPoint controlPointSubscription",
-              controlResponse.toString());
+          Logging().log(logLevel, logLevelInfo, tag,
+              "connectToControlPoint controlPointSubscription", controlResponse.toString());
         }
 
         if (controlResponse.length >= 3 &&
@@ -189,8 +189,8 @@ abstract class DeviceBase {
               logMessage = "Stopped!";
               break;
           }
-          Logging.log(logLevel, logLevelInfo, tag, "connectToControlPoint controlPointSubscription",
-              logMessage);
+          Logging().log(logLevel, logLevelInfo, tag,
+              "connectToControlPoint controlPointSubscription", logMessage);
         }
       });
     }
@@ -212,7 +212,7 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on Exception catch (e, stack) {
-      Logging.logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
+      Logging().logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
 
       const someDelay = Duration(milliseconds: ftmsStatusThreshold);
       await Future.delayed(someDelay);
@@ -221,7 +221,7 @@ abstract class DeviceBase {
       try {
         services = await device!.discoverServices();
       } on Exception catch (e, stack) {
-        Logging.logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
+        Logging().logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
 
         discovering = false;
         return false;
@@ -295,7 +295,7 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on Exception catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
             logLevel, tag, "detach", "characteristic.setNotifyValue(false)", e, stack);
       }
 
@@ -311,7 +311,7 @@ abstract class DeviceBase {
       try {
         await device?.disconnect();
       } on Exception catch (e, stack) {
-        Logging.logException(logLevel, tag, "discover", "device.disconnect()", e, stack);
+        Logging().logException(logLevel, tag, "discover", "device.disconnect()", e, stack);
       }
 
       characteristic = null;
@@ -327,7 +327,7 @@ abstract class DeviceBase {
 
   void logData(List<int> data, String tag) {
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "_listenToData", data.toString());
+      Logging().log(logLevel, logLevelInfo, tag, "_listenToData", data.toString());
     }
   }
 
@@ -363,7 +363,7 @@ abstract class DeviceBase {
     try {
       return await _readBatteryLevelCore();
     } on Exception catch (e, stack) {
-      Logging.logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
+      Logging().logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
       return -1;
     }
   }
@@ -407,8 +407,8 @@ abstract class DeviceBase {
     try {
       return await _cscSensorTypeCore();
     } on Exception catch (e, stack) {
-      Logging.logException(
-          logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
+      Logging()
+          .logException(logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
       return DeviceCategory.smartDevice;
     }
   }
@@ -456,8 +456,8 @@ abstract class DeviceBase {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
       await characteristic?.write(utf8.encode(commandCrLf));
     } on Exception catch (e, stack) {
-      Logging.logException(
-          logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
+      Logging()
+          .logException(logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
       return -1;
     }
 
