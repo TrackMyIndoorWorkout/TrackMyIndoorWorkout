@@ -470,10 +470,10 @@ packages:
     dependency: "direct main"
     description:
       name: group_button
-      sha256: "1382097b97589a66601fbfdf244dc3214e396724ea43899c481fcd40f0d89298"
+      sha256: "138270bde01ff08581695d9489282212bca5c33368d95decba73ed9174ebb669"
       url: "https://pub.dev"
     source: hosted
-    version: "5.3.0"
+    version: "5.3.2"
   http:
     dependency: "direct main"
     description:
