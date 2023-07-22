@@ -20,6 +20,7 @@ import '../device_fourcc.dart';
 import 'device_descriptor.dart';
 
 class KayakFirstDescriptor extends DeviceDescriptor {
+  static const mtuSize = 20;
   static const dataStreamFlag = 0x36; // ASCII 6
   static const separator = 0x3B; // ASCII ;
   static const resetCommand = "1";
@@ -131,12 +132,18 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     Logging.log(logLevel, logLevelInfo, tag, "_executeControlOperationCore command", command);
 
-    try {
-      await controlPoint.write(utf8.encode(command));
-      // Response could be picked up in the subscription listener
-    } on Exception catch (e, stack) {
-      Logging.logException(
-          logLevel, tag, "_executeControlOperationCore", "controlPoint.write", e, stack);
+    final commandBytes = utf8.encode(command);
+    int chunkBeginning = 0;
+    while (chunkBeginning < commandBytes.length) {
+      try {
+        var chunk = commandBytes.skip(chunkBeginning).take(mtuSize).toList(growable: false);
+        await controlPoint.write(chunk);
+        // Response could be picked up in the subscription listener
+        chunkBeginning += mtuSize;
+      } on Exception catch (e, stack) {
+        Logging.logException(
+            logLevel, tag, "_executeControlOperationCore", "controlPoint.write", e, stack);
+      }
     }
   }
 
