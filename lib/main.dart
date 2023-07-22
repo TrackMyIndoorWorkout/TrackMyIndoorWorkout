@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:track_my_indoor_exercise/preferences/database_location.dart';
 
 import 'devices/company_registry.dart';
 import 'preferences/log_level.dart';
@@ -30,7 +31,16 @@ void main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    final dir = await getApplicationDocumentsDirectory();
+    final byteData = await rootBundle.load('assets/timezones_10y.tzf');
+    tz.initializeDatabase(byteData.buffer.asUint8List());
+
+    final prefService = await initPreferences();
+    String dbLocation = prefService.get<String>(databaseLocationTag) ?? databaseLocationDefault;
+    if (dbLocation.isEmpty) {
+      final dbDirectory = await getApplicationDocumentsDirectory();
+      dbLocation = dbDirectory.path;
+    }
+
     final isar = await Isar.open([
       ActivitySchema,
       CalorieTuneSchema,
@@ -41,13 +51,8 @@ void main() async {
       PowerTuneSchema,
       RecordSchema,
       WorkoutSummarySchema,
-    ], directory: dir.path);
+    ], directory: dbLocation);
     Get.put<Isar>(isar, permanent: true);
-
-    final byteData = await rootBundle.load('assets/timezones_10y.tzf');
-    tz.initializeDatabase(byteData.buffer.asUint8List());
-
-    final prefService = await initPreferences();
 
     final companyRegistry = CompanyRegistry();
     await companyRegistry.loadCompanyIdentifiers();

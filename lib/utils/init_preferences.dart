@@ -17,6 +17,7 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
+import '../preferences/database_location.dart';
 import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
@@ -158,6 +159,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
     activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
     activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
+    databaseLocationTag: databaseLocationDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

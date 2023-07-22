@@ -361,7 +361,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           );
 
           if (agreed) {
-            prefService.set(welcomePresentedTag, true);
+            prefService.set<bool>(welcomePresentedTag, true);
             if (_instantScan) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 _startScan(true);

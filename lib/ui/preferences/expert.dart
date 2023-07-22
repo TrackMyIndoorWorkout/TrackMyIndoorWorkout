@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:track_my_indoor_exercise/preferences/database_location.dart';
+import 'package:track_my_indoor_exercise/ui/parts/pick_directory.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
@@ -25,6 +27,8 @@ class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin
 }
 
 class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
+  int _locationEdit = 0;
+
   Future<void> displayNoLogsDialog() async {
     await Get.defaultDialog(
       title: "Nothing to Export",
@@ -161,6 +165,28 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           );
         },
         child: const Text("Clear All Logs"),
+      ),
+      PrefLabel(
+        title: Text(databaseLocation, style: Get.textTheme.headlineSmall!, maxLines: 3),
+        subtitle: const Text(databaseLocationDescription),
+      ),
+      PrefText(
+        key: Key("databaseLocation$_locationEdit"),
+        label: databaseLocationPasteCommand,
+        pref: databaseLocationTag,
+      ),
+      PrefButton(
+        onTap: () async {
+          final existingPath = PrefService.of(context).get(databaseLocationTag);
+          final path = await pickDirectory(context, existingPath);
+          if (path.isNotEmpty) {
+            setState(() {
+              _locationEdit++;
+              PrefService.of(context).set(databaseLocationTag, path);
+            });
+          }
+        },
+        child: const Text(databaseLocationPickCommand),
       ),
     ];
 
