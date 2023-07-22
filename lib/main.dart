@@ -17,6 +17,7 @@ import 'persistence/isar/calorie_tune.dart';
 import 'persistence/isar/device_usage.dart';
 import 'persistence/isar/floor_migration.dart';
 import 'persistence/isar/floor_record_migration.dart';
+import 'persistence/isar/log_entry.dart';
 import 'persistence/isar/power_tune.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'persistence/isar/record.dart';
@@ -36,6 +37,7 @@ void main() async {
       DeviceUsageSchema,
       FloorMigrationSchema,
       FloorRecordMigrationSchema,
+      LogEntrySchema,
       PowerTuneSchema,
       RecordSchema,
       WorkoutSummarySchema,
