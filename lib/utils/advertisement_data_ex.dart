@@ -1,5 +1,5 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'guid_ex.dart';
+import 'string_ex.dart';
 
 extension AdvertisementDataEx on AdvertisementData {
   List<String> get uuids =>
