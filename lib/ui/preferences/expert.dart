@@ -28,6 +28,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
   Future<void> displayNoLogsDialog() async {
     await Get.defaultDialog(
       title: "Nothing to Export",
+      middleText: "",
       confirm: TextButton(
         child: const Text("Dismiss"),
         onPressed: () => Get.close(1),
