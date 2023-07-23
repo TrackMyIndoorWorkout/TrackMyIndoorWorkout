@@ -66,7 +66,9 @@ class AboutScreenState extends State<AboutScreen> {
           Get.find<BasePrefService>()
               .set(databaseMigrationNeededTag, databaseMigrationNeededDefault);
           final database = Get.find<Isar>();
-          database.clearSync();
+          await database.writeTxn(() async {
+            await database.clear();
+          });
           // Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
         },
       ));
