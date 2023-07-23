@@ -13,6 +13,7 @@ const databaseLocationPasteCommand = "Paste an DB Location Folder";
 
 const dataExportImport = "Data Export / Import";
 const dataExportImportDescription =
-    "Including all data (activity, tunes, leaderboards, logs) and settings";
+    "Including all data (activity, tunes, leaderboards, logs) and settings. "
+    "There's no progress bar so please be patient.";
 const dataExport = "Export all data";
 const dataImport = "Import all data";
