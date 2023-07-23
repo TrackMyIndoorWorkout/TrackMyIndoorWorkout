@@ -288,57 +288,94 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             final contents = GZipCodec(gzip: true).decode(compressedContents);
             final database = Get.find<Isar>();
 
+            var skip = 0;
             final recordLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final recordBytes =
-                Uint8List.fromList(contents.take(recordLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.records.importJsonRaw(recordBytes);
-            });
+            skip += 4;
+            if (recordLength > 2) {
+              final recordBytes = Uint8List.fromList(
+                  contents.skip(skip).take(recordLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.records.importJsonRaw(recordBytes);
+              });
+            }
 
-            final activityLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final activityBytes =
-                Uint8List.fromList(contents.take(activityLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.activitys.importJsonRaw(activityBytes);
-            });
+            skip += recordLength;
+            final activityLength =
+                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            if (activityLength > 2) {
+              final activityBytes = Uint8List.fromList(
+                  contents.skip(skip).take(activityLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.activitys.importJsonRaw(activityBytes);
+              });
+            }
 
-            final logLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final logBytes = Uint8List.fromList(contents.take(logLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.logEntrys.importJsonRaw(logBytes);
-            });
+            skip += activityLength;
+            final logLength = lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            if (logLength > 2) {
+              final logBytes =
+                  Uint8List.fromList(contents.skip(skip).take(logLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.logEntrys.importJsonRaw(logBytes);
+              });
+            }
 
-            final workoutLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final workoutBytes =
-                Uint8List.fromList(contents.take(workoutLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.workoutSummarys.importJsonRaw(workoutBytes);
-            });
+            skip += logLength;
+            final workoutLength =
+                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            if (workoutLength > 2) {
+              final workoutBytes = Uint8List.fromList(
+                  contents.skip(skip).take(workoutLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.workoutSummarys.importJsonRaw(workoutBytes);
+              });
+            }
 
-            final powerLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final powerBytes =
-                Uint8List.fromList(contents.take(powerLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.powerTunes.importJsonRaw(powerBytes);
-            });
+            skip += workoutLength;
+            final powerLength =
+                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            if (powerLength > 2) {
+              final powerBytes =
+                  Uint8List.fromList(contents.skip(skip).take(powerLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.powerTunes.importJsonRaw(powerBytes);
+              });
+            }
 
-            final deviceLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final deviceBytes =
-                Uint8List.fromList(contents.take(deviceLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.deviceUsages.importJsonRaw(deviceBytes);
-            });
+            skip += powerLength;
+            final deviceLength =
+                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            if (deviceLength > 2) {
+              final deviceBytes = Uint8List.fromList(
+                  contents.skip(skip).take(deviceLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.deviceUsages.importJsonRaw(deviceBytes);
+              });
+            }
 
-            final calorieLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final calorieBytes =
-                Uint8List.fromList(contents.take(calorieLength).toList(growable: false));
-            await database.writeTxn(() async {
-              await database.calorieTunes.importJsonRaw(calorieBytes);
-            });
+            skip += deviceLength;
+            final calorieLength =
+                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            if (calorieLength > 2) {
+              final calorieBytes = Uint8List.fromList(
+                  contents.skip(skip).take(calorieLength).toList(growable: false));
+              await database.writeTxn(() async {
+                await database.calorieTunes.importJsonRaw(calorieBytes);
+              });
+            }
 
-            final settingsLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            final settingsBytes =
-                Uint8List.fromList(contents.take(settingsLength).toList(growable: false));
+            skip += calorieLength;
+            final settingsLength =
+                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
+            skip += 4;
+            final settingsBytes = Uint8List.fromList(
+                contents.skip(skip).take(settingsLength).toList(growable: false));
             final settingsJson = jsonDecode(utf8.decode(settingsBytes));
             final prefService = Get.find<BasePrefService>();
             prefService.fromMap(settingsJson);
