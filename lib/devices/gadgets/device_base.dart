@@ -161,7 +161,7 @@ abstract class DeviceBase {
             logLevel, tag, "connectToControlPoint", "controlPoint.setNotifyValue(true)", e, stack);
       }
 
-      controlPointSubscription = controlPoint?.value
+      controlPointSubscription = controlPoint?.lastValueStream
           .throttleTime(
         const Duration(milliseconds: ftmsStatusThreshold),
         leading: false,
@@ -432,7 +432,7 @@ abstract class DeviceBase {
       await attach();
     }
 
-    controlPointSubscription = characteristic?.value.listen((byteList) {
+    controlPointSubscription = characteristic?.lastValueStream.listen((byteList) {
       if (metricProcessingFunction != null) {
         metricProcessingFunction(utf8.decode(byteList));
       }

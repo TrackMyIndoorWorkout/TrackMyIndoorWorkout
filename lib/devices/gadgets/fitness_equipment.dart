@@ -284,7 +284,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (!attached || characteristic == null || descriptor == null) return;
 
     final fragmentedPackets = descriptor?.fragmentedPackets ?? false;
-    await for (final byteList in characteristic!.value) {
+    await for (final byteList in characteristic!.lastValueStream) {
       if (logLevel >= logLevelInfo) {
         Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
             "measuring $measuring calibrating $calibrating $byteList");

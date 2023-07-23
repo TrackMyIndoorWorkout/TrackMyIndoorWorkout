@@ -167,7 +167,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           _logLevel, tag, "_prepareSpinDownCore", "_weightData.setNotifyValue", e, stack);
     }
 
-    _weightDataSubscription = _weightData?.value
+    _weightDataSubscription = _weightData?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -213,7 +213,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
     });
 
-    _controlPointSubscription = _fitnessEquipment?.controlPoint?.value
+    _controlPointSubscription = _fitnessEquipment?.controlPoint?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -398,7 +398,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
           "controlPoint.write or status.setNotifyValue(true)", e, stack);
     }
 
-    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value
+    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: ftmsStatusThreshold),
       leading: false,
