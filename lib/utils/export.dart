@@ -2,10 +2,11 @@ import 'dart:typed_data';
 
 List<int> lengthToBytes(int len) {
   final List<int> bytes = [];
-  bytes.add(len & 0xFF);
-  bytes.add(len & 0xFF00);
-  bytes.add(len & 0xFF0000);
-  bytes.add(len & 0xFF000000);
+  for (int i = 0; i < 4; i++) {
+    bytes.add(len & 0xFF);
+    len = len ~/ 256;
+  }
+
   return bytes;
 }
 
