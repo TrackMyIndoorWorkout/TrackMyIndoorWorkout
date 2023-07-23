@@ -209,52 +209,72 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         onTap: () async {
           final database = Get.find<Isar>();
           final allBytes = BytesBuilder(copy: false);
-          await database.records.where().exportJsonRaw((recordBytes) async {
-            allBytes.add(lengthToBytes(recordBytes.length));
-            allBytes.add(recordBytes);
-            await database.activitys.where().exportJsonRaw((activityBytes) async {
-              allBytes.add(lengthToBytes(activityBytes.length));
-              allBytes.add(activityBytes);
-              await database.logEntrys.where().exportJsonRaw((logBytes) async {
-                allBytes.add(lengthToBytes(logBytes.length));
-                allBytes.add(logBytes);
-                await database.workoutSummarys.where().exportJsonRaw((workoutBytes) async {
-                  allBytes.add(lengthToBytes(workoutBytes.length));
-                  allBytes.add(workoutBytes);
-                  await database.powerTunes.where().exportJsonRaw((powerBytes) async {
-                    allBytes.add(lengthToBytes(powerBytes.length));
-                    allBytes.add(powerBytes);
-                    await database.deviceUsages.where().exportJsonRaw((deviceBytes) async {
-                      allBytes.add(lengthToBytes(deviceBytes.length));
-                      allBytes.add(deviceBytes);
-                      await database.calorieTunes.where().exportJsonRaw((calorieBytes) async {
-                        allBytes.add(lengthToBytes(calorieBytes.length));
-                        allBytes.add(calorieBytes);
 
-                        final prefService = Get.find<BasePrefService>();
-                        final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
-                        allBytes.add(lengthToBytes(settingsBytes.length));
-                        allBytes.add(settingsBytes);
-
-                        final compressedBytes = GZipCodec(gzip: true).encode(allBytes.toBytes());
-                        final isoDateTime = DateTime.now().toUtc().toIso8601String();
-                        final title = "Data Export $isoDateTime";
-                        final fileName =
-                            "DataExport${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.bin.gz";
-                        ShareFilesAndScreenshotWidgets().shareFile(
-                          title,
-                          fileName,
-                          Uint8List.fromList(compressedBytes),
-                          'application/x-gzip',
-                          text: title,
-                        );
-                      });
-                    });
-                  });
-                });
-              });
+          await database.txn(() async {
+            await database.records.where().exportJsonRaw((recordBytes) {
+              allBytes.add(lengthToBytes(recordBytes.length));
+              allBytes.add(recordBytes);
             });
           });
+
+          await database.txn(() async {
+            await database.activitys.where().exportJsonRaw((activityBytes) {
+              allBytes.add(lengthToBytes(activityBytes.length));
+              allBytes.add(activityBytes);
+            });
+          });
+
+          await database.txn(() async {
+            await database.logEntrys.where().exportJsonRaw((logBytes) {
+              allBytes.add(lengthToBytes(logBytes.length));
+              allBytes.add(logBytes);
+            });
+          });
+
+          await database.txn(() async {
+            await database.workoutSummarys.where().exportJsonRaw((workoutBytes) {
+              allBytes.add(lengthToBytes(workoutBytes.length));
+              allBytes.add(workoutBytes);
+            });
+          });
+
+          await database.txn(() async {
+            await database.powerTunes.where().exportJsonRaw((powerBytes) {
+              allBytes.add(lengthToBytes(powerBytes.length));
+              allBytes.add(powerBytes);
+            });
+          });
+
+          await database.txn(() async {
+            await database.deviceUsages.where().exportJsonRaw((deviceBytes) {
+              allBytes.add(lengthToBytes(deviceBytes.length));
+              allBytes.add(deviceBytes);
+            });
+          });
+
+          await database.txn(() async {
+            await database.calorieTunes.where().exportJsonRaw((calorieBytes) {
+              allBytes.add(lengthToBytes(calorieBytes.length));
+              allBytes.add(calorieBytes);
+            });
+          });
+
+          final prefService = Get.find<BasePrefService>();
+          final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
+          allBytes.add(lengthToBytes(settingsBytes.length));
+          allBytes.add(settingsBytes);
+
+          final compressedBytes = GZipCodec(gzip: true).encode(allBytes.toBytes());
+          final isoDateTime = DateTime.now().toUtc().toIso8601String();
+          final title = "Data Export $isoDateTime";
+          final fileName = "DataExport${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.bin.gz";
+          ShareFilesAndScreenshotWidgets().shareFile(
+            title,
+            fileName,
+            Uint8List.fromList(compressedBytes),
+            'application/x-gzip',
+            text: title,
+          );
         },
         child: const Text(dataExport),
       ),
