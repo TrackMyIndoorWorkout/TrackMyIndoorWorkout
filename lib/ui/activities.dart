@@ -285,9 +285,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               enableDrag: false,
             );
             if (sportPick != null) {
-              _database.writeTxnSync(() {
+              await _database.writeTxn(() async {
                 activity.sport = sportPick;
-                _database.activitys.putSync(activity);
+                await _database.activitys.put(activity);
               });
 
               setState(() {
@@ -311,9 +311,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             confirm: TextButton(
               child: const Text("Yes"),
               onPressed: () async {
-                _database.writeTxnSync(() {
-                  _database.records.filter().activityIdEqualTo(activity.id).deleteAllSync();
-                  _database.activitys.deleteSync(activity.id);
+                await _database.writeTxn(() async {
+                  await _database.records.filter().activityIdEqualTo(activity.id).deleteAll();
+                  await _database.activitys.delete(activity.id);
                   setState(() {
                     _editCount++;
                   });

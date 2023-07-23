@@ -30,7 +30,7 @@ class StravaService implements UploadService {
 
   @override
   Future<int> upload(Activity activity, bool calculateGps) async {
-    if (!DbUtils().hasRecords(activity.id)) {
+    if (!(await DbUtils().hasRecords(activity.id))) {
       return StravaStatusCode.statusJsonIsEmpty;
     }
 

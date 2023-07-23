@@ -80,9 +80,9 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () {
-                  _database.writeTxnSync(() {
-                    _database.workoutSummarys.deleteSync(workoutSummary.id);
+                onPressed: () async {
+                  await _database.writeTxn(() async {
+                    await _database.workoutSummarys.delete(workoutSummary.id);
                     setState(() {
                       _editCount++;
                     });

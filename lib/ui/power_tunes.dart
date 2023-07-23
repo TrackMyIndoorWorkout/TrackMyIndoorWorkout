@@ -92,8 +92,8 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
               confirm: TextButton(
                 child: const Text("Yes"),
                 onPressed: () async {
-                  _database.writeTxnSync(() {
-                    _database.powerTunes.deleteSync(powerTune.id);
+                  await _database.writeTxn(() async {
+                    await _database.powerTunes.delete(powerTune.id);
                     setState(() {
                       _editCount++;
                     });

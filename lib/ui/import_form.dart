@@ -183,8 +183,8 @@ class ImportFormState extends State<ImportForm> {
                                 final workoutSummary = activity
                                     .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
                                 final database = Get.find<Isar>();
-                                database.writeTxnSync(() {
-                                  database.workoutSummarys.putSync(workoutSummary);
+                                await database.writeTxn(() async {
+                                  await database.workoutSummarys.put(workoutSummary);
                                 });
                               }
                             } else {

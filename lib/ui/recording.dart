@@ -327,8 +327,8 @@ class RecordingState extends State<RecordingScreen> {
           (workoutState == WorkoutState.moving ||
               workoutState == WorkoutState.startedMoving ||
               workoutState == WorkoutState.justPaused)) {
-        _database.writeTxnSync(() {
-          _database.records.putSync(record);
+        await _database.writeTxn(() async {
+          await _database.records.put(record);
         });
       }
 
@@ -516,8 +516,8 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (!continued) {
-        _database.writeTxnSync(() {
-          _database.activitys.putSync(_activity!);
+        await _database.writeTxn(() async {
+          await _database.activitys.put(_activity!);
         });
       }
     }
@@ -1084,13 +1084,13 @@ class RecordingState extends State<RecordingScreen> {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
         final workoutSummary =
             _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
-        _database.writeTxnSync(() {
-          _database.workoutSummarys.putSync(workoutSummary);
+        await _database.writeTxn(() async {
+          await _database.workoutSummarys.put(workoutSummary);
         });
       }
 
-      _database.writeTxnSync(() {
-        _database.activitys.putSync(_activity!);
+      await _database.writeTxn(() async {
+        await _database.activitys.put(_activity!);
       });
 
       if (!quick && _activity != null) {
@@ -2347,8 +2347,8 @@ class RecordingState extends State<RecordingScreen> {
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _activity!.hrmId = hrmId;
             _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
-            _database.writeTxnSync(() async {
-              _database.activitys.putSync(_activity!);
+            await _database.writeTxn(() async {
+              await _database.activitys.put(_activity!);
             });
           }
         }),

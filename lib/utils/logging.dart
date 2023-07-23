@@ -97,13 +97,13 @@ class Logging {
     );
   }
 
-  bool hasLogs() {
-    return database.logEntrys.countSync() > 0;
+  Future<bool> hasLogs() async {
+    return await database.logEntrys.count() > 0;
   }
 
-  void clearLogs() {
-    database.writeTxnSync(() {
-      database.logEntrys.clearSync();
+  Future<void> clearLogs() async {
+    await database.writeTxn(() async {
+      await database.logEntrys.clear();
     });
   }
 

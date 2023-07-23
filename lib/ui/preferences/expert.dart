@@ -145,7 +145,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
-          if (!Logging().hasLogs()) {
+          if (!(await Logging().hasLogs())) {
             await displayNoLogsDialog();
             return;
           }
@@ -290,36 +290,50 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             final recordLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final recordBytes =
                 Uint8List.fromList(contents.take(recordLength).toList(growable: false));
-            await database.records.importJsonRaw(recordBytes);
+            await database.writeTxn(() async {
+              await database.records.importJsonRaw(recordBytes);
+            });
 
             final activityLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final activityBytes =
                 Uint8List.fromList(contents.take(activityLength).toList(growable: false));
-            await database.activitys.importJsonRaw(activityBytes);
+            await database.writeTxn(() async {
+              await database.activitys.importJsonRaw(activityBytes);
+            });
 
             final logLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final logBytes = Uint8List.fromList(contents.take(logLength).toList(growable: false));
-            await database.logEntrys.importJsonRaw(logBytes);
+            await database.writeTxn(() async {
+              await database.logEntrys.importJsonRaw(logBytes);
+            });
 
             final workoutLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final workoutBytes =
                 Uint8List.fromList(contents.take(workoutLength).toList(growable: false));
-            await database.workoutSummarys.importJsonRaw(workoutBytes);
+            await database.writeTxn(() async {
+              await database.workoutSummarys.importJsonRaw(workoutBytes);
+            });
 
             final powerLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final powerBytes =
                 Uint8List.fromList(contents.take(powerLength).toList(growable: false));
-            await database.powerTunes.importJsonRaw(powerBytes);
+            await database.writeTxn(() async {
+              await database.powerTunes.importJsonRaw(powerBytes);
+            });
 
             final deviceLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final deviceBytes =
                 Uint8List.fromList(contents.take(deviceLength).toList(growable: false));
-            await database.deviceUsages.importJsonRaw(deviceBytes);
+            await database.writeTxn(() async {
+              await database.deviceUsages.importJsonRaw(deviceBytes);
+            });
 
             final calorieLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final calorieBytes =
                 Uint8List.fromList(contents.take(calorieLength).toList(growable: false));
-            await database.calorieTunes.importJsonRaw(calorieBytes);
+            await database.writeTxn(() async {
+              await database.calorieTunes.importJsonRaw(calorieBytes);
+            });
 
             final settingsLength = lengthBytesToInt(contents.take(4).toList(growable: false));
             final settingsBytes =

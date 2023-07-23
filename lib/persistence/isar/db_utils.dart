@@ -25,10 +25,10 @@ class DbUtils {
     return database.workoutSummarys.countSync() > 0;
   }
 
-  bool hasRecords(Id activityId) {
+  Future<bool> hasRecords(Id activityId) async {
     return activityId != Isar.minId &&
         activityId != Isar.autoIncrement &&
-        database.records.where().filter().activityIdEqualTo(activityId).countSync() > 0;
+        await database.records.where().filter().activityIdEqualTo(activityId).count() > 0;
   }
 
   Future<List<Record>> getRecords(Id activityId) async {
@@ -61,8 +61,8 @@ class DbUtils {
           // Speed already should have powerFactor effect
           double dD = (record.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
           record.distance = record.distance! + dD;
-          database.writeTxnSync(() {
-            database.records.putSync(record);
+          await database.writeTxn(() async {
+            await database.records.put(record);
           });
         }
       }
@@ -71,9 +71,9 @@ class DbUtils {
     }
 
     if ((previousRecord.distance ?? 0.0) > eps && (activity.distance < eps || force)) {
-      database.writeTxnSync(() {
-        activity.distance = previousRecord.distance!;
-        database.activitys.putSync(activity);
+      activity.distance = previousRecord.distance!;
+      await database.writeTxn(() async {
+        await database.activitys.put(activity);
       });
     }
 
@@ -186,8 +186,8 @@ class DbUtils {
     }
 
     if (updated > 0) {
-      database.writeTxnSync(() {
-        database.activitys.putSync(activity);
+      await database.writeTxn(() async {
+        await database.activitys.put(activity);
       });
     }
 

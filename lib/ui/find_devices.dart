@@ -633,8 +633,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now(),
             );
-            database.writeTxnSync(() {
-              database.deviceUsages.putSync(deviceUsage!);
+            await database.writeTxn(() async {
+              await database.deviceUsages.put(deviceUsage!);
             });
           }
         }
@@ -678,10 +678,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
           descriptor.sport = sportPick;
           if (deviceUsage != null) {
-            database.writeTxnSync(() {
-              deviceUsage!.sport = sportPick;
-              deviceUsage.time = DateTime.now();
-              database.deviceUsages.putSync(deviceUsage);
+            deviceUsage.sport = sportPick;
+            deviceUsage.time = DateTime.now();
+            await database.writeTxn(() async {
+              await database.deviceUsages.put(deviceUsage!);
             });
           } else {
             deviceUsage = DeviceUsage(
@@ -691,14 +691,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now(),
             );
-            database.writeTxnSync(() {
-              database.deviceUsages.putSync(deviceUsage!);
+            await database.writeTxn(() async {
+              await database.deviceUsages.put(deviceUsage!);
             });
           }
         } else {
           descriptor.sport = deviceUsage.sport;
-          database.writeTxnSync(() {
-            database.deviceUsages.putSync(deviceUsage!);
+          await database.writeTxn(() async {
+            await database.deviceUsages.put(deviceUsage!);
           });
         }
       }
@@ -761,9 +761,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
     if (success && navigate) {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
-        database.writeTxnSync(() {
-          deviceUsage!.time = DateTime.now();
-          database.deviceUsages.putSync(deviceUsage);
+        deviceUsage.time = DateTime.now();
+        await database.writeTxn(() async {
+          await database.deviceUsages.put(deviceUsage!);
         });
       }
 

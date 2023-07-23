@@ -72,19 +72,19 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
                   .sortByTimeDesc()
                   .findFirst();
               if (calorieTune != null) {
-                database.writeTxnSync(() {
-                  calorieTune.calorieFactor = calorieFactor;
-                  database.calorieTunes.putSync(calorieTune);
+                calorieTune.calorieFactor = calorieFactor;
+                await database.writeTxn(() async {
+                  await database.calorieTunes.put(calorieTune);
                 });
               } else {
-                database.writeTxnSync(() {
-                  final calorieTune = CalorieTune(
-                    mac: widget.deviceId,
-                    calorieFactor: calorieFactor,
-                    hrBased: widget.hrBased,
-                    time: DateTime.now(),
-                  );
-                  database.calorieTunes.putSync(calorieTune);
+                final calorieTune = CalorieTune(
+                  mac: widget.deviceId,
+                  calorieFactor: calorieFactor,
+                  hrBased: widget.hrBased,
+                  time: DateTime.now(),
+                );
+                await database.writeTxn(() async {
+                  await database.calorieTunes.put(calorieTune);
                 });
               }
 

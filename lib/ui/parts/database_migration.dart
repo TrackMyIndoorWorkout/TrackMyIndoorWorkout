@@ -135,11 +135,14 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
         }
 
         if (activity.id == Isar.autoIncrement) {
-          database.writeTxnSync(() {
-            database.activitys.putSync(activity);
+          await database.writeTxn(() async {
+            await database.activitys.put(activity);
             assert(activity.id != Isar.autoIncrement);
-            database.floorMigrations.putSync(FloorMigration(
-                entityName: "Activity", floorId: floorActivity.id!, isarId: activity.id));
+            await database.floorMigrations.put(FloorMigration(
+              entityName: "Activity",
+              floorId: floorActivity.id!,
+              isarId: activity.id,
+            ));
           });
         }
 
@@ -163,8 +166,8 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
                 ))
             .toList(growable: false);
 
-        database.writeTxnSync(() {
-          database.records.putAllSync(records);
+        await database.writeTxn(() async {
+          database.records.putAll(records);
           final recordMigrations = IterableZip([
             floorRecords.map((fr) => fr.id),
             records.map((ir) => ir.id),
@@ -172,7 +175,7 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
               .map((pair) => FloorRecordMigration(
                   activityId: activity.id, floorId: pair[0]!, isarId: pair[1]!))
               .toList(growable: false);
-          database.floorRecordMigrations.putAllSync(recordMigrations);
+          await database.floorRecordMigrations.putAll(recordMigrations);
         });
 
         migrationItemCounter++;
@@ -204,8 +207,8 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
             ))
         .toList(growable: false);
 
-    database.writeTxnSync(() {
-      database.deviceUsages.putAllSync(deviceUsages);
+    await database.writeTxn(() async {
+      await database.deviceUsages.putAll(deviceUsages);
       final deviceUsageMigrations = IterableZip([
         floorDeviceUsages.map((fdu) => fdu.id),
         deviceUsages.map((idu) => idu.id),
@@ -213,7 +216,7 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
           .map((pair) =>
               FloorMigration(entityName: "DeviceUsage", floorId: pair[0]!, isarId: pair[1]!))
           .toList(growable: false);
-      database.floorMigrations.putAllSync(deviceUsageMigrations);
+      await database.floorMigrations.putAll(deviceUsageMigrations);
     });
 
     migrationItemCounter++;
@@ -241,8 +244,8 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
             ))
         .toList(growable: false);
 
-    database.writeTxnSync(() {
-      database.calorieTunes.putAllSync(calorieTunes);
+    await database.writeTxn(() async {
+      await database.calorieTunes.putAll(calorieTunes);
       final calorieTuneMigrations = IterableZip([
         floorCalorieTunes.map((fct) => fct.id),
         calorieTunes.map((ict) => ict.id),
@@ -250,7 +253,7 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
           .map((pair) =>
               FloorMigration(entityName: "CalorieTune", floorId: pair[0]!, isarId: pair[1]!))
           .toList(growable: false);
-      database.floorMigrations.putAllSync(calorieTuneMigrations);
+      await database.floorMigrations.putAll(calorieTuneMigrations);
     });
 
     migrationItemCounter++;
@@ -277,8 +280,8 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
             ))
         .toList(growable: false);
 
-    database.writeTxnSync(() {
-      database.powerTunes.putAllSync(powerTunes);
+    await database.writeTxn(() async {
+      await database.powerTunes.putAll(powerTunes);
       final powerTuneMigrations = IterableZip([
         floorPowerTunes.map((fct) => fct.id),
         powerTunes.map((ict) => ict.id),
@@ -286,7 +289,7 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
           .map((pair) =>
               FloorMigration(entityName: "PowerTune", floorId: pair[0]!, isarId: pair[1]!))
           .toList(growable: false);
-      database.floorMigrations.putAllSync(powerTuneMigrations);
+      await database.floorMigrations.putAll(powerTuneMigrations);
     });
 
     migrationItemCounter++;
@@ -320,8 +323,8 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
             ))
         .toList(growable: false);
 
-    database.writeTxnSync(() {
-      database.workoutSummarys.putAllSync(workoutSummaries);
+    await database.writeTxn(() async {
+      await database.workoutSummarys.putAll(workoutSummaries);
       final workoutSummaryMigrations = IterableZip([
         floorWorkoutSummaries.map((fws) => fws.id),
         workoutSummaries.map((iws) => iws.id),
@@ -329,7 +332,7 @@ class DatabaseMigrationBottomSheetState extends State<DatabaseMigrationBottomShe
           .map((pair) =>
               FloorMigration(entityName: "WorkoutSummary", floorId: pair[0]!, isarId: pair[1]!))
           .toList(growable: false);
-      database.floorMigrations.putAllSync(workoutSummaryMigrations);
+      await database.floorMigrations.putAll(workoutSummaryMigrations);
     });
 
     migrationItemCounter++;

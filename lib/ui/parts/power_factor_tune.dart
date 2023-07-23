@@ -66,18 +66,18 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
                   .sortByTimeDesc()
                   .findFirst();
               if (powerTune != null) {
-                database.writeTxnSync(() {
-                  powerTune.powerFactor = powerFactor;
-                  database.powerTunes.putSync(powerTune);
+                powerTune.powerFactor = powerFactor;
+                await database.writeTxn(() async {
+                  await database.powerTunes.put(powerTune);
                 });
               } else {
-                database.writeTxnSync(() {
-                  final powerTune = PowerTune(
-                    mac: widget.deviceId,
-                    powerFactor: powerFactor,
-                    time: DateTime.now(),
-                  );
-                  database.powerTunes.putSync(powerTune);
+                final powerTune = PowerTune(
+                  mac: widget.deviceId,
+                  powerFactor: powerFactor,
+                  time: DateTime.now(),
+                );
+                await database.writeTxn(() async {
+                  await database.powerTunes.put(powerTune);
                 });
               }
 
