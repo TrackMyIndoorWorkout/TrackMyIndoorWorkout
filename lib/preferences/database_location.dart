@@ -15,4 +15,4 @@ const dataExportImport = "Data Export / Import";
 const dataExportImportDescription =
     "Including all data (activity, tunes, leaderboards, logs) and settings";
 const dataExport = "Export all data";
-const dataImport = "Export all data";
+const dataImport = "Import all data";
