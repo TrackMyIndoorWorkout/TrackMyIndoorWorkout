@@ -208,6 +208,8 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
+          Get.snackbar("Export started", "In progress...");
+
           final database = Get.find<Isar>();
           final allBytes = BytesBuilder(copy: false);
 
@@ -283,6 +285,8 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         onTap: () async {
           final result = await FilePicker.platform.pickFiles();
           if (result != null && result.files.single.path != null) {
+            Get.snackbar("Import started", "In progress...");
+
             final file = File(result.files.single.path!);
             final compressedContents = await file.readAsBytes();
             final contents = GZipCodec(gzip: true).decode(compressedContents);
@@ -379,6 +383,8 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             final settingsJson = jsonDecode(utf8.decode(settingsBytes));
             final prefService = Get.find<BasePrefService>();
             prefService.fromMap(settingsJson);
+
+            Get.snackbar("Import finished", "Success!!");
           }
         },
         child: const Text(dataImport),
