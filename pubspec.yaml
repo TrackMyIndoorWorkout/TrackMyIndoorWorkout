@@ -11,6 +11,7 @@ environment:
 
 dependency_overrides:
   http: 1.1.0
+  analyzer: 6.0.0
 
 dependencies:
   assorted_layout_widgets: ^8.0.4
@@ -64,7 +65,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^5.13.0
+  analyzer: ^6.0.0
   build_runner: ^2.4.6
   floor_generator: ^1.4.2
   flutter_driver:
