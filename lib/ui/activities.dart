@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,7 +43,6 @@ import 'device_usages.dart';
 import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
-import 'parts/circular_menu.dart';
 import 'parts/export_format_picker.dart';
 import 'parts/import_format_picker.dart';
 import 'parts/legend_dialog.dart';
@@ -431,7 +431,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       );
     }
 
-    final circularFabMenu = CircularFabMenu(
+    final circularFabMenu = FabCircularMenuPlus(
       fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
       fabOpenColor: _themeManager.getBlueColor(),
       fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
 import 'package:flutter/material.dart';
@@ -57,7 +58,6 @@ import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
-import 'parts/circular_menu.dart';
 import 'parts/database_migration.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
@@ -1064,7 +1064,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: CircularFabMenu(
+      floatingActionButton: FabCircularMenuPlus(
         fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
         fabOpenColor: _themeManager.getBlueColor(),
         fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),

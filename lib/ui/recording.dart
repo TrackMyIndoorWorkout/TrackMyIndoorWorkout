@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -17,6 +18,7 @@ import 'package:progress_indicators/progress_indicators.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../devices/bluetooth_device_ex.dart';
@@ -73,7 +75,6 @@ import '../utils/time_zone.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
 import 'parts/boolean_question.dart';
-import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/kayak_first.dart';
@@ -255,7 +256,7 @@ class RecordingState extends State<RecordingScreen> {
   int _unlockButtonIndex = 0;
   final Random _rng = Random();
   final List<GlobalKey> _unlockKeys = [];
-  final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
+  final GlobalKey<FabCircularMenuPlusState> _fabKey = GlobalKey();
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
   StatisticsAccumulator _accu = StatisticsAccumulator(si: true, sport: ActivityType.ride);
@@ -2433,7 +2434,7 @@ class RecordingState extends State<RecordingScreen> {
             ),
             body: body,
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: CircularFabMenu(
+            floatingActionButton: FabCircularMenuPlus(
               key: _fabKey,
               fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
                   color: _themeManager.getAntagonistColor()),
