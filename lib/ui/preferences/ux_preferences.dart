@@ -114,7 +114,7 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
       PrefButton(
         onTap: () async {
           final existingPath = PrefService.of(context).get(instantExportLocationTag);
-          final path = await pickDirectory(context, existingPath);
+          final path = await pickDirectory(context, instantExportLocationPickerTitle, existingPath);
           if (path.isNotEmpty) {
             setState(() {
               _locationEdit++;

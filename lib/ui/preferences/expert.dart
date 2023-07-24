@@ -192,7 +192,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       PrefButton(
         onTap: () async {
           final existingPath = PrefService.of(context).get(databaseLocationTag);
-          final path = await pickDirectory(context, existingPath);
+          final path = await pickDirectory(context, databaseLocationPickerTitle, existingPath);
           if (path.isNotEmpty) {
             setState(() {
               _locationEdit++;

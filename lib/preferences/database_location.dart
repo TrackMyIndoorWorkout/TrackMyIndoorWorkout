@@ -10,6 +10,7 @@ const databaseLocationDescription =
 
 const databaseLocationPickCommand = "Pick a DB Location Folder";
 const databaseLocationPasteCommand = "Paste an DB Location Folder";
+const databaseLocationPickerTitle = "Database Location";
 
 const dataExportImport = "Data Export / Import";
 const dataExportImportDescription =

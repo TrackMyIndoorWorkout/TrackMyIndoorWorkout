@@ -38,9 +38,6 @@
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
-# permission_handler transitive dependency of easy_folder_picker
--keep class com.baseflow.permissionhandler.** { *; }
--keepclassmembernames class com.baseflow.permissionhandler.** { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }

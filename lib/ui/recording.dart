@@ -1031,7 +1031,8 @@ class RecordingState extends State<RecordingScreen> {
     if (_activity?.id == null || !_instantExport) return;
 
     if (_instantExportLocation.isEmpty) {
-      _instantExportLocation = await pickDirectory(context, _instantExportLocation);
+      _instantExportLocation =
+          await pickDirectory(context, instantExportLocationPickerTitle, _instantExportLocation);
       if (_instantExportLocation.isEmpty) {
         return;
       }
