@@ -40,7 +40,7 @@ dependencies:
   is_first_run: ^1.0.0
   isar: *isar_version
   isar_flutter_libs: *isar_version
-  listview_utils_plus: ^0.0.1
+  listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
   package_info_plus: ^4.0.2

@@ -603,10 +603,10 @@ packages:
     dependency: "direct main"
     description:
       name: listview_utils_plus
-      sha256: "2b221ba25b179b7c2bced55b981a3c24122b602cd4897631411dae825914baa7"
+      sha256: c2c9de115aedc86df9ccfeca602002435c77a03d5a60c6ba597632b52c0a051b
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.3"
   loading_overlay:
     dependency: "direct main"
     description:
