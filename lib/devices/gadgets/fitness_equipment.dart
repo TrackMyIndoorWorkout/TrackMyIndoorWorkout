@@ -449,7 +449,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (descriptor != null && device != null) {
       _additionalSensors = descriptor!.getAdditionalSensors(device!, services);
       for (final sensor in _additionalSensors) {
+        // Most of the times the sensor and the main machine is the same device
+        // (example: NPE Runn FTMS + RSC, Schwinn x70, C2 ergs)
+        // discoverCore will not really discover with those, but it'll cause
+        // the proper variable to be set for further functioning.
         await sensor.discoverCore();
+        // The attach will also return in those cases because the device is
+        // already attached.
         await sensor.attach();
       }
     } else {
