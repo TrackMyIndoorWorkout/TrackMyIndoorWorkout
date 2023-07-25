@@ -202,7 +202,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     }
 
     final requiredCharacteristic = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+        (ch) => ch.characteristicUuid.uuidString() == SchwinnX70HrSensor.characteristicUuid);
     if (requiredCharacteristic == null) {
       return [];
     }
