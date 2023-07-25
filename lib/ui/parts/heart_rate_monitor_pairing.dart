@@ -49,10 +49,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   void dispose() {
     _scanStreamSubscription?.pause();
     try {
-      FlutterBluePlus.instance.stopScan();
+      FlutterBluePlus.stopScan();
     } on Exception catch (e, stack) {
-      Logging()
-          .logException(_logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
+      Logging().logException(_logLevel, tag, "dispose", "FlutterBluePlus.stopScan", e, stack);
     }
 
     super.dispose();
@@ -71,20 +70,19 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _isScanning = true;
 
     try {
-      await FlutterBluePlus.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      await FlutterBluePlus.startScan(timeout: Duration(seconds: _scanDuration));
       setState(() {
         _isScanning = false;
       });
     } on Exception catch (e, stack) {
-      Logging().logException(
-          _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
+      Logging().logException(_logLevel, tag, "_startScan", "FlutterBluePlus.startScan", e, stack);
     }
 
     Logging().logVersion(Get.find<PackageInfo>());
   }
 
   Stream<List<ScanResult>> get _throttledScanStream async* {
-    await for (var scanResults in FlutterBluePlus.instance.scanResults.throttleTime(
+    await for (var scanResults in FlutterBluePlus.scanResults.throttleTime(
       const Duration(milliseconds: uiIntermittentDelay),
       leading: false,
       trailing: true,

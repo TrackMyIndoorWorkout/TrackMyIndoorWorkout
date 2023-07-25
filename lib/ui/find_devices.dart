@@ -110,10 +110,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
   void dispose() {
     if (_isScanning) {
       try {
-        FlutterBluePlus.instance.stopScan();
+        FlutterBluePlus.stopScan();
       } on Exception catch (e, stack) {
-        Logging()
-            .logException(_logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
+        Logging().logException(_logLevel, tag, "dispose", "FlutterBluePlus.stopScan", e, stack);
       }
     }
 
@@ -200,7 +199,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     try {
-      await FlutterBluePlus.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      await FlutterBluePlus.startScan(timeout: Duration(seconds: _scanDuration));
       setState(() {
         _isScanning = false;
       });
@@ -262,8 +261,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         }
       }
     } on Exception catch (e, stack) {
-      Logging().logException(
-          _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
+      Logging().logException(_logLevel, tag, "_startScan", "FlutterBluePlus.startScan", e, stack);
     }
   }
 
@@ -283,7 +281,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   }
 
   Stream<List<ScanResult>> get _throttledScanStream async* {
-    await for (var scanResults in FlutterBluePlus.instance.scanResults.throttleTime(
+    await for (var scanResults in FlutterBluePlus.scanResults.throttleTime(
       const Duration(milliseconds: uiIntermittentDelay),
       leading: false,
       trailing: true,
@@ -887,7 +885,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                                     BluetoothConnectionState.disconnected;
                             if (connectionState == BluetoothConnectionState.connected) {
                               if (_isScanning) {
-                                await FlutterBluePlus.instance.stopScan();
+                                await FlutterBluePlus.stopScan();
                                 await Future.delayed(
                                     const Duration(milliseconds: uiIntermittentDelay));
                               }
@@ -925,7 +923,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
                         if (_autoConnect && _lastEquipmentIds.contains(r.device.remoteId.str)) {
                           if (_isScanning) {
-                            FlutterBluePlus.instance.stopScan().whenComplete(() async {
+                            FlutterBluePlus.stopScan().whenComplete(() async {
                               await Future.delayed(
                                   const Duration(milliseconds: uiIntermittentDelay));
                             });
@@ -942,7 +940,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                             }
 
                             if (_isScanning) {
-                              await FlutterBluePlus.instance.stopScan();
+                              await FlutterBluePlus.stopScan();
                               await Future.delayed(
                                   const Duration(milliseconds: uiIntermittentDelay));
                             }
@@ -1098,7 +1096,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _isScanning
               ? _themeManager.getBlueFab(Icons.stop, () async {
                   if (_isScanning) {
-                    await FlutterBluePlus.instance.stopScan();
+                    await FlutterBluePlus.stopScan();
                     await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                   }
                 })
