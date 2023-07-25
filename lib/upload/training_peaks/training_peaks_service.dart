@@ -28,7 +28,7 @@ class TrainingPeaksService implements UploadService {
 
   @override
   Future<int> upload(Activity activity, bool calculateGps) async {
-    if (!(await DbUtils().hasRecords(activity.id))) {
+    if (!DbUtils().hasRecords(activity.id)) {
       return 404;
     }
 

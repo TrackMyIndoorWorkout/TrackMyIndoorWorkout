@@ -106,8 +106,8 @@ abstract class Upload {
       if (fileTrackingUuid.isNotEmpty) {
         activity.markTrainingPeaksUploading(fileTrackingUuid);
         final database = Get.find<Isar>();
-        await database.writeTxn(() async {
-          await database.activitys.put(activity);
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
         });
 
         await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -169,8 +169,8 @@ abstract class Upload {
                         .toList(growable: false);
                     if (workoutIds.isNotEmpty) {
                       activity.markTrainingPeaksUploaded(workoutIds.first);
-                      await database.writeTxn(() async {
-                        await database.activitys.put(activity);
+                      database.writeTxnSync(() {
+                        database.activitys.putSync(activity);
                       });
                     }
                   }

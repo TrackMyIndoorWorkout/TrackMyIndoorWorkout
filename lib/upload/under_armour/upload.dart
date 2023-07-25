@@ -69,8 +69,8 @@ abstract class Upload {
             debugPrint('workoutId: $workoutId');
             activity.markUnderArmourUploaded(workoutId);
             final database = Get.find<Isar>();
-            await database.writeTxn(() async {
-              await database.activitys.put(activity);
+            database.writeTxnSync(() {
+              database.activitys.putSync(activity);
             });
           }
         }

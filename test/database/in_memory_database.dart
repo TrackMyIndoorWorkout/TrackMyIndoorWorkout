@@ -36,7 +36,7 @@ class InMemoryDatabase extends Isar {
 
   @override
   Future<T> txn<T>(Future<T> Function() callback) async {
-    return callback.call();
+    return await callback.call();
   }
 
   @override

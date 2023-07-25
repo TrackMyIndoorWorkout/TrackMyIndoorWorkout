@@ -86,8 +86,8 @@ abstract class Upload {
       if (decodedResponse.id > 0) {
         activity.markUploaded(decodedResponse.id);
         final database = Get.find<Isar>();
-        await database.writeTxn(() async {
-          await database.activitys.put(activity);
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
         });
 
         debugPrint('id ${decodedResponse.id}');

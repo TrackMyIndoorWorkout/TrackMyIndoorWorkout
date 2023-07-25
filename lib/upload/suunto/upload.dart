@@ -102,8 +102,8 @@ abstract class Upload {
 
     activity.suuntoUploadInitiated(uploadId, blobUrl);
     final database = Get.find<Isar>();
-    await database.writeTxn(() async {
-      await database.activitys.put(activity);
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
     });
 
     final putUri = Uri.parse(blobUrl);
@@ -156,8 +156,8 @@ abstract class Upload {
           final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
           activity.markSuuntoUploaded(webUrl);
           final database = Get.find<Isar>();
-          await database.writeTxn(() async {
-            await database.activitys.put(activity);
+          database.writeTxnSync(() {
+            database.activitys.putSync(activity);
           });
         }
       }

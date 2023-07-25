@@ -86,8 +86,8 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
                   .findFirst();
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
-                await database.writeTxn(() async {
-                  await database.calorieTunes.put(calorieTune);
+                database.writeTxnSync(() {
+                  database.calorieTunes.putSync(calorieTune);
                 });
               } else {
                 final calorieTune = CalorieTune(
@@ -96,8 +96,8 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
                   hrBased: widget.hrBased,
                   time: DateTime.now(),
                 );
-                await database.writeTxn(() async {
-                  await database.calorieTunes.put(calorieTune);
+                database.writeTxnSync(() {
+                  database.calorieTunes.putSync(calorieTune);
                 });
               }
               Get.back(result: calorieFactor);

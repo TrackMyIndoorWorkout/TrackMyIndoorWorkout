@@ -79,9 +79,9 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.writeTxn(() async {
-                    await _database.workoutSummarys.delete(workoutSummary.id);
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.workoutSummarys.deleteSync(workoutSummary.id);
                     setState(() {
                       _editCount++;
                     });

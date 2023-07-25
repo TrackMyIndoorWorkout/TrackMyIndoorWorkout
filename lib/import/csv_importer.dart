@@ -567,8 +567,8 @@ class CSVImporter with PowerSpeedMixin {
     );
 
     final extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    await database.writeTxn(() async {
-      await database.activitys.put(activity);
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
     });
 
     final numRow = _lines.length - _linePointer;
@@ -599,8 +599,8 @@ class CSVImporter with PowerSpeedMixin {
           heartRate: int.tryParse(values[2]),
           sport: activity.sport,
         );
-        await database.writeTxn(() async {
-          await database.records.put(record);
+        database.writeTxnSync(() {
+          database.records.putSync(record);
         });
 
         _linePointer++;
@@ -723,8 +723,8 @@ class CSVImporter with PowerSpeedMixin {
                 SchwinnACPerformancePlus.extraCalorieFactor;
           }
           energy += dEnergy;
-          await database.writeTxn(() async {
-            await database.records.put(record);
+          database.writeTxnSync(() {
+            database.records.putSync(record);
           });
 
           timeStamp = timeStamp.add(recordDuration);
@@ -753,8 +753,8 @@ class CSVImporter with PowerSpeedMixin {
       activity.calories = energy.round();
     }
 
-    await database.writeTxn(() async {
-      await database.activitys.put(activity);
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
     });
 
     return activity;

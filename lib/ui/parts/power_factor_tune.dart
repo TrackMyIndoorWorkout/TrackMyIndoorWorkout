@@ -67,8 +67,8 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
                   .findFirst();
               if (powerTune != null) {
                 powerTune.powerFactor = powerFactor;
-                await database.writeTxn(() async {
-                  await database.powerTunes.put(powerTune);
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
                 });
               } else {
                 final powerTune = PowerTune(
@@ -76,8 +76,8 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
                   powerFactor: powerFactor,
                   time: DateTime.now(),
                 );
-                await database.writeTxn(() async {
-                  await database.powerTunes.put(powerTune);
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
                 });
               }
 

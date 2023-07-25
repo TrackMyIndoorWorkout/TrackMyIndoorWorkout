@@ -631,8 +631,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now(),
             );
-            await database.writeTxn(() async {
-              await database.deviceUsages.put(deviceUsage!);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage!);
             });
           }
         }
@@ -678,8 +678,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           if (deviceUsage != null) {
             deviceUsage.sport = sportPick;
             deviceUsage.time = DateTime.now();
-            await database.writeTxn(() async {
-              await database.deviceUsages.put(deviceUsage!);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage!);
             });
           } else {
             deviceUsage = DeviceUsage(
@@ -689,14 +689,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
               manufacturer: advertisementDigest.manufacturer,
               time: DateTime.now(),
             );
-            await database.writeTxn(() async {
-              await database.deviceUsages.put(deviceUsage!);
+            database.writeTxnSync(() {
+              database.deviceUsages.putSync(deviceUsage!);
             });
           }
         } else {
           descriptor.sport = deviceUsage.sport;
-          await database.writeTxn(() async {
-            await database.deviceUsages.put(deviceUsage!);
+          database.writeTxnSync(() {
+            database.deviceUsages.putSync(deviceUsage!);
           });
         }
       }
@@ -760,8 +760,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment.manufacturerName;
         deviceUsage.time = DateTime.now();
-        await database.writeTxn(() async {
-          await database.deviceUsages.put(deviceUsage!);
+        database.writeTxnSync(() {
+          database.deviceUsages.putSync(deviceUsage!);
         });
       }
 

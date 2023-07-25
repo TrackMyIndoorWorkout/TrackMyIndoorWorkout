@@ -88,9 +88,9 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
               middleText: 'Are you sure to delete this Tune?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.writeTxn(() async {
-                    await _database.calorieTunes.delete(calorieTune.id);
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.calorieTunes.deleteSync(calorieTune.id);
                     setState(() {
                       _editCount++;
                     });

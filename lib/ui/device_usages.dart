@@ -80,8 +80,8 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
             if (sportPick != null) {
               deviceUsage.sport = sportPick;
               deviceUsage.time = DateTime.now();
-              await _database.writeTxn(() async {
-                await _database.deviceUsages.put(deviceUsage);
+              _database.writeTxnSync(() {
+                _database.deviceUsages.putSync(deviceUsage);
                 setState(() {
                   _editCount++;
                 });
@@ -99,9 +99,9 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
               middleText: 'Are you sure to delete this Usage?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.writeTxn(() async {
-                    await _database.deviceUsages.delete(deviceUsage.id);
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.deviceUsages.deleteSync(deviceUsage.id);
                     setState(() {
                       _editCount++;
                     });
