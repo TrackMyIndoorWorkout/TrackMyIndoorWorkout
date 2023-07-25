@@ -154,7 +154,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           final fileBytes = await Logging().exportLogs();
           final isoDateTime = DateTime.now().toUtc().toIso8601String();
           final title = "Debug Logs $isoDateTime";
-          final fileName = "DebugLogs${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.csv.gz";
+          final fileName = "DebugLogs${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.txt.gz";
           ShareFilesAndScreenshotWidgets().shareFile(
             title,
             fileName,
