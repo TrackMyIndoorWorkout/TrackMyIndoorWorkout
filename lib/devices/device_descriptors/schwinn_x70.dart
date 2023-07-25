@@ -176,11 +176,11 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
     if (opCode == requestControl /* startOrResumeControl */) {
       List<int> startHrStreamCommand = [
-        0x5 /* length */,
-        0x3 /* seq-с ceiling */,
-        0xd9 /* crc = sum to 0 */,
-        0x0,
-        0x1f /* command */
+        0x05 /* length */,
+        0x03 /* seq-с ceiling */,
+        0xD9 /* crc = sum to 0 */,
+        0x00,
+        0x1F /* command */
       ];
 
       try {
