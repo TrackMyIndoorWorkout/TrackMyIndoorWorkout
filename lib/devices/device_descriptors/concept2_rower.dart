@@ -78,7 +78,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
     List<ComplexSensor> additionalSensors = [];
 
     final requiredCharacteristic1 = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus1.serviceUuid);
+        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus1.characteristicUuid);
     if (requiredCharacteristic1 != null) {
       final additionalSensor = C2AdditionalStatus1(device);
       additionalSensor.services = services;
@@ -86,7 +86,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
     }
 
     final requiredCharacteristic2 = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus2.serviceUuid);
+        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus2.characteristicUuid);
     if (requiredCharacteristic2 != null) {
       final additionalSensor = C2AdditionalStatus2(device);
       additionalSensor.services = services;
@@ -94,7 +94,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
     }
 
     final requiredCharacteristic3 = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStrokeData.serviceUuid);
+        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStrokeData.characteristicUuid);
     if (requiredCharacteristic3 != null) {
       final additionalSensor = C2AdditionalStrokeData(device);
       additionalSensor.services = services;
