@@ -146,7 +146,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
-          if (!(await Logging().hasLogs())) {
+          if (!Logging().hasLogs()) {
             await displayNoLogsDialog();
             return;
           }
