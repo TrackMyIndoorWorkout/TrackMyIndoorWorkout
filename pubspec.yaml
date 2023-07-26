@@ -10,8 +10,8 @@ environment:
   flutter: ">=3.13.0-0.2.pre"
 
 dependency_overrides:
-  http: 1.1.0
-  analyzer: 6.0.0
+  analyzer: 6.0.0  # because of mockito
+  http: 1.1.0  # because of soundpool
 
 dependencies:
   assorted_layout_widgets: ^8.0.4
