@@ -282,10 +282,7 @@ class RecordingState extends State<RecordingScreen> {
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (widget.descriptor.isPolling) {
-            await Future.delayed(KayakFirstDescriptor.commandLongDelay);
-          }
-
+          await Future.delayed(KayakFirstDescriptor.commandLongDelay);
           await _startMeasurement(false);
         });
       }
