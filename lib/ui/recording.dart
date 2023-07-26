@@ -26,6 +26,7 @@ import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
+import '../devices/device_descriptors/kayak_first_descriptor.dart';
 import '../persistence/isar/activity.dart';
 import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/record.dart';
@@ -280,7 +281,13 @@ class RecordingState extends State<RecordingScreen> {
       await _fitnessEquipment?.postPumpStart();
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
-        await _startMeasurement(false);
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (widget.descriptor.isPolling) {
+            await Future.delayed(KayakFirstDescriptor.commandLongDelay);
+          }
+
+          await _startMeasurement(false);
+        });
       }
 
       setState(() {
