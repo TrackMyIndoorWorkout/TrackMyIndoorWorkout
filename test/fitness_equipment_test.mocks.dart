@@ -236,15 +236,6 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
-  _i3.Future<void> clearGattCache() => (super.noSuchMethod(
-        Invocation.method(
-          #clearGattCache,
-          [],
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-  @override
   _i3.Future<bool> removeBond() => (super.noSuchMethod(
         Invocation.method(
           #removeBond,
@@ -253,6 +244,15 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValue: _i3.Future<bool>.value(false),
         returnValueForMissingStub: _i3.Future<bool>.value(false),
       ) as _i3.Future<bool>);
+  @override
+  _i3.Future<void> clearGattCache() => (super.noSuchMethod(
+        Invocation.method(
+          #clearGattCache,
+          [],
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 }
 
 /// A class which mocks [BluetoothService].
