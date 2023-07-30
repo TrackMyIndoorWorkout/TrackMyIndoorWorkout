@@ -123,7 +123,6 @@ void main() {
       final ipParts = getRandomInts(4, 320, rnd);
       final port = rnd.nextInt(81920);
       final valid = ipParts.fold<bool>(true, (prev, part) => prev && part < maxUint8) &&
-          ipParts[0] > 0 &&
           port > 0 &&
           port < maxUint16;
       final addressString = ipParts.map((part) => part.toString()).join(".");
