@@ -59,6 +59,7 @@ android {
         checkReleaseBuilds false
         disable 'InvalidPackage'
     }
+    namespace 'dev.csaba.track_my_indoor_exercise'
 }
 
 flutter {
