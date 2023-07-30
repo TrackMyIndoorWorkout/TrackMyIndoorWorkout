@@ -15,7 +15,6 @@ dependency_overrides:
 
 dependencies:
   assorted_layout_widgets: ^8.0.4
-  bluetooth_enable_fork: ^0.1.6
   collection: ^1.17.2
   datetime_picker_formfield_new: ^2.1.0
   device_info_plus: ^9.0.2
