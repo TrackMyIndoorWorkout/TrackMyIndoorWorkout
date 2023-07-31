@@ -6,6 +6,6 @@ const measurementFontSizeAdjustMax = 100;
 const measurementFontSizeAdjustDivisions =
     (measurementFontSizeAdjustMax - measurementFontSizeAdjustMin) ~/ 5;
 const measurementFontSizeAdjustDescription =
-    "In case the font size on the measurement or the records screen is too large"
-    "it is possible to shrink the rows all the way to quarter size to fit more"
-    "information on screen";
+    "In case the font size on the measurement or the records screen is too "
+    "large it is possible to shrink the rows all the way to quarter size to "
+    "fit more information on screen";

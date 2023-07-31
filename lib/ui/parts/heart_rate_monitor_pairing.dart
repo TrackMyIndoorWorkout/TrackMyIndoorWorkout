@@ -8,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
+
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../preferences/log_level.dart';
@@ -16,6 +17,7 @@ import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/logging.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
@@ -29,7 +31,6 @@ class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
 }
 
 class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPairingBottomSheet> {
-  static RegExp colonRegex = RegExp(r':');
   static const String tag = "HRM_PAIRING";
 
   int _scanDuration = 4;
@@ -48,10 +49,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   void dispose() {
     _scanStreamSubscription?.pause();
     try {
-      FlutterBluePlus.instance.stopScan();
+      FlutterBluePlus.stopScan();
     } on Exception catch (e, stack) {
-      Logging.logException(
-          _logLevel, tag, "dispose", "FlutterBluePlus.instance.stopScan", e, stack);
+      Logging().logException(_logLevel, tag, "dispose", "FlutterBluePlus.stopScan", e, stack);
     }
 
     super.dispose();
@@ -70,20 +70,19 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     _isScanning = true;
 
     try {
-      await FlutterBluePlus.instance.startScan(timeout: Duration(seconds: _scanDuration));
+      await FlutterBluePlus.startScan(timeout: Duration(seconds: _scanDuration));
       setState(() {
         _isScanning = false;
       });
     } on Exception catch (e, stack) {
-      Logging.logException(
-          _logLevel, tag, "_startScan", "FlutterBluePlus.instance.startScan", e, stack);
+      Logging().logException(_logLevel, tag, "_startScan", "FlutterBluePlus.startScan", e, stack);
     }
 
-    Logging.logVersion(Get.find<PackageInfo>());
+    Logging().logVersion(Get.find<PackageInfo>());
   }
 
   Stream<List<ScanResult>> get _throttledScanStream async* {
-    await for (var scanResults in FlutterBluePlus.instance.scanResults.throttleTime(
+    await for (var scanResults in FlutterBluePlus.scanResults.throttleTime(
       const Duration(milliseconds: uiIntermittentDelay),
       leading: false,
       trailing: true,
@@ -132,13 +131,13 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                           ),
                         ),
                         subtitle: Text(
-                          _heartRateMonitor?.device?.id.id.replaceAll(colonRegex, '') ??
+                          _heartRateMonitor?.device?.remoteId.str.shortAddressString() ??
                               emptyMeasurement,
                           style: _subtitleStyle,
                         ),
                         trailing: _themeManager.getGreenFab(Icons.favorite, () async {
-                          if (await _heartRateMonitor?.device?.state.first ==
-                              BluetoothDeviceState.connected) {
+                          if (await _heartRateMonitor?.device?.connectionState.first ==
+                              BluetoothConnectionState.connected) {
                             Get.snackbar("Info", "Already connected");
                           } else {
                             setState(() {
@@ -160,7 +159,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                   ? Container()
                   : Column(
                       children: snapshot.data!.where((d) => d.isWorthy()).map((r) {
-                      _scanResults.add(r.device.id.id);
+                      _scanResults.add(r.device.remoteId.str);
                       return HeartRateMonitorScanResultTile(
                           result: r,
                           onTap: () async {
@@ -175,9 +174,11 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                             var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
                                 ? Get.find<HeartRateMonitor>()
                                 : null;
-                            final existingId = heartRateMonitor?.device?.id.id ?? notAvailable;
-                            final storedId = _heartRateMonitor?.device?.id.id ?? notAvailable;
-                            if (existingId != notAvailable && existingId != r.device.id.id) {
+                            final existingId =
+                                heartRateMonitor?.device?.remoteId.str ?? notAvailable;
+                            final storedId =
+                                _heartRateMonitor?.device?.remoteId.str ?? notAvailable;
+                            if (existingId != notAvailable && existingId != r.device.remoteId.str) {
                               final verdict = await Get.bottomSheet(
                                 const SafeArea(
                                   child: Column(
@@ -220,12 +221,12 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                               }
                             }
 
-                            if (heartRateMonitor != null && existingId != r.device.id.id) {
+                            if (heartRateMonitor != null && existingId != r.device.remoteId.str) {
                               await heartRateMonitor.detach();
                               await heartRateMonitor.disconnect();
                             }
 
-                            if (heartRateMonitor == null || existingId != r.device.id.id) {
+                            if (heartRateMonitor == null || existingId != r.device.remoteId.str) {
                               heartRateMonitor = HeartRateMonitor(r.device);
                               if (Get.isRegistered<HeartRateMonitor>()) {
                                 await Get.delete<HeartRateMonitor>(force: true);

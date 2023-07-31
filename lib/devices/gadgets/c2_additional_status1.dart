@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../gatt/concept2.dart';
@@ -57,7 +57,7 @@ class C2AdditionalStatus1 extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       speed: getSpeed(data),
       pace: getPace(data),
       cadence: data[strokeRateByteIndex],

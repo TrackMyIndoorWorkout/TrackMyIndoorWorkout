@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
@@ -15,6 +17,8 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
+import '../preferences/database_location.dart';
+import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/drag_force_tune.dart';
@@ -23,7 +27,6 @@ import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
-import '../preferences/has_logged_messages.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../preferences/heart_rate_monitor_priority.dart';
@@ -63,7 +66,6 @@ import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
-import '../utils/logging.dart';
 import '../utils/preferences.dart';
 import '../utils/time_zone.dart';
 import 'constants.dart';
@@ -140,7 +142,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     blockSignalStartStopTag: blockSignalStartStopDefault,
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
-    hasLoggedMessagesTag: hasLoggedMessagesDefault,
     instantExportTag: instantExportDefault,
     instantExportLocationTag: instantExportLocationDefault,
     enableAssertsTag: enableAssertsDefault,
@@ -154,6 +155,11 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
+    databaseMigrationNeededTag: databaseMigrationNeededDefault,
+    activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
+    activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
+    activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
+    databaseLocationTag: databaseLocationDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -395,6 +401,12 @@ Future<BasePrefService> initPreferences() async {
     // only if TrackManager.getTrack would get the timeZone besides the sport
   }
 
+  if (prefVersion > preferencesVersionIsarMigration) {
+    if (await IsFirstRun.isFirstRun()) {
+      prefService.set<bool>(databaseMigrationNeededTag, false);
+    }
+  }
+
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -409,11 +421,6 @@ Future<BasePrefService> initPreferences() async {
         SpeedSpec.pacerSpeedDefaults[sport].toString();
     SpeedSpec.pacerSpeeds[sport] =
         double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];
-  }
-
-  final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-  if (logLevel != logLevelNone) {
-    await Logging.init(logLevel);
   }
 
   return prefService;

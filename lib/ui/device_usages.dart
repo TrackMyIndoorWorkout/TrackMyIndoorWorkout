@@ -3,11 +3,13 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
-import '../persistence/models/device_usage.dart';
-import '../persistence/database.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
+
+import '../persistence/isar/device_usage.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
@@ -19,7 +21,7 @@ class DeviceUsagesScreen extends StatefulWidget {
 }
 
 class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   double _sizeDefault = 10.0;
@@ -77,10 +79,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
             );
             if (sportPick != null) {
               deviceUsage.sport = sportPick;
-              deviceUsage.time = DateTime.now().millisecondsSinceEpoch;
-              await _database.deviceUsageDao.updateDeviceUsage(deviceUsage);
-              setState(() {
-                _editCount++;
+              deviceUsage.time = DateTime.now();
+              _database.writeTxnSync(() {
+                _database.deviceUsages.putSync(deviceUsage);
+                setState(() {
+                  _editCount++;
+                });
               });
             }
           },
@@ -95,10 +99,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
               middleText: 'Are you sure to delete this Usage?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.deviceUsageDao.deleteDeviceUsage(deviceUsage);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.deviceUsages.deleteSync(deviceUsage.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -125,8 +131,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.deviceUsageDao.findDeviceUsages(limit, offset);
+            final data = await _database.deviceUsages
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -146,9 +156,8 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         ),
         itemBuilder: (context, _, item) {
           final deviceUsage = item as DeviceUsage;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(deviceUsage.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(deviceUsage.time);
+          final timeString = DateFormat.Hms().format(deviceUsage.time);
           return Card(
             elevation: 6,
             child: ExpandablePanel(
@@ -163,7 +172,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                     overflow: TextOverflow.ellipsis,
                   ),
                   TextOneLine(
-                    deviceUsage.mac,
+                    deviceUsage.mac.shortAddressString(),
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

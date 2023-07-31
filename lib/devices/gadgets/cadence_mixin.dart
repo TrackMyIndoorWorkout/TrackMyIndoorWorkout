@@ -109,7 +109,7 @@ class CadenceMixin {
 
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, mixinTag, "computeCadence",
+      Logging().log(logLevel, logLevelInfo, mixinTag, "computeCadence",
           "cadenceData $cadenceData, $revDiff * 60 / $timeDiff");
     }
 

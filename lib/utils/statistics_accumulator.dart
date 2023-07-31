@@ -1,9 +1,10 @@
 import 'dart:math';
 
 import '../export/export_record.dart';
-import '../persistence/models/record.dart';
 import '../ui/models/display_record.dart';
+import '../persistence/isar/record.dart';
 import 'constants.dart';
+import 'streaming_median_calculator.dart';
 
 class StatisticsAccumulator {
   final bool si;
@@ -21,36 +22,45 @@ class StatisticsAccumulator {
   bool calculateAvgHeartRate;
   bool calculateMaxHeartRate;
   bool calculateMinHeartRate;
+  bool calculateMedian;
 
   late int powerSum;
   late int powerCount;
   late int maxPower;
   late int minPower;
+  late StreamingMedianCalculator<int> powerMedianCalc;
   late double speedSum;
   late int speedCount;
   late double maxSpeed;
   late double minSpeed;
+  late StreamingMedianCalculator<double> speedMedianCalc;
   late int heartRateSum;
   late int heartRateCount;
   late int maxHeartRate;
   late int minHeartRate;
+  late StreamingMedianCalculator<int> heartRateMedianCalc;
   late int cadenceSum;
   late int cadenceCount;
   late int maxCadence;
   late int minCadence;
+  late StreamingMedianCalculator<int> cadenceMedianCalc;
 
   double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
   int get maxPowerDisplay => max(maxPower, 0);
   int get minPowerDisplay => min(minPower, 0);
+  int get medianPower => powerMedianCalc.median ?? 0;
   double get avgSpeed => speedCount > 0 ? speedSum / speedCount : 0.0;
   double get maxSpeedDisplay => max(maxSpeed, 0.0);
   double get minSpeedDisplay => min(minSpeed, 0.0);
+  double get medianSpeed => speedMedianCalc.median ?? 0.0;
   int get avgCadence => cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0;
   int get maxCadenceDisplay => max(maxCadence, 0);
   int get minCadenceDisplay => min(minCadence, 0);
+  int get medianCadence => cadenceMedianCalc.median ?? 0;
   int get avgHeartRate => heartRateCount > 0 ? heartRateSum ~/ heartRateCount : 0;
   int get maxHeartRateDisplay => max(maxHeartRate, 0);
   int get minHeartRateDisplay => min(minHeartRate, 0);
+  int get medianHeartRate => heartRateMedianCalc.median ?? 0;
 
   StatisticsAccumulator({
     required this.si,
@@ -67,6 +77,7 @@ class StatisticsAccumulator {
     this.calculateAvgHeartRate = false,
     this.calculateMaxHeartRate = false,
     this.calculateMinHeartRate = false,
+    this.calculateMedian = false,
   }) {
     reset();
   }
@@ -76,18 +87,22 @@ class StatisticsAccumulator {
     powerCount = 0;
     maxPower = maxInit;
     minPower = minInit;
+    powerMedianCalc = StreamingMedianCalculator<int>();
     speedSum = 0.0;
     speedCount = 0;
     maxSpeed = maxInit.toDouble();
     minSpeed = minInit.toDouble();
+    speedMedianCalc = StreamingMedianCalculator<double>();
     heartRateSum = 0;
     heartRateCount = 0;
     maxHeartRate = maxInit;
     minHeartRate = minInit;
+    heartRateMedianCalc = StreamingMedianCalculator<int>();
     cadenceSum = 0;
     cadenceCount = 0;
     maxCadence = maxInit;
     minCadence = minInit;
+    cadenceMedianCalc = StreamingMedianCalculator<int>();
   }
 
   void processExportRecord(ExportRecord exportRecord) {
@@ -104,6 +119,10 @@ class StatisticsAccumulator {
       if (calculateMinPower) {
         minPower = min(minPower, exportRecord.record.power!);
       }
+
+      if (calculateMedian) {
+        powerMedianCalc.processElement(exportRecord.record.power!);
+      }
     }
 
     if ((exportRecord.record.speed ?? 0.0) > eps) {
@@ -118,6 +137,10 @@ class StatisticsAccumulator {
 
       if (calculateMinSpeed) {
         minSpeed = min(minSpeed, exportRecord.record.speed!);
+      }
+
+      if (calculateMedian) {
+        speedMedianCalc.processElement(exportRecord.record.speed!);
       }
     }
 
@@ -134,6 +157,10 @@ class StatisticsAccumulator {
       if (calculateMinHeartRate) {
         minHeartRate = min(minHeartRate, exportRecord.record.heartRate!);
       }
+
+      if (calculateMedian) {
+        heartRateMedianCalc.processElement(exportRecord.record.heartRate!);
+      }
     }
 
     if ((exportRecord.record.cadence ?? 0) > 0) {
@@ -148,6 +175,10 @@ class StatisticsAccumulator {
 
       if (calculateMinCadence) {
         minCadence = min(minCadence, exportRecord.record.cadence!);
+      }
+
+      if (calculateMedian) {
+        cadenceMedianCalc.processElement(exportRecord.record.cadence!);
       }
     }
   }
@@ -166,6 +197,10 @@ class StatisticsAccumulator {
       if (calculateMinPower) {
         minPower = min(minPower, record.power!);
       }
+
+      if (calculateMedian) {
+        powerMedianCalc.processElement(record.power!);
+      }
     }
 
     if (record.speed != null) {
@@ -180,6 +215,10 @@ class StatisticsAccumulator {
 
       if (calculateMinSpeed) {
         minSpeed = min(minSpeed, record.speed!);
+      }
+
+      if (calculateMedian) {
+        speedMedianCalc.processElement(record.speed!);
       }
     }
 
@@ -196,6 +235,10 @@ class StatisticsAccumulator {
       if (calculateMinHeartRate) {
         minHeartRate = min(minHeartRate, record.heartRate!);
       }
+
+      if (calculateMedian) {
+        heartRateMedianCalc.processElement(record.heartRate!);
+      }
     }
 
     if (record.cadence != null) {
@@ -210,6 +253,10 @@ class StatisticsAccumulator {
 
       if (calculateMinCadence) {
         minCadence = min(minCadence, record.cadence!);
+      }
+
+      if (calculateMedian) {
+        cadenceMedianCalc.processElement(record.cadence!);
       }
     }
   }

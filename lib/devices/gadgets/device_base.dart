@@ -106,7 +106,7 @@ abstract class DeviceBase {
   Future<bool> discoverCore() async {
     discovering = false;
     discovered = true;
-    service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+    service = services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceId);
 
     if (service == null) {
       characteristic = null;
@@ -128,40 +128,40 @@ abstract class DeviceBase {
     characteristicId = newCharacteristicId;
     if (characteristicId.isNotEmpty) {
       characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == characteristicId);
     } else {
-      characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
-      characteristicId = characteristic?.uuid.uuidString() ?? "";
+      characteristic = service!.characteristics.firstWhereOrNull(
+          (ch) => ftmsSportCharacteristics.contains(ch.characteristicUuid.uuidString()));
+      characteristicId = characteristic?.characteristicUuid.uuidString() ?? "";
     }
 
     await connectToControlPoint(true);
   }
 
   Future<void> connectToControlPoint(bool obtainControl) async {
-    if (controlCharacteristicId.isEmpty) {
+    if (controlCharacteristicId.isEmpty || testing) {
       return;
     }
 
     if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
       controlPoint = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == controlCharacteristicId);
     }
 
     if (status == null && statusCharacteristicId.isNotEmpty) {
       status = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == statusCharacteristicId);
     }
 
     if (listenOnControl && !controlNotification && controlPoint != null) {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on Exception catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
             logLevel, tag, "connectToControlPoint", "controlPoint.setNotifyValue(true)", e, stack);
       }
 
-      controlPointSubscription = controlPoint?.value
+      controlPointSubscription = controlPoint?.lastValueStream
           .throttleTime(
         const Duration(milliseconds: ftmsStatusThreshold),
         leading: false,
@@ -169,8 +169,8 @@ abstract class DeviceBase {
       )
           .listen((controlResponse) async {
         if (logLevel >= logLevelInfo) {
-          Logging.log(logLevel, logLevelInfo, tag, "connectToControlPoint controlPointSubscription",
-              controlResponse.toString());
+          Logging().log(logLevel, logLevelInfo, tag,
+              "connectToControlPoint controlPointSubscription", controlResponse.toString());
         }
 
         if (controlResponse.length >= 3 &&
@@ -189,8 +189,8 @@ abstract class DeviceBase {
               logMessage = "Stopped!";
               break;
           }
-          Logging.log(logLevel, logLevelInfo, tag, "connectToControlPoint controlPointSubscription",
-              logMessage);
+          Logging().log(logLevel, logLevelInfo, tag,
+              "connectToControlPoint controlPointSubscription", logMessage);
         }
       });
     }
@@ -212,7 +212,7 @@ abstract class DeviceBase {
     try {
       services = await device!.discoverServices();
     } on Exception catch (e, stack) {
-      Logging.logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
+      Logging().logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
 
       const someDelay = Duration(milliseconds: ftmsStatusThreshold);
       await Future.delayed(someDelay);
@@ -221,7 +221,7 @@ abstract class DeviceBase {
       try {
         services = await device!.discoverServices();
       } on Exception catch (e, stack) {
-        Logging.logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
+        Logging().logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
 
         discovering = false;
         return false;
@@ -236,8 +236,8 @@ abstract class DeviceBase {
   List<String> inferSportsFromCharacteristicIds() {
     if (discovered) {
       return service!.characteristics
-          .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
-          .map((char) => uuidToSport[char.uuid.uuidString()]!)
+          .where((char) => ftmsSportCharacteristics.contains(char.characteristicUuid.uuidString()))
+          .map((char) => uuidToSport[char.characteristicUuid.uuidString()]!)
           .toSet()
           .toList(growable: false);
     }
@@ -295,7 +295,7 @@ abstract class DeviceBase {
       try {
         await characteristic?.setNotifyValue(false);
       } on Exception catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
             logLevel, tag, "detach", "characteristic.setNotifyValue(false)", e, stack);
       }
 
@@ -311,7 +311,7 @@ abstract class DeviceBase {
       try {
         await device?.disconnect();
       } on Exception catch (e, stack) {
-        Logging.logException(logLevel, tag, "discover", "device.disconnect()", e, stack);
+        Logging().logException(logLevel, tag, "discover", "device.disconnect()", e, stack);
       }
 
       characteristic = null;
@@ -327,7 +327,7 @@ abstract class DeviceBase {
 
   void logData(List<int> data, String tag) {
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "_listenToData", data.toString());
+      Logging().log(logLevel, logLevelInfo, tag, "_listenToData", data.toString());
     }
   }
 
@@ -363,7 +363,7 @@ abstract class DeviceBase {
     try {
       return await _readBatteryLevelCore();
     } on Exception catch (e, stack) {
-      Logging.logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
+      Logging().logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
       return -1;
     }
   }
@@ -407,8 +407,8 @@ abstract class DeviceBase {
     try {
       return await _cscSensorTypeCore();
     } on Exception catch (e, stack) {
-      Logging.logException(
-          logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
+      Logging()
+          .logException(logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
       return DeviceCategory.smartDevice;
     }
   }
@@ -432,7 +432,7 @@ abstract class DeviceBase {
       await attach();
     }
 
-    controlPointSubscription = characteristic?.value.listen((byteList) {
+    controlPointSubscription = characteristic?.lastValueStream.listen((byteList) {
       if (metricProcessingFunction != null) {
         metricProcessingFunction(utf8.decode(byteList));
       }
@@ -456,8 +456,8 @@ abstract class DeviceBase {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
       await characteristic?.write(utf8.encode(commandCrLf));
     } on Exception catch (e, stack) {
-      Logging.logException(
-          logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
+      Logging()
+          .logException(logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
       return -1;
     }
 

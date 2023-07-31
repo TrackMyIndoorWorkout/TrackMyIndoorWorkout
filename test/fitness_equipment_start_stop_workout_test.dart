@@ -6,8 +6,8 @@ import 'package:mockito/annotations.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
-import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
@@ -75,8 +75,7 @@ void main() {
           deviceId: mPowerImportDeviceId,
           deviceName: descriptor.modelName,
           hrmId: "",
-          start: oneSecondAgo.millisecondsSinceEpoch,
-          startDateTime: oneSecondAgo,
+          start: oneSecondAgo,
           fourCC: descriptor.fourCC,
           sport: descriptor.sport,
           powerFactor: 1.0,
@@ -89,7 +88,7 @@ void main() {
         final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
         equipment.setActivity(activity);
         equipment.lastRecord = RecordWithSport(
-          timeStamp: oneSecondAgo.millisecondsSinceEpoch,
+          timeStamp: oneSecondAgo,
           elapsedMillis: 0,
           calories: 0,
           sport: descriptor.sport,

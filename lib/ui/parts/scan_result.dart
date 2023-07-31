@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
@@ -9,8 +10,6 @@ import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r':');
-
   const ScanResultTile({
     Key? key,
     required this.result,
@@ -27,7 +26,7 @@ class ScanResultTile extends StatelessWidget {
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,

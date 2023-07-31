@@ -1,7 +1,7 @@
 import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
 import '../../secret.dart';
 import '../upload_service.dart';
 import 'suunto.dart';
@@ -31,15 +31,14 @@ class SuuntoService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, List<Record> records, bool calculateGps) async {
-    if (records.isEmpty) {
+  Future<int> upload(Activity activity, bool calculateGps) async {
+    if (!DbUtils().hasRecords(activity.id)) {
       return 0;
     }
 
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       activity,
-      records,
       false,
       calculateGps,
       false,

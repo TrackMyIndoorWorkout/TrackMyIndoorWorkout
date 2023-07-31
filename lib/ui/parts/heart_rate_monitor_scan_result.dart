@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt/hrm.dart';
 import '../../utils/advertisement_data_ex.dart';
 import '../../utils/constants.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 extension HeartRateMonitorScanResult on ScanResult {
@@ -14,7 +16,7 @@ extension HeartRateMonitorScanResult on ScanResult {
       return false;
     }
 
-    if (device.id.id.isEmpty) {
+    if (device.remoteId.str.isEmpty) {
       return false;
     }
 
@@ -31,8 +33,6 @@ extension HeartRateMonitorScanResult on ScanResult {
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r':');
-
   const HeartRateMonitorScanResultTile({
     Key? key,
     required this.result,
@@ -43,8 +43,8 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   final VoidCallback onTap;
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
-    if (result.device.name.isNotEmpty) {
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
+    if (result.device.localName.isNotEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +77,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         style: captionStyle.apply(fontFamily: fontFamily),
       ),
       trailing: themeManager.getIconFab(
-        (heartRateMonitor?.device?.id.id ?? notAvailable) == result.device.id.id
+        (heartRateMonitor?.device?.remoteId.str ?? notAvailable) == result.device.remoteId.str
             ? themeManager.getGreenColor()
             : themeManager.getBlueColor(),
         Icons.favorite,

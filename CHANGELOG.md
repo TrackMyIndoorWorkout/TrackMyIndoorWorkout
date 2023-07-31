@@ -1,3 +1,17 @@
+## 1.1.147
+* Upgrade database backend to Isar which is 100x faster. Kicks off a migration the first time the
+  new version starts!
+* Fixes for the Schwinn 170/270/570 support (metrics picked up and HR reading picked up)
+* Adding median statistics to the workout details screen (besides max and avg)
+* Upgrades for Kayak First support
+* Upgrade Flutter to channel beta 3.13.0-0.2.pre
+* Upgrade every plugin
+* Fix SVG whiteout of upload fitness portal logos
+* Bluetooth permission changes
+* Establish listview_utils_plus and fab_circular_menu_plus plugins
+* Upgrade Android Gradle Plugin to 8.1+
+* Bug fixes
+
 ## 1.1.146
 * Update Strava iconography to use official icons (Powered by Strava, Connect with Strava)
   to please the Updated Developer Program

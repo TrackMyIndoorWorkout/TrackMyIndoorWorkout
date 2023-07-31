@@ -30,9 +30,9 @@ main() {
       final mockCharacteristic = MockBluetoothCharacteristic();
       final mockServiceGuid = Guid(serviceUid);
       final mockCharacteristicGuid = Guid(characteristicUid);
-      when(serviceMock.uuid).thenReturn(mockServiceGuid);
+      when(serviceMock.serviceUuid).thenReturn(mockServiceGuid);
       when(serviceMock.characteristics).thenReturn([mockCharacteristic]);
-      when(mockCharacteristic.uuid).thenReturn(mockCharacteristicGuid);
+      when(mockCharacteristic.characteristicUuid).thenReturn(mockCharacteristicGuid);
       when(mockCharacteristic.read()).thenAnswer((_) async => characteristicData);
       return serviceMock;
     }

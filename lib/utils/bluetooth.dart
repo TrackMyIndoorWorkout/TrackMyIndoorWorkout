@@ -1,4 +1,3 @@
-import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -7,7 +6,7 @@ import 'delays.dart';
 import 'logging.dart';
 
 Future<bool> isBluetoothOn() async {
-  final blueOn = await FlutterBluePlus.instance.isOn
+  final blueOn = await FlutterBluePlus.isOn
       .timeout(const Duration(milliseconds: spinDownThreshold), onTimeout: () => false);
   return blueOn;
 }
@@ -18,12 +17,12 @@ Future<bool> isBluetoothOff() async {
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   try {
-    var blueOn = await FlutterBluePlus.instance.isOn;
+    var blueOn = await FlutterBluePlus.isOn;
     if (blueOn) {
       return true;
     }
 
-    if (!await FlutterBluePlus.instance.isAvailable) {
+    if (!await FlutterBluePlus.isAvailable) {
       if (!silent) {
         await Get.defaultDialog(
           title: "Bluetooth Error",
@@ -56,16 +55,15 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
         return false;
       }
 
-      await BluetoothEnable.enableBluetooth;
       if (await isBluetoothOff()) {
-        await FlutterBluePlus.instance.turnOn();
+        await FlutterBluePlus.turnOn();
       }
     }
 
     return await isBluetoothOn();
   } on Exception catch (e, stack) {
-    Logging.logException(
-        logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
+    Logging()
+        .logException(logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
     return false;
   }
 }

@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/schwinn_x70.dart';
 import 'complex_sensor.dart';
@@ -32,7 +32,7 @@ class SchwinnX70HrSensor extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       heartRate: data[heartRateByteIndex],
       sport: ActivityType.ride,
     );

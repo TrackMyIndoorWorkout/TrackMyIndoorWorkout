@@ -50,10 +50,8 @@ class FitDataRecord extends FitDefinitionMessage {
 
     var data = FitData();
     data.output = [localMessageType];
-    final dateTime = model.record.timeStamp != null
-        ? DateTime.fromMillisecondsSinceEpoch(model.record.timeStamp!)
-        : DateTime.now();
-    data.addLong(FitSerializable.fitDateTime(dateTime));
+    final dateTime = model.record.timeStamp ?? DateTime.now();
+    data.addLong(FitSerializable.fitTimeStamp(dateTime));
     if (outputGps) {
       data.addGpsCoordinate(model.latitude);
       data.addGpsCoordinate(model.longitude);

@@ -6,21 +6,22 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
-import '../../persistence/database.dart';
 import '../../preferences/extend_tuning.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -189,7 +190,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         .toList(growable: false);
 
     if (values.isEmpty) {
-      Logging.log(logLevel, logLevelInfo, tag, "mergedToYield", "Skipping!!");
+      Logging().log(logLevel, logLevelInfo, tag, "mergedToYield", "Skipping!!");
       return null;
     }
 
@@ -200,15 +201,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               (prev, element) => prev.merge(element),
             );
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "mergedToYield", "merged $merged");
+      Logging().log(logLevel, logLevelInfo, tag, "mergedToYield", "merged $merged");
     }
 
+    merged.timeStamp = DateTime.now();
     return merged;
   }
 
   void _throttlingTimerCallback() {
     _throttleTimer = null;
-    Logging.log(
+    Logging().log(
         logLevel, logLevelInfo, tag, "_throttlingTimerCallback", "Timer expire induced handling");
 
     if (_recordHandlerFunction != null) {
@@ -275,16 +277,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   ///   in processRecord
   Stream<RecordWithSport> get _listenToData async* {
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "_listenToData",
+      Logging().log(logLevel, logLevelInfo, tag, "_listenToData",
           "attached $attached characteristic $characteristic descriptor $descriptor");
     }
 
     if (!attached || characteristic == null || descriptor == null) return;
 
     final fragmentedPackets = descriptor?.fragmentedPackets ?? false;
-    await for (final byteList in characteristic!.value) {
+    await for (final byteList in characteristic!.lastValueStream) {
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+        Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
             "measuring $measuring calibrating $calibrating $byteList");
       }
 
@@ -295,14 +297,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         final fragLength = packetFragment.length;
         final listLength = byteList.length;
         if (logLevel >= logLevelInfo) {
-          Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+          Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
               "Kayak First: ${utf8.decode(byteList)}");
         }
 
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+          Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
               "Repeat packet fragment => discard!");
 
           continue;
@@ -313,7 +315,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
           if (logLevel >= logLevelInfo) {
-            Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+            Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
                 "Complete packet: ${utf8.decode(packetFragment)}");
           }
 
@@ -330,7 +332,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       final key = keySelector(byteListPrep);
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+        Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
             "key $key byteListPrep $byteListPrep");
       }
 
@@ -338,8 +340,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       if (key >= 0 && descriptor!.isFlagValid(key)) {
         if (!dataHandlers.containsKey(key)) {
           if (logLevel >= logLevelInfo) {
-            Logging.log(
-                logLevel, logLevelInfo, tag, "_listenToData loop", "Cloning handler for $key");
+            Logging()
+                .log(logLevel, logLevelInfo, tag, "_listenToData loop", "Cloning handler for $key");
           }
 
           dataHandlers[key] = descriptor!.clone();
@@ -354,7 +356,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       bool timerActive = _throttleTimer?.isActive ?? false;
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "_listenToData loop",
+        Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
             "Processable $processable, timerActive $timerActive");
       }
 
@@ -407,23 +409,23 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   void setHeartRateMonitor(HeartRateMonitor heartRateMonitor) {
     this.heartRateMonitor = heartRateMonitor;
-    final hrmId = heartRateMonitor.device?.id.id;
+    final hrmId = heartRateMonitor.device?.remoteId.str;
     if (hrmId == null) {
       return;
     }
 
-    if (_companionSensor?.device?.id.id == hrmId) {
+    if (_companionSensor?.device?.remoteId.str == hrmId) {
       // Remove companion because external initiated HRM's lifecycle
       // spans beyond the FitnessMachine (so we should prevent detach)
       _companionSensor = null;
     }
 
-    if (_additionalSensors.where((sensor) => sensor.device?.id.id == hrmId).isNotEmpty) {
+    if (_additionalSensors.where((sensor) => sensor.device?.remoteId.str == hrmId).isNotEmpty) {
       // Present as an additional sensor
       // Remove from additional sensor list, because the lifecycle
       // spans beyond the FitnessMachine (so we should prevent detach)
       _additionalSensors =
-          _additionalSensors.where((sensor) => sensor.device?.id.id != hrmId).toList();
+          _additionalSensors.where((sensor) => sensor.device?.remoteId.str != hrmId).toList();
     }
   }
 
@@ -432,21 +434,28 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     bool hadDetach = false;
     for (final sensor in _additionalSensors) {
-      if (sensor.device?.id.id != device?.id.id) {
+      if (sensor.device?.remoteId.str != device?.remoteId.str) {
         await sensor.detach();
         hadDetach = true;
       }
     }
 
     if (hadDetach) {
-      _additionalSensors =
-          _additionalSensors.where((sensor) => sensor.device?.id.id == device?.id.id).toList();
+      _additionalSensors = _additionalSensors
+          .where((sensor) => sensor.device?.remoteId.str == device?.remoteId.str)
+          .toList();
     }
 
     if (descriptor != null && device != null) {
       _additionalSensors = descriptor!.getAdditionalSensors(device!, services);
       for (final sensor in _additionalSensors) {
+        // Most of the times the sensor and the main machine is the same device
+        // (example: NPE Runn FTMS + RSC, Schwinn x70, C2 ergs)
+        // discoverCore will not really discover with those, but it'll cause
+        // the proper variable to be set for further functioning.
         await sensor.discoverCore();
+        // The attach will also return in those cases because the device is
+        // already attached.
         await sensor.attach();
       }
     } else {
@@ -458,7 +467,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     DeviceDescriptor companionDescriptor,
     BluetoothDevice companionDevice,
   ) async {
-    if (heartRateMonitor?.device?.id.id == companionDevice.id.id) {
+    if (heartRateMonitor?.device?.remoteId.str == companionDevice.remoteId.str) {
       // It's a HRM and already set
       return;
     }
@@ -489,18 +498,16 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Future<void> setActivity(Activity activity) async {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
-    if (Get.isRegistered<AppDatabase>()) {
-      final database = Get.find<AppDatabase>();
-      final lastRecord = activity.id != null
-          ? await database.recordDao.findLastRecordOfActivity(activity.id!)
-          : null;
+    if (Get.isRegistered<Isar>()) {
+      final lastRecord = await DbUtils().getLastRecord(activity.id);
       continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "setActivity",
+        Logging().log(logLevel, logLevelInfo, tag, "setActivity",
             "continuation $continuation continuationRecord $continuationRecord");
       }
     }
+
     workoutState = WorkoutState.waitingForFirstMove;
     dataHandlers = {};
     readConfiguration();
@@ -557,7 +564,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           return params;
         }
       } on Exception catch (e, stack) {
-        Logging.logException(
+        Logging().logException(
             logLevel, tag, "getWriteSupportParameters", "writeTargets.read?", e, stack);
       }
     }
@@ -621,7 +628,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           descriptor?.fourCC == kayakProGenesisPortFourCC;
 
       if (logLevel >= logLevelInfo) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelInfo,
           tag,
@@ -633,7 +640,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         );
       }
     } on Exception catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
           logLevel, tag, "_fitnessMachineFeature", "getWriteSupportParameters?", e, stack);
     }
   }
@@ -684,7 +691,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   bool _checkManufacturerName() {
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         tag,
@@ -719,7 +726,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       final mfgName = String.fromCharCodes(nameBytes);
       return mfgName;
     } on Exception catch (e, stack) {
-      Logging.logException(logLevel, tag, "discover", "Could not read manufacturer name", e, stack);
+      Logging()
+          .logException(logLevel, tag, "discover", "Could not read manufacturer name", e, stack);
       return null;
     }
   }
@@ -801,12 +809,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   RecordWithSport processRecord(RecordWithSport stub, [bool idle = false]) {
     final now = DateTime.now();
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "processRecord", "stub at $now $stub");
+      Logging().log(logLevel, logLevelInfo, tag, "processRecord", "stub at $now $stub");
     }
 
     if (_companionSensor != null && _companionSensor!.attached) {
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "processRecord",
+        Logging().log(logLevel, logLevelInfo, tag, "processRecord",
             "merging companion sensor ${_companionSensor!.record}");
       }
 
@@ -816,7 +824,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     for (final sensor in _additionalSensors) {
       if (sensor.attached) {
         if (logLevel >= logLevelInfo) {
-          Logging.log(logLevel, logLevelInfo, tag, "processRecord",
+          Logging().log(logLevel, logLevelInfo, tag, "processRecord",
               "merging additional sensor ${sensor.record}");
         }
 
@@ -828,14 +836,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stub.isNotMoving();
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "processRecord",
+      Logging().log(logLevel, logLevelInfo, tag, "processRecord",
           "workoutState $workoutState isNotMoving $isNotMoving");
     }
 
     if (workoutState == WorkoutState.waitingForFirstMove) {
       if (isNotMoving) {
-        if (_activity != null && _activity!.startDateTime != null) {
-          int elapsedMillis = now.difference(_activity!.startDateTime!).inMilliseconds;
+        if (_activity != null) {
+          int elapsedMillis = now.difference(_activity!.start).inMilliseconds;
           stub.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
           lastRecord.adjustTime(elapsedMillis ~/ 1000, elapsedMillis);
           return pausedRecord(stub);
@@ -852,11 +860,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
         // Null activity should only happen in UX simulation mode
         if (_activity != null) {
-          _activity!.startDateTime = now;
-          _activity!.start = now.millisecondsSinceEpoch;
-          if (Get.isRegistered<AppDatabase>()) {
-            final database = Get.find<AppDatabase>();
-            database.activityDao.updateActivity(_activity!);
+          _activity!.start = now;
+          if (Get.isRegistered<Isar>()) {
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() {
+              database.activitys.putSync(_activity!);
+            });
           }
         }
       }
@@ -886,12 +895,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (descriptor != null) {
       stub.adjustByFactors(_powerFactor, _calorieFactor, _extendTuning);
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "processRecord", "adjusted stub $stub");
+        Logging().log(logLevel, logLevelInfo, tag, "processRecord", "adjusted stub $stub");
       }
     }
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         tag,
@@ -909,7 +918,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       );
     }
 
-    int elapsedMillis = now.difference(_activity?.startDateTime ?? now).inMilliseconds;
+    int elapsedMillis = now.difference(_activity?.start ?? now).inMilliseconds;
     double elapsed = elapsedMillis / 1000.0;
     // When the equipment supplied multiple data read per second but the Fitness Machine
     // standard only supplies second resolution elapsed time the delta time becomes zero
@@ -993,7 +1002,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
 
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "processRecord",
+        Logging().log(logLevel, logLevelInfo, tag, "processRecord",
             "starting distance adj ${stub.distance!} - $_startingDistance");
       }
 
@@ -1127,7 +1136,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
 
       if (logLevel >= logLevelInfo) {
-        Logging.log(logLevel, logLevelInfo, tag, "processRecord",
+        Logging().log(logLevel, logLevelInfo, tag, "processRecord",
             "starting calorie adj $calories - $_startingCalories");
       }
 
@@ -1135,11 +1144,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     stub.calories = calories.floor();
-    stub.activityId = _activity?.id ?? 0;
+    stub.activityId = _activity?.id ?? Isar.minId;
     stub.sport = descriptor?.sport ?? ActivityType.ride;
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "processRecord", "stub before cumulative $stub");
+      Logging().log(logLevel, logLevelInfo, tag, "processRecord", "stub before cumulative $stub");
     }
 
     if (!uxDebug) {
@@ -1153,11 +1162,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(logLevel, logLevelInfo, tag, "processRecord", "stub after processable $stub");
+      Logging().log(logLevel, logLevelInfo, tag, "processRecord", "stub after processable $stub");
     }
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         tag,
@@ -1181,22 +1190,22 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   Future<void> refreshFactors() async {
-    if (!Get.isRegistered<AppDatabase>()) {
+    if (!Get.isRegistered<Isar>()) {
       return;
     }
 
-    final database = Get.find<AppDatabase>();
-    final factors = await database.getFactors(device?.id.id ?? "");
+    final dbUtils = DbUtils();
+    final factors = await dbUtils.getFactors(device?.remoteId.str ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;
     _hrCalorieFactor = factors.item3;
     _hrmCalorieFactor =
-        await database.calorieFactorValue(heartRateMonitor?.device?.id.id ?? "", true);
+        await dbUtils.calorieFactorValue(heartRateMonitor?.device?.remoteId.str ?? "", true);
 
     initPower2SpeedConstants();
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         tag,
@@ -1242,7 +1251,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _enableAsserts = prefService.get<bool>(enableAssertsTag) ?? enableAssertsDefault;
 
     if (logLevel >= logLevelInfo) {
-      Logging.log(
+      Logging().log(
         logLevel,
         logLevelInfo,
         tag,

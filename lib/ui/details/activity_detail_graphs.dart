@@ -8,6 +8,7 @@ import '../../preferences/palette_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import '../models/tile_configuration.dart';
+import 'activity_detail_card_header_row.dart';
 
 class ActivityDetailGraphs extends StatelessWidget {
   final String item;
@@ -27,6 +28,7 @@ class ActivityDetailGraphs extends StatelessWidget {
   final double sizeDefault;
   final PaletteSpec paletteSpec;
   final ThemeManager themeManager;
+  final bool displayMedian;
 
   const ActivityDetailGraphs({
     super.key,
@@ -47,6 +49,7 @@ class ActivityDetailGraphs extends StatelessWidget {
     required this.sizeDefault,
     required this.paletteSpec,
     required this.themeManager,
+    required this.displayMedian,
   });
 
   @override
@@ -71,74 +74,61 @@ class ActivityDetailGraphs extends StatelessWidget {
       tooltipDisplayMode: charts.TrackballDisplayMode.groupAllPoints,
     );
 
+    final List<Widget> cardHeaderRows = [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TextOneLine(
+            tileConfiguration.title,
+            style: textStyle,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+      ActivityDetailCardHeaderRow(
+        themeManager: themeManager,
+        icon: preferencesSpec.icon,
+        iconSize: sizeDefault,
+        statName: "MAX",
+        text: tileConfiguration.maxString,
+        textStyle: measurementStyle,
+        unitText: preferencesSpec.multiLineUnit,
+        unitStyle: unitStyle,
+      ),
+      ActivityDetailCardHeaderRow(
+        themeManager: themeManager,
+        icon: preferencesSpec.icon,
+        iconSize: sizeDefault,
+        statName: "AVG",
+        text: tileConfiguration.avgString,
+        textStyle: measurementStyle,
+        unitText: preferencesSpec.multiLineUnit,
+        unitStyle: unitStyle,
+      ),
+    ];
+
+    if (displayMedian) {
+      cardHeaderRows.add(
+        ActivityDetailCardHeaderRow(
+          themeManager: themeManager,
+          icon: preferencesSpec.icon,
+          iconSize: sizeDefault,
+          statName: "MED",
+          text: tileConfiguration.medianString,
+          textStyle: measurementStyle,
+          unitText: preferencesSpec.multiLineUnit,
+          unitStyle: unitStyle,
+        ),
+      );
+    }
+
     return Card(
       elevation: 6,
       child: ExpandablePanel(
         theme: expandableThemeData,
-        header: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextOneLine(
-                  tileConfiguration.title,
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-            FitHorizontally(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  themeManager.getBlueIcon(preferencesSpec.icon, sizeDefault),
-                  Text("MAX", style: unitStyle),
-                  const Spacer(),
-                  TextOneLine(
-                    tileConfiguration.maxString,
-                    style: measurementStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Spacer(),
-                  Text(
-                    preferencesSpec.multiLineUnit,
-                    textAlign: TextAlign.left,
-                    maxLines: 2,
-                    style: unitStyle,
-                  ),
-                ],
-              ),
-            ),
-            FitHorizontally(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  themeManager.getBlueIcon(preferencesSpec.icon, sizeDefault),
-                  Text("AVG", style: unitStyle),
-                  const Spacer(),
-                  TextOneLine(
-                    tileConfiguration.avgString,
-                    style: measurementStyle,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Spacer(),
-                  Text(
-                    preferencesSpec.multiLineUnit,
-                    textAlign: TextAlign.left,
-                    maxLines: 2,
-                    style: unitStyle,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        header: Column(children: cardHeaderRows),
         collapsed: Container(),
         expanded: Column(children: [
           item == "speed" && sport != ActivityType.ride
@@ -188,7 +178,7 @@ class ActivityDetailGraphs extends StatelessWidget {
             height: size.height / 3,
             child: charts.SfCircularChart(
               margin: const EdgeInsets.all(0),
-              legend: charts.Legend(isVisible: true, textStyle: pieChartLabelStyle),
+              legend: const charts.Legend(isVisible: true, textStyle: pieChartLabelStyle),
               series: tileConfiguration.histogramFn!(),
               palette: paletteSpec.getPiePalette(isLight, preferencesSpec),
               tooltipBehavior: tooltipBehavior,
