@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../gatt/rsc.dart';
@@ -30,7 +30,7 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
           lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.ms2kmh);
       expectedLength += 2;
       cadenceMetric = ByteMetricDescriptor(lsb: expectedLength);
-      expectedLength += 1;
+      expectedLength++;
 
       // Has Instantaneous stride length? (first bit)
       if (flag % 2 == 1) {
@@ -71,7 +71,7 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       distance: getDistance(data),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),

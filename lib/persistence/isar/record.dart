@@ -1,45 +1,31 @@
 import 'dart:math';
 
-import 'package:floor/floor.dart';
+import 'package:isar/isar.dart';
 import 'package:flutter/foundation.dart';
-import '../../preferences/log_level.dart';
-import '../../ui/models/display_record.dart';
-import '../../utils/constants.dart';
-import '../../utils/display.dart';
-import '../../utils/logging.dart';
-import 'activity.dart';
 
-const recordsTableName = 'records';
+import '../../../preferences/log_level.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/display.dart';
+import '../../../utils/logging.dart';
 
-@Entity(tableName: recordsTableName, foreignKeys: [
-  ForeignKey(
-    childColumns: ['activity_id'],
-    parentColumns: ['id'],
-    entity: Activity,
-  )
-], indices: [
-  Index(value: ['time_stamp'])
-])
+part 'record.g.dart';
+
+@Collection(inheritance: false)
 class Record {
   static const String tag = "RECORD";
 
-  @PrimaryKey(autoGenerate: true)
-  int? id;
-  @ColumnInfo(name: 'activity_id')
-  int? activityId;
-  @ColumnInfo(name: 'time_stamp')
-  int? timeStamp; // ms since epoch
+  Id id;
+  int activityId;
+  @Index()
+  late DateTime? timeStamp;
   double? distance; // m
   int? elapsed; // s
   int? calories; // kCal
   int? power; // W
   double? speed; // km/h
   int? cadence;
-  @ColumnInfo(name: 'heart_rate')
   int? heartRate;
 
-  @ignore
-  DateTime? dt;
   @ignore
   int? elapsedMillis;
   @ignore
@@ -56,8 +42,8 @@ class Record {
   int movingTime = 0; // ms
 
   Record({
-    this.id,
-    this.activityId,
+    this.id = Isar.autoIncrement,
+    this.activityId = Isar.minId,
     this.timeStamp,
     this.distance,
     this.elapsed,
@@ -73,18 +59,7 @@ class Record {
     this.caloriesPerHour,
     this.caloriesPerMinute,
   }) {
-    if (dt == null) {
-      if (timeStamp != null && timeStamp! > 0) {
-        _dtFromTimeStamp();
-      } else {
-        dt = DateTime.now();
-      }
-    }
-
-    if ((timeStamp == null || timeStamp == 0) && dt != null) {
-      timeStamp = dt!.millisecondsSinceEpoch;
-    }
-
+    timeStamp ??= DateTime.now();
     paceToSpeed();
   }
 
@@ -112,18 +87,6 @@ class Record {
     }
   }
 
-  void _dtFromTimeStamp() {
-    if (timeStamp == null) return;
-
-    dt = DateTime.fromMillisecondsSinceEpoch(timeStamp!);
-  }
-
-  Record hydrate(String sport) {
-    _dtFromTimeStamp();
-    this.sport = sport;
-    return this;
-  }
-
   double speedByUnit(bool si) {
     return speedByUnitCore(speed ?? 0.0, si);
   }
@@ -134,10 +97,6 @@ class Record {
 
   String distanceStringByUnit(bool si, bool highRes) {
     return distanceString(distance ?? 0.0, si, highRes);
-  }
-
-  DisplayRecord display() {
-    return DisplayRecord(this);
   }
 
   bool isNotMoving() {
@@ -163,7 +122,7 @@ class Record {
 
         if (distance! < lastRecord.distance!) {
           if (logLevel >= logLevelError) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelError,
               tag,
@@ -190,7 +149,7 @@ class Record {
 
         if (elapsed! < lastRecord.elapsed!) {
           if (logLevel >= logLevelError) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelError,
               tag,
@@ -214,7 +173,7 @@ class Record {
 
     if (movingTime < lastRecord.movingTime) {
       if (logLevel >= logLevelError) {
-        Logging.log(
+        Logging().log(
           logLevel,
           logLevelError,
           tag,
@@ -237,7 +196,7 @@ class Record {
 
         if (calories! < lastRecord.calories!) {
           if (logLevel >= logLevelError) {
-            Logging.log(
+            Logging().log(
               logLevel,
               logLevelError,
               tag,
@@ -262,7 +221,7 @@ class Record {
 
       if (distance! < 0.0) {
         if (logLevel >= logLevelError) {
-          Logging.log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
+          Logging().log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
               "negative distance $distance");
         }
 
@@ -277,7 +236,7 @@ class Record {
 
       if (elapsed! < 0) {
         if (logLevel >= logLevelError) {
-          Logging.log(
+          Logging().log(
               logLevel, logLevelError, tag, "nonNegativeEnforcement", "negative elapsed $elapsed");
         }
 
@@ -291,7 +250,7 @@ class Record {
 
     if (movingTime < 0) {
       if (logLevel >= logLevelError) {
-        Logging.log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
+        Logging().log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
             "negative movingTime $movingTime");
       }
 
@@ -305,7 +264,7 @@ class Record {
 
       if (calories! < 0) {
         if (logLevel >= logLevelError) {
-          Logging.log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
+          Logging().log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
               "negative calories $calories");
         }
 
@@ -338,9 +297,9 @@ class Record {
   }
 
   void adjustTime(int newElapsed, int newElapsedMillis) {
-    if (elapsedMillis != null && dt != null) {
+    if (elapsedMillis != null && timeStamp != null) {
       final dMillis = newElapsedMillis - elapsedMillis!;
-      dt = dt!.add(Duration(milliseconds: dMillis));
+      timeStamp = timeStamp!.add(Duration(milliseconds: dMillis));
     }
 
     elapsed = newElapsed;
@@ -423,8 +382,8 @@ class RecordWithSport extends Record {
     caloriesPerMinute,
   })  : assert(sport != null),
         super(
-          id: id,
-          activityId: activityId,
+          id: id ?? Isar.autoIncrement,
+          activityId: activityId ?? Isar.minId,
           timeStamp: timeStamp,
           distance: distance,
           elapsed: elapsed,
@@ -443,7 +402,6 @@ class RecordWithSport extends Record {
 
   static RecordWithSport getZero(String sport) {
     return RecordWithSport(
-      timeStamp: 0,
       distance: 0.0,
       elapsed: 0,
       calories: 0,
@@ -463,7 +421,7 @@ class RecordWithSport extends Record {
             ? 30.0 + random.nextDouble() * 20.0
             : 2.0 + random.nextDouble() * 10.0);
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
       speed: spd,
@@ -506,10 +464,6 @@ class RecordWithSport extends Record {
 
   factory RecordWithSport.offsetBack(Record record, Record continuationRecord) {
     final clone = RecordWithSport.clone(record);
-
-    if (clone.timeStamp != null && continuationRecord.timeStamp != null) {
-      clone.timeStamp = clone.timeStamp! - continuationRecord.timeStamp!;
-    }
 
     if (clone.distance != null && continuationRecord.distance != null) {
       clone.distance = clone.distance! - continuationRecord.distance!;

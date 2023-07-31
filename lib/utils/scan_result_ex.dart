@@ -29,7 +29,7 @@ extension ScanResultEx on ScanResult {
       return false;
     }
 
-    if (device.id.id.isEmpty) {
+    if (device.remoteId.str.isEmpty) {
       return false;
     }
 
@@ -53,7 +53,7 @@ extension ScanResultEx on ScanResult {
 
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       for (var prefix in mapEntry.value) {
-        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
           return true;
         }
       }
@@ -168,7 +168,7 @@ extension ScanResultEx on ScanResult {
       }
 
       for (var prefix in mapEntry.value) {
-        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
           return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
@@ -217,7 +217,7 @@ extension ScanResultEx on ScanResult {
 
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       for (var prefix in mapEntry.value) {
-        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
               Image.asset("assets/equipment/Schwinn_logo.png",
@@ -276,7 +276,7 @@ extension ScanResultEx on ScanResult {
       }
 
       for (var prefix in mapEntry.value) {
-        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
           return Tuple2(
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),

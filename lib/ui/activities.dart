@@ -2,22 +2,26 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:tuple/tuple.dart';
+
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/database.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
 import '../preferences/activity_ui.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
@@ -39,7 +43,6 @@ import 'device_usages.dart';
 import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
-import 'parts/circular_menu.dart';
 import 'parts/export_format_picker.dart';
 import 'parts/import_format_picker.dart';
 import 'parts/legend_dialog.dart';
@@ -50,16 +53,14 @@ import 'power_tunes.dart';
 import 'details/activity_details.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  final bool hasLeaderboardData;
-
-  const ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
+  const ActivitiesScreen({key}) : super(key: key);
 
   @override
   ActivitiesScreenState createState() => ActivitiesScreenState();
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
@@ -183,11 +184,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
 
-          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
           ActivityExport exporter = getExporter(formatPick);
           final fileBytes = await exporter.getExport(
             activity,
-            records,
             formatPick == "CSV",
             _calculateGps,
             false,
@@ -287,7 +286,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             );
             if (sportPick != null) {
               activity.sport = sportPick;
-              await _database.activityDao.updateActivity(activity);
+              _database.writeTxnSync(() {
+                _database.activitys.putSync(activity);
+              });
+
               setState(() {
                 _editCount++;
               });
@@ -309,10 +311,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             confirm: TextButton(
               child: const Text("Yes"),
               onPressed: () async {
-                await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
-                await _database.activityDao.deleteActivity(activity);
-                setState(() {
-                  _editCount++;
+                _database.writeTxnSync(() {
+                  _database.records.filter().activityIdEqualTo(activity.id).deleteAllSync();
+                  _database.activitys.deleteSync(activity.id);
+                  setState(() {
+                    _editCount++;
+                  });
                 });
                 Get.close(1);
               },
@@ -334,6 +338,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     ]);
 
     return FitHorizontally(
+      shrinkLimit: shrinkLimit,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: actionsRow,
@@ -403,7 +408,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       }),
     ];
 
-    if (_leaderboardFeature && widget.hasLeaderboardData) {
+    if (_leaderboardFeature && DbUtils().hasLeaderboardData()) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           Get.bottomSheet(
@@ -426,7 +431,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       );
     }
 
-    final circularFabMenu = CircularFabMenu(
+    final circularFabMenu = FabCircularMenuPlus(
       fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
       fabOpenColor: _themeManager.getBlueColor(),
       fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
@@ -465,8 +470,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.activityDao.findActivities(limit, offset);
+            final data = await _database.activitys
+                .where()
+                .sortByStartDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -484,9 +493,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         empty: const Center(child: Text('No activities found')),
         itemBuilder: (context, _, item) {
           final activity = item as Activity;
-          final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-          final dateString = DateFormat.yMd().format(startStamp);
-          final timeString = DateFormat.Hms().format(startStamp);
+          final dateString = DateFormat.yMd().format(activity.start);
+          final timeString = DateFormat.Hms().format(activity.start);
           final List<Widget> header = [
             ActivityDetailHeaderRow(
               themeManager: _themeManager,

@@ -22,16 +22,12 @@
 -keep class io.flutter.plugins.** { *; }
 
 # This is from iterating over GeneratedPLuginRegistrant.java [
--keep class com.hui.bluetooth_enable.** { *; }
--keepclassmembernames class com.hui.bluetooth_enable.* { *; }
 -keep class dev.fluttercommunity.plus.device_info.** { *; }
 -keepclassmembernames class dev.fluttercommunity.plus.device_info.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
 -keep class com.boskokg.flutter_blue_plus.** { *; }
 -keepclassmembernames class com.boskokg.flutter_blue_plus.* { *; }
--keep class com.flutter.logs.plogs.flutter_logs.** { *; }
--keepclassmembernames class com.flutter.logs.plogs.flutter_logs.* { *; }
 -keep class net.wolverinebeach.flutter_timezone.** { *; }
 -keepclassmembernames class net.wolverinebeach.flutter_timezone.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
@@ -40,9 +36,6 @@
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
-# permission_handler transitive dependency of easy_folder_picker
--keep class com.baseflow.permissionhandler.** { *; }
--keepclassmembernames class com.baseflow.permissionhandler.** { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }

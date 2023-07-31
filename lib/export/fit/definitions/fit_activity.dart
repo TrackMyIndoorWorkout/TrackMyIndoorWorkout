@@ -34,7 +34,7 @@ class FitActivity extends FitDefinitionMessage {
 
     var dummy = FitData();
     dummy.output = [localMessageType];
-    dummy.addLong(FitSerializable.fitDateTime(model.activity.startDateTime!));
+    dummy.addLong(FitSerializable.fitTimeStamp(model.activity.start));
     if (exportTarget == ExportTarget.regular) {
       dummy.addLong(model.activity.movingTime);
       dummy.addShort(1);

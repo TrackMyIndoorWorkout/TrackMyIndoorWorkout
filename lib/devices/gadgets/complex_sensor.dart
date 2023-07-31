@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import 'sensor_base.dart';
@@ -18,7 +18,7 @@ abstract class ComplexSensor extends SensorBase {
   Stream<RecordWithSport> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteList in characteristic!.value.throttleTime(
+    await for (var byteList in characteristic!.lastValueStream.throttleTime(
       const Duration(milliseconds: sensorDataThreshold),
       leading: false,
       trailing: true,

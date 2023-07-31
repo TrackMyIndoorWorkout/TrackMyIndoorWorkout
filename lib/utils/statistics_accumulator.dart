@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import '../export/export_record.dart';
-import '../persistence/models/record.dart';
 import '../ui/models/display_record.dart';
+import '../persistence/isar/record.dart';
 import 'constants.dart';
 import 'streaming_median_calculator.dart';
 

@@ -194,7 +194,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       await controlPoint.write(requestInfo);
       // Response could be picked up in the subscription listener
     } on Exception catch (e, stack) {
-      Logging.logException(
+      Logging().logException(
           logLevel, "FTMS", "executeControlOperation", "controlPoint.write", e, stack);
     }
   }

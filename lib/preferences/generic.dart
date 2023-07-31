@@ -12,7 +12,8 @@ const preferencesVersionTimeDisplayMode = 8;
 const preferencesVersionNoWhitespaceInNetworkAddresses = 9;
 const preferencesVersionPerMetricColoringByZone = 10;
 const preferencesVersionDefaultingOldTimeZone = 11;
-const preferencesVersionDefault = preferencesVersionDefaultingOldTimeZone;
+const preferencesVersionIsarMigration = 12;
+const preferencesVersionDefault = preferencesVersionIsarMigration;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";

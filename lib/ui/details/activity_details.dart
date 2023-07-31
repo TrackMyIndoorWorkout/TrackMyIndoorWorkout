@@ -6,11 +6,11 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/activity_ui.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
@@ -85,20 +85,17 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   );
 
   Future<void> extraInit(BasePrefService prefService) async {
-    final database = Get.find<AppDatabase>();
-    _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
-
+    _allRecords = await DbUtils().getRecords(widget.activity.id);
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords = _allRecords
-            .map((r) => r.hydrate(widget.activity.sport).display())
-            .toList(growable: false);
+        _sampledRecords =
+            _allRecords.map((r) => DisplayRecord.fromRecord(r)).toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
           _pointCount,
-          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(widget.activity.sport).display(),
+          (i) => DisplayRecord.fromRecord(_allRecords[((i + 1) * nth - 1).round()]),
           growable: false,
         );
       }
@@ -127,7 +124,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
       _averageRecords = List.generate(
         _sampledRecords.length,
-        (i) => accu.averageDisplayRecord(_sampledRecords[i].dt),
+        (i) => accu.averageDisplayRecord(_sampledRecords[i].timeStamp),
         growable: false,
       );
 
@@ -173,7 +170,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getSpeedData,
           maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
           avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
-          medianString: accu.medianSpeed.toStringAsFixed(2),
+          medianString: speedOrPaceString(accu.medianSpeed, _si, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
@@ -346,7 +343,6 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
         activityDetailsMedianDisplayDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
-    widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
     final sizeAdjustInt =
@@ -375,14 +371,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartAvgColor,
         animationDuration: 0,
@@ -412,14 +408,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartAvgColor,
         animationDuration: 0,
@@ -449,14 +445,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartAvgColor,
         animationDuration: 0,
@@ -486,14 +482,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartAvgColor,
         animationDuration: 0,
@@ -601,9 +597,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       ),
     ]);
 
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(widget.activity.start);
-    final dateString = DateFormat.Md().format(startStamp);
-    final timeString = DateFormat.Hm().format(startStamp);
+    final dateString = DateFormat.Md().format(widget.activity.start);
+    final timeString = DateFormat.Hm().format(widget.activity.start);
     final title = "$dateString $timeString";
 
     final appBarActions = [
@@ -620,8 +615,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             // final tm = TrackManager();
             // final track = await tm.getTrack(widget.activity.sport);
             // debugPrint(track.name);
-            final database = Get.find<AppDatabase>();
-            await database.finalizeActivity(widget.activity);
+            await DbUtils().finalizeActivity(widget.activity);
             // await database.recalculateDistance(widget.activity, true);
           },
         ),

@@ -13,3 +13,5 @@ const instantExportLocationPasteCommand = "Paste an Export Folder";
 const instantExportLocationDescription = "If instant export is enabled "
     "the app will automatically try to export the activity to the specified "
     "folder after the workout is finished.";
+
+const instantExportLocationPickerTitle = "Instant save folder";

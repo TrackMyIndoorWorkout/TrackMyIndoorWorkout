@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_lap.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'utils.dart';
 
 void main() {
@@ -23,12 +23,11 @@ void main() {
       test('FitLap data has the expected length', () async {
         final rng = Random();
         final lap = FitLap(0, withGps);
-        final now = DateTime.now();
         final exportRecord = ExportRecord(
           latitude: rng.nextDouble(),
           longitude: rng.nextDouble(),
           record: Record(
-            timeStamp: now.millisecondsSinceEpoch,
+            timeStamp: DateTime.now(),
           ),
         );
 

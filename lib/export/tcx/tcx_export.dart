@@ -106,7 +106,7 @@ class TCXExport extends ActivityExport {
   ///
   void addTrackPoint(ExportRecord record, ExportModel exportModel) {
     _sb.writeln("<Trackpoint>");
-    addElement('Time', timeStampString(record.record.timeStamp));
+    addElement('Time', timeStampString(record.record.timeStamp ?? DateTime.now()));
     if (!exportModel.rawData && exportModel.calculateGps) {
       addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
     }
@@ -227,8 +227,7 @@ class TCXExport extends ActivityExport {
   /// To get 2019-03-03T11:43:46.000Z
   /// utc time
   /// Need to add T in the middle
-  String timeStampString(int? epochTime) {
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(epochTime ?? 0);
+  String timeStampString(DateTime dateTime) {
     return dateTime.toUtc().toString().replaceFirst(' ', 'T');
   }
 }

@@ -32,6 +32,7 @@ const fontSizeFactor = 1.2;
 const appName = "Track My Indoor Exercise";
 const displayAppName = "Track My Indoor Workout";
 const huaweiAppGalleryBuild = false;
+const shrinkLimit = 0.2;
 
 class ActivityType {
   static const String alpineSki = "AlpineSki";
