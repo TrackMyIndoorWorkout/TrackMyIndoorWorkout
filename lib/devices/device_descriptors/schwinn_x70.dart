@@ -162,7 +162,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (await isBluetoothOff()) {
+    if (!(await isBluetoothOn())) {
       return;
     }
 
