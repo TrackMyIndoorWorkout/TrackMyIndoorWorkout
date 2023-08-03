@@ -51,4 +51,10 @@ class MockPackageInfo extends _i1.Mock implements _i2.PackageInfo {
         returnValue: '',
         returnValueForMissingStub: '',
       ) as String);
+  @override
+  Map<String, dynamic> get data => (super.noSuchMethod(
+        Invocation.getter(#data),
+        returnValue: <String, dynamic>{},
+        returnValueForMissingStub: <String, dynamic>{},
+      ) as Map<String, dynamic>);
 }
