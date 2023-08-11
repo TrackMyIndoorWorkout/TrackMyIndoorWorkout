@@ -151,6 +151,16 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
             _i3.Future<List<_i2.BluetoothService>>.value(<_i2.BluetoothService>[]),
       ) as _i3.Future<List<_i2.BluetoothService>>);
   @override
+  _i3.Future<int> readRssi({int? timeout = 15}) => (super.noSuchMethod(
+        Invocation.method(
+          #readRssi,
+          [],
+          {#timeout: timeout},
+        ),
+        returnValue: _i3.Future<int>.value(0),
+        returnValueForMissingStub: _i3.Future<int>.value(0),
+      ) as _i3.Future<int>);
+  @override
   _i3.Future<int> requestMtu(
     int? desiredMtu, {
     int? timeout = 15,
@@ -159,16 +169,6 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         Invocation.method(
           #requestMtu,
           [desiredMtu],
-          {#timeout: timeout},
-        ),
-        returnValue: _i3.Future<int>.value(0),
-        returnValueForMissingStub: _i3.Future<int>.value(0),
-      ) as _i3.Future<int>);
-  @override
-  _i3.Future<int> readRssi({int? timeout = 15}) => (super.noSuchMethod(
-        Invocation.method(
-          #readRssi,
-          [],
           {#timeout: timeout},
         ),
         returnValue: _i3.Future<int>.value(0),
@@ -206,27 +206,47 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
-  _i3.Future<void> pair() => (super.noSuchMethod(
+  _i3.Future<void> createBond({int? timeout = 90}) => (super.noSuchMethod(
         Invocation.method(
-          #pair,
+          #createBond,
+          [],
+          {#timeout: timeout},
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+  @override
+  _i3.Future<void> removeBond({int? timeout = 30}) => (super.noSuchMethod(
+        Invocation.method(
+          #removeBond,
+          [],
+          {#timeout: timeout},
+        ),
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
+  @override
+  _i3.Future<void> clearGattCache() => (super.noSuchMethod(
+        Invocation.method(
+          #clearGattCache,
           [],
         ),
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
-  _i3.Future<bool> removeBond() => (super.noSuchMethod(
+  _i3.Stream<_i2.BluetoothBondState> bondState() => (super.noSuchMethod(
         Invocation.method(
-          #removeBond,
+          #bondState,
           [],
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i3.Stream<_i2.BluetoothBondState>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.BluetoothBondState>.empty(),
+      ) as _i3.Stream<_i2.BluetoothBondState>);
   @override
-  _i3.Future<void> clearGattCache() => (super.noSuchMethod(
+  _i3.Future<void> pair() => (super.noSuchMethod(
         Invocation.method(
-          #clearGattCache,
+          #pair,
           [],
         ),
         returnValue: _i3.Future<void>.value(),

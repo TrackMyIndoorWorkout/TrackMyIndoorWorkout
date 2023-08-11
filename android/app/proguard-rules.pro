@@ -14,11 +14,13 @@
 }
 
 # https://github.com/flutter/flutter/issues/78625#issuecomment-804164524
--keep class io.flutter.app.** { *; }
+# https://stackoverflow.com/questions/76800185/how-to-keep-classes-reported-missing-by-r8-during-a-release-build-of-a-flutter-a/
+# https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/435
+#-keep class io.flutter.app.** { *; }
 -keep class io.flutter.plugin.** { *; }
 -keep class io.flutter.util.** { *; }
 -keep class io.flutter.view.** { *; }
--keep class io.flutter.** { *; }
+#-keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
 # This is from iterating over GeneratedPLuginRegistrant.java [

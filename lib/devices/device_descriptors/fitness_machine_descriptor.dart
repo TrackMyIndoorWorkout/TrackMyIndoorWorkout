@@ -178,7 +178,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (await isBluetoothOff()) {
+    if (!(await isBluetoothOn())) {
       return;
     }
 
