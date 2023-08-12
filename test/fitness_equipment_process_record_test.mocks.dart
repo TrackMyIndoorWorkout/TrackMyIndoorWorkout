@@ -113,7 +113,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
       ) as _i3.Stream<List<_i2.BluetoothService>>);
   @override
   _i3.Future<void> connect({
-    Duration? timeout = const Duration(seconds: 15),
+    Duration? timeout = const Duration(seconds: 35),
     bool? autoConnect = false,
   }) =>
       (super.noSuchMethod(
@@ -129,7 +129,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
-  _i3.Future<void> disconnect({int? timeout = 15}) => (super.noSuchMethod(
+  _i3.Future<void> disconnect({int? timeout = 35}) => (super.noSuchMethod(
         Invocation.method(
           #disconnect,
           [],
