@@ -712,8 +712,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     const Duration(milliseconds: spinDownThreshold * 2),
                     onTimeout: () => BluetoothConnectionState.disconnected) ??
                 BluetoothConnectionState.disconnected;
-            if (connectionState != BluetoothConnectionState.disconnecting &&
-                connectionState != BluetoothConnectionState.disconnected) {
+            if (connectionState != BluetoothConnectionState.disconnected) {
               await fitnessEquipment.detach();
               if (!_circuitWorkout) {
                 await fitnessEquipment.disconnect();
