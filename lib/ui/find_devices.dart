@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -12,7 +11,6 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
@@ -153,7 +151,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan already in progress");
+      Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "Scan already in progress");
 
       return;
     }
@@ -179,46 +177,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
-      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "bluetooth check failed");
+      Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "bluetooth check failed");
 
       return;
     }
 
-    if (Platform.isAndroid && (silent || !_instantScan)) {
-      List<Permission> permissions = [
-        Permission.storage,
-        Permission.bluetoothConnect,
-        Permission.bluetoothScan
-      ];
-
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      if (androidInfo.version.sdkInt <= 28) {
-        permissions.add(Permission.location);
-      }
-
-      if (androidInfo.version.sdkInt <= 30) {
-        permissions.add(Permission.bluetooth);
-      }
-
-      permissions.request().then((status) async {
-        final hasAnyDenial = status.entries
-            .map((m) =>
-                m.key != Permission.storage &&
-                (m.value == PermissionStatus.denied ||
-                    m.value == PermissionStatus.permanentlyDenied))
-            .toSet()
-            .contains(true);
-        if (!hasAnyDenial) {
-          await _startScanCore(silent);
-        }
-      });
-    } else {
-      await _startScanCore(silent);
-    }
+    await _startScanCore(silent);
   }
 
   Future<void> _startScanCore(bool silent) async {
-    Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan initiated");
+    Logging().log(_logLevel, logLevelInfo, tag, "_startScanCore", "Scan initiated");
 
     _readPreferencesValues();
     await _readDeviceSports();
@@ -257,7 +225,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               _lastEquipmentIds.isNotEmpty &&
               lasts.isNotEmpty &&
               !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-        Logging().log(_logLevel, logLevelWarning, tag, "_startScan finished pre auto-connect",
+        Logging().log(_logLevel, logLevelWarning, tag, "_startScanCore finished pre auto-connect",
             "advertisementCache miss");
       } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
         if (_fitnessEquipment != null) {
@@ -298,7 +266,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         }
       }
     } on Exception catch (e, stack) {
-      Logging().logException(_logLevel, tag, "_startScan", "FlutterBluePlus.startScan", e, stack);
+      Logging()
+          .logException(_logLevel, tag, "_startScanCore", "FlutterBluePlus.startScan", e, stack);
     }
   }
 
