@@ -107,63 +107,68 @@ const ActivitySchema = CollectionSchema(
       name: r'start',
       type: IsarType.dateTime,
     ),
-    r'stravaId': PropertySchema(
+    r'stravaActivityId': PropertySchema(
       id: 18,
+      name: r'stravaActivityId',
+      type: IsarType.long,
+    ),
+    r'stravaId': PropertySchema(
+      id: 19,
       name: r'stravaId',
       type: IsarType.long,
     ),
     r'suuntoBlobUrl': PropertySchema(
-      id: 19,
+      id: 20,
       name: r'suuntoBlobUrl',
       type: IsarType.string,
     ),
     r'suuntoUploadIdentifier': PropertySchema(
-      id: 20,
+      id: 21,
       name: r'suuntoUploadIdentifier',
       type: IsarType.string,
     ),
     r'suuntoUploaded': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'suuntoUploaded',
       type: IsarType.bool,
     ),
     r'suuntoWorkoutUrl': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'suuntoWorkoutUrl',
       type: IsarType.string,
     ),
     r'timeZone': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'timeZone',
       type: IsarType.string,
     ),
     r'trainingPeaksFileTrackingUuid': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'trainingPeaksFileTrackingUuid',
       type: IsarType.string,
     ),
     r'trainingPeaksUploaded': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'trainingPeaksUploaded',
       type: IsarType.bool,
     ),
     r'trainingPeaksWorkoutId': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'trainingPeaksWorkoutId',
       type: IsarType.long,
     ),
     r'uaWorkoutId': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'uaWorkoutId',
       type: IsarType.long,
     ),
     r'underArmourUploaded': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'underArmourUploaded',
       type: IsarType.bool,
     ),
     r'uploaded': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'uploaded',
       type: IsarType.bool,
     )
@@ -241,18 +246,19 @@ void _activitySerialize(
   writer.writeDouble(offsets[15], object.powerFactor);
   writer.writeString(offsets[16], object.sport);
   writer.writeDateTime(offsets[17], object.start);
-  writer.writeLong(offsets[18], object.stravaId);
-  writer.writeString(offsets[19], object.suuntoBlobUrl);
-  writer.writeString(offsets[20], object.suuntoUploadIdentifier);
-  writer.writeBool(offsets[21], object.suuntoUploaded);
-  writer.writeString(offsets[22], object.suuntoWorkoutUrl);
-  writer.writeString(offsets[23], object.timeZone);
-  writer.writeString(offsets[24], object.trainingPeaksFileTrackingUuid);
-  writer.writeBool(offsets[25], object.trainingPeaksUploaded);
-  writer.writeLong(offsets[26], object.trainingPeaksWorkoutId);
-  writer.writeLong(offsets[27], object.uaWorkoutId);
-  writer.writeBool(offsets[28], object.underArmourUploaded);
-  writer.writeBool(offsets[29], object.uploaded);
+  writer.writeLong(offsets[18], object.stravaActivityId);
+  writer.writeLong(offsets[19], object.stravaId);
+  writer.writeString(offsets[20], object.suuntoBlobUrl);
+  writer.writeString(offsets[21], object.suuntoUploadIdentifier);
+  writer.writeBool(offsets[22], object.suuntoUploaded);
+  writer.writeString(offsets[23], object.suuntoWorkoutUrl);
+  writer.writeString(offsets[24], object.timeZone);
+  writer.writeString(offsets[25], object.trainingPeaksFileTrackingUuid);
+  writer.writeBool(offsets[26], object.trainingPeaksUploaded);
+  writer.writeLong(offsets[27], object.trainingPeaksWorkoutId);
+  writer.writeLong(offsets[28], object.uaWorkoutId);
+  writer.writeBool(offsets[29], object.underArmourUploaded);
+  writer.writeBool(offsets[30], object.uploaded);
 }
 
 Activity _activityDeserialize(
@@ -279,18 +285,19 @@ Activity _activityDeserialize(
     powerFactor: reader.readDouble(offsets[15]),
     sport: reader.readString(offsets[16]),
     start: reader.readDateTime(offsets[17]),
-    stravaId: reader.readLongOrNull(offsets[18]) ?? 0,
-    suuntoBlobUrl: reader.readStringOrNull(offsets[19]) ?? "",
-    suuntoUploadIdentifier: reader.readStringOrNull(offsets[20]) ?? "",
-    suuntoUploaded: reader.readBoolOrNull(offsets[21]) ?? false,
-    suuntoWorkoutUrl: reader.readStringOrNull(offsets[22]) ?? "",
-    timeZone: reader.readString(offsets[23]),
-    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[24]) ?? "",
-    trainingPeaksUploaded: reader.readBoolOrNull(offsets[25]) ?? false,
-    trainingPeaksWorkoutId: reader.readLongOrNull(offsets[26]) ?? 0,
-    uaWorkoutId: reader.readLongOrNull(offsets[27]) ?? 0,
-    underArmourUploaded: reader.readBoolOrNull(offsets[28]) ?? false,
-    uploaded: reader.readBoolOrNull(offsets[29]) ?? false,
+    stravaActivityId: reader.readLongOrNull(offsets[18]) ?? 0,
+    stravaId: reader.readLongOrNull(offsets[19]) ?? 0,
+    suuntoBlobUrl: reader.readStringOrNull(offsets[20]) ?? "",
+    suuntoUploadIdentifier: reader.readStringOrNull(offsets[21]) ?? "",
+    suuntoUploaded: reader.readBoolOrNull(offsets[22]) ?? false,
+    suuntoWorkoutUrl: reader.readStringOrNull(offsets[23]) ?? "",
+    timeZone: reader.readString(offsets[24]),
+    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[25]) ?? "",
+    trainingPeaksUploaded: reader.readBoolOrNull(offsets[26]) ?? false,
+    trainingPeaksWorkoutId: reader.readLongOrNull(offsets[27]) ?? 0,
+    uaWorkoutId: reader.readLongOrNull(offsets[28]) ?? 0,
+    underArmourUploaded: reader.readBoolOrNull(offsets[29]) ?? false,
+    uploaded: reader.readBoolOrNull(offsets[30]) ?? false,
   );
   return object;
 }
@@ -341,26 +348,28 @@ P _activityDeserializeProp<P>(
     case 18:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 19:
-      return (reader.readStringOrNull(offset) ?? "") as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 20:
       return (reader.readStringOrNull(offset) ?? "") as P;
     case 21:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 22:
-      return (reader.readStringOrNull(offset) ?? "") as P;
-    case 23:
-      return (reader.readString(offset)) as P;
-    case 24:
-      return (reader.readStringOrNull(offset) ?? "") as P;
-    case 25:
       return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 23:
+      return (reader.readStringOrNull(offset) ?? "") as P;
+    case 24:
+      return (reader.readString(offset)) as P;
+    case 25:
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 26:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 27:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 28:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 29:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 30:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2092,6 +2101,58 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'stravaActivityId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'stravaActivityId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'stravaActivityId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'stravaActivityId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -3151,6 +3212,18 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByStravaActivityId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'stravaActivityId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByStravaActivityIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'stravaActivityId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterSortBy> sortByStravaId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stravaId', Sort.asc);
@@ -3525,6 +3598,18 @@ extension ActivityQuerySortThenBy on QueryBuilder<Activity, Activity, QSortThenB
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByStravaActivityId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'stravaActivityId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByStravaActivityIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'stravaActivityId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterSortBy> thenByStravaId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'stravaId', Sort.asc);
@@ -3780,6 +3865,12 @@ extension ActivityQueryWhereDistinct on QueryBuilder<Activity, Activity, QDistin
     });
   }
 
+  QueryBuilder<Activity, Activity, QDistinct> distinctByStravaActivityId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'stravaActivityId');
+    });
+  }
+
   QueryBuilder<Activity, Activity, QDistinct> distinctByStravaId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'stravaId');
@@ -3968,6 +4059,12 @@ extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProper
   QueryBuilder<Activity, DateTime, QQueryOperations> startProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'start');
+    });
+  }
+
+  QueryBuilder<Activity, int, QQueryOperations> stravaActivityIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'stravaActivityId');
     });
   }
 

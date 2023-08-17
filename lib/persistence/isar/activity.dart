@@ -43,6 +43,7 @@ class Activity {
   bool trainingPeaksUploaded;
   int trainingPeaksWorkoutId;
   String trainingPeaksFileTrackingUuid;
+  int stravaActivityId;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
@@ -59,14 +60,15 @@ class Activity {
     this.movingTime = 0,
     this.calories = 0,
     this.uploaded = false,
+    this.stravaId = 0,
+    this.stravaActivityId = 0,
     this.suuntoUploaded = false,
     this.suuntoBlobUrl = "",
-    this.underArmourUploaded = false,
-    this.trainingPeaksUploaded = false,
-    this.stravaId = 0,
-    this.uaWorkoutId = 0,
     this.suuntoUploadIdentifier = "",
     this.suuntoWorkoutUrl = "",
+    this.underArmourUploaded = false,
+    this.uaWorkoutId = 0,
+    this.trainingPeaksUploaded = false,
     this.trainingPeaksWorkoutId = 0,
     this.trainingPeaksFileTrackingUuid = "",
     required this.fourCC,
@@ -87,9 +89,13 @@ class Activity {
     this.movingTime = movingTime;
   }
 
-  void markUploaded(int stravaId) {
+  void markStravaUploadInitiated(int uploadId) {
+    stravaId = uploadId;
     uploaded = true;
-    this.stravaId = stravaId;
+  }
+
+  void markStravaUploaded(int activityId) {
+    stravaActivityId = activityId;
   }
 
   void markUnderArmourUploaded(int workoutId) {
@@ -140,6 +146,7 @@ class Activity {
       case trainingPeaksChoice:
         return false;
       case stravaChoice:
+        return stravaActivityId > 0;
       default:
         return false;
     }
@@ -154,6 +161,11 @@ class Activity {
       case trainingPeaksChoice:
         return trainingPeaksPortalUrl;
       case stravaChoice:
+        if (stravaActivityId > 0) {
+          return "$stravaActivityUrlBase$stravaActivityId";
+        } else {
+          return stravaUrl;
+        }
       default:
         return stravaUrl;
     }

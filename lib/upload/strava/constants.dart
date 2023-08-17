@@ -14,3 +14,5 @@ const stravaAccessTokenTag = "strava_accessToken";
 const stravaRefreshTokenTag = "strava_refreshToken";
 const stravaExpiresAtTag = "strava_expire";
 const stravaTokenScopeTag = "strava_scope";
+
+const stravaActivityUrlBase = "https://www.strava.com/activities/";
