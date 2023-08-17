@@ -82,6 +82,12 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValueForMissingStub: _i3.Stream<int>.empty(),
       ) as _i3.Stream<int>);
   @override
+  _i3.Stream<_i2.BluetoothBondState> get bondState => (super.noSuchMethod(
+        Invocation.getter(#bondState),
+        returnValue: _i3.Stream<_i2.BluetoothBondState>.empty(),
+        returnValueForMissingStub: _i3.Stream<_i2.BluetoothBondState>.empty(),
+      ) as _i3.Stream<_i2.BluetoothBondState>);
+  @override
   _i2.DeviceIdentifier get id => (super.noSuchMethod(
         Invocation.getter(#id),
         returnValue: _FakeDeviceIdentifier_0(
@@ -113,7 +119,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
       ) as _i3.Stream<List<_i2.BluetoothService>>);
   @override
   _i3.Future<void> connect({
-    Duration? timeout = const Duration(seconds: 15),
+    Duration? timeout = const Duration(seconds: 35),
     bool? autoConnect = false,
   }) =>
       (super.noSuchMethod(
@@ -129,7 +135,7 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
   @override
-  _i3.Future<void> disconnect({int? timeout = 15}) => (super.noSuchMethod(
+  _i3.Future<void> disconnect({int? timeout = 35}) => (super.noSuchMethod(
         Invocation.method(
           #disconnect,
           [],
@@ -234,15 +240,6 @@ class MockBluetoothDevice extends _i1.Mock implements _i2.BluetoothDevice {
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
-  @override
-  _i3.Stream<_i2.BluetoothBondState> bondState() => (super.noSuchMethod(
-        Invocation.method(
-          #bondState,
-          [],
-        ),
-        returnValue: _i3.Stream<_i2.BluetoothBondState>.empty(),
-        returnValueForMissingStub: _i3.Stream<_i2.BluetoothBondState>.empty(),
-      ) as _i3.Stream<_i2.BluetoothBondState>);
   @override
   _i3.Future<void> pair() => (super.noSuchMethod(
         Invocation.method(

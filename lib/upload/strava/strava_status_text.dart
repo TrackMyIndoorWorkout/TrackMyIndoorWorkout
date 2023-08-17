@@ -5,5 +5,6 @@ class StravaStatusText {
   static const String deleted = "The created activity has been deleted.";
   static const String errorMsg = "There was an error processing your activity.";
   static const String processed = "Your activity is still being processed.";
-  static const String notFound = 'Not Found';
+  static const String notFound = "Not Found";
+  static const String ok = "OK";
 }

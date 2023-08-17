@@ -84,7 +84,7 @@ abstract class Upload {
       final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
       if (decodedResponse.id > 0) {
-        activity.markUploaded(decodedResponse.id);
+        activity.markStravaUploadInitiated(decodedResponse.id);
         final database = Get.find<Isar>();
         database.writeTxnSync(() {
           database.activitys.putSync(activity);
@@ -96,8 +96,10 @@ abstract class Upload {
         final reqCheckUpgrade = '$uploadsEndpoint/${decodedResponse.id}';
         final uri = Uri.parse(reqCheckUpgrade);
         String? reasonPhrase = StravaStatusText.processed;
+        http.Response? resp;
+        ResponseUploadActivity decodedStatus = ResponseUploadActivity(0, "", "", "", 0);
         while (reasonPhrase == StravaStatusText.processed) {
-          final resp = await http.get(uri, headers: header);
+          resp = await http.get(uri, headers: header);
           reasonPhrase = resp.reasonPhrase;
           debugPrint('Check Status $reasonPhrase ${resp.statusCode}');
 
@@ -105,6 +107,8 @@ abstract class Upload {
           if (resp.statusCode >= 200 && resp.statusCode < 300) {
             // resp.statusCode == 200
             debugPrint('Check Body: ${resp.body}');
+            final Map<String, dynamic> bodyMap = json.decode(resp.body);
+            decodedStatus = ResponseUploadActivity.fromJson(bodyMap);
           }
 
           // 404 the temp id does not exist anymore
@@ -133,6 +137,28 @@ abstract class Upload {
             }
           } else {
             debugPrint('---> Unknown error');
+          }
+        }
+
+        int stravaActivityId = decodedStatus.activityId;
+        while (resp != null &&
+            resp.statusCode >= 200 &&
+            resp.statusCode < 300 &&
+            reasonPhrase == StravaStatusText.ok &&
+            decodedStatus.status == StravaStatusText.processed &&
+            stravaActivityId == 0) {
+          if (stravaActivityId > 0) {
+            activity.markStravaUploaded(stravaActivityId);
+          } else {
+            await Future<void>.delayed(const Duration(seconds: 1));
+            resp = await http.get(uri, headers: header);
+            final Map<String, dynamic> bodyMap = json.decode(resp.body);
+            decodedStatus = ResponseUploadActivity.fromJson(bodyMap);
+            reasonPhrase = resp.reasonPhrase;
+            stravaActivityId = decodedStatus.activityId;
+            if (stravaActivityId > 0) {
+              activity.markStravaUploaded(stravaActivityId);
+            }
           }
         }
       }

@@ -5,7 +5,7 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart' hide LogLevel;
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -151,7 +151,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   Future<void> _startScan(bool silent) async {
     if (_isScanning) {
-      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan already in progress");
+      Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "Scan already in progress");
 
       return;
     }
@@ -177,12 +177,16 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
-      Logging().log(_logLevel, logLevelInfo, tag, "startScan", "bluetooth check failed");
+      Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "bluetooth check failed");
 
       return;
     }
 
-    Logging().log(_logLevel, logLevelInfo, tag, "startScan", "Scan initiated");
+    await _startScanCore(silent);
+  }
+
+  Future<void> _startScanCore(bool silent) async {
+    Logging().log(_logLevel, logLevelInfo, tag, "_startScanCore", "Scan initiated");
 
     _readPreferencesValues();
     await _readDeviceSports();
@@ -199,6 +203,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     }
 
     try {
+      // FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
       await FlutterBluePlus.startScan(timeout: Duration(seconds: _scanDuration));
       setState(() {
         _isScanning = false;
@@ -220,7 +225,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               _lastEquipmentIds.isNotEmpty &&
               lasts.isNotEmpty &&
               !_advertisementCache.hasAnyEntry(_lastEquipmentIds)) {
-        Logging().log(_logLevel, logLevelWarning, tag, "_startScan finished pre auto-connect",
+        Logging().log(_logLevel, logLevelWarning, tag, "_startScanCore finished pre auto-connect",
             "advertisementCache miss");
       } else if (_autoConnect && !_goingToRecording && _autoConnectLatch) {
         if (_fitnessEquipment != null) {
@@ -261,7 +266,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         }
       }
     } on Exception catch (e, stack) {
-      Logging().logException(_logLevel, tag, "_startScan", "FlutterBluePlus.startScan", e, stack);
+      Logging()
+          .logException(_logLevel, tag, "_startScanCore", "FlutterBluePlus.startScan", e, stack);
     }
   }
 
@@ -712,8 +718,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                     const Duration(milliseconds: spinDownThreshold * 2),
                     onTimeout: () => BluetoothConnectionState.disconnected) ??
                 BluetoothConnectionState.disconnected;
-            if (connectionState != BluetoothConnectionState.disconnecting &&
-                connectionState != BluetoothConnectionState.disconnected) {
+            if (connectionState != BluetoothConnectionState.disconnected) {
               await fitnessEquipment.detach();
               if (!_circuitWorkout) {
                 await fitnessEquipment.disconnect();

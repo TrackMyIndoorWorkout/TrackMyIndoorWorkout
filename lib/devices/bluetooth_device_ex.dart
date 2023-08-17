@@ -16,5 +16,5 @@ extension BluetoothDeviceEx on BluetoothDevice {
 
   String get nonEmptyName => localName.isNotEmpty
       ? localName
-      : Get.find<AddressNames>().getAddressName(localName, remoteId.str);
+      : Get.find<AddressNames>().getAddressName(remoteId.str, localName);
 }

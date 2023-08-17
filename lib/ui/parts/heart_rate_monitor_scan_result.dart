@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
-import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt/hrm.dart';
 import '../../utils/advertisement_data_ex.dart';
 import '../../utils/constants.dart';
+import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
@@ -44,22 +44,18 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
     final deviceIdString = result.device.remoteId.str.shortAddressString();
-    if (result.device.localName.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            result.device.nonEmptyName,
-            style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(deviceIdString, style: dataStyle)
-        ],
-      );
-    } else {
-      return Text(deviceIdString);
-    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          result.nonEmptyName,
+          style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(deviceIdString, style: dataStyle)
+      ],
+    );
   }
 
   @override

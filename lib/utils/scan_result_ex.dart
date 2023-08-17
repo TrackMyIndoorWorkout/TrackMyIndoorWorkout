@@ -16,6 +16,7 @@ import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
+import '../utils/address_names.dart';
 import 'advertisement_data_ex.dart';
 import 'constants.dart';
 import 'display.dart';
@@ -63,6 +64,12 @@ extension ScanResultEx on ScanResult {
   }
 
   List<String> get serviceUuids => advertisementData.uuids;
+
+  String get nonEmptyName => device.localName.isNotEmpty
+      ? device.localName
+      : (advertisementData.localName.isNotEmpty
+          ? advertisementData.localName
+          : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.localName));
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);

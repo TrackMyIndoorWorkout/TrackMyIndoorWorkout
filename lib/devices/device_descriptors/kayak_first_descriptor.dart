@@ -136,7 +136,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     int chunkBeginning = 0;
     while (chunkBeginning < commandBytes.length) {
       try {
-        var chunk = commandBytes.skip(chunkBeginning).take(mtuSize).toList(growable: false);
+        final chunk = commandBytes.skip(chunkBeginning).take(mtuSize).toList(growable: false);
         await controlPoint.write(chunk);
         // Response could be picked up in the subscription listener
         chunkBeginning += mtuSize;
