@@ -1,5 +1,6 @@
 ## 1.1.149
 * Strava uploads now point to the exact activity directly
+* Dealing with Bluetooth permission and related issues
 * Upgrade Flutter Blue Plus plugin
 * Upgrade Flutter to channel beta 3.13.0-0.4.pre
 * Upgrade numerous plugins
