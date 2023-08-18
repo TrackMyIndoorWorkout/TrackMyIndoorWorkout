@@ -56,12 +56,13 @@ class C2AdditionalStatus1 extends ComplexSensor {
       return RecordWithSport(sport: ActivityType.rowing);
     }
 
+    final hr = data[heartRateByteIndex];
     return RecordWithSport(
       timeStamp: DateTime.now(),
       speed: getSpeed(data),
       pace: getPace(data),
       cadence: data[strokeRateByteIndex],
-      heartRate: data[heartRateByteIndex],
+      heartRate: hr < 255 && hr > 0 ? hr : null,
       sport: ActivityType.rowing,
     );
   }
