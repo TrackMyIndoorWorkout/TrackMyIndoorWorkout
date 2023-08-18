@@ -437,6 +437,7 @@ class RecordWithSport extends Record {
     calories ??= record.calories;
     power ??= record.power;
     speed ??= record.speed;
+    pace ??= record.pace;
     cadence ??= record.cadence;
     heartRate ??= record.heartRate;
     return this;
