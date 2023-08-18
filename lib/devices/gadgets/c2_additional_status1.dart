@@ -11,10 +11,10 @@ class C2AdditionalStatus1 extends ComplexSensor {
   static const characteristicUuid = c2RowingAdditionalStatus1Uuid;
 
   static const expectedDataPacketLength = 17;
-  static const speedLsbByteIndex = 5;
+  static const speedLsbByteIndex = 3;
   static const strokeRateByteIndex = 5;
   static const heartRateByteIndex = 6;
-  static const paceLsbByteIndex = 5;
+  static const paceLsbByteIndex = 7;
 
   MetricDescriptor? speedMetric;
   MetricDescriptor? paceMetric;
