@@ -31,7 +31,7 @@ class C2AdditionalStatus1 extends ComplexSensor {
       speedMetric = ShortMetricDescriptor(
         lsb: speedLsbByteIndex,
         msb: speedLsbByteIndex + 1,
-        divider: 1000 * DeviceDescriptor.ms2kmh,
+        divider: 1000 * DeviceDescriptor.kmh2ms,
       );
       paceMetric = ShortMetricDescriptor(
         lsb: paceLsbByteIndex,
