@@ -407,6 +407,7 @@ class RecordWithSport extends Record {
       calories: 0,
       power: 0,
       speed: 0.0,
+      pace: sport == ActivityType.ride ? null : 0.0,
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
