@@ -4,8 +4,6 @@ const authorizationEndpoint = "${stravaUrl}oauth/authorize";
 const deauthorizationEndpoint = "${stravaUrl}oauth/deauthorize";
 const uploadsEndpoint = "${stravaUrl}api/v3/uploads";
 
-const redirectUrlWeb = "https://trackmyindoorworkout.github.io";
-
 // To use with iOS or Android
 const redirectUrlScheme = "stravaflutter";
 const redirectUrlMobile = "$redirectUrlScheme://redirect/";
