@@ -2,20 +2,19 @@ import 'dart:math';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
-import 'fitness_equipment_test.mocks.dart';
 import 'utils.dart';
 
-@GenerateNiceMocks([
-  MockSpec<BluetoothDevice>(),
-  MockSpec<BluetoothService>(),
-  MockSpec<BluetoothCharacteristic>()
-])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
+class MockBluetoothService extends Mock implements BluetoothService {}
+
+class MockBluetoothCharacteristic extends Mock implements BluetoothCharacteristic {}
+
 main() {
   setUpAll(() async {
     await initPrefServiceForTest();
@@ -30,10 +29,10 @@ main() {
       final mockCharacteristic = MockBluetoothCharacteristic();
       final mockServiceGuid = Guid(serviceUid);
       final mockCharacteristicGuid = Guid(characteristicUid);
-      when(serviceMock.serviceUuid).thenReturn(mockServiceGuid);
-      when(serviceMock.characteristics).thenReturn([mockCharacteristic]);
-      when(mockCharacteristic.characteristicUuid).thenReturn(mockCharacteristicGuid);
-      when(mockCharacteristic.read()).thenAnswer((_) async => characteristicData);
+      when(() => serviceMock.serviceUuid).thenReturn(mockServiceGuid);
+      when(() => serviceMock.characteristics).thenReturn([mockCharacteristic]);
+      when(() => mockCharacteristic.characteristicUuid).thenReturn(mockCharacteristicGuid);
+      when(() => mockCharacteristic.read()).thenAnswer((_) async => characteristicData);
       return serviceMock;
     }
 
@@ -52,7 +51,7 @@ main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(mockDevice.discoverServices())
+      when(() => mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
@@ -68,7 +67,7 @@ main() {
       const anotherUid = '00000000-0000-1000-8000-00805f9b34fb';
       final mockFtmsService = createMockFtmsService(characteristicUid: anotherUid);
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(mockDevice.discoverServices())
+      when(() => mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
@@ -82,7 +81,7 @@ main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(mockDevice.discoverServices())
+      when(() => mockDevice.discoverServices())
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final equipment = FitnessEquipment(descriptor: null, device: mockDevice);

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
@@ -11,9 +11,9 @@ import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
-import 'fitness_equipment_start_stop_workout_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();

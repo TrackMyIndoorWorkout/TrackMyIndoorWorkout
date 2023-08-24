@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:mock_data/mock_data.dart';
-import 'package:mockito/annotations.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
@@ -22,7 +22,8 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
 import 'database/in_memory_database.dart';
 
-@GenerateNiceMocks([MockSpec<PackageInfo>()])
+class MockPackageInfo extends Mock implements PackageInfo {}
+
 void main() {
   setUpAll(() async {
     Get.put<Isar>(InMemoryDatabase(mockUUID()), permanent: true);
