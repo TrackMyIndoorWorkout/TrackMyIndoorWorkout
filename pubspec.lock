@@ -375,18 +375,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_layout_grid
-      sha256: "3c03d28f884d816d6f483bdd64dd79663abfb00eea7cb27ffe98380e8357af95"
+      sha256: "3529b7aa7ed2cb9861a0bbaa5c14d4be2beaf5a070ce0176077159f80c5de094"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   flutter_lints:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: "2118df84ef0c3ca93f96123a616ae8540879991b8b57af2f81b76a7ada49b2a4"
+      sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.3"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1144,18 +1144,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "5c774905aad16bef8b3a10918900b013a942612475e58fb854b431b181be6ebe"
+      sha256: f5201fea1541cd1cf9a5d6883f74ddc0434e73bbc77ab285e3313b497411afec
       url: "https://pub.dev"
     source: hosted
-    version: "22.2.10"
+    version: "22.2.11"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "438eb5008610df9dac9fe37263ea39f58f5e123fbe0f8c57b95b950a6424cae4"
+      sha256: "2baf60cd245a21a7069f036bbca1ca222633d38f57748e133da97a305712627c"
       url: "https://pub.dev"
     source: hosted
-    version: "22.2.10"
+    version: "22.2.11"
   synchronized:
     dependency: transitive
     description:

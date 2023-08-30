@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.14.0-0.1.pre"
 
 dependency_overrides:
-  analyzer: 6.2.0  # because of mockito
+  analyzer: 6.2.0  # because of isar_generator
 
 dependencies:
   assorted_layout_widgets: ^8.0.4
@@ -25,7 +25,7 @@ dependencies:
   floor: ^1.4.2
   flutter_blue_plus: 1.14.11
   flutter_circle_color_picker: ^0.3.0
-  flutter_layout_grid: ^2.0.4
+  flutter_layout_grid: ^2.0.5
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.0.7
   flutter_timezone: ^1.0.7
@@ -52,7 +52,7 @@ dependencies:
   soundpool: ^2.4.1
   sqflite: ^2.3.0
   string_validator: ^1.0.0
-  syncfusion_flutter_charts: ^22.2.10
+  syncfusion_flutter_charts: ^22.2.11
   timezone: ^0.9.2
   tuple: ^2.0.2
   uni_links: ^0.5.1
@@ -68,7 +68,7 @@ dev_dependencies:
   floor_generator: ^1.4.2
   flutter_driver:
     sdk: flutter
-  flutter_lints: ^2.0.2
+  flutter_lints: ^2.0.3
   flutter_test:
     sdk: flutter
   integration_test:
