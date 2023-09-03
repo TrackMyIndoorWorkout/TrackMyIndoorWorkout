@@ -317,7 +317,8 @@ void main() {
       final pace = 60.0 / speed;
       final expected = minPerMileMilesPerHour.item1;
       test("$speed | $pace (Run) -> $expected", () async {
-        expect(speedOrPaceString(speed / km2mi, false, ActivityType.run, limitSlowSpeed: true), expected);
+        expect(speedOrPaceString(speed / km2mi, false, ActivityType.run, limitSlowSpeed: true),
+            expected);
       });
     }
   });
@@ -337,7 +338,8 @@ void main() {
       final pace = 60.0 / speed;
       final expected = minPerMileMilesPerHour.item1;
       test("$speed | $pace (Run) -> $expected", () async {
-        expect(speedOrPaceString(speed / km2mi, false, ActivityType.run, limitSlowSpeed: true), expected);
+        expect(speedOrPaceString(speed / km2mi, false, ActivityType.run, limitSlowSpeed: true),
+            expected);
       });
     }
   });
