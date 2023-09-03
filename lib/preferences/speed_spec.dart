@@ -8,11 +8,11 @@ const pacerSpeedTagPrefix = "pacer_speed_";
 
 class SpeedSpec {
   static final slowSpeedDefaults = {
-    ActivityType.ride: 4.0,
-    ActivityType.run: 2.0,
-    SportSpec.paddleSport: 1.0,
-    ActivityType.swim: 0.5,
-    ActivityType.elliptical: 1.0,
+    ActivityType.ride: 1.0,
+    ActivityType.run: 0.5,
+    SportSpec.paddleSport: 0.2,
+    ActivityType.swim: 0.1,
+    ActivityType.elliptical: 0.2,
   };
 
   static final slowSpeeds = {

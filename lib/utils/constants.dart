@@ -1,5 +1,6 @@
 const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
+const appUrl = "https://trackmyindoorworkout.github.io/";
 const eps = 1e-6;
 const displayEps = 1e-4;
 const workaroundEpsRatio = 0.05;

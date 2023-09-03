@@ -10,6 +10,7 @@ import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../utils/constants.dart';
 import 'strava_status_code.dart';
 import 'constants.dart';
 import 'strava_token.dart';
@@ -113,7 +114,7 @@ abstract class Auth {
     String prompt,
   ) async {
     debugPrint('Entering getStravaCode');
-    String redirectUrl = kIsWeb ? redirectUrlWeb : redirectUrlMobile;
+    String redirectUrl = kIsWeb ? appUrl : redirectUrlMobile;
 
     final params = '?client_id=$clientID&redirect_uri=$redirectUrl'
         '&response_type=code&approval_prompt=$prompt&scope=$scope';

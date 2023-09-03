@@ -1,6 +1,6 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/csc.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/concept2.dart';
@@ -12,7 +12,6 @@ import 'package:track_my_indoor_exercise/devices/gatt/power_meter.dart';
 import 'package:track_my_indoor_exercise/devices/gatt/schwinn_x70.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'infer_sport_from_characteristics_id_test.mocks.dart';
 
 class TestPair {
   final String characteristicId;
@@ -21,7 +20,8 @@ class TestPair {
   const TestPair({required this.characteristicId, required this.sports});
 }
 
-@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
 void main() {
   group('DeviceBase infers sport as expected from characteristics ID', () {
     for (final testPair in [

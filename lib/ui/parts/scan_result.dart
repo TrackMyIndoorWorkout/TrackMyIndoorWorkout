@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
-import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
@@ -32,7 +31,7 @@ class ScanResultTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          result.device.nonEmptyName,
+          result.nonEmptyName,
           style: themeManger.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),

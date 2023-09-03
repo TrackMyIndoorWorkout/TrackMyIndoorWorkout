@@ -143,11 +143,11 @@ abstract class Upload {
       headers: headers,
     );
 
-    final statusBody = uploadStatusResponse.body;
     if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
       debugPrint('Error while getting upload status');
     } else {
       const workoutUrl = '"webUrl":"';
+      final statusBody = uploadStatusResponse.body;
       int matchBeginningIndex = statusBody.indexOf(workoutUrl);
       if (matchBeginningIndex > 0) {
         final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;

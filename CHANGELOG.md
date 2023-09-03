@@ -1,3 +1,18 @@
+## 1.1.149
+* Strava uploads now point to the exact activity directly
+* Dealing with Bluetooth permission and related issues
+* Upgrade Flutter Blue Plus plugin
+* Upgrade Flutter to channel beta 3.13.0-0.4.pre
+* Upgrade numerous plugins
+
+## 1.1.148
+* Upgrade Flutter Blue Plus plugin
+* Minimum Android SDK level increase to 21 (Android 6 Marshmallow)
+  (dropping support for SDK level 19 - Android 4.4 KitKat and SDK level 20 Android 5 Lollipop)
+* Upgrade Flutter to channel beta 3.13.0-0.3.pre
+* Upgrade numerous plugins
+* Upgrade Kotlin
+
 ## 1.1.147
 * Upgrade database backend to Isar which is 100x faster. Kicks off a migration the first time the
   new version starts!
