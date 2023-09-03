@@ -104,6 +104,16 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return advanceFlag(flag);
   }
 
+  int processResistanceFlag(int flag) {
+    if (flag % 2 == 1) {
+      // SInt16
+      resistanceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      byteCounter += 2;
+    }
+
+    return advanceFlag(flag);
+  }
+
   int processPowerFlag(int flag) {
     if (flag % 2 == 1) {
       // SInt16, Watts

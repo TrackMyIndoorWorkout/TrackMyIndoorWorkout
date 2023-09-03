@@ -40,6 +40,8 @@ class Record {
   double? caloriesPerMinute;
   @ignore
   int movingTime = 0; // ms
+  @ignore
+  double? resistance;
 
   Record({
     this.id = Isar.autoIncrement,
@@ -58,6 +60,7 @@ class Record {
     this.sport,
     this.caloriesPerHour,
     this.caloriesPerMinute,
+    this.resistance,
   }) {
     timeStamp ??= DateTime.now();
     paceToSpeed();
@@ -358,7 +361,8 @@ class Record {
         "pace $pace | "
         "strokeCount $strokeCount | "
         "caloriesPerHour $caloriesPerHour | "
-        "caloriesPerMinute $caloriesPerMinute";
+        "caloriesPerMinute $caloriesPerMinute | "
+        "resistance $resistance";
   }
 }
 
@@ -380,6 +384,7 @@ class RecordWithSport extends Record {
     required sport,
     caloriesPerHour,
     caloriesPerMinute,
+    resistance,
   })  : assert(sport != null),
         super(
           id: id ?? Isar.autoIncrement,
@@ -398,6 +403,7 @@ class RecordWithSport extends Record {
           sport: sport,
           caloriesPerHour: caloriesPerHour,
           caloriesPerMinute: caloriesPerMinute,
+          resistance: resistance,
         );
 
   static RecordWithSport getZero(String sport) {
@@ -411,6 +417,7 @@ class RecordWithSport extends Record {
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
+      resistance: 0.0,
       sport: sport,
     );
   }
@@ -441,6 +448,7 @@ class RecordWithSport extends Record {
     pace ??= record.pace;
     cadence ??= record.cadence;
     heartRate ??= record.heartRate;
+    resistance ??= record.resistance;
     return this;
   }
 
@@ -461,6 +469,7 @@ class RecordWithSport extends Record {
       sport: record.sport,
       caloriesPerHour: record.caloriesPerHour,
       caloriesPerMinute: record.caloriesPerMinute,
+      resistance: record.resistance,
     );
   }
 

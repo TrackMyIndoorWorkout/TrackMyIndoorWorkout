@@ -80,7 +80,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     flag = skipFlag(flag); // Average Pace
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
     flag = skipFlag(flag, size: 1); // Metabolic Equivalent
@@ -123,6 +123,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
+      resistance: getResistance(data),
     );
   }
 

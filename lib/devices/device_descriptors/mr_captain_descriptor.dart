@@ -80,7 +80,7 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
     flag = advanceFlag(flag); // Average Pace C5
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power - advanceFlag ?
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processEffedUpExpandedEnergyFlag(flag); // Mixed up, f-ed up
     flag = skipFlag(flag, size: 1); // Elapsed Time, should be 2 bytes, but it's f-ed up single byte
     // flag = skipFlag(flag, size: 1); // Metabolic Equivalent

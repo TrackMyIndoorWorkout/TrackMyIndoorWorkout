@@ -17,7 +17,6 @@ import '../gadgets/schwinn_x70_hr_sensor.dart';
 import '../gatt/ftms.dart';
 import '../gatt/schwinn_x70.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
-import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/six_byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -28,7 +27,6 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   static const magicNumbers = [17, 32, 0];
   static const magicFlag = 32 * 256 + 17;
 
-  MetricDescriptor? resistanceMetric;
   // From https://github.com/ursoft/connectivity-samples/blob/main/BluetoothLeGatt/Application/src/main/java/com/example/android/bluetoothlegatt/BluetoothLeService.java
   static const List<double> resistancePowerFactor = [
     0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, // 1-13
@@ -147,6 +145,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       speed: speed,
       cadence: min(computeCadence().toInt(), maxByte),
       heartRate: null,
+      resistance: getResistance(data),
       sport: sport,
     );
     if (testing) {
