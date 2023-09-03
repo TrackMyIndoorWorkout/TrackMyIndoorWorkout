@@ -29,7 +29,7 @@ void main() {
     for (final testPair in [
       const MachineSportTestPair(machineType: MachineType.indoorBike, sport: ActivityType.ride),
       const MachineSportTestPair(machineType: MachineType.treadmill, sport: ActivityType.run),
-      const MachineSportTestPair(machineType: MachineType.rower, sport: ActivityType.kayaking),
+      const MachineSportTestPair(machineType: MachineType.rower, sport: ActivityType.rowing),
       const MachineSportTestPair(
           machineType: MachineType.crossTrainer, sport: ActivityType.elliptical),
       const MachineSportTestPair(machineType: MachineType.stepClimber, sport: ActivityType.run),
@@ -47,7 +47,7 @@ void main() {
     for (final testPair in [
       const MachineSportIconPair(machineType: MachineType.indoorBike, icon: Icons.directions_bike),
       const MachineSportIconPair(machineType: MachineType.treadmill, icon: Icons.directions_run),
-      const MachineSportIconPair(machineType: MachineType.rower, icon: Icons.kayaking),
+      const MachineSportIconPair(machineType: MachineType.rower, icon: Icons.rowing),
       const MachineSportIconPair(
           machineType: MachineType.crossTrainer, icon: Icons.downhill_skiing),
       const MachineSportIconPair(machineType: MachineType.stepClimber, icon: Icons.stairs),
@@ -61,7 +61,7 @@ void main() {
     }
   });
 
-  group('machineType isFtms classifies as expected', () {
+  group('machineType isSpecificFtms classifies as expected', () {
     for (final testPair in [
       const MachineFtmsTestPair(machineType: MachineType.notFitnessMachine, expected: false),
       const MachineFtmsTestPair(machineType: MachineType.indoorBike, expected: true),
@@ -74,7 +74,7 @@ void main() {
       const MachineFtmsTestPair(machineType: MachineType.multiFtms, expected: false),
     ]) {
       test("${testPair.machineType} -> ${testPair.expected}", () async {
-        expect(testPair.machineType.isFtms, testPair.expected);
+        expect(testPair.machineType.isSpecificFtms, testPair.expected);
       });
     }
   });

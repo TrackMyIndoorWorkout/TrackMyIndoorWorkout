@@ -3,9 +3,11 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
-import '../persistence/models/power_tune.dart';
-import '../persistence/database.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
+
+import '../persistence/isar/power_tune.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';
 
@@ -13,11 +15,11 @@ class PowerTunesScreen extends StatefulWidget {
   const PowerTunesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => PowerTunesScreenState();
+  PowerTunesScreenState createState() => PowerTunesScreenState();
 }
 
-class PowerTunesScreenState extends State<PowerTunesScreen> {
-  final AppDatabase _database = Get.find<AppDatabase>();
+class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingObserver {
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
@@ -25,25 +27,51 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline4!;
+    WidgetsBinding.instance.addObserver(this);
+    _textStyle = Get.textTheme.headlineMedium!;
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   Widget _actionButtonRow(PowerTune powerTune, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getActionIcon(Icons.edit, size),
+          iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
-              PowerFactorTuneBottomSheet(
-                deviceId: powerTune.mac,
-                oldPowerFactor: powerTune.powerFactor,
+              SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: PowerFactorTuneBottomSheet(
+                          deviceId: powerTune.mac,
+                          oldPowerFactor: powerTune.powerFactor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (result != null) {
@@ -56,6 +84,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
         const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
@@ -63,9 +92,11 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
               confirm: TextButton(
                 child: const Text("Yes"),
                 onPressed: () async {
-                  await _database.powerTuneDao.deletePowerTune(powerTune);
-                  setState(() {
-                    _editCount++;
+                  _database.writeTxnSync(() {
+                    _database.powerTunes.deleteSync(powerTune.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -92,8 +123,12 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.powerTuneDao.findPowerTunes(limit, offset);
+            final data = await _database.powerTunes
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -113,9 +148,8 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
         ),
         itemBuilder: (context, _, item) {
           final powerTune = item as PowerTune;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(powerTune.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(powerTune.time);
+          final timeString = DateFormat.Hms().format(powerTune.time);
           final powerPercent = (powerTune.powerFactor * 100).round();
           return Card(
             elevation: 6,
@@ -125,7 +159,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> {
               header: Column(
                 children: [
                   TextOneLine(
-                    powerTune.mac,
+                    powerTune.mac.shortAddressString(),
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

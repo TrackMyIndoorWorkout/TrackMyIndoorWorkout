@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../enums/fit_event.dart';
@@ -12,17 +14,27 @@ import '../fit_serializable.dart';
 import '../fit_sport.dart';
 
 class FitLap extends FitDefinitionMessage {
-  FitLap(localMessageType) : super(localMessageType, FitMessage.lap) {
+  final bool outputGps;
+
+  FitLap(localMessageType, this.outputGps) : super(localMessageType, FitMessage.lap) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
       FitField(0, FitBaseTypes.enumType), // Event
       FitField(1, FitBaseTypes.enumType), // EventType
       FitField(2, FitBaseTypes.uint32Type), // StartTime
-      FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
-      FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
-      FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
-      FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
+    ];
+
+    if (outputGps) {
+      fields.addAll([
+        FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
+        FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
+        FitField(5, FitBaseTypes.sint32Type), // EndPositionLat
+        FitField(6, FitBaseTypes.sint32Type), // EndPositionLong
+      ]);
+    }
+
+    fields.addAll([
       FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
       FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
@@ -38,7 +50,7 @@ class FitLap extends FitDefinitionMessage {
       FitField(24, FitBaseTypes.enumType), // LapTrigger
       FitField(25, FitBaseTypes.enumType), // Sport
       FitField(39, FitBaseTypes.enumType), // Sub-Sport
-    ];
+    ]);
   }
 
   @override
@@ -54,36 +66,24 @@ class FitLap extends FitDefinitionMessage {
     data.addByte(FitEvent.lap);
     data.addByte(FitEventType.stop);
     data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
-    data.addGpsCoordinate(first.latitude);
-    data.addGpsCoordinate(first.longitude);
-    data.addGpsCoordinate(last.latitude);
-    data.addGpsCoordinate(last.longitude);
+    if (outputGps) {
+      data.addGpsCoordinate(first.latitude);
+      data.addGpsCoordinate(first.longitude);
+      data.addGpsCoordinate(last.latitude);
+      data.addGpsCoordinate(last.longitude);
+    }
     data.addLong(model.activity.elapsed * 1000);
     data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());
-    data.addShort(model.activity.calories > 0
-        ? model.activity.calories
-        : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.averageSpeed > eps
-        ? (model.averageSpeed * 1000).round()
-        : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumSpeed > eps
-        ? (model.maximumSpeed * 1000).round()
-        : FitBaseTypes.uint16Type.invalidValue);
-    data.addByte(
-        model.averageHeartRate > 0 ? model.averageHeartRate : FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(
-        model.maximumHeartRate > 0 ? model.maximumHeartRate : FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(
-        model.averageCadence > 0 ? model.averageCadence : FitBaseTypes.uint8Type.invalidValue);
-    data.addByte(
-        model.maximumCadence > 0 ? model.maximumCadence : FitBaseTypes.uint8Type.invalidValue);
-    data.addShort(model.averagePower > eps
-        ? model.averagePower.round()
-        : FitBaseTypes.uint16Type.invalidValue);
-    data.addShort(model.maximumPower > eps
-        ? model.maximumPower.round()
-        : FitBaseTypes.uint16Type.invalidValue);
+    data.addShort(max(model.activity.calories, 0));
+    data.addShort(model.averageSpeed > eps ? (model.averageSpeed * 1000).round() : 0);
+    data.addShort(model.maximumSpeed > eps ? (model.maximumSpeed * 1000).round() : 0);
+    data.addByte(max(model.averageHeartRate, 0));
+    data.addByte(max(model.maximumHeartRate, 0));
+    data.addByte(max(model.averageCadence, 0));
+    data.addByte(max(model.maximumCadence, 0));
+    data.addShort(model.averagePower > eps ? model.averagePower.round() : 0);
+    data.addShort(model.maximumPower > eps ? model.maximumPower.round() : 0);
     data.addByte(FitLapTrigger.sessionEnd);
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);

@@ -6,13 +6,14 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../track/calculator.dart';
-import '../track/tracks.dart';
+import '../track/track_manager.dart';
 import '../utils/constants.dart';
 import 'export_model.dart';
 import 'export_record.dart';
@@ -35,7 +36,7 @@ abstract class ActivityExport {
   String heartRateLimitingMethod = heartRateLimitingMethodDefault;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
-    compressedFileExtension = nonCompressedFileExtension + '.gz';
+    compressedFileExtension = "$nonCompressedFileExtension.gz";
     final prefService = Get.find<BasePrefService>();
     _cadenceGapWorkaround =
         prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
@@ -63,36 +64,38 @@ abstract class ActivityExport {
     Record record,
     Activity activity,
     TrackCalculator calculator,
+    bool calculateGps,
     bool rawData,
   ) {
     record.distance ??= 0.0;
-
-    Offset gps = record.distance != null && !rawData
-        ? calculator.gpsCoordinates(record.distance!)
-        : const Offset(0, 0);
 
     if (!rawData && record.speed != null) {
       record.speed = record.speed! * DeviceDescriptor.kmh2ms;
     }
 
-    return ExportRecord(record: record)
-      ..longitude = gps.dx
-      ..latitude = gps.dy;
+    final exportRecord = ExportRecord(record: record);
+    if (record.distance != null && !rawData && calculateGps) {
+      Offset gps = calculator.gpsCoordinates(record.distance!);
+      exportRecord.longitude = gps.dx;
+      exportRecord.latitude = gps.dy;
+    }
+
+    return exportRecord;
   }
 
   Future<List<int>> getExport(
     Activity activity,
-    List<Record> records,
     bool rawData,
+    bool calculateGps,
     bool compress,
     int exportTarget,
   ) async {
-    activity.hydrate();
     final descriptor = activity.deviceDescriptor();
-    final track = getDefaultTrack(activity.sport);
+    final track = await TrackManager().getTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
+    final records = await DbUtils().getRecords(activity.id);
     final exportRecords = records.map((r) {
-      final record = recordToExport(r, activity, calculator, rawData);
+      final record = recordToExport(r, activity, calculator, calculateGps, rawData);
 
       if (!rawData) {
         if ((record.record.speed ?? 0.0) > eps) {
@@ -139,6 +142,7 @@ abstract class ActivityExport {
     ExportModel exportModel = ExportModel(
       activity: activity,
       rawData: rawData,
+      calculateGps: calculateGps,
       descriptor: descriptor,
       author: 'Csaba Consulting',
       name: appName,
@@ -165,16 +169,15 @@ abstract class ActivityExport {
   }
 
   Map<String, dynamic> getPersistenceValues(Activity activity, bool compressed) {
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-    final dateString = DateFormat.yMd().format(startStamp);
-    final timeString = DateFormat.Hms().format(startStamp);
+    final dateString = DateFormat.yMd().format(activity.start);
+    final timeString = DateFormat.Hms().format(activity.start);
     final fileName = 'Activity_${dateString}_$timeString.${fileExtension(compressed)}'
         .replaceAll('/', '-')
         .replaceAll(':', '-');
     return {
-      'startStamp': startStamp,
+      'startStamp': activity.start,
       'name': '${activity.sport} at $dateString $timeString',
-      'description': '${activity.sport} by ${activity.deviceName}',
+      'description': '${activity.sport}, machine: ${activity.deviceName}, recorded with $appUrl',
       'fileName': fileName,
     };
   }

@@ -32,7 +32,7 @@ class JsonExport extends ActivityExport {
       exportModel.averageHeartRate,
     );
     final jsonWorkout = JsonWorkout(
-      exportModel.activity.startDateTime!,
+      exportModel.activity.start,
       exportModel.name,
       jsonAggregates,
       exportModel.activity.timeZone,

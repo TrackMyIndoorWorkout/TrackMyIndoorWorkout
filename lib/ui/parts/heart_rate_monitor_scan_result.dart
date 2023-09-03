@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+
 import '../../devices/gadgets/heart_rate_monitor.dart';
-import '../../devices/gatt_constants.dart';
+import '../../devices/gatt/hrm.dart';
 import '../../utils/advertisement_data_ex.dart';
 import '../../utils/constants.dart';
+import '../../utils/scan_result_ex.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 extension HeartRateMonitorScanResult on ScanResult {
@@ -13,11 +16,7 @@ extension HeartRateMonitorScanResult on ScanResult {
       return false;
     }
 
-    if (device.name.isEmpty) {
-      return false;
-    }
-
-    if (device.id.id.isEmpty) {
+    if (device.remoteId.str.isEmpty) {
       return false;
     }
 
@@ -34,8 +33,6 @@ extension HeartRateMonitorScanResult on ScanResult {
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r'\:');
-
   const HeartRateMonitorScanResultTile({
     Key? key,
     required this.result,
@@ -46,30 +43,26 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
   final VoidCallback onTap;
 
   Widget _buildTitle(ThemeManager themeManager, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
-    if (result.device.name.isNotEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            result.device.name,
-            style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
-            overflow: TextOverflow.ellipsis,
-          ),
-          Text(deviceIdString, style: dataStyle)
-        ],
-      );
-    } else {
-      return Text(deviceIdString);
-    }
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          result.nonEmptyName,
+          style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(deviceIdString, style: dataStyle)
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    final captionStyle = Get.textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    final captionStyle = Get.textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
@@ -80,14 +73,10 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
         style: captionStyle.apply(fontFamily: fontFamily),
       ),
       trailing: themeManager.getIconFab(
-        (heartRateMonitor?.device?.id.id ?? notAvailable) == result.device.id.id
+        (heartRateMonitor?.device?.remoteId.str ?? notAvailable) == result.device.remoteId.str
             ? themeManager.getGreenColor()
             : themeManager.getBlueColor(),
         Icons.favorite,
-        false,
-        false,
-        "Pair or Disconnect",
-        0,
         onTap,
       ),
     );

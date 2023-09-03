@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/preferences/preferences_spec.dart';
+import 'package:track_my_indoor_exercise/preferences/speed_spec.dart';
+import 'package:track_my_indoor_exercise/preferences/sport_spec.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/display.dart';
 import 'package:tuple/tuple.dart';
@@ -270,7 +271,7 @@ void main() {
   });
 
   group("speedStringByUnit for metric system and running w slowSpeed:", () {
-    final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.run)]!;
+    final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(ActivityType.run)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
@@ -291,7 +292,7 @@ void main() {
   });
 
   group("speedStringByUnit for imperial system and running w slowSpeed:", () {
-    final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.run)]!;
+    final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(ActivityType.run)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed / km2miDisp;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
@@ -358,7 +359,7 @@ void main() {
 
   group("speedStringByUnit for paddle sports w slowSpeed:", () {
     final sports = [ActivityType.kayaking, ActivityType.canoeing, ActivityType.rowing];
-    final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.paddleSport]!;
+    final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.paddleSport]!;
     for (final speed in speeds) {
       for (final sport in sports) {
         final pace = speed.abs() < displayEps ? 0.0 : 30.0 / speed;
@@ -384,7 +385,7 @@ void main() {
   });
 
   group("speedStringByUnit for swimming w slowSpeed:", () {
-    final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.swim)]!;
+    final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(ActivityType.swim)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 6.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
@@ -406,8 +407,7 @@ void main() {
   });
 
   group("speedStringByUnit for metric system and elliptical sports w slowSpeed:", () {
-    final slowSpeed =
-        PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.elliptical)]!;
+    final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(ActivityType.elliptical)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
@@ -429,8 +429,7 @@ void main() {
   });
 
   group("speedStringByUnit for imperial system and elliptical sports w slowSpeed:", () {
-    final slowSpeed =
-        PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(ActivityType.elliptical)]!;
+    final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(ActivityType.elliptical)]!;
     for (final speed in speeds) {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed / km2miDisp;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);

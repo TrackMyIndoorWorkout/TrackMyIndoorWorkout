@@ -46,7 +46,7 @@ extension MachineTypeEx on MachineType {
       case MachineType.stairClimber:
         return ActivityType.run;
       case MachineType.rower:
-        return ActivityType.kayaking;
+        return ActivityType.rowing;
       default:
         return "";
     }
@@ -59,7 +59,7 @@ extension MachineTypeEx on MachineType {
       case MachineType.treadmill:
         return Icons.directions_run;
       case MachineType.rower:
-        return Icons.kayaking;
+        return Icons.rowing;
       case MachineType.heartRateMonitor:
         return Icons.favorite;
       case MachineType.crossTrainer:
@@ -73,7 +73,7 @@ extension MachineTypeEx on MachineType {
     }
   }
 
-  bool get isFtms {
+  bool get isSpecificFtms {
     return [
       MachineType.indoorBike,
       MachineType.treadmill,
@@ -82,5 +82,26 @@ extension MachineTypeEx on MachineType {
       MachineType.stepClimber,
       MachineType.stairClimber,
     ].contains(this);
+  }
+
+  static int getMachineByteFlag(String sport) {
+    switch (sport) {
+      case ActivityType.ride:
+        return MachineType.indoorBike.bit;
+      case ActivityType.run:
+        return MachineType.treadmill.bit;
+      case ActivityType.elliptical:
+        return MachineType.crossTrainer.bit;
+      case ActivityType.rowing:
+        return MachineType.rower.bit;
+      case ActivityType.kayaking:
+        return MachineType.rower.bit;
+      case ActivityType.canoeing:
+        return MachineType.rower.bit;
+      case ActivityType.swim:
+        return MachineType.rower.bit;
+      default:
+        return MachineType.notFitnessMachine.bit;
+    }
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/matrix_bike_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class FlagBytes {
@@ -21,10 +22,9 @@ class TestPair {
 
 void main() {
   test('Matrix Bike constructor tests', () async {
-    final bike = deviceMap[matrixBikeFourCC]!;
+    final bike = MatrixBikeDescriptor();
 
-    expect(bike.canMeasureHeartRate, false);
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, matrixBikeFourCC);
   });
 
@@ -34,10 +34,10 @@ void main() {
       const FlagBytes(lsb: 254, msb: 29, description: "during workout"),
     ]) {
       test(flagBytes.description, () async {
-        final bike = deviceMap[matrixBikeFourCC] as MatrixBikeDescriptor;
+        final bike = MatrixBikeDescriptor();
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
+        bike.initFlag();
         bike.stopWorkout();
-
         bike.processFlag(flag);
 
         expect(bike.speedMetric, isNotNull);
@@ -64,7 +64,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -80,7 +80,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -96,7 +96,7 @@ void main() {
           power: 162,
           speed: 32.03,
           cadence: 67,
-          heartRate: 0,
+          heartRate: null,
           pace: null,
           sport: ActivityType.ride,
           caloriesPerHour: null,
@@ -104,18 +104,18 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final bike = deviceMap[matrixBikeFourCC]!;
+        final bike = MatrixBikeDescriptor();
         bike.initFlag();
         expect(bike.isDataProcessable(testPair.data), true);
         bike.stopWorkout();
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);

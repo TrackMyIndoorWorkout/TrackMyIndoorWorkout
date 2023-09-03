@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-
-import '../preferences/preferences_spec.dart';
+import '../preferences/speed_spec.dart';
+import '../preferences/sport_spec.dart';
 import 'constants.dart';
+
+extension DurationDisplay on Duration {
+  String toDisplay() {
+    return toString().split('.').first.padLeft(8, "0");
+  }
+}
 
 double speedByUnitCore(double speed, bool si) {
   return si ? speed : speed * km2mi;
@@ -45,7 +51,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
     if (speed.abs() < displayEps) return "0:00";
 
     if (limitSlowSpeed) {
-      final slowSpeed = PreferencesSpec.slowSpeeds[PreferencesSpec.sport2Sport(sport)]!;
+      final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(sport)]!;
       if (speed < slowSpeed) {
         return "0:00";
       }
@@ -69,7 +75,7 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
 String paceString(double pace) {
   final minutes = pace.truncate();
   final seconds = ((pace - minutes) * 60.0).truncate();
-  return "$minutes:" + seconds.toString().padLeft(2, "0");
+  return "$minutes:${seconds.toString().padLeft(2, "0")}";
 }
 
 String getSpeedUnit(bool si, String sport) {
@@ -91,7 +97,7 @@ String speedTitle(String sport) {
   return sport == ActivityType.ride ? "Speed" : "Pace";
 }
 
-IconData getIcon(String? sport) {
+IconData getSportIcon(String sport) {
   if (sport == ActivityType.ride) {
     return Icons.directions_bike;
   } else if (sport == ActivityType.run) {
@@ -107,7 +113,8 @@ IconData getIcon(String? sport) {
   } else if (sport == ActivityType.stairStepper) {
     return Icons.stairs;
   }
-  return Icons.directions_bike;
+
+  return Icons.help;
 }
 
 String getCadenceUnit(String sport) {

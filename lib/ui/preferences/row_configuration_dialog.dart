@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/measurement_ui_state.dart';
-import '../../preferences/preferences_spec.dart';
+import '../../preferences/metric_spec.dart';
 import '../../utils/theme_manager.dart';
 
 class RowConfigurationDialog extends StatefulWidget {
   const RowConfigurationDialog({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => RowConfigurationDialogState();
+  RowConfigurationDialogState createState() => RowConfigurationDialogState();
 }
 
 class RowConfigurationDialogState extends State<RowConfigurationDialog> {
@@ -23,7 +23,7 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
     super.initState();
 
     final themeManager = Get.find<ThemeManager>();
-    _textStyle = Get.textTheme.headline3!.apply(color: themeManager.getProtagonistColor());
+    _textStyle = Get.textTheme.displaySmall!.apply(color: themeManager.getProtagonistColor());
     final prefService = Get.find<BasePrefService>();
     final expandedStateStr =
         prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;
@@ -39,7 +39,7 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
 
   @override
   Widget build(BuildContext context) {
-    var rowConfigs = PreferencesSpec.getRowConfigurations();
+    var rowConfigs = MetricSpec.getRowConfigurations();
     List<Widget> children = [
       Container(),
       Text("\u00BC", style: _textStyle),

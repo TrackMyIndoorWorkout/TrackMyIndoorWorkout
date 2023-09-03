@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/display.dart';
@@ -30,56 +31,59 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
     super.initState();
 
     _sportIndex = max(0, widget.sportChoices.indexOf(widget.initialSport));
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headlineMedium!;
     _selectedTextStyle = _largerTextStyle.apply(color: _themeManager.getProtagonistColor());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.sportChoices
-              .asMap()
-              .entries
-              .map(
-                (e) => Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Transform.scale(
-                      scale: 2,
-                      child: Radio(
-                        value: e.key,
-                        groupValue: _sportIndex,
-                        onChanged: (value) {
-                          setState(() {
-                            _sportIndex = value as int;
-                          });
-                        },
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: () {
+      body: ListView(
+        children: widget.sportChoices
+            .asMap()
+            .entries
+            .map(
+              (e) => Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Transform.scale(
+                    scale: 2,
+                    child: Radio(
+                      value: e.key,
+                      groupValue: _sportIndex,
+                      onChanged: (value) {
                         setState(() {
-                          _sportIndex = e.key;
+                          _sportIndex = value as int;
                         });
                       },
-                      icon: _themeManager.getBlueIcon(getIcon(e.value), _largerTextStyle.fontSize!),
-                      label: Text(e.value,
-                          style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle),
                     ),
-                  ],
-                ),
-              )
-              .toList(growable: false),
-        ),
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _sportIndex = e.key;
+                      });
+                    },
+                    icon: _themeManager.getBlueIcon(
+                        getSportIcon(e.value), _largerTextStyle.fontSize!),
+                    label: TextOneLine(
+                      e.value,
+                      style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            )
+            .toList(growable: false),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0,
-          () => Get.back(result: widget.sportChoices[_sportIndex])),
+      floatingActionButton: _themeManager.getGreenFab(
+        Icons.check,
+        () => Get.back(result: widget.sportChoices[_sportIndex]),
+      ),
     );
   }
 }

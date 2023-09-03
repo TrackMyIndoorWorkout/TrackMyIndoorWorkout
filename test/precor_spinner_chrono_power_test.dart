@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:isar/isar.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -12,15 +14,14 @@ class TestPair {
 
 void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
-    final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
+    final bike = PrecorSpinnerChronoPower();
 
-    expect(bike.canMeasureHeartRate, true);
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 
   test('Precor Spinner Chrono Power interprets Data flags properly', () async {
-    final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
+    final bike = PrecorSpinnerChronoPower();
     final data = [83, 89, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     expect(bike.isDataProcessable(data), true);
@@ -197,16 +198,16 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
-        final bike = deviceMap[precorSpinnerChronoPowerFourCC]!;
+        final bike = PrecorSpinnerChronoPower();
         expect(bike.isDataProcessable(testPair.data), true);
 
-        final record = bike.stubRecord(testPair.data)!;
+        final record = bike.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'constants.dart';
 import 'under_armour_token.dart';
@@ -96,11 +97,7 @@ abstract class Auth {
     debugPrint(reqAuth);
     StreamSubscription? sub;
 
-    launch(reqAuth,
-        forceWebView: false,
-        // forceWebView: true,
-        forceSafariVC: false,
-        enableJavaScript: true);
+    launchUrlString(reqAuth, mode: LaunchMode.externalApplication);
 
     debugPrint('Running on iOS or Android');
 
@@ -120,7 +117,7 @@ abstract class Auth {
 
         debugPrint('code $code, error $error');
 
-        closeWebView();
+        closeInAppWebView();
         onCodeReceived.add(code);
 
         debugPrint('Got the new code: $code');
@@ -171,16 +168,16 @@ abstract class Auth {
 
     // Use the refresh token to get a new access token
     if (isExpired && storedBefore) {
-      RefreshAnswer _refreshAnswer =
+      RefreshAnswer refreshAnswer =
           await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
       // Update with new values if HTTP status code is 200
-      if (_refreshAnswer.statusCode != null &&
-          _refreshAnswer.statusCode! >= 200 &&
-          _refreshAnswer.statusCode! < 300) {
+      if (refreshAnswer.statusCode != null &&
+          refreshAnswer.statusCode! >= 200 &&
+          refreshAnswer.statusCode! < 300) {
         await _saveToken(
-          _refreshAnswer.accessToken,
-          _refreshAnswer.refreshToken,
-          _refreshAnswer.expiresAt,
+          refreshAnswer.accessToken,
+          refreshAnswer.refreshToken,
+          refreshAnswer.expiresAt,
         );
       } else {
         debugPrint('Problem doing the refresh process');

@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/lap_counter.dart';
 import '../../preferences/leaderboard_and_rank.dart';
-import 'preferences_base.dart';
+import '../../preferences/show_pacer.dart';
+import 'preferences_screen_mixin.dart';
 
-class LeaderboardPreferencesScreen extends PreferencesScreenBase {
+class LeaderboardPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Leaderboard";
   static String title = "$shortTitle Preferences";
 
   const LeaderboardPreferencesScreen({Key? key}) : super(key: key);
 
+  @override
+  LeaderboardPreferencesScreenState createState() => LeaderboardPreferencesScreenState();
+}
+
+class LeaderboardPreferencesScreenState extends State<LeaderboardPreferencesScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> leaderboardPreferences = [
@@ -19,10 +25,22 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         pref: leaderboardFeatureTag,
         onChange: (value) {
           if (!value) {
-            PrefService.of(context).set(rankRibbonVisualizationTag, false);
-            PrefService.of(context).set(rankTrackVisualizationTag, false);
-            PrefService.of(context).set(rankingForDeviceTag, false);
-            PrefService.of(context).set(rankingForSportTag, false);
+            setState(() {
+              PrefService.of(context).set(rankRibbonVisualizationTag, false);
+              PrefService.of(context).set(rankTrackVisualizationTag, false);
+            });
+          }
+        },
+      ),
+      PrefCheckbox(
+        title: const Text(rankingForSportOrDevice),
+        subtitle: const Text(rankingForSportOrDeviceDescription),
+        pref: rankingForSportOrDeviceTag,
+        onChange: (value) {
+          if (value) {
+            setState(() {
+              PrefService.of(context).set(leaderboardFeatureTag, true);
+            });
           }
         },
       ),
@@ -32,7 +50,9 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         pref: rankRibbonVisualizationTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(leaderboardFeatureTag, true);
+            setState(() {
+              PrefService.of(context).set(leaderboardFeatureTag, true);
+            });
           }
         },
       ),
@@ -42,7 +62,9 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         pref: rankTrackVisualizationTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(leaderboardFeatureTag, true);
+            setState(() {
+              PrefService.of(context).set(leaderboardFeatureTag, true);
+            });
           }
         },
       ),
@@ -52,28 +74,10 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         pref: rankInfoOnTrackTag,
         onChange: (value) {
           if (value) {
-            PrefService.of(context).set(rankTrackVisualizationTag, true);
-            PrefService.of(context).set(leaderboardFeatureTag, true);
-          }
-        },
-      ),
-      PrefCheckbox(
-        title: const Text(rankingForDevice),
-        subtitle: const Text(rankingForDeviceDescription),
-        pref: rankingForDeviceTag,
-        onChange: (value) {
-          if (value) {
-            PrefService.of(context).set(leaderboardFeatureTag, true);
-          }
-        },
-      ),
-      PrefCheckbox(
-        title: const Text(rankingForSport),
-        subtitle: const Text(rankingForSportDescription),
-        pref: rankingForSportTag,
-        onChange: (value) {
-          if (value) {
-            PrefService.of(context).set(leaderboardFeatureTag, true);
+            setState(() {
+              PrefService.of(context).set(rankTrackVisualizationTag, true);
+              PrefService.of(context).set(leaderboardFeatureTag, true);
+            });
           }
         },
       ),
@@ -82,10 +86,34 @@ class LeaderboardPreferencesScreen extends PreferencesScreenBase {
         subtitle: Text(displayLapCounterDescription),
         pref: displayLapCounterTag,
       ),
+      PrefCheckbox(
+        title: const Text(avgSpeedOnTrack),
+        subtitle: const Text(avgSpeedOnTrackDescription),
+        pref: avgSpeedOnTrackTag,
+        onChange: (value) {
+          if (value) {
+            setState(() {
+              PrefService.of(context).set(leaderboardFeatureTag, true);
+            });
+          }
+        },
+      ),
+      PrefCheckbox(
+        title: const Text(showPacer),
+        subtitle: const Text(showPacerDescription),
+        pref: showPacerTag,
+        onChange: (value) {
+          if (value) {
+            setState(() {
+              PrefService.of(context).set(leaderboardFeatureTag, true);
+            });
+          }
+        },
+      ),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(LeaderboardPreferencesScreen.title)),
       body: PrefPage(children: leaderboardPreferences),
     );
   }

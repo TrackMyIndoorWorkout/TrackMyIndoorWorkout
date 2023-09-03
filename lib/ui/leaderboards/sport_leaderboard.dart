@@ -3,14 +3,16 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import '../../utils/constants.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/workout_summary.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
+import '../../persistence/isar/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
-import '../../preferences/generic.dart';
 import '../../preferences/unit_system.dart';
+import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class SportLeaderboardScreen extends StatefulWidget {
@@ -19,11 +21,12 @@ class SportLeaderboardScreen extends StatefulWidget {
   const SportLeaderboardScreen({key, required this.sport}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => SportLeaderboardScreenState();
+  SportLeaderboardScreenState createState() => SportLeaderboardScreenState();
 }
 
-class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
-  final AppDatabase _database = Get.find<AppDatabase>();
+class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
+    with WidgetsBindingObserver {
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
@@ -32,36 +35,56 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
   TextStyle _textStyle2 = const TextStyle();
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
+  double? _slowSpeed;
+
+  @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _textStyle = Get.textTheme.headline5!
+    _textStyle = Get.textTheme.headlineSmall!
         .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
+    if (widget.sport != ActivityType.ride) {
+      _slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Widget _actionButtonRow(WorkoutSummary workoutSummary, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.workoutSummarys.deleteSync(workoutSummary.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -88,9 +111,13 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.workoutSummaryDao
-                .findWorkoutSummaryBySport(widget.sport, limit, offset);
+            final data = await _database.workoutSummarys
+                .filter()
+                .sportEqualTo(widget.sport)
+                .sortBySpeedDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -110,10 +137,9 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen> {
         ),
         itemBuilder: (context, index, item) {
           final workoutSummary = item as WorkoutSummary;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
-          final speedString = workoutSummary.speedString(_si);
+          final dateString = DateFormat.yMd().format(workoutSummary.start);
+          final timeString = DateFormat.Hms().format(workoutSummary.start);
+          final speedString = workoutSummary.speedString(_si, _slowSpeed);
           final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();
           return Card(

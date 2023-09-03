@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -8,8 +10,9 @@ import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
 import '../../utils/theme_manager.dart';
+import 'preferences_screen_mixin.dart';
 
-class IntegrationPreferencesScreen extends StatefulWidget {
+class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Integrations";
   static String title = "$shortTitle Preferences";
 
@@ -27,7 +30,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headline4!;
+    _largerTextStyle = Get.textTheme.headlineMedium!;
     for (final portalName in portalNames) {
       integrationStates[portalName] = UploadService.isIntegrationEnabled(portalName);
     }
@@ -71,6 +74,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     List<Widget> integrationPreferences = [
       const PrefCheckbox(
         title: Text(instantUpload),
@@ -82,13 +86,13 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         subtitle: Text(trainingPeaksUploadPublicDescription),
         pref: trainingPeaksUploadPublicTag,
       ),
-      const PrefLabel(
-        title: Text("Available Integrations:"),
+      PrefLabel(
+        title: Text("Available Integrations:", style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
     ];
 
     integrationPreferences.addAll(
-      getPortalChoices(_themeManager).asMap().entries.map(
+      getPortalChoices(true, _themeManager).asMap().entries.map(
             (e) => PrefButton(
               child: GestureDetector(
                 onTap: () async {
@@ -103,11 +107,21 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
                       size: _largerTextStyle.fontSize! * 1.5,
                       color: _themeManager.getProtagonistColor(),
                     ),
-                    SvgPicture.asset(
-                      e.value.assetName,
-                      color: e.value.color,
-                      height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
-                      semanticsLabel: '${e.value.name} Logo',
+                    SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.white,
+                      ),
+                      height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                      width: mediaWidth - 130,
+                      padding: const EdgeInsets.all(5),
+                      child: SvgPicture.asset(
+                        e.value.assetName,
+                        colorFilter: const ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
+                        height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
+                        semanticsLabel: '${e.value.name} Logo',
+                      ),
                     ),
                   ],
                 ),

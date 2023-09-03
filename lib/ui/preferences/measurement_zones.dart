@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import '../../preferences/preferences_spec.dart';
+import '../../preferences/metric_spec.dart';
+import '../../preferences/speed_spec.dart';
 import '../../utils/constants.dart';
-import 'preferences_base.dart';
+import 'preferences_screen_mixin.dart';
 
 RegExp intListRule = RegExp(r'^\d+(,\d+)*$');
 
-class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
+class MeasurementZonesPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
   static String shortTitle = "Zones";
   static String title = "$shortTitle Preferences";
   final String sport;
@@ -35,11 +36,11 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
   Widget build(BuildContext context) {
     List<Widget> zonePreferences = [];
 
-    for (var prefSpec in PreferencesSpec.preferencesSpecs) {
+    for (var prefSpec in MetricSpec.preferencesSpecs) {
       zonePreferences.addAll([
         PrefText(
           label: sport +
-              PreferencesSpec.thresholdCapital +
+              MetricSpec.thresholdCapital +
               (prefSpec.metric == "speed" ? prefSpec.kmhTitle : prefSpec.fullTitle),
           pref: prefSpec.thresholdTag(sport),
           validator: (str) {
@@ -51,7 +52,7 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           },
         ),
         PrefText(
-          label: "$sport ${prefSpec.title}${PreferencesSpec.zonesCapital}",
+          label: "$sport ${prefSpec.title}${MetricSpec.zonesCapital}",
           pref: prefSpec.zonesTag(sport),
           validator: (str) {
             if (str == null || !isMonotoneIncreasingList(str)) {
@@ -68,10 +69,17 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
       zonePreferences.addAll([
         PrefText(
           label: sport + slowSpeedPostfix,
-          pref: PreferencesSpec.slowSpeedTag(sport),
+          pref: SpeedSpec.slowSpeedTag(sport),
           validator: (str) {
             if (str == null || !isNumber(str, 0.01, -1)) {
               return "Slow speed has to be positive";
+            }
+
+            if (sport != ActivityType.ride) {
+              final slowSpeed = double.tryParse(str);
+              if (slowSpeed != null && slowSpeed > (SpeedSpec.pacerSpeeds[sport] ?? 0.0)) {
+                return "Slow speed must be slower than 'Pacer Speed' (see below)";
+              }
             }
 
             return null;
@@ -79,12 +87,39 @@ class MeasurementZonesPreferencesScreen extends PreferencesScreenBase {
           onChange: (str) {
             final slowSpeed = double.tryParse(str);
             if (slowSpeed != null) {
-              PreferencesSpec.slowSpeeds[sport] = slowSpeed;
+              SpeedSpec.slowSpeeds[sport] = slowSpeed;
             }
           },
         ),
       ]);
     }
+
+    zonePreferences.addAll([
+      PrefText(
+        label: sport + pacerSpeedPostfix,
+        pref: SpeedSpec.pacerSpeedTag(sport),
+        validator: (str) {
+          if (str == null || !isNumber(str, 0.01, -1)) {
+            return "Pacer speed has to be positive";
+          }
+
+          if (sport != ActivityType.ride) {
+            final pacerSpeed = double.tryParse(str);
+            if (pacerSpeed != null && pacerSpeed < (SpeedSpec.slowSpeeds[sport] ?? 0.0)) {
+              return "Pacer speed must be faster than 'Slow Speed' (see above)";
+            }
+          }
+
+          return null;
+        },
+        onChange: (str) {
+          final pacerSpeed = double.tryParse(str);
+          if (pacerSpeed != null) {
+            SpeedSpec.pacerSpeeds[sport] = pacerSpeed;
+          }
+        },
+      ),
+    ]);
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),

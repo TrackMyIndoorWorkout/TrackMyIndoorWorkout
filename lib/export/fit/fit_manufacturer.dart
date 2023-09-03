@@ -1,9 +1,12 @@
 import 'package:edit_distance/edit_distance.dart';
-import '../../devices/device_map.dart';
+import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
+const wahooFitnessFitId = 32;
+const concept2FitId = 40;
 const northPoleEngineeringFitId = 66;
+const stagesCyclingFitId = 69;
 const johnsonHealthTechId = 122;
 const precorFitId = 266;
 const stravaFitId = 265;
@@ -40,7 +43,7 @@ Map<int, String> fitManufacturer = {
   29: 'saxonar',
   30: 'lemond fitness',
   31: 'dexcom',
-  32: 'wahoo fitness',
+  wahooFitnessFitId: 'wahoo fitness',
   33: 'octane fitness',
   34: 'archinoetics',
   35: 'the hurt box',
@@ -48,7 +51,7 @@ Map<int, String> fitManufacturer = {
   37: 'magellan',
   38: 'osynce',
   39: 'holux',
-  40: 'concept2',
+  concept2FitId: 'concept2',
   42: 'one giant leap',
   43: 'ace sensor',
   44: 'brim brothers',
@@ -176,8 +179,8 @@ int getFitManufacturer(String manufacturer) {
     return FitBaseTypes.uint16Type.invalidValue;
   }
 
-  final matrixDescriptor = deviceMap[matrixTreadmillFourCC];
-  if (matrixDescriptor != null && manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+  final matrixDescriptor = MatrixTreadmillDescriptor();
+  if (manufacturer.startsWith(matrixDescriptor.manufacturerNamePart)) {
     return johnsonHealthTechId;
   }
 
@@ -189,15 +192,18 @@ int getFitManufacturer(String manufacturer) {
     final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
         ? manufacturerLower
         : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
-    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, manufacturerEntry.value);
+    final entryCropped = manufacturerEntry.value.length <= manufacturerCropped.length
+        ? manufacturerEntry.value
+        : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
+    final distance = jaroWinkler.normalizedDistance(manufacturerCropped, entryCropped);
     if (distance < bestDistance) {
       bestDistance = distance;
       bestId = manufacturerEntry.key;
     }
   }
 
-  if (bestDistance > 0.1) {
-    bestId = FitBaseTypes.uint16Type.invalidValue;
+  if (bestDistance > 0.10) {
+    bestId = stravaFitId;
   }
 
   return bestId;

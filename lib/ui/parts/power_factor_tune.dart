@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/power_tune.dart';
+import 'package:isar/isar.dart';
+import '../../persistence/isar/power_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -26,7 +26,7 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
   void initState() {
     super.initState();
     _powerFactorPercent = widget.oldPowerFactor * 100.0;
-    _largerTextStyle = Get.textTheme.headline4!.apply(
+    _largerTextStyle = Get.textTheme.headlineMedium!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
     );
@@ -35,44 +35,57 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: ListView(
+        children: [
+          Text("Power Factor %", style: _largerTextStyle),
+          SpinBox(
+            min: 1,
+            max: 1000,
+            value: _powerFactorPercent,
+            onChanged: (value) => _powerFactorPercent = value,
+            textStyle: _largerTextStyle,
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButton: Container(
+        margin: const EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("Power Factor %", style: _largerTextStyle),
-            SpinBox(
-              min: 1,
-              max: 1000,
-              value: _powerFactorPercent,
-              onChanged: (value) => _powerFactorPercent = value,
-              textStyle: _largerTextStyle,
-            ),
+            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            const SizedBox(width: 10, height: 10),
+            _themeManager.getGreenFab(Icons.check, () async {
+              final database = Get.find<Isar>();
+              final powerFactor = _powerFactorPercent / 100.0;
+              final powerTune = await database.powerTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .sortByTimeDesc()
+                  .findFirst();
+              if (powerTune != null) {
+                powerTune.powerFactor = powerFactor;
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
+                });
+              } else {
+                final powerTune = PowerTune(
+                  mac: widget.deviceId,
+                  powerFactor: powerFactor,
+                  time: DateTime.now(),
+                );
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
+                });
+              }
+
+              Get.back(result: powerFactor);
+            }),
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getGreenFab(Icons.check, false, false, "", 0, () async {
-        final database = Get.find<AppDatabase>();
-        final powerFactor = _powerFactorPercent / 100.0;
-        PowerTune? powerTune;
-        if (await database.hasPowerTune(widget.deviceId)) {
-          powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId).first;
-        }
-
-        if (powerTune != null) {
-          powerTune.powerFactor = powerFactor;
-          await database.powerTuneDao.updatePowerTune(powerTune);
-        } else {
-          final powerTune = PowerTune(
-            mac: widget.deviceId,
-            powerFactor: powerFactor,
-            time: DateTime.now().millisecondsSinceEpoch,
-          );
-          await database.powerTuneDao.insertPowerTune(powerTune);
-        }
-        Get.back(result: powerFactor);
-      }),
     );
   }
 }

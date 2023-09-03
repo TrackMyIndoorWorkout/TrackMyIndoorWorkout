@@ -1,5 +1,5 @@
 import '../../export/fit/fit_manufacturer.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import 'treadmill_device_descriptor.dart';
 
 class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
@@ -8,11 +8,9 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
           fourCC: matrixTreadmillFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Treadmill",
-          namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "CTM",
+          manufacturerNamePart: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Treadmill",
-          canMeasureHeartRate: false,
         );
 
   @override
@@ -21,7 +19,6 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    initFlag();
     // Matrix violates the FTMS Treadmill protocol and promises every feature
     // except the Instantaneous Pace and Average Pace (C7 and C8)
     // Flag bytes:

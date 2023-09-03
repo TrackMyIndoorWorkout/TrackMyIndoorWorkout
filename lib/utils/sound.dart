@@ -8,11 +8,12 @@ import '../preferences/sound_effects.dart';
 import '../preferences/target_heart_rate.dart';
 
 enum SoundEffect { bleep, flatBeep, twoTone, threeTone }
+
 final Map<SoundEffect, String> _soundAssetPaths = {
-  SoundEffect.bleep: "assets/bleep.mp3",
-  SoundEffect.flatBeep: "assets/flat_beep.mp3",
-  SoundEffect.twoTone: "assets/two_tone.mp3",
-  SoundEffect.threeTone: "assets/three_tone.mp3",
+  SoundEffect.bleep: "assets/audio/bleep.mp3",
+  SoundEffect.flatBeep: "assets/audio/flat_beep.mp3",
+  SoundEffect.twoTone: "assets/audio/two_tone.mp3",
+  SoundEffect.threeTone: "assets/audio/three_tone.mp3",
 };
 
 class SoundService {

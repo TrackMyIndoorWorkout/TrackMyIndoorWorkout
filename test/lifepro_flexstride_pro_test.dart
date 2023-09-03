@@ -1,10 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/cross_trainer_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:isar/isar.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-
-import 'utils.dart';
 
 class TestPair {
   final List<int> data;
@@ -15,21 +14,20 @@ class TestPair {
 
 void main() {
   test('LifePro FlexStride Pro Device constructor tests', () async {
-    final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC]!;
+    final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
 
-    expect(xTrainer.canMeasureHeartRate, true);
-    expect(xTrainer.defaultSport, ActivityType.elliptical);
+    expect(xTrainer.sport, ActivityType.elliptical);
     expect(xTrainer.fourCC, genericFTMSCrossTrainerFourCC);
+    expect(xTrainer.isMultiSport, false);
   });
 
   test('Cross Trainer Device interprets LifePro FlexStride Pro flags properly', () async {
-    final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC] as CrossTrainerDeviceDescriptor;
+    final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
     const lsb = 12;
     const msb = 33;
     const flag = maxUint8 * msb + lsb;
-    await initPrefServiceForTest();
+    xTrainer.initFlag();
     xTrainer.stopWorkout();
-
     xTrainer.processFlag(flag);
 
     expect(xTrainer.speedMetric, isNotNull);
@@ -54,7 +52,7 @@ void main() {
           power: 0,
           speed: 0.0,
           cadence: 0,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
@@ -69,7 +67,7 @@ void main() {
           power: 5,
           speed: 0.02,
           cadence: 6,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
@@ -84,7 +82,7 @@ void main() {
           power: 90,
           speed: 1.16,
           cadence: 100,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
@@ -99,26 +97,25 @@ void main() {
           power: 66,
           speed: 0.84,
           cadence: 74,
-          heartRate: 0,
+          heartRate: null,
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        await initPrefServiceForTest();
-        final xTrainer = deviceMap[genericFTMSCrossTrainerFourCC]!;
+        final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
         xTrainer.initFlag();
         expect(xTrainer.isDataProcessable(testPair.data), true);
         xTrainer.stopWorkout();
 
-        final record = xTrainer.stubRecord(testPair.data)!;
+        final record = xTrainer.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);

@@ -1,7 +1,7 @@
 import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
 import '../../secret.dart';
 import '../upload_service.dart';
 import 'training_peaks.dart';
@@ -27,16 +27,16 @@ class TrainingPeaksService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, List<Record> records) async {
-    if (records.isEmpty) {
+  Future<int> upload(Activity activity, bool calculateGps) async {
+    if (!DbUtils().hasRecords(activity.id)) {
       return 404;
     }
 
     final exporter = FitExport();
     final fileGzip = await exporter.getExport(
       activity,
-      records,
       false,
+      calculateGps,
       true,
       ExportTarget.regular,
     );

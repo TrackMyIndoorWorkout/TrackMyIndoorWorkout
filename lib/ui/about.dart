@@ -1,29 +1,34 @@
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
+import '../preferences/database_migration_needed.dart';
 import '../preferences/enforced_time_zone.dart';
+// import '../preferences/welcome_presented.dart';
 import '../utils/constants.dart';
+import 'donation.dart';
 
 class AboutScreen extends StatefulWidget {
   static String shortTitle = "About";
+  static const quickStartUrl = "${appUrl}2020/09/25/quick-start.html";
+  static const faqUrl = "${appUrl}2020/09/22/frequently-asked-questions.html";
+  static const knownIssuesUrl = "${appUrl}2020/09/26/known-issues.html";
+  static const changeLogUrl = "${appUrl}changelog";
+  static const attributionsUrl = "${appUrl}attributions";
+  static const privacyPolicyUrl = "${appUrl}privacy/";
 
   const AboutScreen({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => AboutScreenState();
+  AboutScreenState createState() => AboutScreenState();
 }
 
 class AboutScreenState extends State<AboutScreen> {
-  static const hostUrl = "https://trackmyindoorworkout.github.io/";
-  static const quickStartUrl = "${hostUrl}2020/09/25/quick-start.html";
-  static const faqUrl = "${hostUrl}2020/09/22/frequently-asked-questions.html";
-  static const knownIssuesUrl = "${hostUrl}2020/09/26/known-issues.html";
-  static const changeLogUrl = "${hostUrl}changelog";
-
   late String _version;
   late String _buildNumber;
   String _detectedTimeZone = "";
@@ -34,13 +39,13 @@ class AboutScreenState extends State<AboutScreen> {
   @override
   void initState() {
     super.initState();
-    _fieldStyle = Get.textTheme.headline5!;
-    _valueStyle = Get.textTheme.headline6!.apply(fontFamily: fontFamily);
+    _fieldStyle = Get.textTheme.headlineSmall!;
+    _valueStyle = Get.textTheme.titleLarge!.apply(fontFamily: fontFamily);
     final packageInfo = Get.find<PackageInfo>();
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    FlutterNativeTimezone.getLocalTimezone().then((String timeZone) {
+    FlutterTimezone.getLocalTimezone().then((String timeZone) {
       setState(() {
         _detectedTimeZone = timeZone;
       });
@@ -56,7 +61,15 @@ class AboutScreenState extends State<AboutScreen> {
     if (kDebugMode) {
       actions.add(IconButton(
         icon: const Icon(Icons.build),
-        onPressed: () async {},
+        onPressed: () async {
+          Get.find<BasePrefService>()
+              .set(databaseMigrationNeededTag, databaseMigrationNeededDefault);
+          final database = Get.find<Isar>();
+          await database.writeTxn(() async {
+            await database.clear();
+          });
+          // Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
+        },
       ));
     }
 
@@ -65,138 +78,76 @@ class AboutScreenState extends State<AboutScreen> {
         title: Text(AboutScreen.shortTitle),
         actions: actions,
       ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
-                'Version:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
+      body: ListView(
+        shrinkWrap: true,
+        children: [
+          ..._valueWithTitle(title: 'Version:', value: _version, oneLine: true),
+          ..._valueWithTitle(title: 'Build#:', value: _buildNumber, oneLine: true),
+          ..._valueWithTitle(title: 'Detected Time Zone:', value: _detectedTimeZone),
+          ..._valueWithTitle(title: 'Enforced Time Zone:', value: _enforcedTimeZone),
+          const Divider(),
+          _buttonWithLink(buttonText: "Privacy Policy", linkUrl: AboutScreen.privacyPolicyUrl),
+          _buttonWithLink(buttonText: "Quick Start", linkUrl: AboutScreen.quickStartUrl),
+          _buttonWithLink(buttonText: "Frequently Asked Questions", linkUrl: AboutScreen.faqUrl),
+          _buttonWithLink(buttonText: "Known Issues", linkUrl: AboutScreen.knownIssuesUrl),
+          _buttonWithLink(buttonText: "Change Log", linkUrl: AboutScreen.changeLogUrl),
+          _buttonWithLink(buttonText: "Attributions", linkUrl: AboutScreen.attributionsUrl),
+          Center(
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.coffee),
+              label: const Text("Donation"),
+              onPressed: () async {
+                Get.to(() => const DonationScreen());
+              },
             ),
-            Flexible(
-              child: Text(
-                _version,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                'Build#:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _buildNumber,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                'Detected Time Zone:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _detectedTimeZone,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                'Enforced Time Zone:',
-                style: _fieldStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Flexible(
-              child: Text(
-                _enforcedTimeZone,
-                style: _valueStyle,
-                maxLines: 10,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const Divider(),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Quick Start"),
-                onPressed: () async {
-                  if (await canLaunch(quickStartUrl)) {
-                    launch(quickStartUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Frequently Asked Questions"),
-                onPressed: () async {
-                  if (await canLaunch(faqUrl)) {
-                    launch(faqUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Known Issues"),
-                onPressed: () async {
-                  if (await canLaunch(knownIssuesUrl)) {
-                    launch(knownIssuesUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Change Log"),
-                onPressed: () async {
-                  if (await canLaunch(changeLogUrl)) {
-                    launch(changeLogUrl);
-                  } else {
-                    Get.snackbar("Attention", "Cannot open URL");
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
+
+  Widget _buttonWithLink({required String buttonText, required String linkUrl}) => Center(
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.open_in_new),
+          label: Text(buttonText),
+          onPressed: () async {
+            if (await canLaunchUrlString(linkUrl)) {
+              launchUrlString(linkUrl);
+            } else {
+              Get.snackbar("Attention", "Cannot open URL");
+            }
+          },
+        ),
+      );
+
+  List<Widget> _valueWithTitleCore({required String title, required String value}) => [
+        Text(
+          title,
+          style: _fieldStyle,
+          maxLines: 10,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+        ),
+        Text(
+          value,
+          style: _valueStyle,
+          maxLines: 10,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+        ),
+      ];
+
+  List<Widget> _valueWithTitle({
+    required String title,
+    required String value,
+    bool oneLine = false,
+  }) =>
+      oneLine
+          ? [
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: _valueWithTitleCore(title: title, value: value)),
+            ]
+          : _valueWithTitleCore(title: title, value: value);
 }

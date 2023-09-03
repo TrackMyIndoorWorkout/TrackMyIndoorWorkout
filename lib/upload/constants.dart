@@ -13,13 +13,6 @@ const List<String> portalNames = [
   trainingPeaksChoice,
 ];
 
-const List<String> portalLogos = [
-  "strava.svg",
-  "suunto.svg",
-  "under-armour-2line.svg",
-  "training-peaks-2line.svg",
-];
-
 class PortalChoiceDescriptor {
   final String name;
   final String assetName;
@@ -29,31 +22,31 @@ class PortalChoiceDescriptor {
   PortalChoiceDescriptor(this.name, this.assetName, this.color, this.heightMultiplier);
 }
 
-List<PortalChoiceDescriptor> getPortalChoices(ThemeManager themeManager) {
+List<PortalChoiceDescriptor> getPortalChoices(bool justAuth, ThemeManager themeManager) {
   return [
     PortalChoiceDescriptor(
       portalNames[0],
-      "assets/${portalLogos[0]}",
+      "assets/integration/${justAuth ? "connect_with_strava" : "pwrd_by_strava_2line"}.svg",
       themeManager.getOrangeColor(),
-      1.0,
+      1.7,
     ),
     PortalChoiceDescriptor(
       portalNames[1],
-      "assets/${portalLogos[1]}",
+      "assets/integration/suunto.svg",
       themeManager.getSuuntoRedColor(),
-      1.5,
+      1.7,
     ),
     PortalChoiceDescriptor(
       portalNames[2],
-      "assets/${portalLogos[2]}",
+      "assets/integration/under-armour-2line.svg",
       themeManager.getSuuntoRedColor(),
-      1.5,
+      1.7,
     ),
     PortalChoiceDescriptor(
       portalNames[3],
-      "assets/${portalLogos[3]}",
+      "assets/integration/training-peaks-2line.svg",
       themeManager.getBlueColor(),
-      1.5,
+      1.7,
     ),
   ];
 }

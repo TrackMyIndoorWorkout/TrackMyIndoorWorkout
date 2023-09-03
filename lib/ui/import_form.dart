@@ -2,11 +2,15 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
+import '../persistence/isar/workout_summary.dart';
+import '../preferences/leaderboard_and_rank.dart';
 
 typedef SetProgress = void Function(double progress);
 
@@ -16,10 +20,10 @@ class ImportForm extends StatefulWidget {
   const ImportForm({Key? key, required this.migration}) : super(key: key);
 
   @override
-  _ImportFormState createState() => _ImportFormState();
+  ImportFormState createState() => ImportFormState();
 }
 
-class _ImportFormState extends State<ImportForm> {
+class ImportFormState extends State<ImportForm> {
   final dateTimeFormat = DateFormat("yyyy-MM-dd HH:mm");
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _filePath;
@@ -28,11 +32,14 @@ class _ImportFormState extends State<ImportForm> {
   double _progressValue = 0.0;
   double _sizeDefault = 10.0;
   final TextEditingController _textController = TextEditingController();
+  bool _leaderboardFeature = leaderboardFeatureDefault;
 
   @override
   void initState() {
     super.initState();
-    _sizeDefault = Get.textTheme.headline2!.fontSize!;
+    _sizeDefault = Get.textTheme.displayMedium!.fontSize!;
+    final prefService = Get.find<BasePrefService>();
+    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
   }
 
   void setProgress(double progress) {
@@ -50,12 +57,12 @@ class _ImportFormState extends State<ImportForm> {
       body: LoadingOverlay(
         isLoading: _isLoading,
         progressIndicator: SizedBox(
+          height: _sizeDefault * 2,
+          width: _sizeDefault * 2,
           child: CircularProgressIndicator(
             strokeWidth: _sizeDefault,
             value: _progressValue,
           ),
-          height: _sizeDefault * 2,
-          width: _sizeDefault * 2,
         ),
         child: Form(
           key: _formKey,
@@ -64,6 +71,7 @@ class _ImportFormState extends State<ImportForm> {
             children: [
               TextFormField(
                 decoration: InputDecoration(
+                  filled: true,
                   labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
@@ -72,7 +80,7 @@ class _ImportFormState extends State<ImportForm> {
                       style: TextStyle(fontSize: 30),
                     ),
                     onPressed: () async {
-                      FilePickerResult? result = await FilePicker.platform.pickFiles();
+                      final result = await FilePicker.platform.pickFiles();
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
                         setState(() {
@@ -94,33 +102,36 @@ class _ImportFormState extends State<ImportForm> {
                 }),
               ),
               Visibility(
-                child: const SizedBox(height: 24),
                 visible: !widget.migration,
+                child: const SizedBox(height: 24),
               ),
               Visibility(
+                visible: !widget.migration,
                 child: DateTimeField(
                   format: dateTimeFormat,
                   decoration: const InputDecoration(
+                    filled: true,
                     prefixIcon: Icon(Icons.access_time),
                     labelText: 'Workout Date & Time',
                     hintText: 'Pick date & time',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    final date = await showDatePicker(
+                    return await showDatePicker(
                       context: context,
                       firstDate: DateTime(1920),
                       initialDate: currentValue ?? DateTime.now(),
                       lastDate: DateTime(2030),
-                    );
-                    if (date != null) {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.combine(date, time);
-                    } else {
-                      return currentValue;
-                    }
+                    ).then((DateTime? date) async {
+                      if (date != null) {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                        );
+                        return DateTimeField.combine(date, time);
+                      } else {
+                        return currentValue;
+                      }
+                    });
                   },
                   validator: (value) {
                     if (value == null && !widget.migration) {
@@ -132,7 +143,6 @@ class _ImportFormState extends State<ImportForm> {
                     _activityDateTime = value;
                   }),
                 ),
-                visible: !widget.migration,
               ),
               const SizedBox(height: 24),
               Row(
@@ -162,12 +172,21 @@ class _ImportFormState extends State<ImportForm> {
                             File file = File(_filePath!);
                             String contents = await file.readAsString();
                             final importer = CSVImporter(_activityDateTime);
-                            var activity = await importer.import(contents, setProgress);
+                            final activity = await importer.import(contents, setProgress);
                             setState(() {
                               _isLoading = false;
                             });
                             if (activity != null) {
                               Get.snackbar("Success", "Workout imported!");
+                              if (_leaderboardFeature) {
+                                final deviceDescriptor = activity.deviceDescriptor();
+                                final workoutSummary = activity
+                                    .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
+                                final database = Get.find<Isar>();
+                                database.writeTxnSync(() {
+                                  database.workoutSummarys.putSync(workoutSummary);
+                                });
+                              }
                             } else {
                               Get.snackbar(
                                   "Failure", "Problem while importing: ${importer.message}");

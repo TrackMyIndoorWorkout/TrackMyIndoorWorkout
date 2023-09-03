@@ -3,9 +3,11 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
-import '../persistence/models/calorie_tune.dart';
-import '../persistence/database.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
+
+import '../persistence/isar/calorie_tune.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
@@ -13,11 +15,11 @@ class CalorieTunesScreen extends StatefulWidget {
   const CalorieTunesScreen({key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => CalorieTunesScreenState();
+  CalorieTunesScreenState createState() => CalorieTunesScreenState();
 }
 
-class CalorieTunesScreenState extends State<CalorieTunesScreen> {
-  final AppDatabase _database = Get.find<AppDatabase>();
+class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBindingObserver {
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
@@ -25,22 +27,48 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
 
   @override
+  void didChangeMetrics() {
+    setState(() {
+      _editCount++;
+    });
+  }
+
+  @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline4!;
+    WidgetsBinding.instance.addObserver(this);
+    _textStyle = Get.textTheme.headlineMedium!;
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   Widget _actionButtonRow(CalorieTune calorieTune, double size) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: _themeManager.getActionIcon(Icons.edit, size),
+          iconSize: size,
           onPressed: () async {
             final result = await Get.bottomSheet(
-              CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
+              SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
               enableDrag: false,
             );
             if (result != null) {
@@ -53,16 +81,19 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         const Spacer(),
         IconButton(
           icon: _themeManager.getDeleteIcon(size),
+          iconSize: size,
           onPressed: () async {
             Get.defaultDialog(
               title: 'Warning!!!',
               middleText: 'Are you sure to delete this Tune?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.calorieTuneDao.deleteCalorieTune(calorieTune);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.calorieTunes.deleteSync(calorieTune.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -89,8 +120,12 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.calorieTuneDao.findCalorieTunes(limit, offset);
+            final data = await _database.calorieTunes
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -110,9 +145,8 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
         ),
         itemBuilder: (context, _, item) {
           final calorieTune = item as CalorieTune;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(calorieTune.time);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(calorieTune.time);
+          final timeString = DateFormat.Hms().format(calorieTune.time);
           final hrBasedString = calorieTune.hrBased ? "HR based" : "Non HR based";
           final caloriePercent = (calorieTune.calorieFactor * 100).round();
           return Card(
@@ -123,7 +157,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> {
               header: Column(
                 children: [
                   TextOneLine(
-                    calorieTune.mac,
+                    calorieTune.mac.shortAddressString(),
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

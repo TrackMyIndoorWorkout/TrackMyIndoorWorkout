@@ -1,5 +1,5 @@
 import '../../export/fit/fit_manufacturer.dart';
-import '../device_map.dart';
+import '../device_fourcc.dart';
 import 'indoor_bike_device_descriptor.dart';
 
 class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
@@ -8,11 +8,9 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           fourCC: matrixBikeFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Bike",
-          namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "CTM",
+          manufacturerNamePart: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Bike",
-          canMeasureHeartRate: false,
         );
 
   @override
@@ -21,7 +19,6 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
   void processFlag(int flag) {
-    initFlag();
     // Matrix violates the FTMS Indoor Bike protocol and promises every feature
     // except the Heart Rate (C10)
     // Flag bytes:

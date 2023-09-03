@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 const simplerUi = "Simplify Measurement UI";
 const simplerUiTag = "simpler_ui";
@@ -13,11 +13,12 @@ const simplerUiDescription = "On: the track visualization and the real-time"
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = simplerUiFastDefault;
   if (Platform.isAndroid) {
-    var androidInfo = await DeviceInfoPlugin().androidInfo;
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
     if (androidInfo.version.sdkInt < 26) {
       // Remove complexities for very old Android devices
       simplerUiDefault = simplerUiSlowDefault;
     }
   }
+
   return simplerUiDefault;
 }

@@ -5,12 +5,19 @@ abstract class SensorBase extends DeviceBase {
   int expectedLength = 0;
   // Adjusting skewed calories
 
-  SensorBase(serviceId, characteristicsId, device)
+  SensorBase(serviceId, characteristicId, device)
       : super(
           serviceId: serviceId,
-          characteristicsId: characteristicsId,
+          characteristicId: characteristicId,
           device: device,
         );
+
+  void initFlag() {
+    featureFlag = -1;
+    expectedLength = 0;
+  }
+
+  void processFlag(int flag);
 
   bool canMeasurementProcessed(List<int> data);
 

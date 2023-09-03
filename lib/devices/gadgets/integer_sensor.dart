@@ -9,16 +9,17 @@ typedef IntegerMetricProcessingFunction = Function(int measurement);
 abstract class IntegerSensor extends SensorBase {
   int metric = 0;
 
-  IntegerSensor(serviceId, characteristicsId, device) : super(serviceId, characteristicsId, device);
+  IntegerSensor(serviceId, characteristicId, device) : super(serviceId, characteristicId, device);
 
   Stream<int> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
-    await for (var byteList in characteristic!.value.throttleTime(
+    await for (var byteList in characteristic!.lastValueStream.throttleTime(
       const Duration(milliseconds: sensorDataThreshold),
       leading: false,
       trailing: true,
     )) {
+      logData(byteList, "IntegerSensor");
       if (!canMeasurementProcessed(byteList)) continue;
 
       metric = processMeasurement(byteList);
@@ -28,7 +29,6 @@ abstract class IntegerSensor extends SensorBase {
 
   void pumpData(IntegerMetricProcessingFunction? metricProcessingFunction) {
     subscription = _listenToData.listen((newValue) {
-      metric = newValue;
       if (metricProcessingFunction != null) {
         metricProcessingFunction(newValue);
       }

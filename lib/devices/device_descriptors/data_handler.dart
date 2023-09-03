@@ -1,27 +1,32 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
-import '../metric_descriptors/byte_metric_descriptor.dart';
-import '../metric_descriptors/short_metric_descriptor.dart';
-import '../metric_descriptors/three_byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 
 abstract class DataHandler {
+  final String tag;
+  final bool hasFeatureFlags;
   final int flagByteSize;
   int featuresFlag = -1;
   int byteCounter = 0;
+  bool hasFutureReservedBytes = false;
 
   int? heartRateByteIndex;
 
+  bool lastNotMoving = true;
+
   // Common metrics
-  ShortMetricDescriptor? speedMetric;
-  ShortMetricDescriptor? cadenceMetric;
-  ThreeByteMetricDescriptor? distanceMetric;
-  ShortMetricDescriptor? powerMetric;
-  ShortMetricDescriptor? caloriesMetric;
-  ShortMetricDescriptor? timeMetric;
-  ShortMetricDescriptor? caloriesPerHourMetric;
-  ByteMetricDescriptor? caloriesPerMinuteMetric;
+  MetricDescriptor? speedMetric;
+  MetricDescriptor? cadenceMetric;
+  MetricDescriptor? distanceMetric;
+  MetricDescriptor? powerMetric;
+  MetricDescriptor? caloriesMetric;
+  MetricDescriptor? timeMetric;
+  MetricDescriptor? caloriesPerHourMetric;
+  MetricDescriptor? caloriesPerMinuteMetric;
 
   DataHandler({
+    this.tag = "DATA_HANDLER",
+    this.hasFeatureFlags = true,
     this.flagByteSize = 2,
     this.heartRateByteIndex,
     this.timeMetric,
@@ -36,30 +41,51 @@ abstract class DataHandler {
 
   bool isDataProcessable(List<int> data);
 
+  /// It tells if a gathered packet is the whole packet.
+  /// Gets significance for fragmented packet devices.
+  bool isWholePacket(List<int> data) {
+    return true;
+  }
+
   void initFlag() {
     clearMetrics();
     featuresFlag = -1;
     byteCounter = flagByteSize;
   }
 
-  void processFlag(int flag) {
-    initFlag();
-  }
+  bool isFlagValid(int flag);
+
+  void processFlag(int flag);
 
   void preProcessFlag(List<int> data) {
     if (data.length > flagByteSize) {
-      var flag = data[0] + maxUint8 * data[1];
+      var flag = data[0];
+      if (flagByteSize > 1) {
+        flag += maxUint8 * data[1];
+      }
+
+      if (flagByteSize > 2) {
+        flag += maxUint16 * data[2];
+      }
+
       if (flag != featuresFlag) {
+        initFlag();
         featuresFlag = flag;
         processFlag(flag);
       }
     }
   }
 
-  RecordWithSport? stubRecord(List<int> data) {
-    preProcessFlag(data);
+  RecordWithSport? stubRecord(List<int> data);
 
-    return null;
+  RecordWithSport? wrappedStubRecord(List<int> data) {
+    if (hasFeatureFlags) {
+      preProcessFlag(data);
+    }
+
+    final stub = stubRecord(data);
+    lastNotMoving = stub?.isNotMoving() ?? true;
+    return stub;
   }
 
   double? getSpeed(List<int> data) {
@@ -94,10 +120,10 @@ abstract class DataHandler {
     return timeMetric?.getMeasurementValue(data);
   }
 
-  double? getHeartRate(List<int> data) {
-    if (heartRateByteIndex == null) return 0;
+  int? getHeartRate(List<int> data) {
+    if (heartRateByteIndex == null || heartRateByteIndex! >= data.length) return null;
 
-    return data[heartRateByteIndex!].toDouble();
+    return data[heartRateByteIndex!];
   }
 
   void clearMetrics() {

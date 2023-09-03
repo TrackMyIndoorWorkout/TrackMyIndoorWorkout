@@ -3,75 +3,71 @@ import 'dart:collection';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
+import '../../utils/constants.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
+import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
-import '../gatt_constants.dart';
 import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
-  ByteMetricDescriptor? strokeRateMetric;
-  ShortMetricDescriptor? strokeCountMetric;
-  ShortMetricDescriptor? paceMetric;
+  MetricDescriptor? strokeRateMetric;
+  MetricDescriptor? strokeCountMetric;
+  MetricDescriptor? paceMetric;
 
   int _strokeRateWindowSize = strokeRateSmoothingDefault;
   final ListQueue<int> _strokeRates = ListQueue<int>();
   int _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
-    required defaultSport,
+    required sport,
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
+    manufacturerNamePart,
     manufacturerFitId,
     model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = rowerDeviceUuid,
-    canMeasureHeartRate = true,
     heartRateByteIndex,
     isMultiSport = true,
   }) : super(
-          defaultSport: defaultSport,
+          sport: sport,
           isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
+          manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
-          canMeasureHeartRate: canMeasureHeartRate,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: rowerDeviceUuid,
           heartRateByteIndex: heartRateByteIndex,
         );
 
   @override
   RowerDeviceDescriptor clone() => RowerDeviceDescriptor(
-        defaultSport: defaultSport,
+        sport: sport,
+        isMultiSport: isMultiSport,
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
-        manufacturerPrefix: manufacturerPrefix,
+        manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
-        canMeasureHeartRate: canMeasureHeartRate,
         heartRateByteIndex: heartRateByteIndex,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
   void processFlag(int flag) {
-    super.processFlag(flag);
     final prefService = Get.find<BasePrefService>();
-    _strokeRateWindowSize =
-        prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
+    if (sport == ActivityType.rowing) {
+      _strokeRateWindowSize = 0;
+    } else {
+      _strokeRateWindowSize =
+          prefService.get<int>(strokeRateSmoothingIntTag) ?? strokeRateSmoothingDefault;
+    }
 
     // KayakPro Compact
     // 44 0010 1100 (stroke rate, stroke count), total distance, instant pace, instant power
@@ -90,12 +86,13 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     flag = skipFlag(flag, size: 1); // Metabolic Equivalent
     flag = processElapsedTimeFlag(flag);
     flag = skipFlag(flag); // Remaining Time
+
+    // #320 The Reserved flag is set
+    hasFutureReservedBytes = flag > 0;
   }
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    super.stubRecord(data);
-
     final pace = getPace(data);
 
     var strokeRate = getStrokeRate(data);
@@ -120,9 +117,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: strokeRate,
-      heartRate: getHeartRate(data)?.toInt(),
+      heartRate: getHeartRate(data),
       pace: pace,
-      sport: defaultSport,
+      strokeCount: getStrokeCount(data),
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
     );
@@ -162,6 +160,10 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
 
   int? getStrokeRate(List<int> data) {
     return strokeRateMetric?.getMeasurementValue(data)?.toInt();
+  }
+
+  double? getStrokeCount(List<int> data) {
+    return strokeCountMetric?.getMeasurementValue(data);
   }
 
   double? getPace(List<int> data) {

@@ -1,13 +1,15 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
-import '../devices/device_map.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../persistence/database.dart';
+import '../devices/device_factory.dart';
+import '../devices/device_fourcc.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
@@ -19,6 +21,7 @@ import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../ui/import_form.dart';
 import '../utils/constants.dart';
 import '../utils/hr_based_calories.dart';
+import '../utils/power_speed_mixin.dart';
 import '../utils/time_zone.dart';
 import 'constants.dart';
 
@@ -67,30 +70,18 @@ class WorkoutRow {
   }
 }
 
-class CSVImporter {
+class CSVImporter with PowerSpeedMixin {
   static const maxProgressSteps = 400;
-  static const energy2speed = 5.28768241564455E-05;
   static const timeResolutionFactor = 2;
-  static const epsilon = 0.001;
-  static const maxIterations = 100;
-  static const driveTrainLoss = 0; // %
-  static const gConst = 9.8067;
-  static const bikerWeight = 81; // kg
-  static const bikeWeight = 9; // kg
-  static const rollingResistanceCoefficient = 0.005;
-  static const dragCoefficient = 0.63;
-  // Backup: 5.4788
-  static const frontalArea = 4 * ftToM * ftToM; // ft * ft_2_m^2
-  static const airDensity = 0.076537 * lbToKg / (ftToM * ftToM * ftToM);
 
   DateTime? start;
+  DateTime? end;
   String message = "";
 
   List<String> _lines = [];
   int _linePointer = 0;
   bool _migration = false;
   int _version = csvVersion;
-  final Map<int, double> _velocityForPowerDict = <int, double>{};
 
   CSVImporter(this.start);
 
@@ -102,47 +93,8 @@ class CSVImporter {
     return _linePointer <= _lines.length;
   }
 
-  double powerForVelocity(velocity) {
-    const fRolling = gConst * (bikerWeight + bikeWeight) * rollingResistanceCoefficient;
-
-    final fDrag = 0.5 * frontalArea * dragCoefficient * airDensity * velocity * velocity;
-
-    final totalForce = fRolling + fDrag;
-    final wheelPower = totalForce * velocity;
-    const driveTrainFraction = 1.0 - (driveTrainLoss / 100.0);
-    final legPower = wheelPower / driveTrainFraction;
-    return legPower;
-  }
-
-  double velocityForPower(int power) {
-    if (_velocityForPowerDict.containsKey(power)) {
-      return _velocityForPowerDict[power] ?? 0.0;
-    }
-
-    var lowerVelocity = 0.0;
-    var upperVelocity = 2000.0;
-    var middleVelocity = power * energy2speed * 1000;
-    var middlePower = powerForVelocity(middleVelocity);
-
-    var i = 0;
-    do {
-      if ((middlePower - power).abs() < epsilon) break;
-
-      if (middlePower > power) {
-        upperVelocity = middleVelocity;
-      } else {
-        lowerVelocity = middleVelocity;
-      }
-
-      middleVelocity = (upperVelocity + lowerVelocity) / 2.0;
-      middlePower = powerForVelocity(middleVelocity);
-    } while (i++ < maxIterations);
-
-    _velocityForPowerDict[power] = middleVelocity;
-    return middleVelocity;
-  }
-
   Future<Activity?> import(String csv, SetProgress setProgress) async {
+    await initPower2SpeedConstants();
     LineSplitter lineSplitter = const LineSplitter();
     _lines = lineSplitter.convert(csv);
     if (_lines.length < 20) {
@@ -150,21 +102,24 @@ class CSVImporter {
       return null;
     }
 
+    _migration = false;
     _linePointer = 0;
     final firstLine = _lines[0].split(",");
     if (firstLine.length > 1) {
       if (firstLine[0] != csvMagic) {
-        message = "Cannot recognize migration CSV magic";
-        return null;
-      }
+        if (firstLine[0].isNotEmpty) {
+          message = "Cannot recognize migration CSV magic";
+          return null;
+        }
+      } else {
+        if (!firstLine[1].isNumericOnly) {
+          message = "CSV version number is not an integer";
+          return null;
+        }
 
-      if (!firstLine[1].isNumericOnly) {
-        message = "CSV version number is not an integer";
-        return null;
+        _migration = true;
+        _version = int.parse(firstLine[1]);
       }
-
-      _migration = true;
-      _version = int.parse(firstLine[1]);
     }
 
     if (!_findLine(rideSummaryTag)) {
@@ -215,13 +170,11 @@ class CSVImporter {
     }
 
     final prefService = Get.find<BasePrefService>();
-    final database = Get.find<AppDatabase>();
+    final database = Get.find<Isar>();
 
     var deviceName = "";
     var deviceId = mPowerImportDeviceId;
     var hrmId = "";
-    var startTime = 0;
-    var endTime = 0;
     var calories = 0;
     var uploaded = false;
     var stravaId = 0;
@@ -240,7 +193,7 @@ class CSVImporter {
     var underArmourUploaded = false;
     var uaWorkoutId = 0;
     var trainingPeaksUploaded = false;
-    var trainingPeaksAthleteId = 0;
+    var trainingPeaksFileTrackingUuid = "";
     var trainingPeaksWorkoutId = 0;
     var movingTime = 0;
 
@@ -272,7 +225,7 @@ class CSVImporter {
         return null;
       }
 
-      startTime = int.tryParse(startTimeLine[1]) ?? 0;
+      final startTime = int.tryParse(startTimeLine[1]) ?? 0;
       if (startTime == 0) {
         message = "Couldn't parse $startTimeTag";
         return null;
@@ -288,11 +241,13 @@ class CSVImporter {
         return null;
       }
 
-      endTime = int.tryParse(endTimeLine[1]) ?? 0;
+      final endTime = int.tryParse(endTimeLine[1]) ?? 0;
       if (endTime == 0) {
         message = "Couldn't parse $endTimeTag";
         return null;
       }
+
+      end = DateTime.fromMillisecondsSinceEpoch(endTime);
 
       _linePointer++;
 
@@ -487,13 +442,21 @@ class CSVImporter {
 
         _linePointer++;
 
-        final tpAthleteIdLine = _lines[_linePointer].split(",");
-        if (tpAthleteIdLine[0].trim() != trainingPeaksAthleteIdTag) {
-          message = "Couldn't parse $trainingPeaksAthleteIdTag";
-          return null;
-        }
+        if (_version < 4) {
+          final tpAthleteIdLine = _lines[_linePointer].split(",");
+          if (tpAthleteIdLine[0].trim() != trainingPeaksAthleteIdTag) {
+            message = "Couldn't parse $trainingPeaksAthleteIdTag";
+            return null;
+          }
+        } else {
+          final tpFileTrackingUuidLine = _lines[_linePointer].split(",");
+          if (tpFileTrackingUuidLine[0].trim() != trainingPeaksFileTrackingUuidTag) {
+            message = "Couldn't parse $trainingPeaksFileTrackingUuidTag";
+            return null;
+          }
 
-        trainingPeaksAthleteId = int.tryParse(tpAthleteIdLine[1]) ?? 0;
+          trainingPeaksFileTrackingUuid = tpFileTrackingUuidLine[1].trim();
+        }
 
         _linePointer++;
 
@@ -520,19 +483,28 @@ class CSVImporter {
         _linePointer++;
       }
     } else {
-      DeviceDescriptor device = deviceMap[schwinnACPerfPlusFourCC]!;
-      final factors = await database.getFactors(deviceId);
-      deviceName = device.namePrefixes[0];
+      DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
+      final factors = await DbUtils().getFactors(deviceId);
       fourCC = device.fourCC;
-      sport = device.defaultSport;
+      deviceName = deviceNamePrefixes[fourCC]![0];
+      sport = device.sport;
       calorieFactor = factors.item2 *
           (device.canMeasureCalories ? 1.0 : DeviceDescriptor.powerCalorieFactorDefault);
       hrCalorieFactor = factors.item3;
       hrBasedCalories = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
           useHeartRateBasedCalorieCountingDefault;
       powerFactor = factors.item1;
-      startTime = start!.millisecondsSinceEpoch;
-      endTime = start!.add(Duration(seconds: totalElapsed)).millisecondsSinceEpoch;
+      if (start == null) {
+        // User choose the wrong type of import
+        Get.snackbar(
+          "Not CSV migration data",
+          "The current time will be assumed as workout time. "
+              "Select MPower import to specify time",
+        );
+        start = DateTime.now();
+      }
+
+      end = start!.add(Duration(seconds: totalElapsed));
     }
 
     if (movingTime == 0 && totalElapsed > 0) {
@@ -567,13 +539,12 @@ class CSVImporter {
       deviceName: deviceName,
       deviceId: deviceId,
       hrmId: hrmId,
-      start: startTime,
-      end: endTime,
+      start: start ?? DateTime.now(),
+      end: end,
       distance: totalDistance,
       elapsed: totalElapsed,
       movingTime: movingTime,
       calories: calories,
-      startDateTime: start,
       uploaded: uploaded,
       stravaId: stravaId,
       fourCC: fourCC,
@@ -591,13 +562,14 @@ class CSVImporter {
       underArmourUploaded: underArmourUploaded,
       uaWorkoutId: uaWorkoutId,
       trainingPeaksUploaded: trainingPeaksUploaded,
-      trainingPeaksAthleteId: trainingPeaksAthleteId,
+      trainingPeaksFileTrackingUuid: trainingPeaksFileTrackingUuid,
       trainingPeaksWorkoutId: trainingPeaksWorkoutId,
     );
 
     final extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
-    final id = await database.activityDao.insertActivity(activity);
-    activity.id = id;
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
+    });
 
     final numRow = _lines.length - _linePointer;
     _linePointer++;
@@ -609,9 +581,15 @@ class CSVImporter {
 
       while (_linePointer < _lines.length) {
         final values = _lines[_linePointer].split(",");
+        DateTime? timeStamp;
+        final timeStampInt = int.tryParse(values[4]);
+        if (timeStampInt != null) {
+          timeStamp = DateTime.fromMillisecondsSinceEpoch(timeStampInt);
+        }
+
         final record = Record(
           activityId: activity.id,
-          timeStamp: int.tryParse(values[4]),
+          timeStamp: timeStamp,
           distance: double.tryParse(values[3]),
           elapsed: int.tryParse(values[5]),
           calories: int.tryParse(values[7]),
@@ -621,7 +599,9 @@ class CSVImporter {
           heartRate: int.tryParse(values[2]),
           sport: activity.sport,
         );
-        await database.recordDao.insertRecord(record);
+        database.writeTxnSync(() {
+          database.records.putSync(record);
+        });
 
         _linePointer++;
         recordCounter++;
@@ -649,7 +629,8 @@ class CSVImporter {
       double elapsed = 0;
       WorkoutRow? nextRow;
       int lastHeartRate = 0;
-      int timeStamp = start!.millisecondsSinceEpoch;
+      DateTime timeStamp = start!;
+      Duration recordDuration = Duration(milliseconds: milliSecondsPerRecordInt);
       String heartRateGapWorkaroundSetting =
           prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
       bool heartRateGapWorkaround =
@@ -709,7 +690,7 @@ class CSVImporter {
 
         for (int i = 0; i < recordsPerRow; i++) {
           final powerInt = power.round();
-          final speed = velocityForPower(powerInt);
+          final speed = velocityForPowerCardano(powerInt);
           final dDistance = speed * milliSecondsPerRecord / 1000;
 
           final record = RecordWithSport(
@@ -742,9 +723,11 @@ class CSVImporter {
                 SchwinnACPerformancePlus.extraCalorieFactor;
           }
           energy += dEnergy;
-          await database.recordDao.insertRecord(record);
+          database.writeTxnSync(() {
+            database.records.putSync(record);
+          });
 
-          timeStamp += milliSecondsPerRecordInt;
+          timeStamp = timeStamp.add(recordDuration);
           elapsed += milliSecondsPerRecord;
           power += dPower;
           cadence += dCadence;
@@ -770,7 +753,9 @@ class CSVImporter {
       activity.calories = energy.round();
     }
 
-    await database.activityDao.updateActivity(activity);
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
+    });
 
     return activity;
   }

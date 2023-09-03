@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_descriptors/rower_device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:isar/isar.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
-
-import 'utils.dart';
+import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 class TestPair {
   final List<int> data;
@@ -14,22 +14,36 @@ class TestPair {
 }
 
 void main() {
-  test('KayakPro Rower Device constructor tests', () async {
-    final rower = deviceMap[kayakProGenesisPortFourCC]!;
+  setUpAll(() async {
+    await initPrefServiceForTest();
+  });
 
-    expect(rower.canMeasureHeartRate, false);
-    expect(rower.defaultSport, ActivityType.kayaking);
+  test('KayakPro Rower Device constructor tests', () async {
+    final rower = DeviceFactory.getKayaPro();
+
+    expect(rower.sport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
+    expect(rower.isMultiSport, true);
   });
 
   test('Rower Device interprets KayakPro flags properly', () async {
-    final rower = deviceMap[kayakProGenesisPortFourCC] as RowerDeviceDescriptor;
+    final rower = DeviceFactory.getKayaPro();
     const lsb = 44;
     const msb = 9;
+    // C1 stroke rate uint8 (spm) 0.5
+    // C1 stroke count uint16
+    // C3 distance uint24 (m) 1
+    // C4 pace uint16 seconds 1
+    // C6 power sint16 (watts) 1
+    // -
+    // C9 total energy uint16 (kcal) 1
+    // C9 energy/h uint16 1
+    // C9 energy/min uint8 1
+    // C12 elapsed time uint16 (s) 1
+    // total length (1 + 2 + 3 + 2 + 2) + (2 + 2 + 1 + 2) = 10 + 7 = 17
     const flag = maxUint8 * msb + lsb;
-    await initPrefServiceForTest();
+    rower.initFlag();
     rower.stopWorkout();
-
     rower.processFlag(flag);
 
     expect(rower.strokeRateMetric, isNotNull);
@@ -57,7 +71,8 @@ void main() {
           power: 0,
           speed: null,
           cadence: 0,
-          heartRate: 0,
+          strokeCount: 0.0,
+          heartRate: null,
           pace: 0.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
@@ -73,7 +88,8 @@ void main() {
           power: 12,
           speed: null,
           cadence: 39,
-          heartRate: 0,
+          strokeCount: 33.0,
+          heartRate: null,
           pace: 342.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 345.0,
@@ -109,7 +125,8 @@ void main() {
           power: 16,
           speed: null,
           cadence: 76,
-          heartRate: 0,
+          strokeCount: 65.0,
+          heartRate: null,
           pace: 316.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 353.0,
@@ -145,7 +162,8 @@ void main() {
           power: 20,
           speed: null,
           cadence: 42,
-          heartRate: 0,
+          strokeCount: 150.0,
+          heartRate: null,
           pace: 295.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 363.0,
@@ -161,7 +179,8 @@ void main() {
           power: 30,
           speed: null,
           cadence: 88,
-          heartRate: 0,
+          strokeCount: 184.0,
+          heartRate: null,
           pace: 256.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 389.0,
@@ -169,19 +188,18 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        await initPrefServiceForTest();
-        final rower = deviceMap[kayakProGenesisPortFourCC]!;
+        final rower = DeviceFactory.getKayaPro();
         rower.initFlag();
         expect(rower.isDataProcessable(testPair.data), true);
         rower.stopWorkout();
 
-        final record = rower.stubRecord(testPair.data)!;
+        final record = rower.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);

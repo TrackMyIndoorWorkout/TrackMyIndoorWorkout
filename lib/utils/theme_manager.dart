@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:overlay_tutorial/overlay_tutorial.dart';
 import '../ui/about.dart';
+import '../preferences/stage_mode.dart';
 import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
@@ -40,45 +40,6 @@ class ThemeManager {
     );
   }
 
-  OverlayTutorialHole _wrapInOverlayHole(
-    bool enabled,
-    String text,
-    int annotationYOffset,
-    Widget widget,
-  ) {
-    return OverlayTutorialHole(
-      enabled: enabled,
-      overlayTutorialEntry: OverlayTutorialRectEntry(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        radius: const Radius.circular(16.0),
-        overlayTutorialHints: <OverlayTutorialWidgetHint>[
-          OverlayTutorialWidgetHint(
-            builder: (context, rect, rRect) {
-              final annotation = Text(
-                text,
-                style: Get.textTheme.headline6?.copyWith(color: Colors.yellowAccent),
-              );
-              if (rRect.center.dx < Get.width / 2) {
-                return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  left: rRect.right + 4.0,
-                  child: annotation,
-                );
-              } else {
-                return Positioned(
-                  top: rRect.top + 4.0 + annotationYOffset,
-                  right: Get.width - rRect.left + 4.0,
-                  child: annotation,
-                );
-              }
-            },
-          ),
-        ],
-      ),
-      child: widget,
-    );
-  }
-
   Color getHeaderColor() {
     return isDark() ? Colors.indigo : Colors.lightBlue;
   }
@@ -97,6 +58,10 @@ class ThemeManager {
 
   Color getGreenColor() {
     return isDark() ? Colors.lightGreenAccent : Colors.green;
+  }
+
+  Color getGreenColorInverse() {
+    return isDark() ? Colors.green : Colors.lightGreenAccent;
   }
 
   Color getYellowColor() {
@@ -127,23 +92,12 @@ class ThemeManager {
     return Icon(icon, color: getBlueColor(), size: size);
   }
 
-  Icon getGreyIcon(IconData icon, double size) {
-    return Icon(icon, color: getGreyColor(), size: size);
+  Icon getRedIcon(IconData icon, double size) {
+    return Icon(icon, color: getRedColor(), size: size);
   }
 
-  OverlayTutorialHole getBlueIconWithHole(
-    IconData icon,
-    double size,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-  ) {
-    return _wrapInOverlayHole(
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      Icon(icon, color: getBlueColor(), size: size),
-    );
+  Icon getGreyIcon(IconData icon, double size) {
+    return Icon(icon, color: getGreyColor(), size: size);
   }
 
   Icon getActionIcon(IconData icon, double size) {
@@ -158,158 +112,90 @@ class ThemeManager {
     Color foregroundColor,
     Color backgroundColor,
     Widget widget,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
     VoidCallback? onPressed,
+    GlobalKey? key,
   ) {
-    final fab = FloatingActionButton(
+    return FloatingActionButton(
+      key: key ?? GlobalKey(),
       heroTag: null,
-      child: widget,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
+      shape: const CircleBorder(),
       onPressed: onPressed,
+      child: widget,
     );
-
-    return wrapInHole
-        ? _wrapInOverlayHole(
-            overlayEnabled,
-            overlayText,
-            annotationYOffset,
-            fab,
-          )
-        : fab;
   }
 
-  Widget getIconFab(
+  Widget getIconFab(Color color, IconData icon, VoidCallback? onPressed) {
+    return _getFabCore(
+      getAntagonistColor(),
+      color,
+      Icon(icon),
+      onPressed,
+      null,
+    );
+  }
+
+  Widget getIconFabWKey(
     Color color,
     IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
     VoidCallback? onPressed,
+    GlobalKey? key,
   ) {
     return _getFabCore(
       getAntagonistColor(),
       color,
       Icon(icon),
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
       onPressed,
+      key,
     );
   }
 
-  Widget getBlueFab(
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return getIconFab(
-      getBlueColor(),
-      icon,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-    );
+  Widget getBlueFab(IconData icon, VoidCallback? onPressed) {
+    return getIconFab(getBlueColor(), icon, onPressed);
   }
 
-  Widget getGreenFab(
-    IconData icon,
-    bool wrapInHole,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return getIconFab(
-      getGreenColor(),
-      icon,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-    );
+  Widget getGreenFab(IconData icon, VoidCallback? onPressed) {
+    return getIconFab(getGreenColor(), icon, onPressed);
   }
 
-  Widget getGreenGenericFab(
-    Widget widget,
-    wrapInHole,
-    overlayEnabled,
-    overlayText,
-    annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return _getFabCore(
-      getAntagonistColor(),
-      getGreenColor(),
-      widget,
-      wrapInHole,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-    );
+  Widget getBlueFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
+    return getIconFabWKey(getBlueColor(), icon, onPressed, key);
+  }
+
+  Widget getGreenFabWKey(IconData icon, VoidCallback? onPressed, GlobalKey? key) {
+    return getIconFabWKey(getGreenColor(), icon, onPressed, key);
   }
 
   Widget getGreyFab(IconData icon, VoidCallback? onPressed) {
-    return getIconFab(getGreyColor(), icon, false, false, "", 0, onPressed);
+    return getIconFab(getGreyColor(), icon, onPressed);
   }
 
   Widget getRankIcon(int rank) {
-    final textStyle = Get.textTheme.headline4!.apply(fontFamily: fontFamily, color: Colors.black);
+    final textStyle =
+        Get.textTheme.headlineMedium!.apply(fontFamily: fontFamily, color: Colors.black);
     return _getFabCore(
       Colors.black,
       getYellowColor(),
       Text(rank.toString(), style: textStyle),
-      false,
-      false,
-      "",
-      0,
       () {},
+      null,
     );
   }
 
-  Widget getHelpFab(
-    IconData icon,
-    bool overlayEnabled,
-    String overlayText,
-    int annotationYOffset,
-    VoidCallback? onPressed,
-  ) {
-    return _getFabCore(
-      Colors.white,
-      Colors.lightBlue,
-      Icon(icon),
-      true,
-      overlayEnabled,
-      overlayText,
-      annotationYOffset,
-      onPressed,
-    );
+  Widget getHelpFab(IconData icon, VoidCallback? onPressed) {
+    return _getFabCore(Colors.white, Colors.lightBlue, Icon(icon), onPressed, null);
   }
 
-  Widget getAboutFab(bool overlayEnabled) {
+  Widget getAboutFab() {
     return getHelpFab(
       Icons.help,
-      overlayEnabled,
-      "About & Help",
-      0,
       () => Get.to(() => const AboutScreen()),
     );
   }
 
-  Widget getTutorialFab(bool overlayEnabled, VoidCallback? onPressed) {
-    return getHelpFab(Icons.info_rounded, overlayEnabled, "Help Overlay", 0, onPressed);
+  Widget getTutorialFab(VoidCallback? onPressed) {
+    return getHelpFab(Icons.info_rounded, onPressed);
   }
 
   TextStyle boldStyle(TextStyle style, {double fontSizeFactor = 1.0}) {
@@ -317,5 +203,19 @@ class ThemeManager {
       fontSizeFactor: fontSizeFactor,
       fontWeightDelta: 3,
     );
+  }
+
+  Color getAverageChartColor() {
+    final prefService = Get.find<BasePrefService>();
+    final averageChartColorValue =
+        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+    return Color(averageChartColorValue);
+  }
+
+  Color getMaximumChartColor() {
+    final prefService = Get.find<BasePrefService>();
+    final maximumChartColorValue =
+        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+    return Color(maximumChartColorValue);
   }
 }

@@ -1,8 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dev.csaba.track_my_indoor_exercise">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Restrict the use to BLE capable phones only -->
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+    <!-- Allow Bluetooth -->
+    <!-- Got removed for Huawei AppGallery https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/299 -->
+    <!-- Unsure if Android 13 needs it https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/454 -->
+    <!-- <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" /> -->
 
     <!-- https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/27 -->
     <!-- https://github.com/flutter/flutter/issues/27883 -->
@@ -18,6 +19,24 @@
         </intent>
     </queries>
 
+    <!-- Trying to comply with Android 12+ not needing location permission -->
+    <!-- Using the same permissions as
+      https://github.com/boskokg/flutter_blue_plus/blob/f70249ec27b9b2e8ff0472cb4ba6bf3df9c8175f/example/android/app/src/main/AndroidManifest.xml
+    -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- legacy for Android 11 or lower -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+    <!-- legacy for Android 9 or lower -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" />
+
+    <!-- Folder and File Pickers -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
         android:label="Track My Indoor Workout"
         android:icon="@mipmap/ic_launcher">
@@ -28,19 +47,13 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize"
+            android:exported="true"
             android:resizeableActivity="true">
 
             <!-- Theme to apply as soon as Flutter begins rendering frames -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme"
-                />
-
-            <!-- Specify that the launch screen should continue being displayed -->
-            <!-- until Flutter renders its first frame. -->
-            <meta-data
-                android:name="io.flutter.embedding.android.SplashScreenDrawable"
-                android:resource="@drawable/launch_background"
                 />
 
             <intent-filter>

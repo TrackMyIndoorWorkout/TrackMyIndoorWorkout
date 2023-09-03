@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/statistics_accumulator.dart';
 import 'utils.dart';
@@ -11,7 +11,7 @@ void main() {
   group('StatisticsAccumulator calculates avg power when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -27,7 +27,7 @@ void main() {
             actualCount++;
           }
         });
-        test("$sport, $count ($actualCount) -> $sum", () async {
+        test("$i. $sport, $count ($actualCount) -> $sum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, true);
           expect(accu.calculateMaxPower, false);
@@ -66,7 +66,7 @@ void main() {
   group('StatisticsAccumulator calculates max power when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -80,7 +80,7 @@ void main() {
             maximum = max(number, maximum);
           }
         });
-        test("$sport, $count -> $maximum", () async {
+        test("$i. $sport, $count -> $maximum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, true);
@@ -118,7 +118,7 @@ void main() {
   group('StatisticsAccumulator calculates min power when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinPower: true);
         final count = rnd.nextInt(99) + 1;
@@ -129,7 +129,7 @@ void main() {
             minimum = min(number, minimum);
           }
         });
-        test("$sport, $count -> $minimum", () async {
+        test("$i. $sport, $count -> $minimum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -167,7 +167,7 @@ void main() {
   group('StatisticsAccumulator calculates avg speed when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -183,7 +183,7 @@ void main() {
             count--;
           }
         });
-        test("$sport, $count -> $sum", () async {
+        test("$i. $sport, $count -> $sum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -222,7 +222,7 @@ void main() {
   group('StatisticsAccumulator calculates max speed when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -236,7 +236,7 @@ void main() {
             maximum = max(number, maximum);
           }
         });
-        test("$sport, $count -> $maximum", () async {
+        test("$i. $sport, $count -> $maximum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -274,7 +274,7 @@ void main() {
   group('StatisticsAccumulator calculates min speed when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -288,7 +288,7 @@ void main() {
             minimum = min(number, minimum);
           }
         });
-        test("$sport, $count -> $minimum", () async {
+        test("$i. $sport, $count -> $minimum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -326,7 +326,7 @@ void main() {
   group('StatisticsAccumulator calculates avg hr when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
         final count = rnd.nextInt(99) + 1;
@@ -339,7 +339,7 @@ void main() {
             cnt++;
           }
         });
-        test("$sport, $count -> $sum", () async {
+        test("$i. $sport, $count -> $sum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -378,7 +378,7 @@ void main() {
   group('StatisticsAccumulator calculates max hr when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
         final count = rnd.nextInt(99) + 1;
@@ -389,7 +389,7 @@ void main() {
             maximum = max(number, maximum);
           }
         });
-        test("$sport, $count -> $maximum", () async {
+        test("$i. $sport, $count -> $maximum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -427,7 +427,7 @@ void main() {
   group('StatisticsAccumulator calculates min hr when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinHeartRate: true);
         final count = rnd.nextInt(99) + 1;
@@ -438,7 +438,7 @@ void main() {
             minimum = min(number, minimum);
           }
         });
-        test("$sport, $count -> $minimum", () async {
+        test("$i. $sport, $count -> $minimum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -476,7 +476,7 @@ void main() {
   group('StatisticsAccumulator calculates avg cadence when requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
         final count = rnd.nextInt(99) + 1;
@@ -489,7 +489,7 @@ void main() {
             cnt++;
           }
         });
-        test("$sport, $count -> $sum", () async {
+        test("$i. $sport, $count -> $sum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -528,7 +528,7 @@ void main() {
   group('StatisticsAccumulator initializes max cadence when max requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
         final count = rnd.nextInt(99) + 1;
@@ -539,7 +539,7 @@ void main() {
             maximum = max(number, maximum);
           }
         });
-        test("$sport, $count -> $maximum", () async {
+        test("$i. $sport, $count -> $maximum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -577,7 +577,7 @@ void main() {
   group('StatisticsAccumulator initializes min cadence when min requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu =
             StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinCadence: true);
         final count = rnd.nextInt(99) + 1;
@@ -588,7 +588,7 @@ void main() {
             minimum = min(number, minimum);
           }
         });
-        test("$sport, $count -> $minimum", () async {
+        test("$i. $sport, $count -> $minimum", () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, false);
           expect(accu.calculateMaxPower, false);
@@ -626,7 +626,7 @@ void main() {
   group('StatisticsAccumulator initializes everything when all requested', () {
     final rnd = Random();
     for (final sport in allSports) {
-      for (var _ in List<int>.generate(smallRepetition, (index) => index)) {
+      for (var i in List<int>.generate(smallRepetition, (index) => index)) {
         final accu = StatisticsAccumulator(
           si: rnd.nextBool(),
           sport: sport,
@@ -697,7 +697,8 @@ void main() {
           }
           return index;
         });
-        test("$sport, $count -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",
+        test(
+            "$i. $sport, $count -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",
             () async {
           expect(accu.sport, sport);
           expect(accu.calculateAvgPower, true);

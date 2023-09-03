@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
+import '../../utils/string_ex.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
-  final List<Tuple2<String, String>> devices;
+  final List<Tuple3<String, String, String>> devices;
 
   const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => LeaderboardDeviceHubScreenState();
+  LeaderboardDeviceHubScreenState createState() => LeaderboardDeviceHubScreenState();
 }
 
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
@@ -22,63 +23,48 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headline5!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.titleLarge!.apply(fontFamily: fontFamily);
     _sizeDefault = _textStyle.fontSize! * 3;
-    _subTextStyle = Get.textTheme.headline6!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _subTextStyle = Get.textTheme.titleLarge!.apply(fontFamily: fontFamily);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Devices')),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: widget.devices
-              .map(
-                (device) => Container(
-                  padding: const EdgeInsets.all(5.0),
-                  margin: const EdgeInsets.all(5.0),
-                  child: ElevatedButton(
-                    onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: device)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+      body: ListView.separated(
+          padding: const EdgeInsets.all(5.0),
+          itemBuilder: (context, index) => ElevatedButton(
+                onPressed: () =>
+                    Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextOneLine(
-                              device.item2,
-                              style: _textStyle,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            TextOneLine(
-                              "(${device.item1})",
-                              style: _subTextStyle,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        TextOneLine(
+                          widget.devices[index].item1,
+                          style: _textStyle,
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Icon(Icons.chevron_right, size: _sizeDefault),
+                        TextOneLine(
+                          widget.devices[index].item2.shortAddressString(),
+                          style: _subTextStyle,
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
-                  ),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
+                  ],
                 ),
-              )
-              .toList(growable: false),
-        ),
-      ),
+              ),
+          separatorBuilder: (context, index) => const SizedBox(width: 10, height: 10),
+          itemCount: widget.devices.length),
     );
   }
 }

@@ -6,8 +6,10 @@ import '../utils/constants.dart';
 
 // Bluetooth SIG registered companies
 class CompanyRegistry {
+  static const stagesCyclingLlcKey = 442;
   static const matrixIncKey = 859;
   static const johnsonHealthTechKey = 1988;
+  static const huaweiTechnologiesCoKey = 637;
   Map<int, String> registry = {};
 
   Future<void> loadCompanyIdentifiers() async {

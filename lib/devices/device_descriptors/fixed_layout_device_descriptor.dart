@@ -1,20 +1,23 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import 'device_descriptor.dart';
 
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
-    required defaultSport,
+    required sport,
     required isMultiSport,
     required fourCC,
     required vendorName,
     required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
+    manufacturerNamePart,
     manufacturerFitId,
     model,
     dataServiceId,
     dataCharacteristicId,
-    canMeasureHeartRate,
+    controlCharacteristicId = "",
+    statusCharacteristicId = "",
+    tag = "FIXED_LAYOUT_DEVICE_DESCRIPTOR",
+    listenOnControl = true,
+    flagByteSize = 3,
     heartRateByteIndex,
     timeMetric,
     caloriesMetric,
@@ -23,18 +26,23 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     cadenceMetric,
     distanceMetric,
   }) : super(
-          defaultSport: defaultSport,
+          sport: sport,
           isMultiSport: isMultiSport,
           fourCC: fourCC,
           vendorName: vendorName,
           modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
+          manufacturerNamePart: manufacturerNamePart,
           manufacturerFitId: manufacturerFitId,
           model: model,
+          deviceCategory: DeviceCategory.smartDevice,
+          tag: tag,
           dataServiceId: dataServiceId,
           dataCharacteristicId: dataCharacteristicId,
-          canMeasureHeartRate: canMeasureHeartRate,
+          controlCharacteristicId: controlCharacteristicId,
+          statusCharacteristicId: statusCharacteristicId,
+          listenOnControl: listenOnControl,
+          hasFeatureFlags: false,
+          flagByteSize: flagByteSize,
           heartRateByteIndex: heartRateByteIndex,
           timeMetric: timeMetric,
           caloriesMetric: caloriesMetric,
@@ -45,6 +53,11 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
         );
 
   @override
+  void processFlag(int flag) {
+    // Empty implementation, hard coded layouts overlook flags
+  }
+
+  @override
   RecordWithSport? stubRecord(List<int> data) {
     return RecordWithSport(
       distance: getDistance(data),
@@ -53,8 +66,8 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
       cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
-      sport: defaultSport,
+      heartRate: getHeartRate(data),
+      sport: sport,
     );
   }
 }

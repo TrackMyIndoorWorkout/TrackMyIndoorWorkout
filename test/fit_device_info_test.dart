@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/devices/device_map.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_device_info.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -16,7 +16,7 @@ void main() {
 
   group('FitDeviceInfo data has the expected length', () {
     final rnd = Random();
-    deviceMap.forEach((fourCC, deviceDescriptor) {
+    DeviceFactory.allDescriptors().forEach((deviceDescriptor) {
       final globalMessageNumber = rnd.nextInt(maxUint16);
       final text = deviceDescriptor.fullName;
       final deviceInfo = FitDeviceInfo(globalMessageNumber, text.length);

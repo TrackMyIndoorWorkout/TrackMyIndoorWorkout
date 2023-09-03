@@ -1,4 +1,4 @@
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../utils/scan_result_ex.dart';
 import 'advertisement_digest.dart';
@@ -6,18 +6,19 @@ import 'advertisement_digest.dart';
 class AdvertisementCache {
   final Map<String, AdvertisementDigest> _advertisementMap = {};
 
-  void addEntry(ScanResult scanResult) {
-    final id = scanResult.device.id.id;
-    final machineByteFlag = scanResult.getFtmsServiceDataMachineByte();
+  void addEntry(ScanResult scanResult, String deviceSport) {
+    final id = scanResult.device.remoteId.str;
+    final serviceUuids = scanResult.serviceUuids;
+    final machineByteFlag = scanResult.getFtmsServiceDataMachineByte(deviceSport);
     final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);
     _advertisementMap[id] = AdvertisementDigest(
       id: id,
-      serviceUuids: scanResult.serviceUuids,
+      serviceUuids: serviceUuids,
       companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
       manufacturer: scanResult.manufacturerName(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
       machineTypesByte: machineByteFlag,
-      machineType: scanResult.getMachineType(machineTypes),
+      machineType: scanResult.getMachineType(machineTypes, deviceSport),
       machineTypes: machineTypes,
     );
   }

@@ -6,13 +6,14 @@ const preferencesVersionEquipmentRemembrancePerSport = 2;
 const preferencesVersionSpinners = 3;
 const preferencesVersionDefaultingDataConnection = 4;
 const preferencesVersionIncreaseWatchdogDefault = 5;
-const preferencesVersionDefault = preferencesVersionIncreaseWatchdogDefault;
+const preferencesVersionZoneRefinementDefault = 6;
+const preferencesVersionExclusiveSportOrDeviceLeaderboard = 7;
+const preferencesVersionTimeDisplayMode = 8;
+const preferencesVersionNoWhitespaceInNetworkAddresses = 9;
+const preferencesVersionPerMetricColoringByZone = 10;
+const preferencesVersionDefaultingOldTimeZone = 11;
+const preferencesVersionIsarMigration = 12;
+const preferencesVersionDefault = preferencesVersionIsarMigration;
 const preferencesVersionNext = preferencesVersionDefault + 1;
 
 const intTagPostfix = "_int";
-
-extension DurationDisplay on Duration {
-  String toDisplay() {
-    return toString().split('.').first.padLeft(8, "0");
-  }
-}
