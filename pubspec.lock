@@ -810,10 +810,11 @@ packages:
   pref:
     dependency: "direct main"
     description:
-      name: pref
-      sha256: "0d20346ebb662ac3b1bc26c5e75adf02e2646d93ac0b4e41d0cdd173d7ba298d"
-      url: "https://pub.dev"
-    source: hosted
+      path: pref
+      ref: HEAD
+      resolved-ref: "65e957faa8c9b45775c64795bab912c1e890af92"
+      url: "https://github.com/CsabaConsulting/flutter_pref.git"
+    source: git
     version: "2.7.1"
   process:
     dependency: transitive

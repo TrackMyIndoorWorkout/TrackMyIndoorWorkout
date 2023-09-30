@@ -44,7 +44,10 @@ dependencies:
   package_info_plus: ^4.1.0
   path: ^1.8.2
   path_provider: ^2.1.1
-  pref: ^2.7.1
+  pref:
+    git:
+      url: https://github.com/CsabaConsulting/flutter_pref.git
+      path: pref
   progress_indicators: ^1.0.0
   qr_widget: ^4.1.0
   rxdart: ^0.27.7
