@@ -14,7 +14,7 @@ extension BluetoothDeviceEx on BluetoothDevice {
         ?.firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == identifier);
   }
 
-  String get nonEmptyName => localName.isNotEmpty
-      ? localName
-      : Get.find<AddressNames>().getAddressName(remoteId.str, localName);
+  String get nonEmptyName => platformName.isNotEmpty
+      ? platformName
+      : Get.find<AddressNames>().getAddressName(remoteId.str, platformName);
 }
