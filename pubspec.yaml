@@ -77,7 +77,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   isar_generator: *isar_version
-  mocktail: ^1.0.0
+  mocktail: ^1.0.1
   mock_data: ^2.0.0
   yaml: ^3.1.2
 
