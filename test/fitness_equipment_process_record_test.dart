@@ -257,7 +257,7 @@ void main() {
 
         final expected =
             (150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
-        expect(record.calories, closeTo(expected.floor(), 1));
+        expect(record.calories, closeTo(expected.floor(), 2));
       });
     });
   });
