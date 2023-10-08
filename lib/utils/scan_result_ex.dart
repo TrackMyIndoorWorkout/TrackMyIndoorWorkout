@@ -54,7 +54,7 @@ extension ScanResultEx on ScanResult {
 
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       for (var prefix in mapEntry.value) {
-        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
           return true;
         }
       }
@@ -65,11 +65,11 @@ extension ScanResultEx on ScanResult {
 
   List<String> get serviceUuids => advertisementData.uuids;
 
-  String get nonEmptyName => device.localName.isNotEmpty
-      ? device.localName
+  String get nonEmptyName => device.platformName.isNotEmpty
+      ? device.platformName
       : (advertisementData.localName.isNotEmpty
           ? advertisementData.localName
-          : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.localName));
+          : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);
@@ -175,7 +175,7 @@ extension ScanResultEx on ScanResult {
       }
 
       for (var prefix in mapEntry.value) {
-        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
           return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
@@ -224,7 +224,7 @@ extension ScanResultEx on ScanResult {
 
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       for (var prefix in mapEntry.value) {
-        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
               Image.asset("assets/equipment/Schwinn_logo.png",
@@ -283,7 +283,7 @@ extension ScanResultEx on ScanResult {
       }
 
       for (var prefix in mapEntry.value) {
-        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
           return Tuple2(
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),

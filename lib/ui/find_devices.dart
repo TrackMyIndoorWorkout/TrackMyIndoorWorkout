@@ -411,7 +411,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     DeviceDescriptor? descriptor;
     for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
       for (var prefix in mapEntry.value) {
-        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
           descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
           break;
         }
@@ -496,14 +496,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
           // or starts with XOSS_VOR_S (Xoss Vortex)
           // Cadence sensor names contain CADENCE (Wahoo) or contain CAD (Garmin)
           // or starts with XOSS_VOR_C (Xoss Vortex)
-          if (device.localName.contains("SPEED") ||
-              device.localName.contains("SPD") ||
-              device.localName.contains("XOSS_VOR_S")) {
+          if (device.platformName.contains("SPEED") ||
+              device.platformName.contains("SPD") ||
+              device.platformName.contains("XOSS_VOR_S")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
-          } else if (!device.localName.contains("CADENCE") &&
-              !device.localName.contains("CAD") &&
-              !device.localName.contains("XOSS_VOR_C")) {
+          } else if (!device.platformName.contains("CADENCE") &&
+              !device.platformName.contains("CAD") &&
+              !device.platformName.contains("XOSS_VOR_C")) {
             var success = false;
             if (_fitnessEquipment != null &&
                 _fitnessEquipment!.device != null &&

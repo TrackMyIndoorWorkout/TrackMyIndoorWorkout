@@ -75,7 +75,6 @@ import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
 import 'models/display_record.dart';
 import 'models/row_configuration.dart';
-import 'parts/boolean_question.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/kayak_first.dart';
@@ -977,16 +976,14 @@ class RecordingState extends State<RecordingScreen> {
     _unlockKey = -2;
   }
 
-  _preDispose() async {
+  @override
+  void dispose() {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
-  }
 
-  @override
-  void dispose() {
     WakelockPlus.disable();
 
     super.dispose();
@@ -1273,40 +1270,6 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     return series;
-  }
-
-  Future<bool> _onWillPop() async {
-    if (!_measuring || _circuitWorkout) {
-      await _preDispose();
-      return true;
-    }
-
-    final verdict = await Get.bottomSheet(
-      const SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: BooleanQuestionBottomSheet(
-                  title: "About to navigate away",
-                  content: "The workout in progress will be finished. Are you sure?",
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      isScrollControlled: true,
-      ignoreSafeArea: false,
-      isDismissible: false,
-      enableDrag: false,
-    );
-
-    if (verdict) {
-      await _preDispose();
-    }
-
-    return verdict;
   }
 
   Color _getZoneColor({required metricIndex, required bool background}) {
@@ -1733,7 +1696,8 @@ class RecordingState extends State<RecordingScreen> {
                 Expanded(
                   child: Center(
                     child: ThreeChoicesBottomSheet(
-                      title: "Circuit workout in progress",
+                      title:
+                          "Circuit workout in progress, use pause to move to a new machine without stopping the workout",
                       verticalActions: true,
                       firstChoice: "Continue workout",
                       secondChoice: "Finish on THIS machine for good",
@@ -2368,8 +2332,26 @@ class RecordingState extends State<RecordingScreen> {
       ]);
     }
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    final actions = [
+      IconButton(
+        icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+        onPressed: () async {
+          await startStopAction();
+        },
+      )
+    ];
+    if (_circuitWorkout && _measuring) {
+      actions.insert(
+        0,
+        IconButton(
+          icon: const Icon(Icons.pause),
+          onPressed: () => Get.back(),
+        ),
+      );
+    }
+
+    return PopScope(
+      canPop: !_measuring || _circuitWorkout,
       child: GestureDetector(
         behavior: HitTestBehavior.deferToChild,
         onTapUp: (details) {
@@ -2423,19 +2405,14 @@ class RecordingState extends State<RecordingScreen> {
                 widget.device.nonEmptyName,
                 overflow: TextOverflow.ellipsis,
               ),
-              actions: [
-                _busy
-                    ? HeartbeatProgressIndicator(
+              actions: _busy
+                  ? [
+                      HeartbeatProgressIndicator(
                         child: IconButton(
                             icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
                       )
-                    : IconButton(
-                        icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                        onPressed: () async {
-                          await startStopAction();
-                        },
-                      ),
-              ],
+                    ]
+                  : actions,
             ),
             body: body,
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
