@@ -486,7 +486,9 @@ class CSVImporter with PowerSpeedMixin {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
       final factors = await DbUtils().getFactors(deviceId);
       fourCC = device.fourCC;
-      deviceName = deviceNamePrefixes[fourCC]![0];
+      deviceName = deviceNamePrefixes.containsKey(fourCC)
+          ? deviceNamePrefixes[fourCC]?.deviceNamePrefixes[0] ?? notAvailable
+          : notAvailable;
       sport = device.sport;
       calorieFactor = factors.item2 *
           (device.canMeasureCalories ? 1.0 : DeviceDescriptor.powerCalorieFactorDefault);

@@ -52,9 +52,13 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
-      for (var prefix in mapEntry.value) {
-        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    final loweredManufacturers = manufacturerNames().toLowerCase();
+    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
           return true;
         }
       }
@@ -75,7 +79,7 @@ extension ScanResultEx on ScanResult {
     return serviceUuids.contains(serviceId);
   }
 
-  String manufacturerName() {
+  String manufacturerNames() {
     final companyRegistry = Get.find<CompanyRegistry>();
 
     final companyIds = advertisementData.manufacturerData.keys;
@@ -169,13 +173,17 @@ extension ScanResultEx on ScanResult {
   }
 
   IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
-    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    final loweredManufacturers = manufacturerNames().toLowerCase();
+    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       if (multiSportFourCCs.contains(mapEntry.key)) {
         continue;
       }
 
-      for (var prefix in mapEntry.value) {
-        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
+      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
           return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
@@ -222,9 +230,13 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
-      for (var prefix in mapEntry.value) {
-        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    final loweredManufacturers = manufacturerNames().toLowerCase();
+    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) ||
+            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
               Image.asset("assets/equipment/Schwinn_logo.png",
@@ -282,8 +294,10 @@ extension ScanResultEx on ScanResult {
         continue;
       }
 
-      for (var prefix in mapEntry.value) {
-        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
+      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
           return Tuple2(
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),

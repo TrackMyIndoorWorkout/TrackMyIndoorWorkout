@@ -10,13 +10,6 @@ import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
-class TestPair {
-  final List<int> data;
-  final RecordWithSport record;
-
-  const TestPair({required this.data, required this.record});
-}
-
 // This Technogym Run RSC also has stride length between the cadence and the distance,
 // but we discard that
 const sampleData = [
