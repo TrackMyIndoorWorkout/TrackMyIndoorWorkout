@@ -454,6 +454,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
         } else if (advertisementDigest.machineType == MachineType.indoorBike) {
           descriptor = DeviceFactory.getDescriptorForFourCC(matrixBikeFourCC);
         }
+      } else if (advertisementDigest.mayNeedTechnogymSpecialTreatment() &&
+          advertisementDigest.manufacturer.startsWith("Technogym")) {
+        // TODO: rather identify at Step 1., needs manufaturer name check as well
+        descriptor = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
       } else if (deviceUsage != null) {
         descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
       }

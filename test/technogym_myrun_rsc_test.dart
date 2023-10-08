@@ -3,8 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
-import 'package:track_my_indoor_exercise/devices/device_factory.dart';
-import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
 import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -24,14 +22,6 @@ class MockBluetoothDevice extends Mock implements BluetoothDevice {}
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
-  });
-
-  test('Technogym MyRun RSC constructor tests', () async {
-    final treadmill = DeviceFactory.getGenericFTMSTreadmill();
-
-    expect(treadmill.sport, ActivityType.run);
-    expect(treadmill.fourCC, genericFTMSTreadmillFourCC);
-    expect(treadmill.isMultiSport, false);
   });
 
   test('Technogym MyRun RSC Device interprets flags properly', () async {

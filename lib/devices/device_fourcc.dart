@@ -29,6 +29,7 @@ const concept2RowerFourCC = "Cpt2";
 const merachMr667FourCC = "M667";
 const virtufitUltimatePro2FourCC = "VFUP";
 const kayakFirstFourCC = "K1st";
+const technogymRunFourCC = "TRun";
 
 List<String> allFourCC = [
   mPowerImportDeviceId,
@@ -60,6 +61,7 @@ List<String> allFourCC = [
   merachMr667FourCC,
   virtufitUltimatePro2FourCC,
   kayakFirstFourCC,
+  technogymRunFourCC,
 ];
 
 List<String> multiSportFourCCs = [
@@ -71,6 +73,7 @@ List<String> multiSportFourCCs = [
 // This was originally part of DeviceDescriptor, but we don't want to
 // unnecessary instantiate a bunch of them when trying to identify an
 // equipment. So it was factored out here.
+// TODO: needs also manufacturer name, needs to be refactored into an algorithm
 Map<String, List<String>> deviceNamePrefixes = {
   precorSpinnerChronoPowerFourCC: ["CHRONO"],
   schwinnICBikeFourCC: ["IC Bike"],
@@ -101,6 +104,7 @@ Map<String, List<String>> deviceNamePrefixes = {
   merachMr667FourCC: ["Merach-MR667"],
   virtufitUltimatePro2FourCC: ["VIRTUFIT-UP2"],
   kayakFirstFourCC: [],
+  technogymRunFourCC: ["Treadmill"],
 };
 
 class SportDescriptor {
@@ -148,4 +152,5 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   virtufitUltimatePro2FourCC:
       SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
+  technogymRunFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
 };
