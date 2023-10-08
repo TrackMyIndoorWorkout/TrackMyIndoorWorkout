@@ -61,6 +61,7 @@ void main() {
 
     expect(treadmill.sport, ActivityType.run);
     expect(treadmill.fourCC, genericFTMSTreadmillFourCC);
+    expect(treadmill.isMultiSport, false);
   });
 
   test('Technogym MyRun interprets FTMS Treadmill Data 1 flags properly', () async {

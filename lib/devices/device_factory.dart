@@ -14,6 +14,7 @@ import 'device_descriptors/npe_runn_treadmill.dart';
 import 'device_descriptors/paddling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
+import 'device_descriptors/running_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
 import 'device_descriptors/schwinn_x70.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
@@ -245,6 +246,18 @@ class DeviceFactory {
     );
   }
 
+  static RunningSpeedAndCadenceDescriptor getTechnogymRun() {
+    return RunningSpeedAndCadenceDescriptor(
+      fourCC: technogymRunFourCC,
+      vendorName: "Technogym",
+      modelName: "Technogym Run",
+      manufacturerNamePart: "Technogym",
+      manufacturerFitId: technogymFitId,
+      model: "Treadmill",
+      deviceCategory: DeviceCategory.primarySensor,
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -304,6 +317,8 @@ class DeviceFactory {
         return getVirtufitUltimatePro2();
       case kayakFirstFourCC:
         return KayakFirstDescriptor();
+      case technogymRunFourCC:
+        return getTechnogymRun();
     }
 
     return DeviceFactory.getGenericFTMSBike();

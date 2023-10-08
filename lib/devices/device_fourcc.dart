@@ -29,6 +29,7 @@ const concept2RowerFourCC = "Cpt2";
 const merachMr667FourCC = "M667";
 const virtufitUltimatePro2FourCC = "VFUP";
 const kayakFirstFourCC = "K1st";
+const technogymRunFourCC = "TRun";
 
 List<String> allFourCC = [
   mPowerImportDeviceId,
@@ -60,6 +61,7 @@ List<String> allFourCC = [
   merachMr667FourCC,
   virtufitUltimatePro2FourCC,
   kayakFirstFourCC,
+  technogymRunFourCC,
 ];
 
 List<String> multiSportFourCCs = [
@@ -68,39 +70,59 @@ List<String> multiSportFourCCs = [
   genericFTMSRowerFourCC,
 ];
 
+class DeviceIdentifierHelperEntry {
+  final List<String> deviceNamePrefixes;
+  late final List<String> deviceNameLoweredPrefixes;
+  final String manufacturerNamePrefix;
+  late final String manufacturerNameLoweredPrefix;
+
+  DeviceIdentifierHelperEntry(
+      {required this.deviceNamePrefixes, this.manufacturerNamePrefix = ""}) {
+    deviceNameLoweredPrefixes =
+        deviceNamePrefixes.map((d) => d.toLowerCase()).toList(growable: false);
+    manufacturerNameLoweredPrefix = manufacturerNamePrefix.toLowerCase();
+  }
+}
+
 // This was originally part of DeviceDescriptor, but we don't want to
 // unnecessary instantiate a bunch of them when trying to identify an
 // equipment. So it was factored out here.
-Map<String, List<String>> deviceNamePrefixes = {
-  precorSpinnerChronoPowerFourCC: ["CHRONO"],
-  schwinnICBikeFourCC: ["IC Bike"],
-  bowflexC7BikeFourCC: ["C7-"],
-  schwinnUprightBikeFourCC: ["SCH130", "SCH230", "SCH510"],
-  schwinnX70BikeFourCC: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"],
-  stagesSB20FourCC: ["Stages Bike"],
-  yesoulS3FourCC: ["Yesoul"],
-  schwinnACPerfPlusFourCC: ["Schwinn AC Perf+"],
-  matrixBikeFourCC: ["CTM", "Johnson", "Matrix"],
-  kayakProGenesisPortFourCC: ["KayakPro", "KP"],
-  mrCaptainRowerFourCC: ["XG"],
-  npeRunnFourCC: ["RUNN"],
-  matrixTreadmillFourCC: ["CTM", "Johnson", "Matrix"],
-  genericFTMSTreadmillFourCC: ["FTMS Treadmill"],
-  genericFTMSBikeFourCC: ["FTMS Bike"],
-  genericFTMSKayakFourCC: ["FTMS Kayak"],
-  genericFTMSCanoeFourCC: ["FTMS Canoe"],
-  genericFTMSRowerFourCC: ["FTMS Rower"],
-  genericFTMSSwimFourCC: ["FTMS Swim"],
+Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
+  precorSpinnerChronoPowerFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["CHRONO"]),
+  schwinnICBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["IC Bike"]),
+  bowflexC7BikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["C7-"]),
+  schwinnUprightBikeFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["SCH130", "SCH230", "SCH510"]),
+  schwinnX70BikeFourCC: DeviceIdentifierHelperEntry(
+      deviceNamePrefixes: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"]),
+  stagesSB20FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stages Bike"]),
+  yesoulS3FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Yesoul"]),
+  schwinnACPerfPlusFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Schwinn AC Perf+"]),
+  matrixBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["CTM", "Johnson", "Matrix"]),
+  kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
+  mrCaptainRowerFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["XG"]),
+  npeRunnFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["RUNN"]),
+  matrixTreadmillFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["CTM", "Johnson", "Matrix"]),
+  genericFTMSTreadmillFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Treadmill"]),
+  genericFTMSBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Bike"]),
+  genericFTMSKayakFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Kayak"]),
+  genericFTMSCanoeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Canoe"]),
+  genericFTMSRowerFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Rower"]),
+  genericFTMSSwimFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Swim"]),
   // Delete this?
-  genericFTMSEllipticalFourCC: ["FTMS Elliptical"],
-  genericFTMSCrossTrainerFourCC: ["FTMS Cross Trainer"],
-  powerMeterBasedBikeFourCC: ["Stages IC"],
-  cscSensorBasedBikeFourCC: ["N/A"],
-  cscSensorBasedPaddleFourCC: ["N/A"],
-  concept2RowerFourCC: ["PM5"],
-  merachMr667FourCC: ["Merach-MR667"],
-  virtufitUltimatePro2FourCC: ["VIRTUFIT-UP2"],
-  kayakFirstFourCC: [],
+  genericFTMSEllipticalFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Elliptical"]),
+  genericFTMSCrossTrainerFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Cross Trainer"]),
+  powerMeterBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stages IC"]),
+  cscSensorBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
+  cscSensorBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
+  concept2RowerFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"]),
+  merachMr667FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Merach-MR667"]),
+  virtufitUltimatePro2FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["VIRTUFIT-UP2"]),
+  kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
+  technogymRunFourCC: DeviceIdentifierHelperEntry(
+      deviceNamePrefixes: ["Treadmill"], manufacturerNamePrefix: "Technogym"),
 };
 
 class SportDescriptor {
@@ -148,4 +170,5 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   virtufitUltimatePro2FourCC:
       SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
+  technogymRunFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
 };

@@ -408,10 +408,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
+    final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
-    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
-      for (var prefix in mapEntry.value) {
-        if (device.platformName.toLowerCase().startsWith(prefix.toLowerCase())) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+      for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(lowerPrefix) &&
+            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                advertisementDigest.loweredManufacturers
+                    .contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
           descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
           break;
         }
@@ -425,7 +430,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
         .macEqualTo(device.remoteId.str)
         .sortByTimeDesc()
         .findFirst();
-    final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
     // Or other dedicated workarounds
@@ -634,7 +638,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: inferredSport,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturer,
+              manufacturer: advertisementDigest.manufacturers,
               time: DateTime.now(),
             );
             database.writeTxnSync(() {
@@ -692,7 +696,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: sportPick,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturer,
+              manufacturer: advertisementDigest.manufacturers,
               time: DateTime.now(),
             );
             database.writeTxnSync(() {
