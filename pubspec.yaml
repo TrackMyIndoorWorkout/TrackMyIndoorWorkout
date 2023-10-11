@@ -13,10 +13,10 @@ dependency_overrides:
   analyzer: 6.2.0  # because of isar_generator
 
 dependencies:
-  assorted_layout_widgets: ^8.0.4
+  assorted_layout_widgets: ^8.0.5
   collection: ^1.17.2
   datetime_picker_formfield_new: ^2.1.0
-  device_info_plus: ^9.0.3
+  device_info_plus: ^10.0.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.1
@@ -41,7 +41,7 @@ dependencies:
   listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
-  package_info_plus: ^4.1.0
+  package_info_plus: ^5.0.0
   path: ^1.8.2
   path_provider: ^2.1.1
   pref:
@@ -54,14 +54,14 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   soundpool: ^2.4.1
   sqflite: ^2.3.0
-  string_validator: ^1.0.0
-  syncfusion_flutter_charts: ^23.1.39
+  string_validator: ^1.0.2
+  syncfusion_flutter_charts: ^23.1.40
   timezone: ^0.9.2
   tuple: ^2.0.2
   uni_links: ^0.5.1
   url_launcher: ^6.1.14
   vector_math: ^2.1.4
-  wakelock_plus: ^1.1.1
+  wakelock_plus: ^1.1.2
   flutter:
     sdk: flutter
 
