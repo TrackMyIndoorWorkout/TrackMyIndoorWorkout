@@ -796,8 +796,8 @@ packages:
     description:
       path: pref
       ref: HEAD
-      resolved-ref: f4b9119a9e4cc8ad424b19559cf154413d685bff
-      url: "https://github.com/CsabaConsulting/flutter_pref.git"
+      resolved-ref: "0743081a0ef063f4db06395e23b5b32dfd3f3272"
+      url: "https://github.com/DavBfr/flutter_pref.git"
     source: git
     version: "2.7.1"
   process:

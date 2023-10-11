@@ -46,7 +46,7 @@ dependencies:
   path_provider: ^2.1.1
   pref:
     git:
-      url: https://github.com/CsabaConsulting/flutter_pref.git
+      url: https://github.com/DavBfr/flutter_pref.git
       path: pref
   progress_indicators: ^1.0.0
   qr_widget: ^4.1.0
