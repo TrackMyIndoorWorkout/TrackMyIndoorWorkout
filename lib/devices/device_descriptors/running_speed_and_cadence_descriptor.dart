@@ -13,8 +13,6 @@ import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
 class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
-  final String serviceUuid;
-  final String characteristicUuid;
   ComplexSensor? sensor;
 
   RunningSpeedAndCadenceDescriptor({
@@ -26,14 +24,12 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
     required super.model,
     required super.deviceCategory,
     super.tag,
-    this.serviceUuid = runningCadenceServiceUuid,
-    this.characteristicUuid = runningCadenceMeasurementUuid,
     super.flagByteSize = 1,
   }) : super(
           sport: ActivityType.run,
           isMultiSport: false,
-          dataServiceId: serviceUuid,
-          dataCharacteristicId: characteristicUuid,
+          dataServiceId: runningCadenceServiceUuid,
+          dataCharacteristicId: runningCadenceMeasurementUuid,
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
@@ -111,7 +107,7 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
     }
 
     final requiredService =
-        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceUuid);
+        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == dataServiceId);
     if (requiredService == null) {
       return;
     }
