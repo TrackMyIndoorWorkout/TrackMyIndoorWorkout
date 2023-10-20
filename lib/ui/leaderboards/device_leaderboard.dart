@@ -19,7 +19,7 @@ import '../../utils/theme_manager.dart';
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple3<String, String, String> device;
 
-  const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
+  const DeviceLeaderboardScreen({super.key, required this.device});
 
   @override
   DeviceLeaderboardScreenState createState() => DeviceLeaderboardScreenState();

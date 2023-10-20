@@ -7,8 +7,7 @@ class BooleanQuestionBottomSheet extends StatefulWidget {
   final String title;
   final String content;
 
-  const BooleanQuestionBottomSheet({Key? key, required this.title, required this.content})
-      : super(key: key);
+  const BooleanQuestionBottomSheet({super.key, required this.title, required this.content});
 
   @override
   BooleanQuestionBottomSheetState createState() => BooleanQuestionBottomSheetState();

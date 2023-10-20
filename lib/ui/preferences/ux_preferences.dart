@@ -24,7 +24,7 @@ class UXPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "UX";
   static String title = "$shortTitle Preferences";
 
-  const UXPreferencesScreen({Key? key}) : super(key: key);
+  const UXPreferencesScreen({super.key});
 
   @override
   UXPreferencesScreenState createState() => UXPreferencesScreenState();

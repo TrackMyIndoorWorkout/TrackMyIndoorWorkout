@@ -16,7 +16,7 @@ import 'zone_palette.dart';
 class ZonesHubScreen extends StatefulWidget {
   static String shortTitle = "Zones";
 
-  const ZonesHubScreen({Key? key}) : super(key: key);
+  const ZonesHubScreen({super.key});
 
   @override
   ZonesHubScreenState createState() => ZonesHubScreenState();

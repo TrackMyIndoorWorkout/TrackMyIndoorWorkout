@@ -10,8 +10,11 @@ class PowerFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldPowerFactor;
 
-  const PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldPowerFactor})
-      : super(key: key);
+  const PowerFactorTuneBottomSheet({
+    super.key,
+    required this.deviceId,
+    required this.oldPowerFactor,
+  });
 
   @override
   PowerFactorTuneBottomSheetState createState() => PowerFactorTuneBottomSheetState();

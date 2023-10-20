@@ -7,7 +7,7 @@ class ZoneIndexDisplayPreferencesScreen extends StatelessWidget with Preferences
   static String shortTitle = "Index Disp.";
   static String title = "$shortTitle Preferences";
 
-  const ZoneIndexDisplayPreferencesScreen({Key? key}) : super(key: key);
+  const ZoneIndexDisplayPreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

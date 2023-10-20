@@ -18,34 +18,25 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
   ComplexSensor? sensor;
 
   RunningSpeedAndCadenceDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
-    required deviceCategory,
-    tag,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    required super.deviceCategory,
+    super.tag,
     this.serviceUuid = runningCadenceServiceUuid,
     this.characteristicUuid = runningCadenceMeasurementUuid,
-    flagByteSize = 1,
+    super.flagByteSize = 1,
   }) : super(
           sport: ActivityType.run,
           isMultiSport: false,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          deviceCategory: deviceCategory,
-          tag: tag,
           dataServiceId: serviceUuid,
           dataCharacteristicId: characteristicUuid,
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
-          flagByteSize: flagByteSize,
         );
 
   @override

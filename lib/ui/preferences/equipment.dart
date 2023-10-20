@@ -21,7 +21,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
   static String shortTitle = "Equipment";
   static String title = "$shortTitle Preferences";
 
-  const EquipmentPreferencesScreen({Key? key}) : super(key: key);
+  const EquipmentPreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

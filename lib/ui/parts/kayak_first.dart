@@ -19,7 +19,7 @@ import '../../utils/theme_manager.dart';
 import '../preferences/kayak_first_display_slot.dart';
 
 class KayakFirstBottomSheet extends StatefulWidget {
-  const KayakFirstBottomSheet({Key? key}) : super(key: key);
+  const KayakFirstBottomSheet({super.key});
 
   @override
   KayakFirstBottomSheetState createState() => KayakFirstBottomSheetState();

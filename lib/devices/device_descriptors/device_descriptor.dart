@@ -59,26 +59,16 @@ abstract class DeviceDescriptor extends DataHandler {
     this.statusCharacteristicId = "",
     this.canMeasureCalories = true,
     tag = "DEVICE_DESCRIPTOR",
-    hasFeatureFlags = true,
-    flagByteSize = 2,
-    heartRateByteIndex,
-    timeMetric,
-    caloriesMetric,
-    speedMetric,
-    powerMetric,
-    cadenceMetric,
-    distanceMetric,
-  }) : super(
-          hasFeatureFlags: hasFeatureFlags,
-          flagByteSize: flagByteSize,
-          heartRateByteIndex: heartRateByteIndex,
-          timeMetric: timeMetric,
-          caloriesMetric: caloriesMetric,
-          speedMetric: speedMetric,
-          powerMetric: powerMetric,
-          cadenceMetric: cadenceMetric,
-          distanceMetric: distanceMetric,
-        );
+    super.hasFeatureFlags = true,
+    super.flagByteSize = 2,
+    super.heartRateByteIndex,
+    super.timeMetric,
+    super.caloriesMetric,
+    super.speedMetric,
+    super.powerMetric,
+    super.cadenceMetric,
+    super.distanceMetric,
+  });
 
   String get fullName => '$vendorName $modelName';
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;

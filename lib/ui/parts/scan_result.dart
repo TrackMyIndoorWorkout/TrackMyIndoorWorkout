@@ -10,13 +10,13 @@ import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
   const ScanResultTile({
-    Key? key,
+    super.key,
     required this.result,
     required this.deviceSport,
     required this.mediaWidth,
     required this.onEquipmentTap,
     required this.onHrmTap,
-  }) : super(key: key);
+  });
 
   final ScanResult result;
   final String deviceSport;

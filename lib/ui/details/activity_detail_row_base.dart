@@ -6,7 +6,7 @@ import '../../utils/theme_manager.dart';
 
 class ActivityDetailRowBase extends StatelessWidget {
   const ActivityDetailRowBase({
-    Key? key,
+    super.key,
     required this.themeManager,
     required this.icon,
     required this.iconSize,
@@ -17,7 +17,7 @@ class ActivityDetailRowBase extends StatelessWidget {
     required this.spacer,
     required this.forceOneLine,
     required this.fitHorizontally,
-  }) : super(key: key);
+  });
 
   final ThemeManager themeManager;
   final IconData icon;

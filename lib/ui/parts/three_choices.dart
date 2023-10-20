@@ -11,13 +11,13 @@ class ThreeChoicesBottomSheet extends StatefulWidget {
   final String thirdChoice;
 
   const ThreeChoicesBottomSheet({
-    Key? key,
+    super.key,
     required this.title,
     required this.verticalActions,
     required this.firstChoice,
     required this.secondChoice,
     required this.thirdChoice,
-  }) : super(key: key);
+  });
 
   @override
   ThreeChoicesBottomSheetState createState() => ThreeChoicesBottomSheetState();

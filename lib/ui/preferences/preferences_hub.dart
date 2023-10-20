@@ -18,7 +18,7 @@ import 'workout.dart';
 import 'zones_hub.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
-  const PreferencesHubScreen({Key? key}) : super(key: key);
+  const PreferencesHubScreen({super.key});
 
   @override
   PreferencesHubScreenState createState() => PreferencesHubScreenState();

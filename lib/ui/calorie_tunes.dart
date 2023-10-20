@@ -12,7 +12,7 @@ import '../utils/theme_manager.dart';
 import 'parts/calorie_factor_tune.dart';
 
 class CalorieTunesScreen extends StatefulWidget {
-  const CalorieTunesScreen({key}) : super(key: key);
+  const CalorieTunesScreen({super.key});
 
   @override
   CalorieTunesScreenState createState() => CalorieTunesScreenState();

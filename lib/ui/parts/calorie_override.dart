@@ -13,7 +13,7 @@ class CalorieOverrideBottomSheet extends StatefulWidget {
   late final double oldCalories;
   late final bool hrBased;
 
-  CalorieOverrideBottomSheet({Key? key, required Activity activity}) : super(key: key) {
+  CalorieOverrideBottomSheet({super.key, required Activity activity}) {
     if (activity.hrBasedCalories) {
       if (activity.hrmId.isNotEmpty) {
         deviceId = activity.hrmId;

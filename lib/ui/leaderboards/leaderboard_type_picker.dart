@@ -12,7 +12,7 @@ import 'leaderboard_sport_hub.dart';
 import 'sport_leaderboard.dart';
 
 class LeaderBoardTypeBottomSheet extends StatefulWidget {
-  const LeaderBoardTypeBottomSheet({Key? key}) : super(key: key);
+  const LeaderBoardTypeBottomSheet({super.key});
 
   @override
   LeaderBoardTypeBottomSheetState createState() => LeaderBoardTypeBottomSheetState();

@@ -69,7 +69,7 @@ import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {
-  const FindDevicesScreen({Key? key}) : super(key: key);
+  const FindDevicesScreen({super.key});
 
   @override
   FindDevicesState createState() => FindDevicesState();
