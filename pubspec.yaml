@@ -16,11 +16,11 @@ dependencies:
   assorted_layout_widgets: ^8.0.5
   collection: ^1.17.2
   datetime_picker_formfield_new: ^2.1.0
-  device_info_plus: ^10.0.0
+  device_info_plus: ^9.1.0
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.1
-  file_picker: ^5.5.0
+  file_picker: ^6.0.0
   flex_color_scheme: ^7.3.1
   floor: ^1.4.2
   flutter_blue_plus: 1.17.5
@@ -28,7 +28,7 @@ dependencies:
   flutter_layout_grid: ^2.0.5
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.0.7
-  flutter_timezone: ^1.0.7
+  flutter_timezone: ^1.0.8
   get: ^4.6.6
   group_button: ^5.3.3
   http: ^1.1.0
@@ -41,7 +41,7 @@ dependencies:
   listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
-  package_info_plus: ^5.0.0
+  package_info_plus: ^4.2.0
   path: ^1.8.2
   path_provider: ^2.1.1
   pref: ^2.7.1
@@ -58,7 +58,7 @@ dependencies:
   uni_links: ^0.5.1
   url_launcher: ^6.1.14
   vector_math: ^2.1.4
-  wakelock_plus: ^1.1.2
+  wakelock_plus: ^1.1.3
   flutter:
     sdk: flutter
 
