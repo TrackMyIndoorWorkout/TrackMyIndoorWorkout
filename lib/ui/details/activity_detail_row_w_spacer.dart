@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'activity_detail_row_base.dart';
 
 class ActivityDetailRowWithSpacer extends ActivityDetailRowBase {
