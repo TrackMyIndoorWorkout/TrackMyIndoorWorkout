@@ -10,7 +10,8 @@ environment:
   flutter: ">=3.16.0-0.3.pre"
 
 dependency_overrides:
-  analyzer: 6.2.0  # because of isar_generator
+  analyzer: ^6.3.0  # because of isar_generator
+  meta: ^1.11.0  # SDK pinned down version 1.10.0
 
 dependencies:
   assorted_layout_widgets: ^8.0.5
