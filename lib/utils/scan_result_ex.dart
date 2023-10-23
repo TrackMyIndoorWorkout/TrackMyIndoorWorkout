@@ -240,7 +240,7 @@ extension ScanResultEx on ScanResult {
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
-        if (loweredPlatformName.startsWith(loweredPrefix) ||
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
