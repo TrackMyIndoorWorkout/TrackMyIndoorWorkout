@@ -411,12 +411,13 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
     final loweredPlatformName = device.platformName.toLowerCase();
-    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+    for (final mapEntry in deviceNamePrefixes.entries) {
       for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(lowerPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 advertisementDigest.loweredManufacturers
-                    .contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
+                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
           descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
           break;
         }
@@ -638,7 +639,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: inferredSport,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturers,
+              manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
             database.writeTxnSync(() {
@@ -696,7 +697,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: sportPick,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturers,
+              manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
             database.writeTxnSync(() {
