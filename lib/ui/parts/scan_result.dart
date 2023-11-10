@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
+import '../../utils/guid_ex.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
@@ -74,7 +75,7 @@ class ScanResultTile extends StatelessWidget {
     return nameStrings.join(', ');
   }
 
-  String getNiceServiceData(Map<String, List<int>> data) {
+  String getNiceServiceData(Map<Guid, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
     }
@@ -114,7 +115,7 @@ class ScanResultTile extends StatelessWidget {
         logoAndBanner.item2,
         _buildAdvRow(
           'Complete Name',
-          result.advertisementData.localName,
+          result.advertisementData.advName,
           detailStyle,
           secondaryStyle,
         ),

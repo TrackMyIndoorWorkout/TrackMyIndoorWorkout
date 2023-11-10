@@ -19,8 +19,8 @@ import '../preferences/paddling_with_cycling_sensors.dart';
 import '../utils/address_names.dart';
 import 'advertisement_data_ex.dart';
 import 'display.dart';
+import 'guid_ex.dart';
 import 'machine_type.dart';
-import 'string_ex.dart';
 import 'theme_manager.dart';
 
 extension ScanResultEx on ScanResult {
@@ -73,8 +73,8 @@ extension ScanResultEx on ScanResult {
 
   String get nonEmptyName => device.platformName.isNotEmpty
       ? device.platformName
-      : (advertisementData.localName.isNotEmpty
-          ? advertisementData.localName
+      : (advertisementData.advName.isNotEmpty
+          ? advertisementData.advName
           : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
 
   bool hasService(String serviceId) {
@@ -98,7 +98,7 @@ extension ScanResultEx on ScanResult {
   }
 
   int getFtmsServiceDataMachineByte(String deviceSport) {
-    for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
+    for (MapEntry<Guid, List<int>> entry in advertisementData.serviceData.entries) {
       if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
         if (serviceData.length > 2 && serviceData[0] >= 1 && serviceData[1] > 0) {
