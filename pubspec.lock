@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: f5d88aa5b34a67ebd3f7e6bcc8facf05670d47b6ff59c1d14a5bf503b2b4cd65
+      sha256: dab1f4e03798bbeeca190bdd3ed6eec96c211b390d5672fd0e5c6d1c696e753c
       url: "https://pub.dev"
     source: hosted
-    version: "1.28.5"
+    version: "1.28.10"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
