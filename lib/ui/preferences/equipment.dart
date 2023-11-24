@@ -10,6 +10,7 @@ import '../../preferences/drive_train_loss.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/measurement_sink_address.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
+import '../../preferences/treadmill_rsc_only_mode.dart';
 import '../../preferences/water_wheel_circumference.dart';
 import '../../preferences/wheel_circumference.dart';
 import '../../utils/preferences.dart';
@@ -125,6 +126,25 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         title: Text(blockSignalStartStop),
         subtitle: Text(blockSignalStartStopDescription),
         pref: blockSignalStartStopTag,
+      ),
+      PrefLabel(
+        title: Text(treadmillRscOnlyMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
+        subtitle: const Text(treadmillRscOnlyModeDescription),
+      ),
+      const PrefRadio<String>(
+        title: Text(treadmillRscOnlyModeAutoDescription),
+        value: treadmillRscOnlyModeAuto,
+        pref: treadmillRscOnlyModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(treadmillRscOnlyModeAlwaysDescription),
+        value: treadmillRscOnlyModeAlways,
+        pref: treadmillRscOnlyModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(treadmillRscOnlyModeNeverDescription),
+        value: treadmillRscOnlyModeNever,
+        pref: treadmillRscOnlyModeTag,
       ),
       PrefText(
         label: measurementSinkAddress,

@@ -57,6 +57,7 @@ import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/training_peaks_upload_public.dart';
+import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
@@ -160,6 +161,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
     activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
     databaseLocationTag: databaseLocationDefault,
+    treadmillRscOnlyModeTag: treadmillRscOnlyModeDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
