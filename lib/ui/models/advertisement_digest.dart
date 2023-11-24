@@ -32,8 +32,4 @@ class AdvertisementDigest {
     return companyIds.contains(CompanyRegistry.johnsonHealthTechKey);
     // companyIds.contains(CompanyRegistry.matrixIncKey) is hopefully not needed
   }
-
-  bool mayNeedTechnogymSpecialTreatment() {
-    return companyIds.contains(CompanyRegistry.technogymSpaKey);
-  }
 }
