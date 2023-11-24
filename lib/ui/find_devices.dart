@@ -44,6 +44,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
@@ -82,6 +83,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _autoConnect = autoConnectDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
+  String _treadmillRscOnlyMode = treadmillRscOnlyModeDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
@@ -136,6 +138,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _paddlingWithCyclingSensors =
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+    _treadmillRscOnlyMode =
+        prefService.get<String>(treadmillRscOnlyModeTag) ?? treadmillRscOnlyModeDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
@@ -418,7 +422,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 advertisementDigest.loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+          if (mapEntry.key == technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+            continue;
+          }
+
+          var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+          if (descriptorCandidate.sport == ActivityType.run &&
+              mapEntry.key != technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
+            descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
+          }
+
+          descriptor = descriptorCandidate;
           break;
         }
       }
