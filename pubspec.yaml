@@ -42,7 +42,7 @@ dependencies:
   listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
-  package_info_plus: ^4.2.0
+  package_info_plus: ^5.0.1
   path: ^1.8.2
   path_provider: ^2.1.1
   pref: ^2.7.2
