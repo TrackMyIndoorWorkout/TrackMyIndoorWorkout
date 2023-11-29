@@ -44,6 +44,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
@@ -69,7 +70,7 @@ import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {
-  const FindDevicesScreen({Key? key}) : super(key: key);
+  const FindDevicesScreen({super.key});
 
   @override
   FindDevicesState createState() => FindDevicesState();
@@ -82,6 +83,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _autoConnect = autoConnectDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
+  String _treadmillRscOnlyMode = treadmillRscOnlyModeDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
@@ -136,6 +138,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _paddlingWithCyclingSensors =
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+    _treadmillRscOnlyMode =
+        prefService.get<String>(treadmillRscOnlyModeTag) ?? treadmillRscOnlyModeDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
@@ -411,13 +415,26 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
     final loweredPlatformName = device.platformName.toLowerCase();
-    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+    for (final mapEntry in deviceNamePrefixes.entries) {
       for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(lowerPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 advertisementDigest.loweredManufacturers
-                    .contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
+          if (mapEntry.key == technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+            continue;
+          }
+
+          var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+          if (descriptorCandidate.sport == ActivityType.run &&
+              mapEntry.key != technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
+            descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
+          }
+
+          descriptor = descriptorCandidate;
           break;
         }
       }
@@ -638,7 +655,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: inferredSport,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturers,
+              manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
             database.writeTxnSync(() {
@@ -696,7 +713,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: sportPick,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturers,
+              manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
             database.writeTxnSync(() {

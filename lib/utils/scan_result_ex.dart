@@ -18,10 +18,9 @@ import '../devices/gatt/schwinn_x70.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../utils/address_names.dart';
 import 'advertisement_data_ex.dart';
-import 'constants.dart';
 import 'display.dart';
+import 'guid_ex.dart';
 import 'machine_type.dart';
-import 'string_ex.dart';
 import 'theme_manager.dart';
 
 extension ScanResultEx on ScanResult {
@@ -53,12 +52,15 @@ extension ScanResultEx on ScanResult {
     }
 
     final loweredPlatformName = device.platformName.toLowerCase();
-    final loweredManufacturers = manufacturerNames().toLowerCase();
-    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
-      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+    final loweredManufacturers =
+        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    for (final mapEntry in deviceNamePrefixes.values) {
+      for (final loweredPrefix in mapEntry.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
+            (mapEntry.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers
+                    .map((m) => m.contains(mapEntry.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
           return true;
         }
       }
@@ -71,20 +73,20 @@ extension ScanResultEx on ScanResult {
 
   String get nonEmptyName => device.platformName.isNotEmpty
       ? device.platformName
-      : (advertisementData.localName.isNotEmpty
-          ? advertisementData.localName
+      : (advertisementData.advName.isNotEmpty
+          ? advertisementData.advName
           : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);
   }
 
-  String manufacturerNames() {
+  List<String> manufacturerNames() {
     final companyRegistry = Get.find<CompanyRegistry>();
 
     final companyIds = advertisementData.manufacturerData.keys;
     if (companyIds.isEmpty) {
-      return notAvailable;
+      return [];
     }
 
     List<String> nameStrings = [];
@@ -92,11 +94,11 @@ extension ScanResultEx on ScanResult {
       nameStrings.add(companyRegistry.nameForId(companyId));
     }
 
-    return nameStrings.join(', ');
+    return nameStrings;
   }
 
   int getFtmsServiceDataMachineByte(String deviceSport) {
-    for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
+    for (MapEntry<Guid, List<int>> entry in advertisementData.serviceData.entries) {
       if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
         if (serviceData.length > 2 && serviceData[0] >= 1 && serviceData[1] > 0) {
@@ -174,16 +176,19 @@ extension ScanResultEx on ScanResult {
 
   IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
     final loweredPlatformName = device.platformName.toLowerCase();
-    final loweredManufacturers = manufacturerNames().toLowerCase();
+    final loweredManufacturers =
+        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       if (multiSportFourCCs.contains(mapEntry.key)) {
         continue;
       }
 
-      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+      for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
+                loweredManufacturers
+                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
           return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
@@ -231,12 +236,15 @@ extension ScanResultEx on ScanResult {
     }
 
     final loweredPlatformName = device.platformName.toLowerCase();
-    final loweredManufacturers = manufacturerNames().toLowerCase();
+    final loweredManufacturers =
+        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
-      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
-        if (loweredPlatformName.startsWith(loweredPrefix) ||
+      for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
+                loweredManufacturers
+                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
               Image.asset("assets/equipment/Schwinn_logo.png",
@@ -294,10 +302,12 @@ extension ScanResultEx on ScanResult {
         continue;
       }
 
-      for (var loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+      for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.contains(mapEntry.value.manufacturerNameLoweredPrefix))) {
+                loweredManufacturers
+                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
           return Tuple2(
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),

@@ -22,7 +22,7 @@ class AboutScreen extends StatefulWidget {
   static const attributionsUrl = "${appUrl}attributions";
   static const privacyPolicyUrl = "${appUrl}privacy/";
 
-  const AboutScreen({Key? key}) : super(key: key);
+  const AboutScreen({super.key});
 
   @override
   AboutScreenState createState() => AboutScreenState();

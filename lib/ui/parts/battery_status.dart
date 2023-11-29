@@ -11,7 +11,7 @@ import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class BatteryStatusBottomSheet extends StatefulWidget {
-  const BatteryStatusBottomSheet({Key? key}) : super(key: key);
+  const BatteryStatusBottomSheet({super.key});
 
   @override
   BatteryStatusBottomSheetState createState() => BatteryStatusBottomSheetState();

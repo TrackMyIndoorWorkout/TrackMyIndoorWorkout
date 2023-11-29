@@ -9,7 +9,7 @@ import '../../utils/theme_manager.dart';
 class ColorPickerBottomSheet extends StatefulWidget {
   final Color color;
   final ValueChanged<Color>? onChanged;
-  const ColorPickerBottomSheet({Key? key, required this.color, this.onChanged}) : super(key: key);
+  const ColorPickerBottomSheet({super.key, required this.color, this.onChanged});
 
   @override
   ColorPickerBottomSheetState createState() => ColorPickerBottomSheetState();

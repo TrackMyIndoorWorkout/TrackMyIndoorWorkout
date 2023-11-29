@@ -11,7 +11,7 @@ typedef ComplexMetricProcessingFunction = Function(RecordWithSport record);
 abstract class ComplexSensor extends SensorBase {
   late RecordWithSport record;
 
-  ComplexSensor(serviceId, characteristicId, device) : super(serviceId, characteristicId, device) {
+  ComplexSensor(super.serviceId, super.characteristicId, super.device) {
     record = RecordWithSport(sport: ActivityType.workout);
   }
 

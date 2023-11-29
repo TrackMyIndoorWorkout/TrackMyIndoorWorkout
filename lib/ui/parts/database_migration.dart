@@ -23,7 +23,7 @@ import '../../preferences/database_migration_needed.dart';
 import '../../utils/theme_manager.dart';
 
 class DatabaseMigrationBottomSheet extends StatefulWidget {
-  const DatabaseMigrationBottomSheet({Key? key}) : super(key: key);
+  const DatabaseMigrationBottomSheet({super.key});
 
   @override
   DatabaseMigrationBottomSheetState createState() => DatabaseMigrationBottomSheetState();

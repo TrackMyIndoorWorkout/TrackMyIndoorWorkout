@@ -6,19 +6,13 @@ import 'device_descriptor.dart';
 
 class CyclingSpeedAndCadenceDescriptor extends CyclingSensorDescriptor {
   CyclingSpeedAndCadenceDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
   }) : super(
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
           deviceCategory: DeviceCategory.secondarySensor,
           flagByteSize: 1,
           tag: "CSC_SENSOR",

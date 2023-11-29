@@ -14,7 +14,7 @@ import '../utils/theme_manager.dart';
 import 'parts/sport_picker.dart';
 
 class DeviceUsagesScreen extends StatefulWidget {
-  const DeviceUsagesScreen({key}) : super(key: key);
+  const DeviceUsagesScreen({super.key});
 
   @override
   DeviceUsagesScreenState createState() => DeviceUsagesScreenState();

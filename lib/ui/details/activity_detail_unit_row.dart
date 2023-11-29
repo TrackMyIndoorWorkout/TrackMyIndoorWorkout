@@ -3,11 +3,11 @@ import '../../utils/theme_manager.dart';
 
 class ActivityDetailUnitRow extends StatelessWidget {
   const ActivityDetailUnitRow({
-    Key? key,
+    super.key,
     required this.themeManager,
     required this.unitText,
     required this.unitStyle,
-  }) : super(key: key);
+  });
 
   final ThemeManager themeManager;
   final String unitText;

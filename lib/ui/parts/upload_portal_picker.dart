@@ -16,7 +16,7 @@ import '../../utils/theme_manager.dart';
 class UploadPortalPickerBottomSheet extends StatefulWidget {
   final Activity activity;
 
-  const UploadPortalPickerBottomSheet({Key? key, required this.activity}) : super(key: key);
+  const UploadPortalPickerBottomSheet({super.key, required this.activity});
 
   @override
   UploadPortalPickerBottomSheetState createState() => UploadPortalPickerBottomSheetState();

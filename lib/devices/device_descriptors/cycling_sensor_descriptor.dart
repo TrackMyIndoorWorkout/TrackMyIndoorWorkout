@@ -16,34 +16,25 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   ComplexSensor? sensor;
 
   CyclingSensorDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
-    required deviceCategory,
-    tag,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    required super.deviceCategory,
+    super.tag,
     required this.serviceUuid,
     required this.characteristicUuid,
-    flagByteSize = 2,
+    super.flagByteSize,
   }) : super(
           sport: ActivityType.ride,
           isMultiSport: false,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          deviceCategory: deviceCategory,
-          tag: tag,
           dataServiceId: serviceUuid,
           dataCharacteristicId: characteristicUuid,
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
-          flagByteSize: flagByteSize,
         );
 
   @override

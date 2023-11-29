@@ -22,7 +22,7 @@ import '../../utils/theme_manager.dart';
 import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
-  const SpinDownBottomSheet({Key? key}) : super(key: key);
+  const SpinDownBottomSheet({super.key});
 
   @override
   SpinDownBottomSheetState createState() => SpinDownBottomSheetState();

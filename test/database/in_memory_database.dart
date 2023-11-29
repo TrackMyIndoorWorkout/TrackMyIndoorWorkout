@@ -9,7 +9,7 @@ class InMemoryDatabase extends Isar {
   late IsarCollection<Activity> activities;
   late IsarCollection<Record> records;
 
-  InMemoryDatabase(String name) : super(name) {
+  InMemoryDatabase(super.name) {
     activities = ActivityCollection(this);
     records = RecordCollection(this);
     attachCollections({

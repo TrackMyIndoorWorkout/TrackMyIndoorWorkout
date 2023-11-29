@@ -102,13 +102,13 @@ class RecordingScreen extends StatefulWidget {
   final String sport;
 
   const RecordingScreen({
-    Key? key,
+    super.key,
     required this.device,
     required this.descriptor,
     required this.initialState,
     required this.size,
     required this.sport,
-  }) : super(key: key);
+  });
 
   @override
   RecordingState createState() => RecordingState();

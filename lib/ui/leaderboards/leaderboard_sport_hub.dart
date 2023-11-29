@@ -7,7 +7,7 @@ import 'sport_leaderboard.dart';
 class LeaderboardSportHubScreen extends StatefulWidget {
   final List<String> sports;
 
-  const LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
+  const LeaderboardSportHubScreen({super.key, required this.sports});
 
   @override
   LeaderboardSportHubScreenState createState() => LeaderboardSportHubScreenState();

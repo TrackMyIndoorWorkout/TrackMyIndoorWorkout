@@ -5,27 +5,19 @@ import 'fitness_machine_descriptor.dart';
 
 class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   IndoorBikeDeviceDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
-    heartRateByteIndex,
-    canMeasureCalories = true,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    super.heartRateByteIndex,
+    super.canMeasureCalories,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
           dataServiceId: fitnessMachineUuid,
           dataCharacteristicId: indoorBikeUuid,
-          heartRateByteIndex: heartRateByteIndex,
-          canMeasureCalories: canMeasureCalories,
         );
 
   @override

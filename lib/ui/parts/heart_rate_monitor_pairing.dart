@@ -23,7 +23,7 @@ import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
-  const HeartRateMonitorPairingBottomSheet({Key? key}) : super(key: key);
+  const HeartRateMonitorPairingBottomSheet({super.key});
 
   @override
   HeartRateMonitorPairingBottomSheetState createState() =>

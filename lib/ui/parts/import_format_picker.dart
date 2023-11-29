@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import '../../utils/theme_manager.dart';
 
 class ImportFormatPickerBottomSheet extends StatefulWidget {
-  const ImportFormatPickerBottomSheet({Key? key}) : super(key: key);
+  const ImportFormatPickerBottomSheet({super.key});
 
   @override
   ImportFormatPickerBottomSheetState createState() => ImportFormatPickerBottomSheetState();

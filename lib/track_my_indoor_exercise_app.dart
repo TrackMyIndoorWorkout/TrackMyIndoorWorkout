@@ -8,10 +8,7 @@ import 'utils/theme_manager.dart';
 class TrackMyIndoorExerciseApp extends StatefulWidget {
   final BasePrefService prefService;
 
-  const TrackMyIndoorExerciseApp({
-    key,
-    required this.prefService,
-  }) : super(key: key);
+  const TrackMyIndoorExerciseApp({super.key, required this.prefService});
 
   @override
   TrackMyIndoorExerciseAppState createState() => TrackMyIndoorExerciseAppState();

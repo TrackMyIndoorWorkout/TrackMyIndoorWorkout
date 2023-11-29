@@ -8,7 +8,7 @@ import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class PalettePickerBottomSheet extends StatefulWidget {
-  const PalettePickerBottomSheet({Key? key}) : super(key: key);
+  const PalettePickerBottomSheet({super.key});
 
   @override
   PalettePickerBottomSheetState createState() => PalettePickerBottomSheetState();

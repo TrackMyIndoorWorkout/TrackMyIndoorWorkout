@@ -6,7 +6,7 @@ import '../../utils/theme_manager.dart';
 
 class ActivityDetailCardHeaderRow extends StatelessWidget {
   const ActivityDetailCardHeaderRow({
-    Key? key,
+    super.key,
     required this.themeManager,
     required this.icon,
     required this.iconSize,
@@ -15,7 +15,7 @@ class ActivityDetailCardHeaderRow extends StatelessWidget {
     required this.textStyle,
     required this.unitText,
     required this.unitStyle,
-  }) : super(key: key);
+  });
 
   final ThemeManager themeManager;
   final IconData icon;

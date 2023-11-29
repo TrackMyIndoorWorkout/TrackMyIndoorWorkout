@@ -5,8 +5,8 @@ class AdvertisementDigest {
   final String id;
   final List<String> serviceUuids;
   final List<int> companyIds;
-  final String manufacturers;
-  late final String loweredManufacturers;
+  final List<String> manufacturers;
+  late final List<String> loweredManufacturers;
   final int txPower;
   final int machineTypesByte;
   final MachineType machineType;
@@ -22,7 +22,7 @@ class AdvertisementDigest {
     required this.machineType,
     required this.machineTypes,
   }) {
-    loweredManufacturers = manufacturers.toLowerCase();
+    loweredManufacturers = manufacturers.map((m) => m.toLowerCase()).toList(growable: false);
   }
 
   // #239 SOLE E25 elliptical: Treadmill, Indoor Bike, Cross Trainer
@@ -31,9 +31,5 @@ class AdvertisementDigest {
   bool needsMatrixSpecialTreatment() {
     return companyIds.contains(CompanyRegistry.johnsonHealthTechKey);
     // companyIds.contains(CompanyRegistry.matrixIncKey) is hopefully not needed
-  }
-
-  bool mayNeedTechnogymSpecialTreatment() {
-    return companyIds.contains(CompanyRegistry.technogymSpaKey);
   }
 }

@@ -11,10 +11,10 @@ class SportPickerBottomSheet extends StatefulWidget {
   final String initialSport;
 
   const SportPickerBottomSheet({
-    Key? key,
+    super.key,
     required this.sportChoices,
     required this.initialSport,
-  }) : super(key: key);
+  });
 
   @override
   SportPickerBottomSheetState createState() => SportPickerBottomSheetState();

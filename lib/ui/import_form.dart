@@ -17,7 +17,7 @@ typedef SetProgress = void Function(double progress);
 class ImportForm extends StatefulWidget {
   final bool migration;
 
-  const ImportForm({Key? key, required this.migration}) : super(key: key);
+  const ImportForm({super.key, required this.migration});
 
   @override
   ImportFormState createState() => ImportFormState();

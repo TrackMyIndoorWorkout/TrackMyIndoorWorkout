@@ -13,39 +13,26 @@ import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
 class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
-  final String serviceUuid;
-  final String characteristicUuid;
   ComplexSensor? sensor;
 
   RunningSpeedAndCadenceDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
-    required deviceCategory,
-    tag,
-    this.serviceUuid = runningCadenceServiceUuid,
-    this.characteristicUuid = runningCadenceMeasurementUuid,
-    flagByteSize = 1,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    required super.deviceCategory,
+    super.tag,
+    super.flagByteSize = 1,
   }) : super(
           sport: ActivityType.run,
           isMultiSport: false,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          deviceCategory: deviceCategory,
-          tag: tag,
-          dataServiceId: serviceUuid,
-          dataCharacteristicId: characteristicUuid,
+          dataServiceId: runningCadenceServiceUuid,
+          dataCharacteristicId: runningCadenceMeasurementUuid,
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
-          flagByteSize: flagByteSize,
         );
 
   @override
@@ -120,7 +107,7 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
     }
 
     final requiredService =
-        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceUuid);
+        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == dataServiceId);
     if (requiredService == null) {
       return;
     }
