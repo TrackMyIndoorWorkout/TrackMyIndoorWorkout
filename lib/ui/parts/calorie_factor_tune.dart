@@ -11,7 +11,7 @@ class CalorieFactorTuneBottomSheet extends StatefulWidget {
   late final double oldCalorieFactor;
   late final bool hrBased;
 
-  CalorieFactorTuneBottomSheet({Key? key, required CalorieTune calorieTune}) : super(key: key) {
+  CalorieFactorTuneBottomSheet({super.key, required CalorieTune calorieTune}) {
     deviceId = calorieTune.mac;
     oldCalorieFactor = calorieTune.calorieFactor;
     hrBased = calorieTune.hrBased;

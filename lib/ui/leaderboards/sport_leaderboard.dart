@@ -18,7 +18,7 @@ import '../../utils/theme_manager.dart';
 class SportLeaderboardScreen extends StatefulWidget {
   final String sport;
 
-  const SportLeaderboardScreen({key, required this.sport}) : super(key: key);
+  const SportLeaderboardScreen({super.key, required this.sport});
 
   @override
   SportLeaderboardScreenState createState() => SportLeaderboardScreenState();

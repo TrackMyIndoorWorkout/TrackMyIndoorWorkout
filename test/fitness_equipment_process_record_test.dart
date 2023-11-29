@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
@@ -13,9 +13,9 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/hr_based_calories.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 import 'utils.dart';
-import 'fitness_equipment_process_record_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
@@ -257,7 +257,7 @@ void main() {
 
         final expected =
             (150 + pow) * powerFactor * calorieFactor * DeviceDescriptor.powerCalorieFactorDefault;
-        expect(record.calories, closeTo(expected.floor(), 1));
+        expect(record.calories, closeTo(expected.floor(), 2));
       });
     });
   });

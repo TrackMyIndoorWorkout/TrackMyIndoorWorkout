@@ -5,26 +5,19 @@ import 'fitness_machine_descriptor.dart';
 
 class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   CrossTrainerDeviceDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
-    heartRateByteIndex,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    super.heartRateByteIndex,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.isMultiSport,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
           dataServiceId: fitnessMachineUuid,
           dataCharacteristicId: crossTrainerUuid,
           flagByteSize: 3,
-          heartRateByteIndex: heartRateByteIndex,
         );
 
   @override

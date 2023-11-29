@@ -9,7 +9,7 @@ import 'device_leaderboard.dart';
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple3<String, String, String>> devices;
 
-  const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
+  const LeaderboardDeviceHubScreen({super.key, required this.devices});
 
   @override
   LeaderboardDeviceHubScreenState createState() => LeaderboardDeviceHubScreenState();

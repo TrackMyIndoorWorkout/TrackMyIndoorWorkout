@@ -13,7 +13,7 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
   static String shortTitle = "Heart Rate";
   static String title = "$shortTitle Preferences";
 
-  const HeartRatePreferencesScreen({Key? key}) : super(key: key);
+  const HeartRatePreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

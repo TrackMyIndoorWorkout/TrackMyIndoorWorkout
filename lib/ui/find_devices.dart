@@ -44,6 +44,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/workout_mode.dart';
@@ -69,7 +70,7 @@ import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {
-  const FindDevicesScreen({Key? key}) : super(key: key);
+  const FindDevicesScreen({super.key});
 
   @override
   FindDevicesState createState() => FindDevicesState();
@@ -82,6 +83,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _autoConnect = autoConnectDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
+  String _treadmillRscOnlyMode = treadmillRscOnlyModeDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
@@ -136,6 +138,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
     _paddlingWithCyclingSensors =
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+    _treadmillRscOnlyMode =
+        prefService.get<String>(treadmillRscOnlyModeTag) ?? treadmillRscOnlyModeDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
@@ -408,11 +412,29 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
+    final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
-    for (MapEntry<String, List<String>> mapEntry in deviceNamePrefixes.entries) {
-      for (var prefix in mapEntry.value) {
-        if (device.localName.toLowerCase().startsWith(prefix.toLowerCase())) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+    final loweredPlatformName = device.platformName.toLowerCase();
+    for (final mapEntry in deviceNamePrefixes.entries) {
+      for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(lowerPrefix) &&
+            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                advertisementDigest.loweredManufacturers
+                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                    .reduce((value, contains) => value || contains))) {
+          if (mapEntry.key == technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+            continue;
+          }
+
+          var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+          if (descriptorCandidate.sport == ActivityType.run &&
+              mapEntry.key != technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
+            descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
+          }
+
+          descriptor = descriptorCandidate;
           break;
         }
       }
@@ -425,7 +447,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
         .macEqualTo(device.remoteId.str)
         .sortByTimeDesc()
         .findFirst();
-    final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
 
     // Step 2. Try to infer from if it has proprietary Precor service
     // Or other dedicated workarounds
@@ -496,14 +517,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
           // or starts with XOSS_VOR_S (Xoss Vortex)
           // Cadence sensor names contain CADENCE (Wahoo) or contain CAD (Garmin)
           // or starts with XOSS_VOR_C (Xoss Vortex)
-          if (device.localName.contains("SPEED") ||
-              device.localName.contains("SPD") ||
-              device.localName.contains("XOSS_VOR_S")) {
+          if (device.platformName.contains("SPEED") ||
+              device.platformName.contains("SPD") ||
+              device.platformName.contains("XOSS_VOR_S")) {
             descriptor.deviceCategory = DeviceCategory.primarySensor;
             isPrimarySensor = true;
-          } else if (!device.localName.contains("CADENCE") &&
-              !device.localName.contains("CAD") &&
-              !device.localName.contains("XOSS_VOR_C")) {
+          } else if (!device.platformName.contains("CADENCE") &&
+              !device.platformName.contains("CAD") &&
+              !device.platformName.contains("XOSS_VOR_C")) {
             var success = false;
             if (_fitnessEquipment != null &&
                 _fitnessEquipment!.device != null &&
@@ -634,7 +655,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: inferredSport,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturer,
+              manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
             database.writeTxnSync(() {
@@ -692,7 +713,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               sport: sportPick,
               mac: device.remoteId.str,
               name: device.nonEmptyName,
-              manufacturer: advertisementDigest.manufacturer,
+              manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
             database.writeTxnSync(() {

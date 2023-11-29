@@ -130,7 +130,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
 
-  FitnessEquipment({this.descriptor, device})
+  FitnessEquipment({this.descriptor, super.device})
       : super(
           tag: "FITNESS_EQUIPMENT",
           serviceId: descriptor?.dataServiceId ?? fitnessMachineUuid,
@@ -138,7 +138,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           controlCharacteristicId: descriptor?.controlCharacteristicId ?? "",
           listenOnControl: descriptor?.listenOnControl ?? true,
           statusCharacteristicId: descriptor?.statusCharacteristicId ?? "",
-          device: device,
         ) {
     readConfiguration();
     lastRecord = RecordWithSport(sport: sport);

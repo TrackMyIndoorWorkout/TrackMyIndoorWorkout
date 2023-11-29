@@ -35,11 +35,8 @@ import 'activity_detail_unit_row.dart';
 class ActivityDetailsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
-  const ActivityDetailsScreen({
-    Key? key,
-    required this.activity,
-    required this.size,
-  }) : super(key: key);
+
+  const ActivityDetailsScreen({super.key, required this.activity, required this.size});
 
   @override
   ActivityDetailsScreenState createState() => ActivityDetailsScreenState();

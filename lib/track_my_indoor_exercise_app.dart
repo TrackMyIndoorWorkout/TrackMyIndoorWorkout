@@ -8,10 +8,7 @@ import 'utils/theme_manager.dart';
 class TrackMyIndoorExerciseApp extends StatefulWidget {
   final BasePrefService prefService;
 
-  const TrackMyIndoorExerciseApp({
-    key,
-    required this.prefService,
-  }) : super(key: key);
+  const TrackMyIndoorExerciseApp({super.key, required this.prefService});
 
   @override
   TrackMyIndoorExerciseAppState createState() => TrackMyIndoorExerciseAppState();
@@ -33,8 +30,16 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         color: _themeManager!.getHeaderColor(),
-        theme: FlexThemeData.light(scheme: FlexScheme.indigoM3, useMaterial3: true),
-        darkTheme: FlexThemeData.dark(scheme: FlexScheme.indigoM3, useMaterial3: true),
+        theme: FlexThemeData.light(
+          scheme: FlexScheme.indigoM3,
+          useMaterial3: true,
+          swapLegacyOnMaterial3: true,
+        ),
+        darkTheme: FlexThemeData.dark(
+          scheme: FlexScheme.indigoM3,
+          useMaterial3: true,
+          swapLegacyOnMaterial3: true,
+        ),
         themeMode: _themeManager!.getThemeMode(),
         home: const FindDevicesScreen(),
       ),

@@ -366,38 +366,24 @@ class RecordWithSport extends Record {
   RecordWithSport({
     id,
     activityId,
-    timeStamp,
-    distance,
-    elapsed,
-    calories,
-    power,
-    speed,
-    cadence,
-    heartRate,
-    elapsedMillis,
-    pace,
-    strokeCount,
-    required sport,
-    caloriesPerHour,
-    caloriesPerMinute,
+    super.timeStamp,
+    super.distance,
+    super.elapsed,
+    super.calories,
+    super.power,
+    super.speed,
+    super.cadence,
+    super.heartRate,
+    super.elapsedMillis,
+    super.pace,
+    super.strokeCount,
+    required super.sport,
+    super.caloriesPerHour,
+    super.caloriesPerMinute,
   })  : assert(sport != null),
         super(
           id: id ?? Isar.autoIncrement,
           activityId: activityId ?? Isar.minId,
-          timeStamp: timeStamp,
-          distance: distance,
-          elapsed: elapsed,
-          calories: calories,
-          power: power,
-          speed: speed,
-          cadence: cadence,
-          heartRate: heartRate,
-          elapsedMillis: elapsedMillis,
-          pace: pace,
-          strokeCount: strokeCount,
-          sport: sport,
-          caloriesPerHour: caloriesPerHour,
-          caloriesPerMinute: caloriesPerMinute,
         );
 
   static RecordWithSport getZero(String sport) {
@@ -407,6 +393,7 @@ class RecordWithSport extends Record {
       calories: 0,
       power: 0,
       speed: 0.0,
+      pace: sport == ActivityType.ride ? null : 0.0,
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
@@ -437,6 +424,7 @@ class RecordWithSport extends Record {
     calories ??= record.calories;
     power ??= record.power;
     speed ??= record.speed;
+    pace ??= record.pace;
     cadence ??= record.cadence;
     heartRate ??= record.heartRate;
     return this;

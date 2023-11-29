@@ -7,7 +7,7 @@ import '../../preferences/metric_spec.dart';
 import '../../utils/theme_manager.dart';
 
 class RowConfigurationDialog extends StatefulWidget {
-  const RowConfigurationDialog({Key? key}) : super(key: key);
+  const RowConfigurationDialog({super.key});
 
   @override
   RowConfigurationDialogState createState() => RowConfigurationDialogState();

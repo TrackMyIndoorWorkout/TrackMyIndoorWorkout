@@ -13,7 +13,7 @@ class TargetHrPreferencesScreen extends StatefulWidget with PreferencesScreenMix
   static String shortTitle = targetHrShortTitle;
   static String title = "$shortTitle Preferences";
 
-  const TargetHrPreferencesScreen({Key? key}) : super(key: key);
+  const TargetHrPreferencesScreen({super.key});
 
   @override
   TargetHrPreferencesScreenState createState() => TargetHrPreferencesScreenState();

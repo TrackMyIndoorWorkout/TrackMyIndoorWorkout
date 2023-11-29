@@ -12,7 +12,7 @@ class MeasurementZonesPreferencesScreen extends StatelessWidget with Preferences
   static String title = "$shortTitle Preferences";
   final String sport;
 
-  MeasurementZonesPreferencesScreen(this.sport, {Key? key}) : super(key: key) {
+  MeasurementZonesPreferencesScreen(this.sport, {super.key}) {
     shortTitle = "$sport Zone";
     title = "$shortTitle Preferences";
   }

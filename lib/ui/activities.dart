@@ -53,7 +53,7 @@ import 'power_tunes.dart';
 import 'details/activity_details.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  const ActivitiesScreen({key}) : super(key: key);
+  const ActivitiesScreen({super.key});
 
   @override
   ActivitiesScreenState createState() => ActivitiesScreenState();

@@ -1,3 +1,10 @@
+## 1.1.150
+* Concept2 RowErg legacy (non FTMS) support
+* Technogym Run support (not the MyRun but the newer Run, RSC only communication)
+* Upgrade Flutter Blue Plus plugin many times
+* Upgrade Flutter to channel beta 3.17.0-0.0.pre
+* Upgrade numerous plugins many times
+
 ## 1.1.149
 * Strava uploads now point to the exact activity directly
 * Dealing with Bluetooth permission and related issues

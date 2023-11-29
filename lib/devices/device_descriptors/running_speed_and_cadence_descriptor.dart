@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/rsc.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
@@ -10,12 +12,10 @@ import '../gadgets/heart_rate_monitor.dart';
 import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
-abstract class CyclingSensorDescriptor extends DeviceDescriptor {
-  final String serviceUuid;
-  final String characteristicUuid;
+class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
   ComplexSensor? sensor;
 
-  CyclingSensorDescriptor({
+  RunningSpeedAndCadenceDescriptor({
     required super.fourCC,
     required super.vendorName,
     required super.modelName,
@@ -24,14 +24,12 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     required super.model,
     required super.deviceCategory,
     super.tag,
-    required this.serviceUuid,
-    required this.characteristicUuid,
-    super.flagByteSize,
+    super.flagByteSize = 1,
   }) : super(
-          sport: ActivityType.ride,
+          sport: ActivityType.run,
           isMultiSport: false,
-          dataServiceId: serviceUuid,
-          dataCharacteristicId: characteristicUuid,
+          dataServiceId: runningCadenceServiceUuid,
+          dataCharacteristicId: runningCadenceMeasurementUuid,
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
@@ -109,12 +107,28 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     }
 
     final requiredService =
-        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceUuid);
+        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == dataServiceId);
     if (requiredService == null) {
       return;
     }
 
     sensor = getSensor(device);
     sensor!.services = services;
+  }
+
+  @override
+  RunningSpeedAndCadenceDescriptor clone() => RunningSpeedAndCadenceDescriptor(
+        fourCC: fourCC,
+        vendorName: vendorName,
+        modelName: modelName,
+        manufacturerNamePart: manufacturerNamePart,
+        manufacturerFitId: manufacturerFitId,
+        model: model,
+        deviceCategory: deviceCategory,
+      )..sensor = sensor;
+
+  @override
+  ComplexSensor? getSensor(BluetoothDevice device) {
+    return RunningSpeedAndCadenceSensor(device);
   }
 }

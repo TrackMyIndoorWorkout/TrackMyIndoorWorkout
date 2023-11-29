@@ -2,7 +2,7 @@ extension StringEx on String {
   static RegExp nonAlphaNumFilterRegex = RegExp(r'[\W]+');
 
   String uuidString() {
-    return substring(4, 8).toLowerCase();
+    return length > 4 ? substring(4, 8).toLowerCase() : this;
   }
 
   String rgbString() {

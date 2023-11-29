@@ -34,7 +34,7 @@ class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin
   static String shortTitle = "Expert";
   static String title = "$shortTitle Preferences";
 
-  const ExpertPreferencesScreen({Key? key}) : super(key: key);
+  const ExpertPreferencesScreen({super.key});
 
   @override
   ExpertPreferencesScreenState createState() => ExpertPreferencesScreenState();

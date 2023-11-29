@@ -7,7 +7,7 @@ class ColoringByZonePreferencesScreen extends StatelessWidget with PreferencesSc
   static String shortTitle = "Color by Zone";
   static String title = "$shortTitle Preferences";
 
-  const ColoringByZonePreferencesScreen({Key? key}) : super(key: key);
+  const ColoringByZonePreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

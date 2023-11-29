@@ -33,11 +33,7 @@ extension HeartRateMonitorScanResult on ScanResult {
 }
 
 class HeartRateMonitorScanResultTile extends StatelessWidget {
-  const HeartRateMonitorScanResultTile({
-    Key? key,
-    required this.result,
-    required this.onTap,
-  }) : super(key: key);
+  const HeartRateMonitorScanResultTile({super.key, required this.result, required this.onTap});
 
   final ScanResult result;
   final VoidCallback onTap;

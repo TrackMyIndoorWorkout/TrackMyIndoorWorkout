@@ -18,7 +18,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
   static String shortTitle = "Data";
   static String title = "$shortTitle Preferences";
 
-  const DataPreferencesScreen({Key? key}) : super(key: key);
+  const DataPreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,7 @@ import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';
 
 class PowerTunesScreen extends StatefulWidget {
-  const PowerTunesScreen({key}) : super(key: key);
+  const PowerTunesScreen({super.key});
 
   @override
   PowerTunesScreenState createState() => PowerTunesScreenState();

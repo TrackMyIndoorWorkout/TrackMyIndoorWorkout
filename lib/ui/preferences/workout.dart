@@ -14,7 +14,7 @@ class WorkoutPreferencesScreen extends StatefulWidget with PreferencesScreenMixi
   static String shortTitle = "Workout";
   static String title = "$shortTitle Preferences";
 
-  const WorkoutPreferencesScreen({Key? key}) : super(key: key);
+  const WorkoutPreferencesScreen({super.key});
 
   @override
   WorkoutPreferencesScreenState createState() => WorkoutPreferencesScreenState();

@@ -7,7 +7,7 @@ import 'package:qr_widget/qr_widget.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DonationScreen extends StatelessWidget {
-  const DonationScreen({Key? key}) : super(key: key);
+  const DonationScreen({super.key});
 
   Widget getListTile(String vendorName, String logoSvgPath, String url, String qrPostfix) {
     return ListTile(

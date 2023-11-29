@@ -6,13 +6,13 @@ import '../../utils/theme_manager.dart';
 
 class ActivityDetailHeaderRow extends StatelessWidget {
   const ActivityDetailHeaderRow({
-    Key? key,
+    super.key,
     required this.themeManager,
     required this.icon,
     required this.iconSize,
     required this.text,
     required this.textStyle,
-  }) : super(key: key);
+  });
 
   final ThemeManager themeManager;
   final IconData icon;

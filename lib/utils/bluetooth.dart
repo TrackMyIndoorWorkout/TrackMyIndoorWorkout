@@ -19,7 +19,7 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
       return true;
     }
 
-    if (!await FlutterBluePlus.isAvailable) {
+    if (!await FlutterBluePlus.isSupported) {
       if (!silent) {
         await Get.defaultDialog(
           title: "Bluetooth Error",

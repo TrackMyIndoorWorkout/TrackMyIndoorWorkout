@@ -16,7 +16,7 @@ class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreen
   static String shortTitle = "Integrations";
   static String title = "$shortTitle Preferences";
 
-  const IntegrationPreferencesScreen({Key? key}) : super(key: key);
+  const IntegrationPreferencesScreen({super.key});
 
   @override
   IntegrationPreferencesScreenState createState() => IntegrationPreferencesScreenState();
