@@ -12,7 +12,6 @@ environment:
 dependency_overrides:
   analyzer: ^6.3.0  # because of isar_generator
   path: ^1.9.0  # SDK pinned this down
-  web: ^0.4.0  # SDK pinned this down
 
 dependencies:
   assorted_layout_widgets: ^9.0.0
