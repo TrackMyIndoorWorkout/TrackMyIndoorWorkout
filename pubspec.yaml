@@ -11,7 +11,8 @@ environment:
 
 dependency_overrides:
   analyzer: ^6.3.0  # because of isar_generator
-  web: ^0.4.0  # SDK pinned this down as well
+  path: ^1.9.0  # SDK pinned this down
+  web: ^0.4.0  # SDK pinned this down
 
 dependencies:
   assorted_layout_widgets: ^9.0.0
@@ -43,7 +44,7 @@ dependencies:
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
   package_info_plus: ^5.0.1
-  path: ^1.8.2
+  path: ^1.9.0
   path_provider: ^2.1.1
   pref: ^2.7.2
   progress_indicators: ^1.0.0
