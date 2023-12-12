@@ -94,11 +94,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     final dataString = utf8.decode(data);
     final dataParts = dataString.split(";");
     return RecordWithSport(
-      distance: double.tryParse(dataParts[9]),
-      elapsed: int.tryParse(dataParts[22]),
-      power: int.tryParse(dataParts[21]),
-      speed: (double.tryParse(dataParts[11]) ?? 0.0) * DeviceDescriptor.ms2kmh,
-      cadence: int.tryParse(dataParts[13]),
+      distance: double.tryParse(dataParts.elementAtOrNull(9) ?? ""),
+      elapsed: int.tryParse(dataParts.elementAtOrNull(22) ?? ""),
+      power: int.tryParse(dataParts.elementAtOrNull(21) ?? ""),
+      speed:
+          (double.tryParse(dataParts.elementAtOrNull(11) ?? "") ?? 0.0) * DeviceDescriptor.ms2kmh,
+      cadence: int.tryParse(dataParts.elementAtOrNull(13) ?? ""),
       sport: sport,
     );
   }
