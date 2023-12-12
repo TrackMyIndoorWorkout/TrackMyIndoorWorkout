@@ -93,6 +93,10 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   RecordWithSport? stubRecord(List<int> data) {
     final dataString = utf8.decode(data);
     final dataParts = dataString.split(";");
+    if (dataParts.length < 23) {
+      return null;
+    }
+
     return RecordWithSport(
       distance: double.tryParse(dataParts.elementAtOrNull(9) ?? ""),
       elapsed: int.tryParse(dataParts.elementAtOrNull(22) ?? ""),
