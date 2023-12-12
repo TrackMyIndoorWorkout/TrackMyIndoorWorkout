@@ -15,7 +15,7 @@ import 'suunto_token.dart';
 ///===========================================
 /// Class related to Authorization process
 ///===========================================
-abstract class Auth {
+mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
   Future<void> registerToken(

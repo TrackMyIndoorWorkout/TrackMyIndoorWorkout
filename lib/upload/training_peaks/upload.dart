@@ -16,7 +16,7 @@ import '../../utils/constants.dart';
 import 'constants.dart';
 import 'training_peaks_token.dart';
 
-abstract class Upload {
+mixin Upload {
   String trainingPeaksSport(String sport) {
     if (sport == ActivityType.canoeing || sport == ActivityType.kayaking) {
       sport = "Rowing";

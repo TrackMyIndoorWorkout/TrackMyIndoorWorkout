@@ -15,7 +15,7 @@ import 'under_armour_token.dart';
 ///===========================================
 /// Class related to Authorization process
 ///===========================================
-abstract class Auth {
+mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
   Future<void> registerToken(String? token, String? refreshToken, int? expire) async {

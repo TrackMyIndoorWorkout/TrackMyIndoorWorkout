@@ -10,7 +10,7 @@ import '../../secret.dart';
 import 'constants.dart';
 import 'suunto_token.dart';
 
-abstract class Upload {
+mixin Upload {
   /// Tested with gpx and tcx
   /// For the moment the parameters
   ///

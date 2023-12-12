@@ -15,7 +15,7 @@ import 'training_peaks_token.dart';
 ///===========================================
 /// Class related to Authorization process
 ///===========================================
-abstract class Auth {
+mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
   String getUrlBase(bool oAuthOrApi) {

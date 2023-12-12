@@ -30,7 +30,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
 
   CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(4, 64, maxUint16);
-    wheelCadence = CadenceMixin();
+    wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(4, 64, maxUint32);
     readCircumference();
   }
