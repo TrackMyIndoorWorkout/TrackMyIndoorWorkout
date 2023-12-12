@@ -118,7 +118,8 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isWholePacket(List<int> data) {
-    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D ||
+        data.length == 2 && data.first == 49 && data.last == 1;
   }
 
   @override
