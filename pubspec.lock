@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: "5cac245fa54701a1d1f7fab18982bc1effef949ef565c352c3c9176013f3221b"
+      sha256: c7ab27134ee2b2ca628a2e965d6bad1d8e2153d2cd1c457582c902bcb4c79a52
       url: "https://pub.dev"
     source: hosted
-    version: "1.30.3"
+    version: "1.30.5"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
@@ -675,10 +675,10 @@ packages:
     dependency: "direct dev"
     description:
       name: mocktail
-      sha256: bac151b31e4ed78bd59ab89aa4c0928f297b1180186d5daf03734519e5f596c1
+      sha256: f603ebd85a576e5914870b02e5839fc5d0243b867bf710651cf239a28ebb365e
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   number_selector:
     dependency: "direct main"
     description:
