@@ -126,6 +126,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
+  final Duration _pollDuration = const Duration(milliseconds: pollThreshold);
   final Map<int, DataEntry> _listDeduplicationMap = {};
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
@@ -160,7 +161,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (descriptor != null && descriptor is KayakFirstDescriptor) {
       var selector = l[0];
-      if (l.length > 1 && l[1] != KayakFirstDescriptor.separator) {
+      if (l.length > 1 && ![0, 1, 10, 13, KayakFirstDescriptor.separator].contains(l[1])) {
         selector += 256 * l[1];
       }
 
@@ -300,24 +301,40 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               "Kayak First: ${utf8.decode(byteList)}");
         }
 
+        if (descriptor?.skipPacket(byteList) ?? false) {
+          if (logLevel >= logLevelInfo) {
+            Logging()
+                .log(logLevel, logLevelInfo, tag, "_listenToData loop", "skipPacket => discard!");
+          }
+
+          continue;
+        }
+
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
-              "Repeat packet fragment => discard!");
+          if (logLevel >= logLevelInfo) {
+            Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
+                "Repeat packet fragment => discard!");
+          }
 
           continue;
         }
 
         packetFragment.addAll(byteList);
         if (descriptor?.isWholePacket(packetFragment) ?? false) {
-          descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
-          if (logLevel >= logLevelInfo) {
+          final key = keySelector(byteListPrep);
+          if (descriptor?.isFlagValid(key) ?? false) {
+            descriptor?.registerResponse(byteListPrep.first, logLevel);
+            if (logLevel >= logLevelInfo) {
+              Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
+                  "Complete packet: ${utf8.decode(packetFragment)} with key $key");
+            }
+          } else if (logLevel >= logLevelInfo) {
             Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
-                "Complete packet: ${utf8.decode(packetFragment)}");
+                "Bad key $key complete packet: ${utf8.decode(packetFragment)}");
           }
-
           packetFragment.clear();
         } else {
           continue;
@@ -1281,7 +1298,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void _startPollingTimer() {
-    _timer = Timer(_throttleDuration, _pollingTimerCallback);
+    _timer = Timer(_pollDuration, _pollingTimerCallback);
     descriptor?.pollMeasurement(getControlPoint()!, logLevel);
   }
 

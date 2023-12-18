@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -18,6 +19,13 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../device_fourcc.dart';
 import 'device_descriptor.dart';
+
+enum KayakFirstState {
+  initializing,
+  startingWorkout,
+  polling,
+  endingWorkout,
+}
 
 class KayakFirstDescriptor extends DeviceDescriptor {
   static const mtuSize = 20;
@@ -50,7 +58,11 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const commandExtraLongDelayMs = 5000; // ms
   static const commandExtraLongDelay = Duration(milliseconds: commandExtraLongDelayMs);
   static const commandExtraLongTimeoutGuard = Duration(milliseconds: commandExtraLongDelayMs + 250);
+  static const maxWaitIterations = 3;
   ListQueue<int> responses = ListQueue<int>();
+  List<int> currentResponses = [];
+  KayakFirstState machineState = KayakFirstState.initializing;
+  bool initializedConsole = false;
 
   KayakFirstDescriptor()
       : super(
@@ -93,7 +105,8 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   RecordWithSport? stubRecord(List<int> data) {
     final dataString = utf8.decode(data);
     final dataParts = dataString.split(";");
-    if (dataParts.length < 23) {
+    if (dataParts.length < 24) {
+      debugPrint("Partial fragment");
       return null;
     }
 
@@ -118,13 +131,26 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isWholePacket(List<int> data) {
-    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D ||
-        data.length == 2 && data.first == 49 && data.last == 1;
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
+  }
+
+  @override
+  bool skipPacket(List<int> data) {
+    return data.length == 2 && data.first == resetByte && data.last == 1 ||
+        data.length == 3 && data.first == dataStreamFlag && data.last == 0x0A && data[1] == 0x0D;
   }
 
   @override
   bool isFlagValid(int flag) {
-    return flag == dataStreamFlag;
+    if (machineState == KayakFirstState.polling && flag != dataStreamFlag) {
+      debugPrint("Invalid flag! $flag");
+    }
+
+    return machineState == KayakFirstState.polling && flag == dataStreamFlag ||
+        machineState != KayakFirstState.polling &&
+            flag >= resetByte &&
+            flag <= startStopByte &&
+            flag != dataStreamFlag;
   }
 
   @override
@@ -170,9 +196,11 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         break;
       case startOrResumeControl:
         command = startCommand;
+        machineState = KayakFirstState.startingWorkout;
         break;
       case stopOrPauseControl:
         command = stopCommand;
+        machineState = KayakFirstState.endingWorkout;
         break;
       default:
         break;
@@ -213,7 +241,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   }
 
   Future<void> configureDisplay(BluetoothCharacteristic? controlPoint, int logLevel) async {
-    if (controlPoint == null) {
+    if (controlPoint == null || initializedConsole) {
       return;
     }
 
@@ -240,39 +268,96 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     // 1. Reset
     bool seenIt = false;
-    while (!seenIt) {
+    int iterationCount = 0;
+    currentResponses.clear();
+    while (!seenIt && iterationCount < maxWaitIterations) {
       await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
       seenIt = await _waitForResponse(resetByte, responseWatchTimeoutMs, logLevel)
           .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
+      iterationCount++;
     }
 
+    await Future.delayed(commandShortDelay);
     // 2. Handshake
-    await handshake(controlPoint, false, logLevel);
-    await _waitForResponse(handshakeByte, responseWatchTimeoutMs, logLevel)
-        .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+    seenIt = false;
+    iterationCount = 0;
+    currentResponses.clear();
+    while (!seenIt && iterationCount < maxWaitIterations) {
+      await handshake(controlPoint, false, logLevel);
+      seenIt = await _waitForResponse(handshakeByte, responseWatchTimeoutMs, logLevel)
+          .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+      await Future.delayed(commandLongDelay);
+      iterationCount++;
+    }
+
     await Future.delayed(commandShortDelay);
     // 3. Display Configuration
-    await configureDisplay(controlPoint, logLevel);
-    await _waitForResponse(displayConfigurationByte, commandExtraLongDelayMs, logLevel)
-        .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+    seenIt = false;
+    iterationCount = 0;
+    currentResponses.clear();
+    while (!seenIt && iterationCount < maxWaitIterations) {
+      await configureDisplay(controlPoint, logLevel);
+      seenIt = await _waitForResponse(displayConfigurationByte, commandExtraLongDelayMs, logLevel)
+          .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+      await Future.delayed(commandLongDelay);
+      iterationCount++;
+    }
+
+    /*
     await Future.delayed(commandShortDelay);
+    // X1. Prelim measurement start command
+    seenIt = false;
+    iterationCount = 0;
+    currentResponses.clear();
+    await executeControlOperation(
+        controlPoint, blockSignalStartStop, logLevel, startOrResumeControl);
+    while (!seenIt && iterationCount < maxWaitIterations) {
+      seenIt = await _waitForResponse(startStopByte, commandExtraLongDelayMs, logLevel)
+          .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+      await Future.delayed(commandShortDelay);
+      iterationCount++;
+    }
+
+    await Future.delayed(commandShortDelay);
+    // X2. Prelim measurement stop command
+    seenIt = false;
+    iterationCount = 0;
+    currentResponses.clear();
+    await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, stopOrPauseControl);
+    while (!seenIt && iterationCount < maxWaitIterations) {
+      seenIt = await _waitForResponse(startStopByte, commandExtraLongDelayMs, logLevel)
+          .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+      await Future.delayed(commandShortDelay);
+      iterationCount++;
+    }
+    */
+
+    initializedConsole = true;
   }
 
   Future<bool> _waitForResponse(int responseByte, int timeout, int logLevel) async {
     final iterationCount = timeout ~/ responseWatchDelayMs;
     int i = 0;
-    for (; i < iterationCount && responses.last != responseByte; i++) {
+    for (; i < iterationCount && !currentResponses.contains(responseByte); i++) {
       await Future.delayed(responseWatchDelay);
     }
 
-    final seenIt = i < iterationCount;
+    final seenIt = currentResponses.contains(responseByte);
     Logging().log(logLevel, logLevelInfo, tag, "_waitForResponse", "$seenIt");
     return seenIt;
   }
 
   @override
   void registerResponse(int key, int logLevel) {
+    currentResponses.add(key);
+    if (machineState == KayakFirstState.startingWorkout &&
+        [startStopByte, dataStreamFlag].contains(key)) {
+      machineState = KayakFirstState.polling;
+    } else if (machineState == KayakFirstState.endingWorkout && key == startStopByte) {
+      machineState = KayakFirstState.initializing;
+    }
+
     if (responses.last != key) {
       responses.add(key);
 
