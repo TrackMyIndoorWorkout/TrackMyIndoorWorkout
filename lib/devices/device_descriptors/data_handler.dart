@@ -47,6 +47,17 @@ abstract class DataHandler {
     return true;
   }
 
+  /// It tells if a gathered packet should be just skipped,
+  /// and ignored.
+  /// Gets significance for fragmented packet devices,
+  /// and such which sometimes incorrectly emit packets
+  /// violating gathering of series of smaller packets
+  /// comprising larger packets (see isWholePacket above).
+  /// Kayak First abides by 20 bytes MTU only.
+  bool skipPacket(List<int> data) {
+    return false;
+  }
+
   void initFlag() {
     clearMetrics();
     featuresFlag = -1;

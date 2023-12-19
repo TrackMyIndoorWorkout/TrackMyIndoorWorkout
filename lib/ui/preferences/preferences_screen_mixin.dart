@@ -1,4 +1,4 @@
-class PreferencesScreenMixin {
+mixin PreferencesScreenMixin {
   static String shortTitle = "";
   static String title = shortTitle;
 

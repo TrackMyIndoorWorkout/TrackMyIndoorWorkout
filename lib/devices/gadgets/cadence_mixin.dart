@@ -8,7 +8,7 @@ import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import 'cadence_data.dart';
 
-class CadenceMixin {
+mixin CadenceMixin {
   static const String mixinTag = "CADENCE_MIXIN";
   static int defaultRevolutionSlidingWindow = 10; // Seconds
   static int defaultEventTimeOverflow = 64; // Overflows every 64 seconds
@@ -120,3 +120,5 @@ class CadenceMixin {
     cadenceData.clear();
   }
 }
+
+class CadenceMixinImpl with CadenceMixin {}

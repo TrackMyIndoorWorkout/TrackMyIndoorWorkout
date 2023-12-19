@@ -10,7 +10,7 @@ import '../../persistence/isar/activity.dart';
 import 'constants.dart';
 import 'under_armour_token.dart';
 
-abstract class Upload {
+mixin Upload {
   /// statusCode:
   /// 201 activity created
   /// 400 problem could be that activity already uploaded

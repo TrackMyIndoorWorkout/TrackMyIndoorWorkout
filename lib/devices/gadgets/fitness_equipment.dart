@@ -32,7 +32,6 @@ import '../../utils/power_speed_mixin.dart';
 import '../bluetooth_device_ex.dart';
 import '../device_descriptors/data_handler.dart';
 import '../device_descriptors/device_descriptor.dart';
-import '../device_descriptors/kayak_first_descriptor.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
@@ -68,6 +67,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   DeviceDescriptor? descriptor;
   Map<int, DataHandler> dataHandlers = {};
   List<int> packetFragment = [];
+  List<int> lastFragment = [];
+  Function listEquality = const ListEquality().equals;
   String? manufacturerName;
   double _residueCalories = 0.0;
   int _lastPositiveCadence = 0; // #101
@@ -126,6 +127,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   // For Throttling + deduplication #234
   final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
+  final Duration _pollDuration = const Duration(milliseconds: pollThreshold);
   final Map<int, DataEntry> _listDeduplicationMap = {};
   Timer? _throttleTimer;
   RecordHandlerFunction? _recordHandlerFunction;
@@ -156,15 +158,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   int keySelector(List<int> l) {
     if (l.isEmpty) {
       return badKey;
-    }
-
-    if (descriptor != null && descriptor is KayakFirstDescriptor) {
-      var selector = l[0];
-      if (l.length > 1 && l[1] != KayakFirstDescriptor.separator) {
-        selector += 256 * l[1];
-      }
-
-      return selector;
     }
 
     if (l.length == 1 || descriptor?.flagByteSize == 1) {
@@ -294,30 +287,58 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       List<int> byteListPrep = [];
       if (fragmentedPackets) {
         final fragLength = packetFragment.length;
+        if (lastFragment.isNotEmpty &&
+            lastFragment.length == byteList.length &&
+            listEquality(lastFragment, byteList)) {
+          Logging().log(
+              logLevel, logLevelInfo, tag, "_listenToData loop", "Repeat fragment => discard!");
+
+          continue;
+        }
+
+        lastFragment.clear();
+        lastFragment.addAll(byteList);
+
         final listLength = byteList.length;
         if (logLevel >= logLevelInfo) {
           Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
               "Kayak First: ${utf8.decode(byteList)}");
         }
 
+        if (descriptor?.skipPacket(byteList) ?? false) {
+          if (logLevel >= logLevelInfo) {
+            Logging()
+                .log(logLevel, logLevelInfo, tag, "_listenToData loop", "skipPacket => discard!");
+          }
+
+          continue;
+        }
+
         if (byteList.isNotEmpty &&
             fragLength >= listLength &&
             packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
-              "Repeat packet fragment => discard!");
+          if (logLevel >= logLevelInfo) {
+            Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
+                "Repeat packet fragment => discard!");
+          }
 
           continue;
         }
 
         packetFragment.addAll(byteList);
         if (descriptor?.isWholePacket(packetFragment) ?? false) {
-          descriptor?.registerResponse(packetFragment.first, logLevel);
           byteListPrep.addAll(packetFragment);
-          if (logLevel >= logLevelInfo) {
+          final key = keySelector(byteListPrep);
+          if (descriptor?.isFlagValid(key) ?? false) {
+            descriptor?.registerResponse(byteListPrep.first, logLevel);
+            if (logLevel >= logLevelInfo) {
+              Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
+                  "Complete packet: ${utf8.decode(packetFragment)} with key $key");
+            }
+          } else if (logLevel >= logLevelInfo) {
             Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
-                "Complete packet: ${utf8.decode(packetFragment)}");
+                "Bad key $key complete packet: ${utf8.decode(packetFragment)}");
           }
-
           packetFragment.clear();
         } else {
           continue;
@@ -1281,7 +1302,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   void _startPollingTimer() {
-    _timer = Timer(_throttleDuration, _pollingTimerCallback);
+    _timer = Timer(_pollDuration, _pollingTimerCallback);
     descriptor?.pollMeasurement(getControlPoint()!, logLevel);
   }
 

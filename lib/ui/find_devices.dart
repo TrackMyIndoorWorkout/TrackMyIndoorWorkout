@@ -427,6 +427,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
             continue;
           }
 
+          if (mapEntry.key == concept2RowerFourCC &&
+              advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+            continue;
+          }
+
           var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
           if (descriptorCandidate.sport == ActivityType.run &&
               mapEntry.key != technogymRunFourCC &&

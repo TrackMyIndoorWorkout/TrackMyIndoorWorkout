@@ -17,7 +17,7 @@ class TestPair {
 
 void main() {
   test('Cadence Mixin returns 0 when empty', () async {
-    final cadenceMixin = CadenceMixin();
+    final cadenceMixin = CadenceMixinImpl();
 
     expect(cadenceMixin.cadenceData.isEmpty, true);
     expect(cadenceMixin.computeCadence().toInt(), 0);
@@ -30,7 +30,7 @@ void main() {
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
       final deltaRevolutions = getRandomDoubles(len, 100.0, rnd);
       test("len $len, ", () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
           cadenceMixin.addCadenceData(deltaTimes[i], deltaRevolutions[i]);
         }
@@ -53,7 +53,7 @@ void main() {
       test(
           "len $len, 0. (${deltaTimes.first}, ${deltaRevolutions.first}) $len. ($timeSum, $revolutionSum)",
           () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         var cumulativeTime = 0.0;
         var cumulativeRevolution = 0.0;
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
@@ -80,7 +80,7 @@ void main() {
         smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
       numRevolutions++;
       test('# revolutions $numRevolutions', () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
         var timeTick = 0.0;
         var revolutions = 0.0;
@@ -105,7 +105,7 @@ void main() {
         smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
       numRevolutions++;
       test('# revolutions $numRevolutions', () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
         var timeTick = 0.0;
         var revolutions = 0.0;

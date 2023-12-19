@@ -16,7 +16,7 @@ import 'strava_status_text.dart';
 import 'strava_token.dart';
 import 'upload_activity.dart';
 
-abstract class Upload {
+mixin Upload {
   /// Tested with gpx and tcx
   /// For the moment the parameters
   ///
