@@ -20,13 +20,6 @@ import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../device_fourcc.dart';
 import 'device_descriptor.dart';
 
-enum KayakFirstState {
-  initializing,
-  startingWorkout,
-  polling,
-  endingWorkout,
-}
-
 class KayakFirstDescriptor extends DeviceDescriptor {
   static const mtuSize = 20;
   static const dataStreamFlag = 0x36; // ASCII 6
@@ -37,6 +30,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const handshakeByte = 0x32;
   static const newHandshakeCommand = "${handshakeCommand}1";
   static const configurationCommand = "3";
+  static const configurationByte = 0x33;
   static const displayConfigurationCommand = "5";
   static const displayConfigurationByte = 0x35;
   static const pollDataCommand = "6";
@@ -59,9 +53,17 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const commandExtraLongDelay = Duration(milliseconds: commandExtraLongDelayMs);
   static const commandExtraLongTimeoutGuard = Duration(milliseconds: commandExtraLongDelayMs + 250);
   static const maxWaitIterations = 3;
+  static const List<int> validFlags = [
+    resetByte + 0x0D * 256,
+    resetByte + separator * 256,
+    handshakeByte + separator * 256,
+    configurationByte + separator * 256,
+    displayConfigurationByte + separator * 256,
+    dataStreamFlag + separator * 256,
+    startStopByte + separator * 256
+  ];
   ListQueue<int> responses = ListQueue<int>();
   List<int> currentResponses = [];
-  KayakFirstState machineState = KayakFirstState.initializing;
   bool initializedConsole = false;
 
   KayakFirstDescriptor()
@@ -84,7 +86,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
           statusCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
-          flagByteSize: 1,
+          flagByteSize: 2,
           heartRateByteIndex: -1,
           timeMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
           caloriesMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
@@ -103,6 +105,10 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
+    if (data[0] != dataStreamFlag) {
+      return null;
+    }
+
     final dataString = utf8.decode(data);
     final dataParts = dataString.split(";");
     if (dataParts.length < 24) {
@@ -142,15 +148,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isFlagValid(int flag) {
-    if (machineState == KayakFirstState.polling && flag != dataStreamFlag) {
-      debugPrint("Invalid flag! $flag");
-    }
-
-    return machineState == KayakFirstState.polling && flag == dataStreamFlag ||
-        machineState != KayakFirstState.polling &&
-            flag >= resetByte &&
-            flag <= startStopByte &&
-            flag != dataStreamFlag;
+    return validFlags.contains(flag);
   }
 
   @override
@@ -196,11 +194,9 @@ class KayakFirstDescriptor extends DeviceDescriptor {
         break;
       case startOrResumeControl:
         command = startCommand;
-        machineState = KayakFirstState.startingWorkout;
         break;
       case stopOrPauseControl:
         command = stopCommand;
-        machineState = KayakFirstState.endingWorkout;
         break;
       default:
         break;
@@ -351,12 +347,6 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   @override
   void registerResponse(int key, int logLevel) {
     currentResponses.add(key);
-    if (machineState == KayakFirstState.startingWorkout &&
-        [startStopByte, dataStreamFlag].contains(key)) {
-      machineState = KayakFirstState.polling;
-    } else if (machineState == KayakFirstState.endingWorkout && key == startStopByte) {
-      machineState = KayakFirstState.initializing;
-    }
 
     if (responses.last != key) {
       responses.add(key);
