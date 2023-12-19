@@ -1,3 +1,10 @@
+## 1.1.151
+* Concept2 RowErg FTMS support
+* Kayak First ergometer support (both kayak and canoe)
+* Upgrade Flutter Blue Plus plugin many times
+* Upgrade Flutter to channel beta 3.18.0-0.2.pre, Dart 3.3.0-174.3.beta
+* Upgrade numerous plugins many times
+
 ## 1.1.150
 * Concept2 RowErg legacy (non FTMS) support
 * Technogym Run support (not the MyRun but the newer Run, RSC only communication)
