@@ -47,7 +47,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const responseWatchTimeoutGuard = Duration(milliseconds: responseWatchTimeoutMs + 250);
   static const commandShortDelayMs = 500; // ms
   static const commandShortDelay = Duration(milliseconds: commandShortDelayMs);
-  static const commandLongDelayMs = 2000; // ms
+  static const commandLongDelayMs = 1000; // ms
   static const commandLongDelay = Duration(milliseconds: commandLongDelayMs);
   static const commandExtraLongDelayMs = 5000; // ms
   static const commandExtraLongDelay = Duration(milliseconds: commandExtraLongDelayMs);
@@ -56,6 +56,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const List<int> validFlags = [
     resetByte + 0x0D * 256,
     resetByte + separator * 256,
+    resetByte + 1 * 256,
     handshakeByte + separator * 256,
     configurationByte + separator * 256,
     displayConfigurationByte + separator * 256,
@@ -137,13 +138,17 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   bool isWholePacket(List<int> data) {
-    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D;
+    return data.length >= 2 && data.last == 0x0A && data[data.length - 2] == 0x0D ||
+        data.length == 2 && data.first == resetByte && data.last == 1;
   }
 
   @override
   bool skipPacket(List<int> data) {
-    return data.length == 2 && data.first == resetByte && data.last == 1 ||
-        data.length == 3 && data.first == dataStreamFlag && data.last == 0x0A && data[1] == 0x0D;
+    return data.length == 3 &&
+            data.first == dataStreamFlag &&
+            data.last == 0x0A &&
+            data[1] == 0x0D ||
+        data.isNotEmpty && data.map((e) => e == 0 || e == 1).every((p) => p);
   }
 
   @override
@@ -258,90 +263,89 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
-    await Future.delayed(commandShortDelay);
+    await Future.delayed(responseWatchDelay);
     final prefService = Get.find<BasePrefService>();
     final blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
-    // 1. Reset
+    // 1.1 Reset
     bool seenIt = false;
     int iterationCount = 0;
     currentResponses.clear();
     while (!seenIt && iterationCount < maxWaitIterations) {
       await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-      seenIt = await _waitForResponse(resetByte, responseWatchTimeoutMs, logLevel)
+      seenIt = await _waitForResponse(resetByte, commandExtraLongDelayMs, logLevel, true)
           .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }
 
-    await Future.delayed(commandShortDelay);
+    await Future.delayed(commandLongDelay);
+    // 1.2 Reset
+    seenIt = false;
+    iterationCount = 0;
+    currentResponses.clear();
+    while (!seenIt && iterationCount < maxWaitIterations) {
+      await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
+      seenIt = await _waitForResponse(resetByte, commandExtraLongDelayMs, logLevel, true)
+          .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+      await Future.delayed(commandLongDelay);
+      iterationCount++;
+    }
+
+    await Future.delayed(commandExtraLongDelay);
     // 2. Handshake
     seenIt = false;
     iterationCount = 0;
     currentResponses.clear();
     while (!seenIt && iterationCount < maxWaitIterations) {
       await handshake(controlPoint, false, logLevel);
-      seenIt = await _waitForResponse(handshakeByte, responseWatchTimeoutMs, logLevel)
+      seenIt = await _waitForResponse(handshakeByte, commandExtraLongDelayMs, logLevel, true)
           .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }
 
-    await Future.delayed(commandShortDelay);
+    await Future.delayed(commandExtraLongDelay);
     // 3. Display Configuration
     seenIt = false;
     iterationCount = 0;
     currentResponses.clear();
     while (!seenIt && iterationCount < maxWaitIterations) {
       await configureDisplay(controlPoint, logLevel);
-      seenIt = await _waitForResponse(displayConfigurationByte, commandExtraLongDelayMs, logLevel)
-          .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+      seenIt =
+          await _waitForResponse(displayConfigurationByte, commandExtraLongDelayMs, logLevel, true)
+              .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }
 
-    /*
-    await Future.delayed(commandShortDelay);
-    // X1. Prelim measurement start command
-    seenIt = false;
-    iterationCount = 0;
-    currentResponses.clear();
-    await executeControlOperation(
-        controlPoint, blockSignalStartStop, logLevel, startOrResumeControl);
-    while (!seenIt && iterationCount < maxWaitIterations) {
-      seenIt = await _waitForResponse(startStopByte, commandExtraLongDelayMs, logLevel)
-          .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
-      await Future.delayed(commandShortDelay);
-      iterationCount++;
-    }
-
-    await Future.delayed(commandShortDelay);
-    // X2. Prelim measurement stop command
-    seenIt = false;
-    iterationCount = 0;
-    currentResponses.clear();
-    await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, stopOrPauseControl);
-    while (!seenIt && iterationCount < maxWaitIterations) {
-      seenIt = await _waitForResponse(startStopByte, commandExtraLongDelayMs, logLevel)
-          .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
-      await Future.delayed(commandShortDelay);
-      iterationCount++;
-    }
-    */
-
+    await Future.delayed(commandExtraLongDelay);
     initializedConsole = true;
   }
 
-  Future<bool> _waitForResponse(int responseByte, int timeout, int logLevel) async {
+  Future<bool> _waitForResponse(int responseByte, int timeout, int logLevel, bool withEcho) async {
     final iterationCount = timeout ~/ responseWatchDelayMs;
     int i = 0;
+    bool seenEcho = !withEcho;
+    if (withEcho) {
+      for (; i < iterationCount && !currentResponses.contains(responseByte); i++) {
+        await Future.delayed(responseWatchDelay);
+      }
+
+      final seenEcho = currentResponses.contains(responseByte);
+      Logging().log(logLevel, logLevelInfo, tag, "_waitForResponse echo", "$seenEcho");
+
+      currentResponses.clear();
+    }
+
+    i = 0;
     for (; i < iterationCount && !currentResponses.contains(responseByte); i++) {
       await Future.delayed(responseWatchDelay);
     }
 
     final seenIt = currentResponses.contains(responseByte);
     Logging().log(logLevel, logLevelInfo, tag, "_waitForResponse", "$seenIt");
-    return seenIt;
+    return seenIt || seenEcho;
   }
 
   @override
