@@ -286,20 +286,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       List<int> byteListPrep = [];
       if (fragmentedPackets) {
-        final fragLength = packetFragment.length;
-        if (lastFragment.isNotEmpty &&
-            lastFragment.length == byteList.length &&
-            listEquality(lastFragment, byteList)) {
-          Logging().log(
-              logLevel, logLevelInfo, tag, "_listenToData loop", "Repeat fragment => discard!");
-
-          continue;
-        }
-
-        lastFragment.clear();
-        lastFragment.addAll(byteList);
-
-        final listLength = byteList.length;
         if (logLevel >= logLevelInfo) {
           Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
               "Kayak First: ${utf8.decode(byteList)}");
@@ -309,17 +295,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           if (logLevel >= logLevelInfo) {
             Logging()
                 .log(logLevel, logLevelInfo, tag, "_listenToData loop", "skipPacket => discard!");
-          }
-
-          continue;
-        }
-
-        if (byteList.isNotEmpty &&
-            fragLength >= listLength &&
-            packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          if (logLevel >= logLevelInfo) {
-            Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
-                "Repeat packet fragment => discard!");
           }
 
           continue;
