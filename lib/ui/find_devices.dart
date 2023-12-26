@@ -110,6 +110,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   void dispose() {
+    _scanStreamController.close();
+    _scanStreamSubscription?.cancel();
+
     if (_isScanning) {
       try {
         FlutterBluePlus.stopScan();
