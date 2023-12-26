@@ -18,8 +18,7 @@ Future<bool> isBluetoothOn() async {
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   try {
-    var blueOn = await isBluetoothOn();
-    if (blueOn) {
+    if (await isBluetoothOn()) {
       return true;
     }
 
