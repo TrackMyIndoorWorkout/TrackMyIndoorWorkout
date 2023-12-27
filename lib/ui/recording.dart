@@ -74,12 +74,14 @@ import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
 import 'models/display_record.dart';
+import 'models/overlay_state.dart';
 import 'models/row_configuration.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
 import 'parts/kayak_first.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/pick_directory.dart';
+import 'parts/pre_measurement_progress.dart';
 import 'parts/spin_down.dart';
 import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
@@ -281,8 +283,10 @@ class RecordingState extends State<RecordingScreen> {
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
+          progressBottomSheet("Starting...", KayakFirstDescriptor.progressBarCompletionTime);
           await Future.delayed(KayakFirstDescriptor.commandLongDelay);
           await _startMeasurement(false);
+          ProgressState.optionallyCloseProgress();
         });
       }
 

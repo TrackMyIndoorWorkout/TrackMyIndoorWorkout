@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -11,6 +12,8 @@ import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
+import '../../ui/models/overlay_state.dart';
+import '../../ui/parts/pre_measurement_progress.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
@@ -52,6 +55,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   static const commandExtraLongDelayMs = 5000; // ms
   static const commandExtraLongDelay = Duration(milliseconds: commandExtraLongDelayMs);
   static const commandExtraLongTimeoutGuard = Duration(milliseconds: commandExtraLongDelayMs + 250);
+  static const progressBarCompletionTime = 6000; // ms
   static const maxWaitIterations = 3;
   static const List<int> validFlags = [
     resetByte + 0x0D * 256,
@@ -263,6 +267,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
+    progressBottomSheet("Initializing step 2...", progressBarCompletionTime);
     await Future.delayed(responseWatchDelay);
     final prefService = Get.find<BasePrefService>();
     final blockSignalStartStop =
@@ -280,10 +285,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     await Future.delayed(commandLongDelay);
+    ProgressState.optionallyCloseProgress();
     // 1.2 Reset
     seenIt = false;
     iterationCount = 0;
     currentResponses.clear();
+    progressBottomSheet("Initializing step 3...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
       seenIt = await _waitForResponse(resetByte, commandExtraLongDelayMs, logLevel, true)
@@ -293,10 +300,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     await Future.delayed(commandExtraLongDelay);
+    ProgressState.optionallyCloseProgress();
     // 2. Handshake
     seenIt = false;
     iterationCount = 0;
     currentResponses.clear();
+    progressBottomSheet("Handshake...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await handshake(controlPoint, false, logLevel);
       seenIt = await _waitForResponse(handshakeByte, commandExtraLongDelayMs, logLevel, true)
@@ -306,10 +315,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     await Future.delayed(commandExtraLongDelay);
+    ProgressState.optionallyCloseProgress();
     // 3. Display Configuration
     seenIt = false;
     iterationCount = 0;
     currentResponses.clear();
+    progressBottomSheet("Configuration...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await configureDisplay(controlPoint, logLevel);
       seenIt =
@@ -320,6 +331,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     await Future.delayed(commandExtraLongDelay);
+    ProgressState.optionallyCloseProgress();
     initializedConsole = true;
   }
 
