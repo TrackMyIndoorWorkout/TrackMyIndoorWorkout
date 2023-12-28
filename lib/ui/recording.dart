@@ -74,7 +74,7 @@ import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
 import 'models/display_record.dart';
-import 'models/overlay_state.dart';
+import 'models/progress_state.dart';
 import 'models/row_configuration.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';

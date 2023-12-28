@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-import '../models/overlay_state.dart';
+import '../models/progress_state.dart';
 
 class PreMeasurementProgress extends StatefulWidget {
   final String phase;

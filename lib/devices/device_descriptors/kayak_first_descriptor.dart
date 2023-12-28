@@ -12,7 +12,7 @@ import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
-import '../../ui/models/overlay_state.dart';
+import '../../ui/models/progress_state.dart';
 import '../../ui/parts/pre_measurement_progress.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
