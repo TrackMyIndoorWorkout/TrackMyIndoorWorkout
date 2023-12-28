@@ -44,7 +44,7 @@ extension ScanResultEx on ScanResult {
           serviceUuids.contains(schwinnX70ServiceUuid) ||
           serviceUuids.contains(cyclingPowerServiceUuid) ||
           serviceUuids.contains(cyclingCadenceServiceUuid) ||
-          serviceUuids.contains(c2RowingPrimaryServiceUuid) ||
+          serviceUuids.contains(c2ErgPrimaryServiceUuid) ||
           serviceUuids.contains(kayakFirstServiceUuid) ||
           serviceUuids.contains(heartRateServiceUuid)) {
         return true;
@@ -159,7 +159,7 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    if (serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
+    if (serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
       return MachineType.rower;
     }
 
@@ -179,12 +179,14 @@ extension ScanResultEx on ScanResult {
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
-      if (multiSportFourCCs.contains(mapEntry.key)) {
+      if (multiSportFourCCs.contains(mapEntry.key) && mapEntry.key != concept2ErgFourCC) {
         continue;
       }
 
+      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
@@ -210,7 +212,7 @@ extension ScanResultEx on ScanResult {
         );
       }
 
-      if (serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
+      if (serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
         return Tuple2(
           Image.asset("assets/equipment/Concept2_logo.png",
               width: logoSize, semanticLabel: "Concept2 Logo"),
@@ -239,8 +241,10 @@ extension ScanResultEx on ScanResult {
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))

@@ -22,7 +22,7 @@ void main() {
       const TestPair(input: ActivityType.run, expected: "Run"),
       const TestPair(input: ActivityType.ride, expected: "Bike"),
       const TestPair(input: ActivityType.elliptical, expected: "X-train"),
-      const TestPair(input: ActivityType.nordicSki, expected: "Other"),
+      const TestPair(input: ActivityType.nordicSki, expected: "XC-ski"),
     ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         final tp = TrainingPeaks("", "");

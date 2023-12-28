@@ -247,8 +247,10 @@ abstract class DeviceBase {
         characteristicId == stepClimberUuid ||
         characteristicId == stairClimberUuid) {
       sports.add(ActivityType.run);
-    } else if (characteristicId == c2RowingGeneralStatusUuid) {
+    } else if (characteristicId == c2ErgGeneralStatusUuid) {
       sports.add(ActivityType.rowing);
+      sports.add(ActivityType.nordicSki);
+      sports.add(ActivityType.ride);
     } else if (characteristicId == rowerDeviceUuid) {
       sports.addAll(waterSports);
     } else if (characteristicId == precorMeasurementUuid ||

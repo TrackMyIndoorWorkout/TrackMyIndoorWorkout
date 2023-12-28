@@ -32,7 +32,9 @@ void main() {
       const TestPair(characteristicId: cyclingPowerMeasurementUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: indoorBikeUuid, sports: [ActivityType.ride]),
       const TestPair(characteristicId: rowerDeviceUuid, sports: waterSports),
-      const TestPair(characteristicId: c2RowingGeneralStatusUuid, sports: [ActivityType.rowing]),
+      const TestPair(
+          characteristicId: c2ErgGeneralStatusUuid,
+          sports: [ActivityType.rowing, ActivityType.nordicSki, ActivityType.ride]),
       const TestPair(characteristicId: crossTrainerUuid, sports: [ActivityType.elliptical]),
       const TestPair(characteristicId: heartRateMeasurementUuid, sports: []),
       const TestPair(

@@ -2,7 +2,7 @@ import '../../utils/constants.dart';
 
 Map<String, int> underArmourSport = {
   ActivityType.alpineSki: 74,
-  ActivityType.backcountrySki: 397, // Cross country skiing
+  ActivityType.backcountrySki: 397,
   ActivityType.canoeing: 57,
   ActivityType.crossfit: 704,
   ActivityType.eBikeRide: 1246,
@@ -16,7 +16,7 @@ Map<String, int> underArmourSport = {
   ActivityType.inlineSkate: 169,
   ActivityType.kayaking: 257,
   ActivityType.kitesurf: 205,
-  ActivityType.nordicSki: 1237,
+  ActivityType.nordicSki: 1237, // Cross country skiing
   "OpenWaterSwim": 180,
   "Paddling": 88,
   ActivityType.ride: 36, // Road Cycling

@@ -87,6 +87,12 @@ const paddleSports = [
   ActivityType.canoeing,
 ];
 
+const c2Sports = [
+  ActivityType.rowing,
+  ActivityType.nordicSki,
+  ActivityType.ride,
+];
+
 const allSports = [
   ActivityType.ride,
   ActivityType.run,
@@ -95,4 +101,5 @@ const allSports = [
   ActivityType.canoeing,
   ActivityType.rowing,
   ActivityType.swim,
+  ActivityType.nordicSki,
 ];
