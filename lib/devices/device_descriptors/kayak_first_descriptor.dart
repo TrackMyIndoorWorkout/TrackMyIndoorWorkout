@@ -267,7 +267,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       return;
     }
 
-    progressBottomSheet("Initializing step 2...", progressBarCompletionTime);
+    progressBottomSheet("Initializing 1...", progressBarCompletionTime);
     await Future.delayed(responseWatchDelay);
     final prefService = Get.find<BasePrefService>();
     final blockSignalStartStop =
@@ -291,7 +291,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     seenIt = false;
     iterationCount = 0;
     currentResponses.clear();
-    progressBottomSheet("Initializing step 3...", progressBarCompletionTime);
+    progressBottomSheet("Initializing 2...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
       seenIt = await _waitForResponse(resetByte, commandExtraLongDelayMs, logLevel, true)
