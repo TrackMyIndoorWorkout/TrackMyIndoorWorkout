@@ -286,6 +286,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     await Future.delayed(commandLongDelay);
     ProgressState.optionallyCloseProgress();
+    await Future.delayed(responseWatchDelay);
     // 1.2 Reset
     seenIt = false;
     iterationCount = 0;
@@ -301,6 +302,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     await Future.delayed(commandExtraLongDelay);
     ProgressState.optionallyCloseProgress();
+    await Future.delayed(responseWatchDelay);
     // 2. Handshake
     seenIt = false;
     iterationCount = 0;
@@ -316,6 +318,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     await Future.delayed(commandExtraLongDelay);
     ProgressState.optionallyCloseProgress();
+    await Future.delayed(responseWatchDelay);
     // 3. Display Configuration
     seenIt = false;
     iterationCount = 0;
@@ -332,6 +335,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     await Future.delayed(commandExtraLongDelay);
     ProgressState.optionallyCloseProgress();
+    await Future.delayed(responseWatchDelay);
     initializedConsole = true;
   }
 
