@@ -48,7 +48,9 @@ class PreMeasurementProgressState extends State<PreMeasurementProgress> {
     super.initState();
     _sizeDefault = Get.textTheme.displayMedium!.fontSize!;
     _textStyle = Get.textTheme.headlineMedium!;
-    Get.put<ProgressState>(ProgressState(progressVisible: true));
+    final progressState = Get.find<ProgressState>();
+    progressState.progressCount += 1;
+    Get.put<ProgressState>(progressState);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _timer = Timer.periodic(Duration(milliseconds: widget.progressTimerGap), (_) {
@@ -60,7 +62,7 @@ class PreMeasurementProgressState extends State<PreMeasurementProgress> {
   @override
   void dispose() {
     final progressState = Get.find<ProgressState>();
-    progressState.progressVisible = false;
+    progressState.progressCount -= 1;
     Get.put<ProgressState>(progressState);
     _timer?.cancel();
     super.dispose();
