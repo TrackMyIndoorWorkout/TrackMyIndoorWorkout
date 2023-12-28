@@ -8,9 +8,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:track_my_indoor_exercise/preferences/database_location.dart';
 
 import 'devices/company_registry.dart';
+import 'preferences/database_location.dart';
 import 'preferences/log_level.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'persistence/isar/activity.dart';
