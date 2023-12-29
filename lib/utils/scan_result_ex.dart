@@ -235,6 +235,23 @@ extension ScanResultEx on ScanResult {
           ),
         );
       }
+
+      if (device.platformName.startsWith("Stages ") &&
+          (serviceUuids.contains(fitnessMachineUuid) ||
+              serviceUuids.contains(cyclingPowerServiceUuid))) {
+        return Tuple2(
+          SvgPicture.asset(
+            "assets/equipment/Stages_logo.svg",
+            height: logoSize,
+            semanticsLabel: "Stages Logo",
+          ),
+          SvgPicture.asset(
+            "assets/equipment/Stages_banner.svg",
+            height: logoSize,
+            semanticsLabel: "Stages Banner",
+          ),
+        );
+      }
     }
 
     final loweredPlatformName = device.platformName.toLowerCase();
