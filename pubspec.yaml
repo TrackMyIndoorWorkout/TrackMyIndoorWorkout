@@ -12,6 +12,7 @@ environment:
 dependency_overrides:
   analyzer: ^6.3.0  # because of isar_generator
   path: ^1.9.0  # SDK pinned this down
+  intl: ^0.19.0  # because of syncfusion_flutter_charts
 
 dependencies:
   assorted_layout_widgets: ^9.0.0
@@ -35,7 +36,7 @@ dependencies:
   http: ^1.1.2
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
-  intl: ^0.18.1
+  intl: ^0.19.0
   is_first_run: ^1.0.0
   isar: *isar_version
   isar_flutter_libs: *isar_version
@@ -53,7 +54,7 @@ dependencies:
   soundpool: ^2.4.1
   sqflite: ^2.3.0
   string_validator: ^1.0.2
-  syncfusion_flutter_charts: ^24.1.41
+  syncfusion_flutter_charts: ^24.1.43+1
   timezone: ^0.9.2
   tuple: ^2.0.2
   uni_links: ^0.5.1
