@@ -201,6 +201,7 @@ extension ScanResultEx on ScanResult {
 
   Tuple2<Widget, Widget> getLogoAndBanner(List<MachineType> ftmsServiceDataMachineTypes,
       String deviceSport, double logoSize, double mediaWidth, ThemeManager themeManager) {
+    final loweredPlatformName = device.platformName.toLowerCase();
     if (advertisementData.serviceUuids.isNotEmpty) {
       final serviceUuids = advertisementData.uuids;
       if (serviceUuids.contains(schwinnX70ServiceUuid)) {
@@ -236,7 +237,7 @@ extension ScanResultEx on ScanResult {
         );
       }
 
-      if (device.platformName.startsWith("Stages ") &&
+      if (loweredPlatformName.startsWith("stages") &&
           (serviceUuids.contains(fitnessMachineUuid) ||
               serviceUuids.contains(cyclingPowerServiceUuid))) {
         return Tuple2(
@@ -254,7 +255,6 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    final loweredPlatformName = device.platformName.toLowerCase();
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
