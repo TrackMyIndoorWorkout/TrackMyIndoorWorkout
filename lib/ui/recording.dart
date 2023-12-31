@@ -368,15 +368,15 @@ class RecordingState extends State<RecordingScreen> {
               _graphMaxData.removeFirst();
             }
           }
-          graphData = _graphData.toList();
+          graphData = _graphData.toList(growable: false);
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            graphAvgData = _graphAvgData.toList();
+            graphAvgData = _graphAvgData.toList(growable: false);
           }
 
           if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            graphMaxData = _graphMaxData.toList();
+            graphMaxData = _graphMaxData.toList(growable: false);
           }
         }
 
@@ -748,25 +748,33 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _pointCount = min(60, size.width ~/ 2);
+    _onStageStatisticsType =
+        prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
     final now = DateTime.now();
-    _graphData = _simplerUi
-        ? ListQueue<DisplayRecord>(0)
-        : ListQueue.from(List<DisplayRecord>.generate(
+    if (!_simplerUi) {
+      _graphData = ListQueue.from(List<DisplayRecord>.generate(
+          _pointCount,
+          (i) =>
+              DisplayRecord.blank(widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+      graphData = _graphData.toList(growable: false);
+      if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+          _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+        _graphAvgData = ListQueue.from(List<DisplayRecord>.generate(
             _pointCount,
             (i) => DisplayRecord.blank(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
-    _graphAvgData = _simplerUi
-        ? ListQueue<DisplayRecord>(0)
-        : ListQueue.from(List<DisplayRecord>.generate(
+        graphAvgData = _graphAvgData.toList(growable: false);
+      }
+
+      if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+          _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+        _graphMaxData = ListQueue.from(List<DisplayRecord>.generate(
             _pointCount,
             (i) => DisplayRecord.blank(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
-    _graphMaxData = _simplerUi
-        ? ListQueue<DisplayRecord>(0)
-        : ListQueue.from(List<DisplayRecord>.generate(
-            _pointCount,
-            (i) => DisplayRecord.blank(
-                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+        graphMaxData = _graphMaxData.toList(growable: false);
+      }
+    }
 
     if (widget.sport != ActivityType.ride) {
       final slowPace = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
