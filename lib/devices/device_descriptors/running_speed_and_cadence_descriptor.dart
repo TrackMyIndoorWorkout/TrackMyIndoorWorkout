@@ -1,7 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
-import 'package:track_my_indoor_exercise/devices/gatt/rsc.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
@@ -9,7 +7,10 @@ import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/heart_rate_monitor.dart';
+import '../gadgets/running_speed_and_cadence_sensor.dart';
 import '../gatt/hrm.dart';
+import '../gatt/power_meter.dart';
+import '../gatt/rsc.dart';
 import 'device_descriptor.dart';
 
 class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {

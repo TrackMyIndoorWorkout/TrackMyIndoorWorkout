@@ -9,9 +9,6 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
-import 'package:track_my_indoor_exercise/preferences/database_location.dart';
-import 'package:track_my_indoor_exercise/ui/parts/pick_directory.dart';
-import 'package:track_my_indoor_exercise/utils/export.dart';
 
 import '../../persistence/isar/activity.dart';
 import '../../persistence/isar/calorie_tune.dart';
@@ -23,11 +20,14 @@ import '../../persistence/isar/workout_summary.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
+import '../../preferences/database_location.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/log_level.dart';
+import '../../utils/export.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
+import '../parts/pick_directory.dart';
 import 'preferences_screen_mixin.dart';
 
 class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
