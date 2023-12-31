@@ -1292,7 +1292,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if (descriptor != null) {
+    if (descriptor != null && !uxDebug) {
       if (!_blockSignalStartStop) {
         await descriptor!.executeControlOperation(
           getControlPoint(),

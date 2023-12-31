@@ -279,7 +279,10 @@ class RecordingState extends State<RecordingScreen> {
       await _fitnessEquipment?.additionalSensorsOnDemand();
       await _fitnessEquipment?.attach();
       _startPumpingData();
-      await _fitnessEquipment?.postPumpStart();
+      if (!_uxDebug) {
+        await _fitnessEquipment?.postPumpStart();
+      }
+
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
