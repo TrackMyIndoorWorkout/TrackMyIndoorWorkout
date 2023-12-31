@@ -854,7 +854,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         }
 
         // Null activity should only happen in UX simulation mode
-        if (_activity != null) {
+        if (_activity != null && !uxDebug) {
           _activity!.start = now;
           if (Get.isRegistered<Isar>()) {
             final database = Get.find<Isar>();
@@ -1309,7 +1309,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   Future<void> stopWorkout() async {
-    if (!_blockSignalStartStop && descriptor != null) {
+    if (!_blockSignalStartStop && descriptor != null && !uxDebug) {
       await descriptor!.executeControlOperation(
         getControlPoint(),
         _blockSignalStartStop,

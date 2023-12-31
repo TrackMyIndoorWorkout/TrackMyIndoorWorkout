@@ -1695,7 +1695,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> startStopAction() async {
     if (_measuring) {
-      if (_circuitWorkout) {
+      if (_circuitWorkout && !_uxDebug) {
         final selection = await Get.bottomSheet(
           const SafeArea(
             child: Column(
