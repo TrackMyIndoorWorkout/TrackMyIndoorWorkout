@@ -243,7 +243,7 @@ extension ScanResultEx on ScanResult {
         return Tuple2(
           SvgPicture.asset(
             "assets/equipment/Stages_logo.svg",
-            height: logoSize,
+            width: logoSize,
             semanticsLabel: "Stages Logo",
           ),
           SvgPicture.asset(
@@ -297,7 +297,7 @@ extension ScanResultEx on ScanResult {
             return Tuple2(
               SvgPicture.asset(
                 "assets/equipment/Stages_logo.svg",
-                height: logoSize,
+                width: logoSize,
                 semanticsLabel: "Stages Logo",
               ),
               SvgPicture.asset(
