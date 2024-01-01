@@ -1,3 +1,11 @@
+## 1.1.152
+* Concept2 RowErg, SkiErg, BikeErg support progress
+* Kayak First ergometer support (both kayak and canoe) with UI feedback
+* Upgrade Flutter Blue Plus plugin several times
+* Fixing graph problem during measurement (syncfusion_flutter_charts v24+ issue)
+* Fixing Stages branding logo size and also the logo's and banner's color in dark mode
+* Fixing Bowflex logo SVG and also the logo's and banner's color in dark mode
+
 ## 1.1.151
 * Concept2 RowErg FTMS support
 * Kayak First ergometer support progress (both kayak and canoe)
