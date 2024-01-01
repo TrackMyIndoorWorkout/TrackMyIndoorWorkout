@@ -24,6 +24,8 @@ mixin Upload {
       sport = "Bike";
     } else if (sport == ActivityType.elliptical) {
       sport = "X-train";
+    } else if (sport == ActivityType.nordicSki) {
+      sport = "XC-ski";
     } else if (sport != ActivityType.swim &&
         sport != ActivityType.rowing &&
         sport != ActivityType.run) {

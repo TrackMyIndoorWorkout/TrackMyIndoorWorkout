@@ -112,6 +112,7 @@ mixin PowerSpeedMixin {
     switch (sport) {
       case ActivityType.run:
       case ActivityType.rowing:
+      case ActivityType.nordicSki:
         return 1.9;
       case ActivityType.kayaking:
       case ActivityType.canoeing:

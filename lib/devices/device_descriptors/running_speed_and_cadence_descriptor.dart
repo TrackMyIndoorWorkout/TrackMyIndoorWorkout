@@ -1,15 +1,17 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
-import 'package:track_my_indoor_exercise/devices/gatt/rsc.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
+import '../gadgets/cycling_power_meter_sensor.dart';
 import '../gadgets/heart_rate_monitor.dart';
+import '../gadgets/running_speed_and_cadence_sensor.dart';
 import '../gatt/hrm.dart';
+import '../gatt/power_meter.dart';
+import '../gatt/rsc.dart';
 import 'device_descriptor.dart';
 
 class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
@@ -81,16 +83,25 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
   @override
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
+    List<ComplexSensor> additionalSensors = [];
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
-    final requiredService = services
+    final hrmService = services
         .firstWhereOrNull((service) => service.serviceUuid.uuidString() == heartRateServiceUuid);
-    if (requiredService == null) {
-      return [];
+    if (hrmService != null) {
+      final additionalSensor = HeartRateMonitor(device);
+      additionalSensor.services = services;
+      additionalSensors.add(additionalSensor);
     }
 
-    final additionalSensor = HeartRateMonitor(device);
-    additionalSensor.services = services;
-    return [additionalSensor];
+    final powerMeterService = services
+        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == cyclingPowerServiceUuid);
+    if (powerMeterService != null) {
+      final additionalSensor = CyclingPowerMeterSensor(device);
+      additionalSensor.services = services;
+      additionalSensors.add(additionalSensor);
+    }
+
+    return additionalSensors;
   }
 
   @override

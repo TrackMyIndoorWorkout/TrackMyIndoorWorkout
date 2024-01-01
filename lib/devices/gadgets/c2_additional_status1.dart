@@ -7,8 +7,8 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
 class C2AdditionalStatus1 extends ComplexSensor {
-  static const serviceUuid = c2RowingPrimaryServiceUuid;
-  static const characteristicUuid = c2RowingAdditionalStatus1Uuid;
+  static const serviceUuid = c2ErgPrimaryServiceUuid;
+  static const characteristicUuid = c2ErgAdditionalStatus1Uuid;
 
   static const expectedDataPacketLength = 17;
   static const speedLsbByteIndex = 3;

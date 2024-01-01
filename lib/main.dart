@@ -8,9 +8,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:track_my_indoor_exercise/preferences/database_location.dart';
 
 import 'devices/company_registry.dart';
+import 'preferences/database_location.dart';
 import 'preferences/log_level.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'persistence/isar/activity.dart';
@@ -21,6 +21,7 @@ import 'persistence/isar/floor_record_migration.dart';
 import 'persistence/isar/log_entry.dart';
 import 'persistence/isar/power_tune.dart';
 import 'ui/models/advertisement_cache.dart';
+import 'ui/models/progress_state.dart';
 import 'persistence/isar/record.dart';
 import 'persistence/isar/workout_summary.dart';
 import 'utils/address_names.dart';
@@ -60,6 +61,7 @@ void main() async {
 
     Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
     Get.put<AddressNames>(AddressNames(), permanent: true);
+    Get.put<ProgressState>(ProgressState(), permanent: true);
 
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       Get.put<PackageInfo>(packageInfo, permanent: true);

@@ -93,9 +93,9 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services.firstWhereOrNull(
+    final rscService = services.firstWhereOrNull(
         (service) => service.serviceUuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid);
-    if (requiredService == null) {
+    if (rscService == null) {
       return [];
     }
 

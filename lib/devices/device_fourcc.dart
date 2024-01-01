@@ -25,7 +25,10 @@ const genericFTMSCrossTrainerFourCC = "GXtr";
 const powerMeterBasedBikeFourCC = "PowB";
 const cscSensorBasedBikeFourCC = "CSCB";
 const cscSensorBasedPaddleFourCC = "CSCP";
-const concept2RowerFourCC = "Cpt2";
+const concept2RowerFourCC = "C2Rw";
+const concept2SkiFourCC = "C2Sk";
+const concept2BikeFourCC = "C2Bk";
+const concept2ErgFourCC = "Cpt2";
 const merachMr667FourCC = "M667";
 const virtufitUltimatePro2FourCC = "VFUP";
 const kayakFirstFourCC = "K1st";
@@ -58,6 +61,9 @@ List<String> allFourCC = [
   cscSensorBasedBikeFourCC,
   cscSensorBasedPaddleFourCC,
   concept2RowerFourCC,
+  concept2SkiFourCC,
+  concept2BikeFourCC,
+  concept2ErgFourCC,
   merachMr667FourCC,
   virtufitUltimatePro2FourCC,
   kayakFirstFourCC,
@@ -68,18 +74,24 @@ List<String> multiSportFourCCs = [
   kayakProGenesisPortFourCC,
   kayakFirstFourCC,
   genericFTMSRowerFourCC,
+  concept2ErgFourCC,
 ];
 
 class DeviceIdentifierHelperEntry {
   final List<String> deviceNamePrefixes;
   late final List<String> deviceNameLoweredPrefixes;
+  final String deviceNamePostfix;
+  late final String deviceNameLoweredPostfix;
   final String manufacturerNamePrefix;
   late final String manufacturerNameLoweredPrefix;
 
   DeviceIdentifierHelperEntry(
-      {required this.deviceNamePrefixes, this.manufacturerNamePrefix = ""}) {
+      {required this.deviceNamePrefixes,
+      this.deviceNamePostfix = "",
+      this.manufacturerNamePrefix = ""}) {
     deviceNameLoweredPrefixes =
         deviceNamePrefixes.map((d) => d.toLowerCase()).toList(growable: false);
+    deviceNameLoweredPostfix = deviceNamePostfix.toLowerCase();
     manufacturerNameLoweredPrefix = manufacturerNamePrefix.toLowerCase();
   }
 }
@@ -117,7 +129,13 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   powerMeterBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stages IC"]),
   cscSensorBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   cscSensorBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
-  concept2RowerFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"]),
+  concept2RowerFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"], deviceNamePostfix: "Row"),
+  concept2SkiFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"], deviceNamePostfix: "Ski"),
+  concept2BikeFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"], deviceNamePostfix: "Bike"),
+  concept2ErgFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"]),
   merachMr667FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Merach-MR667"]),
   virtufitUltimatePro2FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["VIRTUFIT-UP2"]),
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
@@ -166,6 +184,9 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   cscSensorBasedPaddleFourCC:
       SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),
   concept2RowerFourCC: SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
+  concept2SkiFourCC: SportDescriptor(defaultSport: ActivityType.nordicSki, isMultiSport: false),
+  concept2BikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
+  concept2ErgFourCC: SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: true),
   merachMr667FourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   virtufitUltimatePro2FourCC:
       SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),

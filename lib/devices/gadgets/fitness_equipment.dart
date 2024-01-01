@@ -286,20 +286,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
       List<int> byteListPrep = [];
       if (fragmentedPackets) {
-        final fragLength = packetFragment.length;
-        if (lastFragment.isNotEmpty &&
-            lastFragment.length == byteList.length &&
-            listEquality(lastFragment, byteList)) {
-          Logging().log(
-              logLevel, logLevelInfo, tag, "_listenToData loop", "Repeat fragment => discard!");
-
-          continue;
-        }
-
-        lastFragment.clear();
-        lastFragment.addAll(byteList);
-
-        final listLength = byteList.length;
         if (logLevel >= logLevelInfo) {
           Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
               "Kayak First: ${utf8.decode(byteList)}");
@@ -309,17 +295,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           if (logLevel >= logLevelInfo) {
             Logging()
                 .log(logLevel, logLevelInfo, tag, "_listenToData loop", "skipPacket => discard!");
-          }
-
-          continue;
-        }
-
-        if (byteList.isNotEmpty &&
-            fragLength >= listLength &&
-            packetFragment.sublist(fragLength - listLength).equals(byteList)) {
-          if (logLevel >= logLevelInfo) {
-            Logging().log(logLevel, logLevelInfo, tag, "_listenToData loop",
-                "Repeat packet fragment => discard!");
           }
 
           continue;
@@ -879,7 +854,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         }
 
         // Null activity should only happen in UX simulation mode
-        if (_activity != null) {
+        if (_activity != null && !uxDebug) {
           _activity!.start = now;
           if (Get.isRegistered<Isar>()) {
             final database = Get.find<Isar>();
@@ -1317,7 +1292,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 
-    if (descriptor != null) {
+    if (descriptor != null && !uxDebug) {
       if (!_blockSignalStartStop) {
         await descriptor!.executeControlOperation(
           getControlPoint(),
@@ -1334,7 +1309,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   Future<void> stopWorkout() async {
-    if (!_blockSignalStartStop && descriptor != null) {
+    if (!_blockSignalStartStop && descriptor != null && !uxDebug) {
       await descriptor!.executeControlOperation(
         getControlPoint(),
         _blockSignalStartStop,

@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: ce908da0d8030b26e7945b6c6aa818bbe61292f0a3de33e8d2ba6fafadf5a3aa
+      sha256: f9d546a09009650f4d2918f50cc76d39d8e84f74314a7c87dce197253e292c3a
       url: "https://pub.dev"
     source: hosted
-    version: "1.30.6"
+    version: "1.31.4"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
@@ -507,10 +507,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   io:
     dependency: transitive
     description:
@@ -739,10 +739,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: e595b98692943b4881b219f0a9e3945118d3c16bd7e2813f98ec6e532d905f72
+      sha256: "477184d672607c0a3bf68fbbf601805f92ef79c82b64b4d6eb318cbca4c48668"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.2"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -1040,10 +1040,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: "8922805564b78eb7aa9386c10056d377a541ac7270dc6a1589176277ebb4d15d"
+      sha256: c4a4c5a4b2a32e2d0f6837b33d7c91a67903891a5b7dbe706cf4b1f6b0c798c5
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   sqlparser:
     dependency: transitive
     description:
@@ -1112,18 +1112,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "6f2ea3eaa34b998ba68461f6c8457f01cf8c07cf376a57069f9995a9cae1eb33"
+      sha256: d720751869540bc0b18e063414e9c8d41c924cca01e3aad3538d404c31d00e2d
       url: "https://pub.dev"
     source: hosted
-    version: "24.1.41"
+    version: "24.1.43+1"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "69c827931957d5b121ee9f0b9b0b8d7d0d1ac537b61bcdd5c3fbffc044bbe86e"
+      sha256: "1b40729aa10a727150a6cc56e532c770f4baded83846fca8700efd908d0f4d0a"
       url: "https://pub.dev"
     source: hosted
-    version: "24.1.41"
+    version: "24.1.43"
   synchronized:
     dependency: transitive
     description:
@@ -1360,10 +1360,10 @@ packages:
     dependency: transitive
     description:
       name: web_socket_channel
-      sha256: d88238e5eac9a42bb43ca4e721edba3c08c6354d4a53063afaa568516217621b
+      sha256: "045ec2137c27bf1a32e6ffa0e734d532a6677bf9016a0d1a406c54e499ff945b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1"
   webdriver:
     dependency: transitive
     description:

@@ -6,16 +6,19 @@ import 'delays.dart';
 import 'logging.dart';
 
 Future<bool> isBluetoothOn() async {
-  final blueState = await FlutterBluePlus.adapterState.first.timeout(
-      const Duration(milliseconds: dataMapExpiry),
-      onTimeout: () => BluetoothAdapterState.off);
+  var blueState = FlutterBluePlus.adapterStateNow;
+  if (blueState == BluetoothAdapterState.unknown) {
+    blueState = await FlutterBluePlus.adapterState.first.timeout(
+        const Duration(milliseconds: dataMapExpiry),
+        onTimeout: () => BluetoothAdapterState.off);
+  }
+
   return blueState == BluetoothAdapterState.on;
 }
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   try {
-    var blueOn = await isBluetoothOn();
-    if (blueOn) {
+    if (await isBluetoothOn()) {
       return true;
     }
 

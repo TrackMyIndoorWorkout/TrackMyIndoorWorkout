@@ -110,6 +110,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
 
   @override
   void dispose() {
+    _scanStreamController.close();
+    _scanStreamSubscription?.cancel();
+
     if (_isScanning) {
       try {
         FlutterBluePlus.stopScan();
@@ -416,8 +419,10 @@ class FindDevicesState extends State<FindDevicesScreen> {
     DeviceDescriptor? descriptor;
     final loweredPlatformName = device.platformName.toLowerCase();
     for (final mapEntry in deviceNamePrefixes.entries) {
+      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
       for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(lowerPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 advertisementDigest.loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
@@ -427,8 +432,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
             continue;
           }
 
-          if (mapEntry.key == concept2RowerFourCC &&
+          if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
+                  .contains(mapEntry.key) &&
               advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+            // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
+            // TODO: What does SkiErg implement (if any at all)?
             continue;
           }
 
@@ -461,8 +469,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
           descriptor = DeviceFactory.getDescriptorForFourCC(precorSpinnerChronoPowerFourCC);
         } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
-        } else if (advertisementDigest.serviceUuids.contains(c2RowingPrimaryServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(concept2RowerFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(concept2ErgFourCC);
         } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
@@ -683,8 +691,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
                   Expanded(
                     child: Center(
                       child: SportPickerBottomSheet(
-                        sportChoices:
-                            descriptor.fourCC == kayakFirstFourCC ? paddleSports : waterSports,
+                        sportChoices: DeviceFactory.getSportChoices(descriptor.fourCC),
                         initialSport: initialSport,
                       ),
                     ),

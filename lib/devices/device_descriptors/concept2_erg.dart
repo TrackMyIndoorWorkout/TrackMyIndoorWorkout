@@ -4,7 +4,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
-import '../../utils/constants.dart';
+// import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
 import '../gadgets/c2_additional_status1.dart';
@@ -16,23 +16,23 @@ import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import '../device_fourcc.dart';
 import 'fixed_layout_device_descriptor.dart';
 
-class Concept2Rower extends FixedLayoutDeviceDescriptor {
+class Concept2Erg extends FixedLayoutDeviceDescriptor {
   static const expectedDataPacketLength = 19;
   static const distanceLsbByteIndex = 3;
 
-  Concept2Rower()
+  Concept2Erg(String defaultSport, bool isMultiSport, String fourCC)
       : super(
-          sport: deviceSportDescriptors[concept2RowerFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[concept2RowerFourCC]!.isMultiSport,
-          fourCC: concept2RowerFourCC,
+          sport: defaultSport,
+          isMultiSport: isMultiSport,
+          fourCC: fourCC,
           vendorName: "Concept2",
           modelName: "PM5",
           manufacturerNamePart: "Concept2",
           manufacturerFitId: concept2FitId,
           model: "PM5",
           tag: "CONCEPT2",
-          dataServiceId: c2RowingPrimaryServiceUuid,
-          dataCharacteristicId: c2RowingGeneralStatusUuid,
+          dataServiceId: c2ErgPrimaryServiceUuid,
+          dataCharacteristicId: c2ErgGeneralStatusUuid,
           listenOnControl: false,
           flagByteSize: 1,
           distanceMetric: ThreeByteMetricDescriptor(
@@ -43,7 +43,11 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
         );
 
   @override
-  Concept2Rower clone() => Concept2Rower();
+  Concept2Erg clone() => Concept2Erg(
+        deviceSportDescriptors[concept2ErgFourCC]!.defaultSport,
+        deviceSportDescriptors[concept2ErgFourCC]!.isMultiSport,
+        concept2ErgFourCC,
+      );
 
   @override
   bool isDataProcessable(List<int> data) {
@@ -59,7 +63,7 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
   RecordWithSport? stubRecord(List<int> data) {
     return RecordWithSport(
       distance: getDistance(data),
-      sport: ActivityType.rowing,
+      sport: sport,
     );
   }
 
@@ -69,8 +73,8 @@ class Concept2Rower extends FixedLayoutDeviceDescriptor {
   @override
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services.firstWhereOrNull(
-        (service) => service.serviceUuid.uuidString() == c2RowingPrimaryServiceUuid);
+    final requiredService = services
+        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == c2ErgPrimaryServiceUuid);
     if (requiredService == null) {
       return [];
     }
