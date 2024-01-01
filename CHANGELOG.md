@@ -1,6 +1,6 @@
 ## 1.1.151
 * Concept2 RowErg FTMS support
-* Kayak First ergometer support (both kayak and canoe)
+* Kayak First ergometer support progress (both kayak and canoe)
 * Upgrade Flutter Blue Plus plugin many times
 * Upgrade Flutter to channel beta 3.18.0-0.2.pre, Dart 3.3.0-174.3.beta
 * Upgrade numerous plugins many times
