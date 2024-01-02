@@ -253,10 +253,10 @@ packages:
     dependency: "direct main"
     description:
       name: fab_circular_menu_plus
-      sha256: "2b4c25c2fa88d986483ed230dc30fa82e19a13c5258a0cf65f6255ff48fa1d80"
+      sha256: f3de78e1c267c360bae41cbe07fe3f6dc6895102c559d273779cf7a96f31bf4e
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.2"
   fake_async:
     dependency: transitive
     description:
