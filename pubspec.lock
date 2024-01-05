@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: f9d546a09009650f4d2918f50cc76d39d8e84f74314a7c87dce197253e292c3a
+      sha256: "3e0ebb77e4d9382923670f46a04d0036cb9c2952f32625b91d3f8dd690ea5eb9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.31.4"
+    version: "1.31.5"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
@@ -811,10 +811,10 @@ packages:
     dependency: "direct main"
     description:
       name: pref
-      sha256: "12073e208ce1c6808ad9617964a286341ff14dea0c26f96cc3e212a88a5bb103"
+      sha256: c385b6239c594bfc78209eba17686bd0a156c8a216edf4b0716923fddc9b4f85
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.2"
+    version: "2.8.0"
   process:
     dependency: transitive
     description:
@@ -1112,10 +1112,10 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "0cd8e9a2575c428b4b8545134b9235500cbb99e2eb945a82d8114ec2eee401c2"
+      sha256: "1f5434cb0dd0118a8f3281a0351559772e09066c2adfd69b16098f38f2b909e9"
       url: "https://pub.dev"
     source: hosted
-    version: "24.1.44"
+    version: "24.1.44+1"
   syncfusion_flutter_core:
     dependency: transitive
     description:
