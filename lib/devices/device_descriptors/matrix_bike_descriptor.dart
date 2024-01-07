@@ -45,7 +45,7 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
     flag = processCadenceFlag(flag);
     flag = skipFlag(flag); // Average Cadence
     flag = processTotalDistanceFlag(flag);
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
     flag = advanceFlag(flag); // Expanded Energy
