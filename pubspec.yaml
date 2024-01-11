@@ -6,8 +6,8 @@ version: 1.1.152+152
 isar_version: &isar_version ^3.1.0+1
 
 environment:
-  sdk: ">=3.3.0-174.3.beta"
-  flutter: ">=3.18.0-0.2.pre"
+  sdk: ">=3.3.0-279.0.dev"
+  flutter: ">=3.19.0-0.1.pre"
 
 dependency_overrides:
   analyzer: ^6.3.0  # because of isar_generator
