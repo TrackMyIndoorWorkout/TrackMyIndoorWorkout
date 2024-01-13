@@ -11,7 +11,6 @@ environment:
 
 dependency_overrides:
   analyzer: ^6.3.0  # because of isar_generator
-  path: ^1.9.0  # SDK pinned this down
   intl: ^0.19.0  # because of syncfusion_flutter_charts
 
 dependencies:
