@@ -168,7 +168,8 @@ abstract class ActivityExport {
     return GZipCodec(gzip: true).encode(fileBytes);
   }
 
-  Map<String, dynamic> getPersistenceValues(Activity activity, bool compressed) {
+  Map<String, dynamic> getPersistenceValues(Activity activity, bool compressed,
+      [bool moderated = false]) {
     final dateString = DateFormat.yMd().format(activity.start);
     final timeString = DateFormat.Hms().format(activity.start);
     final fileName = 'Activity_${dateString}_$timeString.${fileExtension(compressed)}'
@@ -177,7 +178,8 @@ abstract class ActivityExport {
     return {
       'startStamp': activity.start,
       'name': '${activity.sport} at $dateString $timeString',
-      'description': '${activity.sport}, machine: ${activity.deviceName}, recorded with $appUrl',
+      'description':
+          '${activity.sport}, machine: ${activity.deviceName}, recorded with ${moderated ? appDomain : appUrl}',
       'fileName': fileName,
     };
   }

@@ -53,7 +53,7 @@ mixin Upload {
       return await checkStatus(headers, activity);
     }
 
-    Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
+    Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false, true);
     final postUri = Uri.parse(uploadsEndpoint);
     final uploadInitResponse = await http.post(
       postUri,
