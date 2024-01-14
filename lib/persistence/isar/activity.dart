@@ -131,6 +131,8 @@ class Activity {
         return underArmourUploaded;
       case trainingPeaksChoice:
         return trainingPeaksUploaded;
+      case anyChoice:
+        return uploaded || suuntoUploaded || underArmourUploaded || trainingPeaksUploaded;
       case stravaChoice:
       default:
         return uploaded;

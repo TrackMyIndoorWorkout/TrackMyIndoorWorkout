@@ -4,21 +4,19 @@ import 'package:flutter/widgets.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class ActivityDetailHeaderRow extends StatelessWidget {
-  const ActivityDetailHeaderRow({
+class ActivityDetailHeaderRowBase extends StatelessWidget {
+  const ActivityDetailHeaderRowBase({
     super.key,
     required this.themeManager,
     required this.icon,
     required this.iconSize,
-    required this.text,
-    required this.textStyle,
+    required this.widget,
   });
 
   final ThemeManager themeManager;
   final IconData icon;
   final double iconSize;
-  final String text;
-  final TextStyle textStyle;
+  final Widget widget;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +27,7 @@ class ActivityDetailHeaderRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           themeManager.getBlueIcon(icon, iconSize),
-          Text(text, style: textStyle),
+          widget,
         ],
       ),
     );

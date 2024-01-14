@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/instant_upload.dart';
 import '../../preferences/training_peaks_upload_public.dart';
+import '../../preferences/upload_display_mode.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
@@ -87,6 +87,27 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         pref: trainingPeaksUploadPublicTag,
       ),
       PrefLabel(
+        title: Text(uploadDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
+      const PrefRadio<String>(
+        title: Text(uploadDisplayModeNoneTitle),
+        subtitle: Text(uploadDisplayModeNoneDescription),
+        value: uploadDisplayModeNone,
+        pref: uploadDisplayModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(uploadDisplayModeAggregateTitle),
+        subtitle: Text(uploadDisplayModeAggregateDescription),
+        value: uploadDisplayModeAggregate,
+        pref: uploadDisplayModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(uploadDisplayModeDetailedTitle),
+        subtitle: Text(uploadDisplayModeDetailedDescription),
+        value: uploadDisplayModeDetailed,
+        pref: uploadDisplayModeTag,
+      ),
+      PrefLabel(
         title: Text("Available Integrations:", style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
     ];
@@ -116,12 +137,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
                       height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
                       width: mediaWidth - 130,
                       padding: const EdgeInsets.all(5),
-                      child: SvgPicture.asset(
-                        e.value.assetName,
-                        colorFilter: const ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
-                        height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
-                        semanticsLabel: '${e.value.name} Logo',
-                      ),
+                      child: e.value.getSvg(false, _largerTextStyle.fontSize!),
                     ),
                   ],
                 ),
