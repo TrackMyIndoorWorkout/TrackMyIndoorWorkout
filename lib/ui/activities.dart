@@ -501,7 +501,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           final dateString = DateFormat.yMd().format(activity.start);
           var timeString = DateFormat.Hms().format(activity.start);
           if (_uploadDisplayMode == uploadDisplayModeAggregate && activity.isUploaded(anyChoice)) {
-            timeString += " \u2601";
+            timeString += "\u2601";
           }
 
           final List<Widget> header = [
