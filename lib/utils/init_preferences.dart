@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
@@ -214,6 +216,7 @@ Future<BasePrefService> initPreferences() async {
   Get.put<BasePrefService>(prefService, permanent: true);
 
   final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
+  log("prefVersion: $prefVersion");
   if (prefVersion <= preferencesVersionSportThresholds) {
     for (var prefSpec in MetricSpec.preferencesSpecs) {
       final thresholdTag = MetricSpec.thresholdPrefix + prefSpec.metric;
@@ -406,7 +409,9 @@ Future<BasePrefService> initPreferences() async {
   }
 
   if (prefVersion > preferencesVersionIsarMigration) {
+    log("Migration, is first run?");
     if (await IsFirstRun.isFirstRun()) {
+      log("Yes, first run");
       prefService.set<bool>(databaseMigrationNeededTag, false);
     }
   }

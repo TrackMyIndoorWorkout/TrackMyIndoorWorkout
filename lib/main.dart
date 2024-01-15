@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -30,18 +31,27 @@ import 'utils/logging.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(() async {
+    log("WidgetsFlutterBinding.ensureInitialized");
     WidgetsFlutterBinding.ensureInitialized();
 
+    log("rootBundle.load");
     final byteData = await rootBundle.load('assets/timezones_10y.tzf');
+    log("tz.initializeDatabase");
     tz.initializeDatabase(byteData.buffer.asUint8List());
 
+    log("initPreferences");
     final prefService = await initPreferences();
+    log("dbLocation...");
     String dbLocation = prefService.get<String>(databaseLocationTag) ?? databaseLocationDefault;
+    log("dbLocation: $dbLocation");
     if (dbLocation.isEmpty) {
+      log("dbLocation.isEmpty");
       final dbDirectory = await getApplicationDocumentsDirectory();
       dbLocation = dbDirectory.path;
+      log("dbLocation: $dbLocation");
     }
 
+    log("Isar.open");
     final isar = await Isar.open([
       ActivitySchema,
       CalorieTuneSchema,
@@ -53,21 +63,31 @@ void main() async {
       RecordSchema,
       WorkoutSummarySchema,
     ], directory: dbLocation);
+    log("Get.put<Isar>");
     Get.put<Isar>(isar, permanent: true);
 
     final companyRegistry = CompanyRegistry();
+    log("companyRegistry.loadCompanyIdentifiers");
     await companyRegistry.loadCompanyIdentifiers();
+    log("Get.put<CompanyRegistry>");
     Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
+    log("Get.put<AdvertisementCache>");
     Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
+    log("Get.put<AddressNames>");
     Get.put<AddressNames>(AddressNames(), permanent: true);
+    log("Get.put<ProgressState>");
     Get.put<ProgressState>(ProgressState(), permanent: true);
 
+    log("PackageInfo.fromPlatform()");
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      log("Get.put<PackageInfo>");
       Get.put<PackageInfo>(packageInfo, permanent: true);
+      log("Logging().logVersion");
       Logging().logVersion(packageInfo);
     });
 
+    log("runApp");
     runApp(TrackMyIndoorExerciseApp(prefService: prefService));
   },
       (error, stack) => error is Exception

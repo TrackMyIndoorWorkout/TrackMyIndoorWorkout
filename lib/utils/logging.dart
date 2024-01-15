@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -8,7 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../persistence/isar/log_entry.dart';
 import '../preferences/log_level.dart';
-import '../utils/constants.dart';
+// import '../utils/constants.dart';
 
 class Logging {
   static Map<int, String> levelToDescription = {
@@ -31,6 +32,9 @@ class Logging {
     String subTag,
     String message,
   ) {
+    dev.log("$tag | $subTag | $message");
+    return;
+/*
     if (kDebugMode) {
       debugPrint("$tag | $subTag | $message");
     }
@@ -46,6 +50,7 @@ class Logging {
     } else {
       _logCore(logLevelError, tag, subTag, message);
     }
+ */
   }
 
   void logException(
