@@ -53,6 +53,7 @@ import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/stage_mode.dart';
+import '../preferences/stationary_workout.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/two_column_layout.dart';
@@ -199,6 +200,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _instantExport = instantExportDefault;
   String _instantExportLocation = instantExportLocationDefault;
   bool _calculateGps = calculateGpsDefault;
+  bool _stationaryWorkout = stationaryWorkoutDefault;
   bool _uxDebug = appDebugModeDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
@@ -747,6 +749,7 @@ class RecordingState extends State<RecordingScreen> {
     _instantExportLocation =
         prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
+    _stationaryWorkout = prefService.get<bool>(stationaryWorkoutTag) ?? stationaryWorkoutDefault;
     _pointCount = min(60, size.width ~/ 2);
     _onStageStatisticsType =
         prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
@@ -1990,6 +1993,8 @@ class RecordingState extends State<RecordingScreen> {
 
     var extras = [];
     if (!_simplerUi) {
+      // TODO
+      _stationaryWorkout;
       for (var entry in _preferencesSpecs.asMap().entries) {
         var height = 0.0;
         switch (_expandedHeights[entry.key]) {
