@@ -575,8 +575,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
         } else if (!isPrimarySensor && !currentPrimarySensor) {
           Get.snackbar(
               "Warning",
-              "Please select a primary (wheel speed or power) sensor first. "
-                  "Pedal cadence sensor should be added later.");
+              "Please select a speed / pace or power sensor first. "
+                  "Cadence sensor may not be enough for speed / pace.");
           setState(() {
             _goingToRecording = false;
           });
