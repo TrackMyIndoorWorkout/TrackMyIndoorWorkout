@@ -1,3 +1,12 @@
+## 1.1.153
+* Progress towards Stryd foot pod support
+* Optional aggregate or detailed upload status displays on the Activity List screen
+* Option to have cadence sensor and heart rate only workouts.
+  This means that no speed and distance can be computed
+* Upgrade Flutter to channel beta 3.19.0-0.1.pre, Dart 3.3.0-279.0.dev
+* Upgrade numerous plugins many times
+* Android Gradle Plugin AGP upgrade
+
 ## 1.1.152
 * Concept2 RowErg, SkiErg, BikeErg support progress
 * Kayak First ergometer support (both kayak and canoe) with UI feedback
