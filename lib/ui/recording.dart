@@ -419,23 +419,29 @@ class RecordingState extends State<RecordingScreen> {
               _onStageStatisticsType == onStageStatisticsTypeAlternating &&
                   _elapsed % (_onStageStatisticsAlternationDuration * 2) <
                       _onStageStatisticsAlternationDuration) {
-            _statistics[_power0Index] = _accu.avgPower.toInt().toString();
-            _statistics[_speed0Index] = speedOrPaceString(
-              _accu.avgSpeed,
-              _si,
-              widget.descriptor.sport,
-              limitSlowSpeed: true,
-            );
+            if (!_stationaryWorkout) {
+              _statistics[_power0Index] = _accu.avgPower.toInt().toString();
+              _statistics[_speed0Index] = speedOrPaceString(
+                _accu.avgSpeed,
+                _si,
+                widget.descriptor.sport,
+                limitSlowSpeed: true,
+              );
+            }
+
             _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
             _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
           } else {
-            _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
-            _statistics[_speed0Index] = speedOrPaceString(
-              _accu.maxSpeedDisplay,
-              _si,
-              widget.descriptor.sport,
-              limitSlowSpeed: true,
-            );
+            if (!_stationaryWorkout) {
+              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
+              _statistics[_speed0Index] = speedOrPaceString(
+                _accu.maxSpeedDisplay,
+                _si,
+                widget.descriptor.sport,
+                limitSlowSpeed: true,
+              );
+            }
+
             _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
             _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
           }
@@ -449,8 +455,11 @@ class RecordingState extends State<RecordingScreen> {
           record.heartRate?.toString() ?? emptyMeasurement,
           record.distanceStringByUnit(_si, _highRes),
         ];
-        optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
-        optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
+        if (!_stationaryWorkout) {
+          optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
+          optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
+        }
+
         optionallyChangeMeasurementByZone(_cadenceNIndex, record.cadence ?? 0, true);
         optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
       });
@@ -895,15 +904,19 @@ class RecordingState extends State<RecordingScreen> {
     final expandedHeightStr =
         prefService.get<String>(measurementDetailSizeTag) ?? measurementDetailSizeDefault;
     _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
-      final expanded = expandedStateStr[index] == "1";
+      final expanded = expandedStateStr[index] == "1" && !_stationaryWorkout;
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
       _rowControllers.add(rowController);
       switch (index) {
         case _powerNIndex:
-          rowController.addListener(_onTogglePower);
+          if (!_stationaryWorkout) {
+            rowController.addListener(_onTogglePower);
+          }
           break;
         case _speedNIndex:
-          rowController.addListener(_onToggleSpeed);
+          if (!_stationaryWorkout) {
+            rowController.addListener(_onToggleSpeed);
+          }
           break;
         case _cadenceNIndex:
           rowController.addListener(_onToggleRpm);
@@ -913,7 +926,9 @@ class RecordingState extends State<RecordingScreen> {
           break;
         case _distanceNIndex:
         default:
-          rowController.addListener(_onToggleDistance);
+          if (!_stationaryWorkout) {
+            rowController.addListener(_onToggleDistance);
+          }
           break;
       }
 
@@ -943,10 +958,10 @@ class RecordingState extends State<RecordingScreen> {
     _accu = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
-      calculateAvgPower: true,
-      calculateMaxPower: true,
-      calculateAvgSpeed: true,
-      calculateMaxSpeed: true,
+      calculateAvgPower: !_stationaryWorkout,
+      calculateMaxPower: !_stationaryWorkout,
+      calculateAvgSpeed: !_stationaryWorkout,
+      calculateMaxSpeed: !_stationaryWorkout,
       calculateAvgCadence: true,
       calculateMaxCadence: true,
       calculateAvgHeartRate: true,
@@ -954,18 +969,28 @@ class RecordingState extends State<RecordingScreen> {
     );
     _zoneIndexes = [null, null, null, null];
 
-    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
-    _rankRibbonVisualization =
-        prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
-    _rankingForSportOrDevice =
-        prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
     _leaderboard = [];
     _selfRankString = [];
-    _rankTrackVisualization =
-        prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
-    _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
-    _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
-    _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
+    _rankingForSportOrDevice =
+        prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
+    if (_stationaryWorkout) {
+      _leaderboardFeature = false;
+      _rankRibbonVisualization = false;
+      _rankTrackVisualization = false;
+      _rankInfoOnTrack = false;
+      _displayLapCounter = false;
+      _avgSpeedOnTrack = false;
+    } else {
+      _leaderboardFeature =
+          prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
+      _rankRibbonVisualization =
+          prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
+      _rankTrackVisualization =
+          prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
+      _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
+      _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
+      _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
+    }
 
     _rankInfoColumnCount = 2;
     if (_displayLapCounter) {
@@ -991,6 +1016,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_unlockKeys.isEmpty) {
       _unlockKeys.addAll([for (var i = 0; i < _unlockChoices; ++i) GlobalKey()]);
     }
+
     _unlockKey = -2;
   }
 
@@ -1762,8 +1788,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   TextStyle getMeasurementStyle(int entryKey) {
-    return (entryKey == _calories0Index ||
-            entryKey == _distance0Index ||
+    return ([_calories0Index, _distance0Index].contains(entryKey) ||
             _onStageStatisticsType == onStageStatisticsTypeNone)
         ? _fullMeasurementStyle.apply()
         : _measurementStyle.apply();
@@ -1842,12 +1867,12 @@ class RecordingState extends State<RecordingScreen> {
     if (_timeDisplayMode == timeDisplayModeHIITMoving &&
         workoutState != WorkoutState.waitingForFirstMove) {
       final timeColorIndex =
-          (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) ? 0 : 4;
+          [WorkoutState.justPaused, WorkoutState.paused].contains(workoutState) ? 0 : 4;
       timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
     }
 
     var timeIcon = (_timeDisplayMode == timeDisplayModeHIITMoving &&
-            (workoutState == WorkoutState.startedMoving || workoutState == WorkoutState.moving))
+            [WorkoutState.startedMoving, WorkoutState.moving].contains(workoutState))
         ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
         : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
@@ -1892,6 +1917,7 @@ class RecordingState extends State<RecordingScreen> {
       var measurementStyle = getMeasurementStyle(entry.key);
 
       if (entry.key == _speed0Index &&
+          !_stationaryWorkout &&
           (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
         speedTextStyle =
             measurementStyle.apply(color: _getSpeedColor(_selfRank, background: false));
@@ -1903,67 +1929,71 @@ class RecordingState extends State<RecordingScreen> {
         measurementStyle = targetHrTextStyle;
       }
 
-      if ((entry.key == _power0Index || entry.key == _cadence0Index) &&
+      if ((entry.key == _power0Index && !_stationaryWorkout || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = measurementStyle.apply(
             color: _getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
-      final rowChildren = (entry.key == _calories0Index ||
-              entry.key == _distance0Index ||
-              _onStageStatisticsType == onStageStatisticsTypeNone)
-          ? [
-              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
-              const Spacer(),
-              Text(_values[entry.key], style: measurementStyle),
+      final List<Widget> rowChildren = [];
+      if (_stationaryWorkout && [_power0Index, _speed0Index, _distance0Index].contains(entry.key)) {
+        rowChildren.add(const Divider());
+      } else if ([_calories0Index, _distance0Index].contains(entry.key) ||
+          _onStageStatisticsType == onStageStatisticsTypeNone) {
+        rowChildren.addAll([
+          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
+          const Spacer(),
+          Text(_values[entry.key], style: measurementStyle),
+          SizedBox(
+            width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
+            child: Center(
+              child: Text(
+                entry.value.unit,
+                maxLines: 2,
+                style: _fullUnitStyle,
+              ),
+            ),
+          ),
+        ]);
+      } else {
+        rowChildren.addAll([
+          SizedBox(
+            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(_values[entry.key], style: measurementStyle),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
               SizedBox(
-                width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
+                width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
                 child: Center(
                   child: Text(
                     entry.value.unit,
                     maxLines: 2,
-                    style: _fullUnitStyle,
+                    style: _unitStyle,
                   ),
                 ),
               ),
-            ]
-          : [
-              SizedBox(
-                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_values[entry.key], style: measurementStyle),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
-                  SizedBox(
-                    width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
-                    child: Center(
-                      child: Text(
-                        entry.value.unit,
-                        maxLines: 2,
-                        style: _unitStyle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_statistics[entry.key], style: measurementStyle),
-                  ],
-                ),
-              ),
-            ];
+            ],
+          ),
+          SizedBox(
+            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(_statistics[entry.key], style: measurementStyle),
+              ],
+            ),
+          ),
+        ]);
+      }
 
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1972,8 +2002,8 @@ class RecordingState extends State<RecordingScreen> {
       ));
     }
 
-    final statString = (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-            _onStageStatisticsType == onStageStatisticsTypeNone ||
+    final statString = ([onStageStatisticsTypeAverage, onStageStatisticsTypeNone]
+                .contains(_onStageStatisticsType) ||
             _onStageStatisticsType == onStageStatisticsTypeAlternating &&
                 _elapsed % (_onStageStatisticsAlternationDuration * 2) <
                     _onStageStatisticsAlternationDuration)
@@ -1993,9 +2023,12 @@ class RecordingState extends State<RecordingScreen> {
 
     var extras = [];
     if (!_simplerUi) {
-      // TODO
-      _stationaryWorkout;
       for (var entry in _preferencesSpecs.asMap().entries) {
+        if (_stationaryWorkout && ["speed", "power"].contains(entry.value.metric)) {
+          extras.add(null);
+          continue;
+        }
+
         var height = 0.0;
         switch (_expandedHeights[entry.key]) {
           case 0:
@@ -2068,7 +2101,7 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       List<Widget> markers = [];
-      final markerPosition = _trackCalculator?.trackMarker(_distance);
+      final markerPosition = _stationaryWorkout ? null : _trackCalculator?.trackMarker(_distance);
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
@@ -2127,28 +2160,32 @@ class RecordingState extends State<RecordingScreen> {
       columnOne.add(statHeaderRow);
     }
 
-    columnOne.addAll([
-      ColoredBox(
-        color: _getZoneColor(metricIndex: _powerNIndex, background: true),
-        child: ExpandablePanel(
-          theme: _expandableThemeData,
-          header: rows[_power1Index],
-          collapsed: Container(),
-          expanded: _simplerUi ? Container() : extras[_powerNIndex],
-          controller: _rowControllers[_powerNIndex],
+    if (_stationaryWorkout) {
+      columnOne.addAll([const Divider(), const Divider()]);
+    } else {
+      columnOne.addAll([
+        ColoredBox(
+          color: _getZoneColor(metricIndex: _powerNIndex, background: true),
+          child: ExpandablePanel(
+            theme: _expandableThemeData,
+            header: rows[_power1Index],
+            collapsed: Container(),
+            expanded: _simplerUi ? Container() : extras[_powerNIndex],
+            controller: _rowControllers[_powerNIndex],
+          ),
         ),
-      ),
-      ColoredBox(
-        color: _getSpeedColor(_selfRank, background: true),
-        child: ExpandablePanel(
-          theme: _expandableThemeData,
-          header: rows[_speed1Index],
-          collapsed: Container(),
-          expanded: _simplerUi ? Container() : extras[_speedNIndex],
-          controller: _rowControllers[_speedNIndex],
+        ColoredBox(
+          color: _getSpeedColor(_selfRank, background: true),
+          child: ExpandablePanel(
+            theme: _expandableThemeData,
+            header: rows[_speed1Index],
+            collapsed: Container(),
+            expanded: _simplerUi ? Container() : extras[_speedNIndex],
+            controller: _rowControllers[_speedNIndex],
+          ),
         ),
-      ),
-    ]);
+      ]);
+    }
 
     List<Widget> columnRest = [
       ColoredBox(
@@ -2171,13 +2208,15 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_hrNIndex],
         ),
       ),
-      ExpandablePanel(
-        theme: _expandableThemeData,
-        header: rows[_distance1Index],
-        collapsed: Container(),
-        expanded: _simplerUi ? Container() : extras[_distanceNIndex],
-        controller: _rowControllers[_distanceNIndex],
-      ),
+      _stationaryWorkout
+          ? const Divider()
+          : ExpandablePanel(
+              theme: _expandableThemeData,
+              header: rows[_distance1Index],
+              collapsed: Container(),
+              expanded: _simplerUi ? Container() : extras[_distanceNIndex],
+              controller: _rowControllers[_distanceNIndex],
+            ),
     ];
 
     if (_landscape && _twoColumnLayout) {
