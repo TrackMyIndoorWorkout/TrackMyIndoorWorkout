@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -136,13 +135,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                             height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
                             width: mediaWidth - 150,
                             padding: const EdgeInsets.all(5),
-                            child: SvgPicture.asset(
-                              e.value.assetName,
-                              colorFilter:
-                                  const ColorFilter.mode(Colors.transparent, BlendMode.srcATop),
-                              height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
-                              semanticsLabel: '${e.value.name} Logo',
-                            ),
+                            child: e.value.getSvg(false, _largerTextStyle.fontSize!),
                           ),
                         ],
                       ),

@@ -8,6 +8,7 @@ import '../../preferences/data_stream_gap_sound_effect.dart';
 import '../../preferences/data_stream_gap_watchdog_time.dart';
 import '../../preferences/extend_tuning.dart';
 import '../../preferences/sound_effects.dart';
+import '../../preferences/stationary_workout.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../persistence/isar/db_utils.dart';
 import '../../utils/sound.dart';
@@ -28,6 +29,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         title: Text(calculateGps),
         subtitle: Text(calculateGpsDescription),
         pref: calculateGpsTag,
+      ),
+      const PrefCheckbox(
+        title: Text(stationaryWorkout),
+        subtitle: Text(stationaryWorkoutDescription),
+        pref: stationaryWorkoutTag,
       ),
       const PrefTitle(title: Text("Tuning")),
       const PrefCheckbox(

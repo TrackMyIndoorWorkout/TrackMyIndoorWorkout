@@ -33,6 +33,7 @@ const merachMr667FourCC = "M667";
 const virtufitUltimatePro2FourCC = "VFUP";
 const kayakFirstFourCC = "K1st";
 const technogymRunFourCC = "TRun";
+const strydFootPodFourCC = "Strd";
 
 List<String> allFourCC = [
   mPowerImportDeviceId,
@@ -68,6 +69,7 @@ List<String> allFourCC = [
   virtufitUltimatePro2FourCC,
   kayakFirstFourCC,
   technogymRunFourCC,
+  strydFootPodFourCC,
 ];
 
 List<String> multiSportFourCCs = [
@@ -141,6 +143,7 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   technogymRunFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["Treadmill"], manufacturerNamePrefix: "Technogym"),
+  strydFootPodFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stryd"]),
 };
 
 class SportDescriptor {
@@ -192,4 +195,5 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
       SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
   technogymRunFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
+  strydFootPodFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
 };

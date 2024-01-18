@@ -44,6 +44,7 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/stationary_workout.dart';
 import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/welcome_presented.dart';
@@ -84,6 +85,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
   String _treadmillRscOnlyMode = treadmillRscOnlyModeDefault;
+  bool _stationaryWorkout = stationaryWorkoutDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
@@ -143,6 +145,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
     _treadmillRscOnlyMode =
         prefService.get<String>(treadmillRscOnlyModeTag) ?? treadmillRscOnlyModeDefault;
+    _stationaryWorkout = prefService.get<bool>(stationaryWorkoutTag) ?? stationaryWorkoutDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
@@ -513,7 +516,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
             DeviceCategory.secondarySensor) {
           // The user clicked twice on a secondary sensor, ignore
           // But secondary sensor shouldn't have a FitnessEquipment anyway
-          Get.snackbar("Warning", "Cannot measure with a pedal cadence sensor only!");
+          Get.snackbar(
+              "Warning",
+              "Cannot measure distance and speed with a cadence sensor only!");
           setState(() {
             _goingToRecording = false;
           });
@@ -563,16 +568,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
           }
         }
 
-        bool currentPrimarySensor = _fitnessEquipment != null &&
-            _fitnessEquipment!.descriptor != null &&
-            _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor;
+        bool currentPrimarySensor = _stationaryWorkout ||
+            (_fitnessEquipment != null &&
+                _fitnessEquipment!.descriptor != null &&
+                _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor);
         if (isPrimarySensor && !currentPrimarySensor) {
           navigate = false;
         } else if (!isPrimarySensor && !currentPrimarySensor) {
           Get.snackbar(
               "Warning",
-              "Please select a primary (wheel speed or power) sensor first. "
-                  "Pedal cadence sensor should be added later.");
+              "Please select a speed / pace or power sensor first. "
+                  "Cadence sensor may not be enough for speed / pace.");
           setState(() {
             _goingToRecording = false;
           });
