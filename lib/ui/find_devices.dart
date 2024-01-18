@@ -516,7 +516,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
             DeviceCategory.secondarySensor) {
           // The user clicked twice on a secondary sensor, ignore
           // But secondary sensor shouldn't have a FitnessEquipment anyway
-          Get.snackbar("Warning", "Cannot measure with a pedal cadence sensor only!");
+          Get.snackbar(
+              "Warning",
+              "Cannot measure distance and speed with a cadence sensor only!");
           setState(() {
             _goingToRecording = false;
           });
