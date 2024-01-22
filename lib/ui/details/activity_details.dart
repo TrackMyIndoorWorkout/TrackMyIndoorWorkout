@@ -1,25 +1,26 @@
 import 'dart:math';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/database.dart';
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
+import '../../persistence/isar/record.dart';
+import '../../preferences/activity_ui.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/statistics_accumulator.dart';
+import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 import '../models/display_record.dart';
 import '../models/histogram_data.dart';
@@ -27,15 +28,15 @@ import '../models/measurement_counter.dart';
 import '../models/tile_configuration.dart';
 import '../about.dart';
 import 'activity_detail_graphs.dart';
+import 'activity_detail_row_fit_horizontal.dart';
+import 'activity_detail_row_w_unit.dart';
+import 'activity_detail_unit_row.dart';
 
 class ActivityDetailsScreen extends StatefulWidget {
   final Activity activity;
   final Size size;
-  const ActivityDetailsScreen({
-    Key? key,
-    required this.activity,
-    required this.size,
-  }) : super(key: key);
+
+  const ActivityDetailsScreen({super.key, required this.activity, required this.size});
 
   @override
   ActivityDetailsScreenState createState() => ActivityDetailsScreenState();
@@ -54,6 +55,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   final List<String> _selectedValues = [];
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
+  bool _calculateMedian = activityDetailsMedianDisplayDefault;
   List<MetricSpec> _preferencesSpecs = [];
   PaletteSpec? _paletteSpec;
 
@@ -80,20 +82,17 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   );
 
   Future<void> extraInit(BasePrefService prefService) async {
-    final database = Get.find<AppDatabase>();
-    _allRecords = await database.recordDao.findAllActivityRecords(widget.activity.id ?? 0);
-
+    _allRecords = await DbUtils().getRecords(widget.activity.id);
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords = _allRecords
-            .map((r) => r.hydrate(widget.activity.sport).display())
-            .toList(growable: false);
+        _sampledRecords =
+            _allRecords.map((r) => DisplayRecord.fromRecord(r)).toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
           _pointCount,
-          (i) => _allRecords[((i + 1) * nth - 1).round()].hydrate(widget.activity.sport).display(),
+          (i) => DisplayRecord.fromRecord(_allRecords[((i + 1) * nth - 1).round()]),
           growable: false,
         );
       }
@@ -114,6 +113,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         calculateMaxCadence: measurementCounter.hasCadence,
         calculateAvgHeartRate: measurementCounter.hasHeartRate,
         calculateMaxHeartRate: measurementCounter.hasHeartRate,
+        calculateMedian: _calculateMedian,
       );
       for (var record in _allRecords) {
         accu.processRecord(record);
@@ -121,7 +121,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
       _averageRecords = List.generate(
         _sampledRecords.length,
-        (i) => accu.averageDisplayRecord(_sampledRecords[i].dt),
+        (i) => accu.averageDisplayRecord(_sampledRecords[i].timeStamp),
         growable: false,
       );
 
@@ -138,6 +138,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getPowerData,
           maxString: accu.maxPower.toStringAsFixed(2),
           avgString: accu.avgPower.toStringAsFixed(2),
+          medianString: accu.medianPower.toStringAsFixed(2),
         );
         prefSpec.calculateBounds(
           measurementCounter.minPower.toDouble(),
@@ -166,6 +167,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getSpeedData,
           maxString: speedOrPaceString(accu.maxSpeed, _si, widget.activity.sport),
           avgString: speedOrPaceString(accu.avgSpeed, _si, widget.activity.sport),
+          medianString: speedOrPaceString(accu.medianSpeed, _si, widget.activity.sport),
         );
         prefSpec.calculateBounds(
           measurementCounter.minSpeed,
@@ -194,6 +196,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getCadenceData,
           maxString: "${accu.maxCadence}",
           avgString: "${accu.avgCadence}",
+          medianString: "${accu.medianCadence}",
         );
         prefSpec.calculateBounds(
           measurementCounter.minCadence.toDouble(),
@@ -222,6 +225,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           dataFn: _getHrData,
           maxString: "${accu.maxHeartRate}",
           avgString: "${accu.avgHeartRate}",
+          medianString: "${accu.medianHeartRate}",
         );
         prefSpec.calculateBounds(
           measurementCounter.minHr.toDouble(),
@@ -333,8 +337,9 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
+    _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
+        activityDetailsMedianDisplayDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
-    widget.activity.hydrate();
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
     final sizeAdjustInt =
@@ -363,14 +368,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartAvgColor,
         animationDuration: 0,
@@ -400,14 +405,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartAvgColor,
         animationDuration: 0,
@@ -437,14 +442,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartAvgColor,
         animationDuration: 0,
@@ -474,14 +479,14 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     return <charts.LineSeries<DisplayRecord, DateTime>>[
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _sampledRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
         animationDuration: 0,
       ),
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: _averageRecords,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartAvgColor,
         animationDuration: 0,
@@ -525,131 +530,72 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     }
 
     final List<Widget> header = [
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(getSportIcon(widget.activity.sport), _sizeDefault),
-            Expanded(
-              child: TextOneLine(
-                widget.activity.deviceName,
-                style: _textStyle,
-                textAlign: TextAlign.right,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: getSportIcon(widget.activity.sport),
+        iconSize: _sizeDefault,
+        text: widget.activity.deviceName,
+        textStyle: _textStyle,
+        unitText: "",
       ),
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-            const Spacer(),
-            Text(
-              widget.activity.movingTimeString,
-              style: _measurementStyle,
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.numbers,
+        iconSize: _sizeDefault,
+        text: widget.activity.deviceId.shortAddressString(),
+        textStyle: _textStyle,
+        unitText: "",
+      ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.timer,
+        iconSize: _sizeDefault,
+        text: widget.activity.movingTimeString,
+        textStyle: _measurementStyle,
+        unitText: "",
       ),
     ];
     if (widget.activity.movingTime ~/ 1000 < widget.activity.elapsed) {
       header.addAll([
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Spacer(),
-            Text(
-              "(Moving Time)",
-              style: _unitStyle,
-            ),
-          ],
+        ActivityDetailUnitRow(
+            themeManager: _themeManager, unitText: "(Moving Time)", unitStyle: _unitStyle),
+        ActivityDetailRowFitHorizontal(
+          themeManager: _themeManager,
+          icon: Icons.timer,
+          iconSize: _sizeDefault,
+          text: widget.activity.elapsedString,
+          textStyle: _measurementStyle,
+          unitText: "",
+          unitStyle: null,
         ),
-        FitHorizontally(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-              const Spacer(),
-              FitHorizontally(
-                child: Text(
-                  widget.activity.elapsedString,
-                  style: _measurementStyle,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Spacer(),
-            Text(
-              "(Total Time)",
-              style: _unitStyle,
-            ),
-          ],
-        ),
+        ActivityDetailUnitRow(
+            themeManager: _themeManager, unitText: "(Total Time)", unitStyle: _unitStyle),
       ]);
     }
 
     header.addAll([
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-            const Spacer(),
-            Text(
-              widget.activity.distanceString(_si, _highRes),
-              style: _measurementStyle,
-            ),
-            SizedBox(
-              width: _sizeDefault,
-              child: Text(
-                distanceUnit(_si, _highRes),
-                style: _unitStyle,
-              ),
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.add_road,
+        iconSize: _sizeDefault,
+        text: widget.activity.distanceString(_si, _highRes),
+        textStyle: _measurementStyle,
+        unitText: distanceUnit(_si, _highRes),
+        unitStyle: _unitStyle,
       ),
-      FitHorizontally(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-            const Spacer(),
-            FitHorizontally(
-              child: Text(
-                '${widget.activity.calories}',
-                style: _measurementStyle,
-              ),
-            ),
-            SizedBox(
-              width: _sizeDefault,
-              child: Text(
-                'cal',
-                style: _unitStyle,
-              ),
-            ),
-          ],
-        ),
+      ActivityDetailRowWithUnit(
+        themeManager: _themeManager,
+        icon: Icons.whatshot,
+        iconSize: _sizeDefault,
+        text: '${widget.activity.calories}',
+        textStyle: _measurementStyle,
+        unitText: 'cal',
+        unitStyle: _unitStyle,
       ),
     ]);
 
-    final startStamp = DateTime.fromMillisecondsSinceEpoch(widget.activity.start);
-    final dateString = DateFormat.Md().format(startStamp);
-    final timeString = DateFormat.Hm().format(startStamp);
+    final dateString = DateFormat.Md().format(widget.activity.start);
+    final timeString = DateFormat.Hm().format(widget.activity.start);
     final title = "$dateString $timeString";
 
     final appBarActions = [
@@ -663,8 +609,11 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         IconButton(
           icon: const Icon(Icons.build),
           onPressed: () async {
-            final database = Get.find<AppDatabase>();
-            await database.recalculateDistance(widget.activity, true);
+            // final tm = TrackManager();
+            // final track = await tm.getTrack(widget.activity.sport);
+            // debugPrint(track.name);
+            await DbUtils().finalizeActivity(widget.activity);
+            // await database.recalculateDistance(widget.activity, true);
           },
         ),
       );
@@ -706,6 +655,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                   sizeDefault: _sizeDefault2,
                   paletteSpec: _paletteSpec!,
                   themeManager: _themeManager,
+                  displayMedian: _calculateMedian,
                 );
               },
             ),

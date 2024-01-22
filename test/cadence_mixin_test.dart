@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cadence_mixin.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/delays.dart';
 
 import 'utils.dart';
@@ -17,10 +17,10 @@ class TestPair {
 
 void main() {
   test('Cadence Mixin returns 0 when empty', () async {
-    final cadenceMixin = CadenceMixin();
+    final cadenceMixin = CadenceMixinImpl();
 
     expect(cadenceMixin.cadenceData.isEmpty, true);
-    expect(cadenceMixin.computeCadence(), 0);
+    expect(cadenceMixin.computeCadence().toInt(), 0);
   });
 
   group('Cadence Mixin clearCadenceData clears cadence data', () {
@@ -30,14 +30,14 @@ void main() {
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
       final deltaRevolutions = getRandomDoubles(len, 100.0, rnd);
       test("len $len, ", () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
           cadenceMixin.addCadenceData(deltaTimes[i], deltaRevolutions[i]);
         }
 
         cadenceMixin.clearCadenceData();
         expect(cadenceMixin.cadenceData.isEmpty, true);
-        expect(cadenceMixin.computeCadence(), 0);
+        expect(cadenceMixin.computeCadence().toInt(), 0);
       });
     }
   });
@@ -53,7 +53,7 @@ void main() {
       test(
           "len $len, 0. (${deltaTimes.first}, ${deltaRevolutions.first}) $len. ($timeSum, $revolutionSum)",
           () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         var cumulativeTime = 0.0;
         var cumulativeRevolution = 0.0;
         for (final i in List<int>.generate(len, (i) => i, growable: false)) {
@@ -78,9 +78,9 @@ void main() {
     final rnd = Random();
     for (var numRevolutions in getRandomInts(
         smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
-      numRevolutions += 1;
+      numRevolutions++;
       test('# revolutions $numRevolutions', () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
         var timeTick = 0.0;
         var revolutions = 0.0;
@@ -103,9 +103,9 @@ void main() {
     final rnd = Random();
     for (var numRevolutions in getRandomInts(
         smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
-      numRevolutions += 1;
+      numRevolutions++;
       test('# revolutions $numRevolutions', () async {
-        final cadenceMixin = CadenceMixin();
+        final cadenceMixin = CadenceMixinImpl();
         final deltaRevolutions = getRandomDoubles(numRevolutions, 5.0, rnd);
         var timeTick = 0.0;
         var revolutions = 0.0;

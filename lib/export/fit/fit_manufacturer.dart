@@ -7,6 +7,8 @@ const wahooFitnessFitId = 32;
 const concept2FitId = 40;
 const northPoleEngineeringFitId = 66;
 const stagesCyclingFitId = 69;
+const strydFitId = 95;
+const technogymFitId = 111;
 const johnsonHealthTechId = 122;
 const precorFitId = 266;
 const stravaFitId = 265;
@@ -103,7 +105,7 @@ Map<int, String> fitManufacturer = {
   92: '1partcarbon',
   93: 'inside ride technologies',
   94: 'sound of motion',
-  95: 'stryd',
+  strydFitId: 'stryd',
   96: 'icg', // Indoorcycling Group
   97: 'MiPulse',
   98: 'bsx athletics',
@@ -119,7 +121,7 @@ Map<int, String> fitManufacturer = {
   108: 'giant manufacturing co',
   109: 'tigrasport', // Tigrasport
   110: 'salutron',
-  111: 'technogym',
+  technogymFitId: 'technogym',
   112: 'bryton sensors',
   113: 'latitude limited',
   114: 'soaring technology',

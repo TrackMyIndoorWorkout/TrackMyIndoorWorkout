@@ -3,11 +3,11 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/workout_summary.dart';
+import '../../persistence/isar/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/speed_spec.dart';
 import '../../preferences/sport_spec.dart';
@@ -19,7 +19,7 @@ import '../../utils/theme_manager.dart';
 class DeviceLeaderboardScreen extends StatefulWidget {
   final Tuple3<String, String, String> device;
 
-  const DeviceLeaderboardScreen({key, required this.device}) : super(key: key);
+  const DeviceLeaderboardScreen({super.key, required this.device});
 
   @override
   DeviceLeaderboardScreenState createState() => DeviceLeaderboardScreenState();
@@ -27,7 +27,7 @@ class DeviceLeaderboardScreen extends StatefulWidget {
 
 class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
     with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   int _editCount = 0;
@@ -80,10 +80,12 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
               middleText: 'Are you sure to delete this entry?',
               confirm: TextButton(
                 child: const Text("Yes"),
-                onPressed: () async {
-                  await _database.workoutSummaryDao.deleteWorkoutSummary(workoutSummary);
-                  setState(() {
-                    _editCount++;
+                onPressed: () {
+                  _database.writeTxnSync(() {
+                    _database.workoutSummarys.deleteSync(workoutSummary.id);
+                    setState(() {
+                      _editCount++;
+                    });
                   });
                   Get.close(1);
                 },
@@ -102,7 +104,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.device.item2} Leaderboard')),
+      appBar: AppBar(title: Text('${widget.device.item1} Leaderboard')),
       body: CustomListView(
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
@@ -110,9 +112,13 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.workoutSummaryDao
-                .findWorkoutSummaryByDevice(widget.device.item1, limit, offset);
+            final data = await _database.workoutSummarys
+                .filter()
+                .deviceIdEqualTo(widget.device.item2)
+                .sortBySpeedDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -132,9 +138,8 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         ),
         itemBuilder: (context, index, item) {
           final workoutSummary = item as WorkoutSummary;
-          final timeStamp = DateTime.fromMillisecondsSinceEpoch(workoutSummary.start);
-          final dateString = DateFormat.yMd().format(timeStamp);
-          final timeString = DateFormat.Hms().format(timeStamp);
+          final dateString = DateFormat.yMd().format(workoutSummary.start);
+          final timeString = DateFormat.Hms().format(workoutSummary.start);
           final speedString = workoutSummary.speedString(_si, _slowSpeed);
           final distanceString = workoutSummary.distanceStringWithUnit(_si, _highRes);
           final timeDisplay = Duration(seconds: workoutSummary.elapsed).toDisplay();

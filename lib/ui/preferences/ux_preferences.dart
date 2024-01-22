@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/activity_ui.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/instant_export.dart';
@@ -23,7 +24,7 @@ class UXPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "UX";
   static String title = "$shortTitle Preferences";
 
-  const UXPreferencesScreen({Key? key}) : super(key: key);
+  const UXPreferencesScreen({super.key});
 
   @override
   UXPreferencesScreenState createState() => UXPreferencesScreenState();
@@ -101,11 +102,6 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
         subtitle: Text(instantUploadDescription),
         pref: instantUploadTag,
       ),
-      const PrefCheckbox(
-        title: Text(instantExport),
-        subtitle: Text(instantExportDescription),
-        pref: instantExportTag,
-      ),
       // PrefLabel(
       //   title: Text(instantExportLocation, style: Get.textTheme.headlineSmall!, maxLines: 3),
       //   subtitle: const Text(instantExportLocationDescription),
@@ -118,7 +114,7 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
       PrefButton(
         onTap: () async {
           final existingPath = PrefService.of(context).get(instantExportLocationTag);
-          final path = await pickDirectory(context, existingPath);
+          final path = await pickDirectory(context, instantExportLocationPickerTitle, existingPath);
           if (path.isNotEmpty) {
             setState(() {
               _locationEdit++;
@@ -127,6 +123,29 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
           }
         },
         child: const Text(instantExportLocationPickCommand),
+      ),
+      PrefLabel(
+        title: Text(activityListAndDetails, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
+      const PrefCheckbox(
+        title: Text(activityListMachineNameInHeader),
+        subtitle: Text(activityListMachineNameInHeaderDescription),
+        pref: activityListMachineNameInHeaderTag,
+      ),
+      const PrefCheckbox(
+        title: Text(activityListBluetoothAddressInHeader),
+        subtitle: Text(activityListBluetoothAddressInHeaderDescription),
+        pref: activityListBluetoothAddressInHeaderTag,
+      ),
+      const PrefCheckbox(
+        title: Text(activityDetailsMedianDisplay),
+        subtitle: Text(activityDetailsMedianDisplayDescription),
+        pref: activityDetailsMedianDisplayTag,
+      ),
+      const PrefCheckbox(
+        title: Text(instantExport),
+        subtitle: Text(instantExportDescription),
+        pref: instantExportTag,
       ),
       const PrefCheckbox(
         title: Text(multiSportDeviceSupport),

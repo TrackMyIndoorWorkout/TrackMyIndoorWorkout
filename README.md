@@ -38,7 +38,7 @@ For more details please see [the application's website](https://trackmyindoorwor
 ## Code regeneration
 
 With certain data persistence or testing Mock changes you may need code regeneration:
-1. `flutter packages pub run build_runner build --delete-conflicting-outputs`
+1. `dart run build_runner build --delete-conflicting-outputs`
 2. Don't forget to re-run `dart format --line-length 100 .` after that.
 
 ## License

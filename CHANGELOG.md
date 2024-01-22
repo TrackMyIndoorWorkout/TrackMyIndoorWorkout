@@ -1,3 +1,117 @@
+## 1.1.153
+* Progress towards Stryd foot pod support
+* Optional aggregate or detailed upload status displays on the Activity List screen
+* Option to have cadence sensor and heart rate only workouts.
+  This means that no speed and distance can be computed
+* Upgrade Flutter to channel beta 3.19.0-0.1.pre, Dart 3.3.0-279.0.dev
+* Upgrade numerous plugins many times
+* Android Gradle Plugin AGP upgrade
+
+## 1.1.152
+* Concept2 RowErg, SkiErg, BikeErg support progress
+* Kayak First ergometer support (both kayak and canoe) with UI feedback
+* Upgrade Flutter Blue Plus plugin several times
+* Fixing graph problem during measurement (syncfusion_flutter_charts v24+ issue)
+* Fixing Stages branding logo size and also the logo's and banner's color in dark mode
+* Fixing Bowflex logo SVG and also the logo's and banner's color in dark mode
+
+## 1.1.151
+* Concept2 RowErg FTMS support
+* Kayak First ergometer support progress (both kayak and canoe)
+* Upgrade Flutter Blue Plus plugin many times
+* Upgrade Flutter to channel beta 3.18.0-0.2.pre, Dart 3.3.0-174.3.beta
+* Upgrade numerous plugins many times
+
+## 1.1.150
+* Concept2 RowErg legacy (non FTMS) support
+* Technogym Run support (not the MyRun but the newer Run, RSC only communication)
+* Upgrade Flutter Blue Plus plugin many times
+* Upgrade Flutter to channel beta 3.17.0-0.0.pre
+* Upgrade numerous plugins many times
+
+## 1.1.149
+* Strava uploads now point to the exact activity directly
+* Dealing with Bluetooth permission and related issues
+* Upgrade Flutter Blue Plus plugin
+* Upgrade Flutter to channel beta 3.13.0-0.4.pre
+* Upgrade numerous plugins
+
+## 1.1.148
+* Upgrade Flutter Blue Plus plugin
+* Minimum Android SDK level increase to 21 (Android 6 Marshmallow)
+  (dropping support for SDK level 19 - Android 4.4 KitKat and SDK level 20 Android 5 Lollipop)
+* Upgrade Flutter to channel beta 3.13.0-0.3.pre
+* Upgrade numerous plugins
+* Upgrade Kotlin
+
+## 1.1.147
+* Upgrade database backend to Isar which is 100x faster. Kicks off a migration the first time the
+  new version starts!
+* Fixes for the Schwinn 170/270/570 support (metrics picked up and HR reading picked up)
+* Adding median statistics to the workout details screen (besides max and avg)
+* Upgrades for Kayak First support
+* Upgrade Flutter to channel beta 3.13.0-0.2.pre
+* Upgrade every plugin
+* Fix SVG whiteout of upload fitness portal logos
+* Bluetooth permission changes
+* Establish listview_utils_plus and fab_circular_menu_plus plugins
+* Upgrade Android Gradle Plugin to 8.1+
+* Bug fixes
+
+## 1.1.146
+* Update Strava iconography to use official icons (Powered by Strava, Connect with Strava)
+  to please the Updated Developer Program
+* Upgrade a ton of packages
+* Location permission changes due to the newer version of Flutter Blue Plus
+  (require fine location even for newer Android)
+* No update to Dart 3.0 or AGP 8.5 yet
+
+## 1.1.145
+* Kayak First delay logic refactoring
+
+## 1.1.144
+* Kayak First data acquisition changes, timing adjustments
+* Display hourglass on the Recording screen now that attach, discovery and actions happen
+  right after connection and this can take seconds
+* Upgrading a few Flutter plugins
+
+## 1.1.143
+* Correct Kayak First pace display
+* Correct Kayak First recording when Instant Measurement Start is on
+* Correct machine switching when the previous machine gets powered off
+* Correct water sport track visualization to be 500m
+* CET timezone virtual tracks in Berlin, Germany with respect to the upcoming FIBO expo
+* Other adjustments
+
+## 1.1.142
+* Kayak First ergometer support
+* Fundamental changes of the connection and core logic: connection preserving logic instead of
+  disconnection favoring principles (please report me if you experience any connection related
+  anomalies)
+* Fundamental changes of the data collection routines: connect immediately always while on the
+  Recording screen (and beyond), just not utilize the packets if not in measurement
+* Upgrading to Material 3 UI, changing UI to conform more to Material 3
+* Using Flex Color Scheme (along with Material 3)
+* Upgrading a lot of Flutter plugins
+
+## 1.1.141
+* Contains the build 140 production hotfix
+* Upgrading a few Flutter plugins
+
+## 1.1.140
+* Hotfix app hanging of the time zone migration when custom time zone is selected
+
+## 1.1.139
+* Adjusting some track elevations, naming, and one water track location
+* Simplify closest time zone's track search
+* Upgrading Flutter version
+
+## 1.1.138
+* Adding track for biking, cycling, water sport activities for almost all time zones
+* Making GPS tracks more precise (Haversine and Vincenty measurement formulas - thanks ChatGPT)
+* Narrowing down the list of selectable time zones to be able to match the closest track
+* Upgrading numerous Flutter plugins
+
 ## 1.1.137
 * Fixing false 65534 reported calories when 0 calorie workout is uploaded to Strava
   (some portals don't interpret FIT InvalidValue in that case, so we'll zero it)

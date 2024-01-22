@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/power_tune.dart';
+import 'package:isar/isar.dart';
+import '../../persistence/isar/power_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -10,8 +10,11 @@ class PowerFactorTuneBottomSheet extends StatefulWidget {
   final String deviceId;
   final double oldPowerFactor;
 
-  const PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldPowerFactor})
-      : super(key: key);
+  const PowerFactorTuneBottomSheet({
+    super.key,
+    required this.deviceId,
+    required this.oldPowerFactor,
+  });
 
   @override
   PowerFactorTuneBottomSheetState createState() => PowerFactorTuneBottomSheetState();
@@ -57,20 +60,30 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () async {
-              final database = Get.find<AppDatabase>();
+              final database = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
-              final powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId);
+              final powerTune = await database.powerTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (powerTune != null) {
                 powerTune.powerFactor = powerFactor;
-                await database.powerTuneDao.updatePowerTune(powerTune);
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
+                });
               } else {
                 final powerTune = PowerTune(
                   mac: widget.deviceId,
                   powerFactor: powerFactor,
-                  time: DateTime.now().millisecondsSinceEpoch,
+                  time: DateTime.now(),
                 );
-                await database.powerTuneDao.insertPowerTune(powerTune);
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
+                });
               }
+
               Get.back(result: powerFactor);
             }),
           ],

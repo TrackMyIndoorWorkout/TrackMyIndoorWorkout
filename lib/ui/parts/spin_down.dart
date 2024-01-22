@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -13,15 +12,17 @@ import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt/ftms.dart';
 import '../../devices/gatt/generic.dart';
 import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/log_level.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
+import '../../utils/logging.dart';
 import '../../utils/theme_manager.dart';
 import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
-  const SpinDownBottomSheet({Key? key}) : super(key: key);
+  const SpinDownBottomSheet({super.key});
 
   @override
   SpinDownBottomSheetState createState() => SpinDownBottomSheetState();
@@ -48,6 +49,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   static const stepCalibrating = 1;
   static const stepDone = 2;
   static const stepNotSupported = 3;
+  static const String tag = "SPIN_DOWN";
 
   FitnessEquipment? _fitnessEquipment;
   StreamSubscription? _controlPointSubscription;
@@ -71,9 +73,11 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   String _targetSpeedLowString = "...";
   String _currentSpeedString = "...";
   final ThemeManager _themeManager = Get.find<ThemeManager>();
+  final BasePrefService _prefService = Get.find<BasePrefService>();
+
   bool _isLight = true;
   int _preferencesWeight = athleteBodyWeightDefault;
-  bool _rememberLastWeight = rememberAthleteBodyWeightDefault;
+  int _logLevel = logLevelDefault;
 
   bool get _spinDownPossible =>
       (_fitnessEquipment?.supportsSpinDown ?? false) &&
@@ -94,12 +98,10 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
   @override
   void initState() {
+    _logLevel = _prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _rememberLastWeight =
-        prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
-    _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    _si = _prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _preferencesWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
     final weightBytes = getWeightBytes(_weight, _si);
     _oldWeightLsb = weightBytes.item1;
@@ -160,12 +162,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     // #117 Attach the handler way ahead of the actual weight write
     try {
       await _weightData?.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(
+          _logLevel, tag, "_prepareSpinDownCore", "_weightData.setNotifyValue", e, stack);
     }
 
-    _weightDataSubscription = _weightData?.value
+    _weightDataSubscription = _weightData?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -201,9 +203,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       } else if (_calibrationState == CalibrationState.weightSubmitting) {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-        } on PlatformException catch (e, stack) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
+        } on Exception catch (e, stack) {
+          Logging()
+              .logException(_logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -211,7 +213,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       }
     });
 
-    _controlPointSubscription = _fitnessEquipment?.controlPoint?.value
+    _controlPointSubscription = _fitnessEquipment?.controlPoint?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -323,16 +325,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     _newWeightLsb = newWeightBytes.item1;
     _newWeightMsb = newWeightBytes.item2;
     try {
-      if (_rememberLastWeight) {
-        final weightKg = _weight * (_si ? 1.0 : lbToKg);
-        final prefService = Get.find<BasePrefService>();
-        await prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
-      }
-
+      final weightKg = _weight * (_si ? 1.0 : lbToKg);
+      await _prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(
+          _logLevel, tag, "_onWeightInputButtonPressed", "_weightData.write", e, stack);
       setState(() {
         _calibrationState = CalibrationState.weighInProblem;
       });
@@ -395,12 +393,12 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     try {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(_logLevel, tag, "onCalibrationButtonPressed",
+          "controlPoint.write or status.setNotifyValue(true)", e, stack);
     }
 
-    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value
+    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: ftmsStatusThreshold),
       leading: false,

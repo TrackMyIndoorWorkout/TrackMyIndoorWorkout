@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/hrm.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
@@ -22,7 +22,7 @@ class HeartRateMonitor extends ComplexSensor {
       // Heart rate value format (first bit)
       if (flag % 2 == 0) {
         heartRateMetric = ByteMetricDescriptor(lsb: expectedLength);
-        expectedLength += 1; // 8 bit HR
+        expectedLength++; // 8 bit HR
       } else {
         heartRateMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit HR
@@ -73,9 +73,9 @@ class HeartRateMonitor extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       heartRate: getHeartRate(data),
-      calories: getCalories(data),
+      calories: getCalories(data)?.toInt(),
       sport: ActivityType.workout,
     );
   }

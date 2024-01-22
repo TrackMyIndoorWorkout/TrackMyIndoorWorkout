@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
@@ -28,7 +28,8 @@ void main() {
       final expected = pacePair[1];
       for (var sport in [ActivityType.run, ActivityType.virtualRun]) {
         test("${pacePair[0]} -> $expected", () async {
-          expect(RecordWithSport(pace: pacePair[0], sport: sport).speed, closeTo(expected, eps));
+          expect(RecordWithSport(pace: pacePair[0].toDouble(), sport: sport).speed,
+              closeTo(expected, eps));
         });
       }
     }

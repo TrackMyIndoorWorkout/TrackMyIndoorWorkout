@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -18,12 +18,16 @@ import '../gatt/battery.dart';
 import '../gatt/csc.dart';
 import '../gatt/concept2.dart';
 import '../gatt/ftms.dart';
+import '../gatt/kayak_first.dart';
 import '../gatt/precor.dart';
 import '../gatt/power_meter.dart';
 import '../gatt/schwinn_x70.dart';
 import '../bluetooth_device_ex.dart';
 
+typedef StringMetricProcessingFunction = Function(String measurement);
+
 abstract class DeviceBase {
+  final String tag;
   final String serviceId;
   String characteristicId;
   BluetoothDevice? device;
@@ -57,6 +61,7 @@ abstract class DeviceBase {
     required this.serviceId,
     required this.characteristicId,
     required this.device,
+    this.tag = "DEVICE_BASE",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
@@ -88,19 +93,20 @@ abstract class DeviceBase {
       connecting = false;
       connected = true;
     }
+
     return connected;
   }
 
-  Future<bool> connectAndDiscover({retry = false}) async {
+  Future<bool> connectAndDiscover() async {
     await connect();
 
-    return await discover(retry: retry);
+    return await discover();
   }
 
   Future<bool> discoverCore() async {
     discovering = false;
     discovered = true;
-    service = services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceId);
+    service = services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceId);
 
     if (service == null) {
       characteristic = null;
@@ -122,40 +128,40 @@ abstract class DeviceBase {
     characteristicId = newCharacteristicId;
     if (characteristicId.isNotEmpty) {
       characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == characteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == characteristicId);
     } else {
-      characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ftmsSportCharacteristics.contains(ch.uuid.uuidString()));
-      characteristicId = characteristic?.uuid.uuidString() ?? "";
+      characteristic = service!.characteristics.firstWhereOrNull(
+          (ch) => ftmsSportCharacteristics.contains(ch.characteristicUuid.uuidString()));
+      characteristicId = characteristic?.characteristicUuid.uuidString() ?? "";
     }
 
     await connectToControlPoint(true);
   }
 
   Future<void> connectToControlPoint(bool obtainControl) async {
-    if (controlCharacteristicId.isEmpty) {
+    if (controlCharacteristicId.isEmpty || testing) {
       return;
     }
 
     if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
       controlPoint = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == controlCharacteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == controlCharacteristicId);
     }
 
     if (status == null && statusCharacteristicId.isNotEmpty) {
       status = service!.characteristics
-          .firstWhereOrNull((ch) => ch.uuid.uuidString() == statusCharacteristicId);
+          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == statusCharacteristicId);
     }
 
     if (listenOnControl && !controlNotification && controlPoint != null) {
       try {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
-      } on PlatformException catch (e, stack) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+      } on Exception catch (e, stack) {
+        Logging().logException(
+            logLevel, tag, "connectToControlPoint", "controlPoint.setNotifyValue(true)", e, stack);
       }
 
-      controlPointSubscription = controlPoint?.value
+      controlPointSubscription = controlPoint?.lastValueStream
           .throttleTime(
         const Duration(milliseconds: ftmsStatusThreshold),
         leading: false,
@@ -163,13 +169,8 @@ abstract class DeviceBase {
       )
           .listen((controlResponse) async {
         if (logLevel >= logLevelInfo) {
-          Logging.log(
-            logLevel,
-            logLevelInfo,
-            "FITNESS_EQUIPMENT",
-            "connectToControlPoint controlPointSubscription",
-            controlResponse.toString(),
-          );
+          Logging().log(logLevel, logLevelInfo, tag,
+              "connectToControlPoint controlPointSubscription", controlResponse.toString());
         }
 
         if (controlResponse.length >= 3 &&
@@ -188,21 +189,14 @@ abstract class DeviceBase {
               logMessage = "Stopped!";
               break;
           }
-          if (logLevel >= logLevelInfo) {
-            Logging.log(
-              logLevel,
-              logLevelInfo,
-              "FITNESS_EQUIPMENT",
-              "connectToControlPoint controlPointSubscription",
-              logMessage,
-            );
-          }
+          Logging().log(logLevel, logLevelInfo, tag,
+              "connectToControlPoint controlPointSubscription", logMessage);
         }
       });
     }
   }
 
-  Future<bool> discover({bool retry = false}) async {
+  Future<bool> discover() async {
     if (!connected) {
       return false;
     }
@@ -217,15 +211,21 @@ abstract class DeviceBase {
     discovering = true;
     try {
       services = await device!.discoverServices();
-    } on PlatformException catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
-      }
+    } on Exception catch (e, stack) {
+      Logging().logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
 
-      discovering = false;
-      if (retry) return false;
-      await discover(retry: true);
+      const someDelay = Duration(milliseconds: ftmsStatusThreshold);
+      await Future.delayed(someDelay);
+      await Future.delayed(someDelay);
+
+      try {
+        services = await device!.discoverServices();
+      } on Exception catch (e, stack) {
+        Logging().logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
+
+        discovering = false;
+        return false;
+      }
     }
 
     final success = await discoverCore();
@@ -236,8 +236,8 @@ abstract class DeviceBase {
   List<String> inferSportsFromCharacteristicIds() {
     if (discovered) {
       return service!.characteristics
-          .where((char) => ftmsSportCharacteristics.contains(char.uuid.uuidString()))
-          .map((char) => uuidToSport[char.uuid.uuidString()]!)
+          .where((char) => ftmsSportCharacteristics.contains(char.characteristicUuid.uuidString()))
+          .map((char) => uuidToSport[char.characteristicUuid.uuidString()]!)
           .toSet()
           .toList(growable: false);
     }
@@ -247,8 +247,10 @@ abstract class DeviceBase {
         characteristicId == stepClimberUuid ||
         characteristicId == stairClimberUuid) {
       sports.add(ActivityType.run);
-    } else if (characteristicId == c2RowingGeneralStatusUuid) {
+    } else if (characteristicId == c2ErgGeneralStatusUuid) {
       sports.add(ActivityType.rowing);
+      sports.add(ActivityType.nordicSki);
+      sports.add(ActivityType.ride);
     } else if (characteristicId == rowerDeviceUuid) {
       sports.addAll(waterSports);
     } else if (characteristicId == precorMeasurementUuid ||
@@ -259,6 +261,8 @@ abstract class DeviceBase {
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
+    } else if (characteristicId == kayakFirstAllAroundUuid) {
+      sports.addAll([ActivityType.kayaking, ActivityType.canoeing]);
     }
 
     return sports;
@@ -292,11 +296,9 @@ abstract class DeviceBase {
     if (attached) {
       try {
         await characteristic?.setNotifyValue(false);
-      } on PlatformException catch (e, stack) {
-        if (kDebugMode) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
-        }
+      } on Exception catch (e, stack) {
+        Logging().logException(
+            logLevel, tag, "detach", "characteristic.setNotifyValue(false)", e, stack);
       }
 
       attached = false;
@@ -308,7 +310,12 @@ abstract class DeviceBase {
   Future<void> disconnect() async {
     if (!uxDebug) {
       await detach();
-      await device?.disconnect();
+      try {
+        await device?.disconnect();
+      } on Exception catch (e, stack) {
+        Logging().logException(logLevel, tag, "discover", "device.disconnect()", e, stack);
+      }
+
       characteristic = null;
       services = [];
       service = null;
@@ -322,13 +329,7 @@ abstract class DeviceBase {
 
   void logData(List<int> data, String tag) {
     if (logLevel >= logLevelInfo) {
-      Logging.log(
-        logLevel,
-        logLevelInfo,
-        tag,
-        "_listenToData",
-        data.toString(),
-      );
+      Logging().log(logLevel, logLevelInfo, tag, "_listenToData", data.toString());
     }
   }
 
@@ -363,9 +364,8 @@ abstract class DeviceBase {
 
     try {
       return await _readBatteryLevelCore();
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(logLevel, tag, "discover", "Could not disconnect", e, stack);
       return -1;
     }
   }
@@ -408,10 +408,68 @@ abstract class DeviceBase {
 
     try {
       return await _cscSensorTypeCore();
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging()
+          .logException(logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
       return DeviceCategory.smartDevice;
     }
+  }
+
+  Future<void> listenToKayakFirst(StringMetricProcessingFunction? metricProcessingFunction) async {
+    if (characteristic == null || uxDebug) return;
+
+    if (!connected) {
+      await connect();
+    }
+
+    if (!connected) return;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered || characteristic == null) return;
+
+    if (!attached) {
+      await attach();
+    }
+
+    controlPointSubscription = characteristic?.lastValueStream.listen((byteList) {
+      if (metricProcessingFunction != null) {
+        metricProcessingFunction(utf8.decode(byteList));
+      }
+    });
+  }
+
+  Future<int> sendKayakFirstCommand(String command) async {
+    if (!connected || uxDebug) {
+      await connect();
+    }
+
+    if (!connected) return -1;
+
+    if (!discovered) {
+      await discover();
+    }
+
+    if (!discovered || characteristic == null) return -1;
+
+    try {
+      final commandCrLf = command.contains("\n") ? command : "$command\r\n";
+      await characteristic?.write(utf8.encode(commandCrLf));
+    } on Exception catch (e, stack) {
+      Logging()
+          .logException(logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
+      return -1;
+    }
+
+    return 0;
+  }
+
+  Future<void> unListenKayakFirst() async {
+    if (characteristic == null || uxDebug || !connected || !discovered || !attached) return;
+
+    controlPointSubscription?.cancel();
+    controlPointSubscription = null;
   }
 }

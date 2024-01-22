@@ -1,37 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
-import '../../devices/bluetooth_device_ex.dart';
+
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
 import '../../utils/scan_result_ex.dart';
+import '../../utils/guid_ex.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends StatelessWidget {
-  static RegExp colonRegex = RegExp(r':');
-
   const ScanResultTile({
-    Key? key,
+    super.key,
     required this.result,
     required this.deviceSport,
+    required this.mediaWidth,
     required this.onEquipmentTap,
     required this.onHrmTap,
-  }) : super(key: key);
+  });
 
   final ScanResult result;
   final String deviceSport;
+  final double mediaWidth;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          result.device.nonEmptyName,
+          result.nonEmptyName,
           style: themeManger.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),
@@ -74,7 +75,7 @@ class ScanResultTile extends StatelessWidget {
     return nameStrings.join(', ');
   }
 
-  String getNiceServiceData(Map<String, List<int>> data) {
+  String getNiceServiceData(Map<Guid, List<int>> data) {
     if (data.isEmpty) {
       return 'N/A';
     }
@@ -94,14 +95,13 @@ class ScanResultTile extends StatelessWidget {
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
 
+    final logoSize = captionStyle.fontSize! * 2.5;
     final deviceIcon = result.getIcon([], deviceSport);
+    final logoAndBanner =
+        result.getLogoAndBanner([], deviceSport, logoSize, mediaWidth, themeManager);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
-      leading: Icon(
-        deviceIcon,
-        size: captionStyle.fontSize! * 2.5,
-        color: themeManager.getProtagonistColor(),
-      ),
+      leading: logoAndBanner.item1,
       trailing: themeManager.getIconFab(
         result.advertisementData.connectable
             ? themeManager.getBlueColor()
@@ -112,15 +112,10 @@ class ScanResultTile extends StatelessWidget {
             : null,
       ),
       children: [
+        logoAndBanner.item2,
         _buildAdvRow(
           'Complete Name',
-          result.advertisementData.localName,
-          detailStyle,
-          secondaryStyle,
-        ),
-        _buildAdvRow(
-          'Tx Power Level',
-          '${result.advertisementData.txPowerLevel ?? 'N/A'}',
+          result.advertisementData.advName,
           detailStyle,
           secondaryStyle,
         ),

@@ -1,11 +1,7 @@
 import "package:flutter/widgets.dart";
 
 class BrandIconData extends IconData {
-  const BrandIconData(int codePoint)
-      : super(
-          codePoint,
-          fontFamily: "brands",
-        );
+  const BrandIconData(super.codePoint) : super(fontFamily: "brands");
 }
 
 class BrandIcons {

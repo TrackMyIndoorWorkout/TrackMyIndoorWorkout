@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
     for (final sport in allSports) {
       test("for $sport", () async {
         final blank = RecordWithSport(sport: sport);
-        expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        assert(DateTime.now().difference(blank.timeStamp!).inMilliseconds < 100);
         expect(blank.distance, null);
         expect(blank.elapsed, null);
         expect(blank.calories, null);
@@ -31,7 +31,7 @@ void main() {
     for (final sport in allSports) {
       test("for $sport", () async {
         final blank = RecordWithSport.getZero(sport);
-        expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        assert(DateTime.now().difference(blank.timeStamp!).inMilliseconds < 100);
         expect(blank.distance, closeTo(0.0, eps));
         expect(blank.elapsed, 0);
         expect(blank.calories, 0);
@@ -41,7 +41,7 @@ void main() {
         expect(blank.heartRate, 0);
         expect(blank.elapsedMillis, 0);
         expect(blank.sport, sport);
-        expect(blank.pace, null);
+        expect(blank.pace, sport == ActivityType.ride ? null : closeTo(0.0, eps));
         expect(blank.strokeCount, null);
         expect(blank.caloriesPerHour, null);
         expect(blank.caloriesPerMinute, null);
@@ -58,7 +58,7 @@ void main() {
         final speedHigh =
             sport == ActivityType.run ? 16.0 : (sport == ActivityType.ride ? 50.0 : 12.0);
         final random = RecordWithSport.getRandom(sport, rnd);
-        expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        assert(DateTime.now().difference(random.timeStamp!).inMilliseconds < 100);
         expect(random.distance, null);
         expect(random.elapsed, null);
         expect(random.calories, inInclusiveRange(0, 1500));

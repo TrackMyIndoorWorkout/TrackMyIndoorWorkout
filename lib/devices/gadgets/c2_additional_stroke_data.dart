@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/concept2.dart';
 import '../metric_descriptors/metric_descriptor.dart';
@@ -6,8 +6,8 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
 class C2AdditionalStrokeData extends ComplexSensor {
-  static const serviceUuid = c2RowingPrimaryServiceUuid;
-  static const characteristicUuid = c2RowingAdditionalStrokeDataUuid;
+  static const serviceUuid = c2ErgPrimaryServiceUuid;
+  static const characteristicUuid = c2ErgAdditionalStrokeDataUuid;
 
   static const expectedDataPacketLength = 15;
   static const powerLsbByteIndex = 3;
@@ -43,7 +43,7 @@ class C2AdditionalStrokeData extends ComplexSensor {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       power: getPower(data)?.toInt(),
       sport: ActivityType.rowing,
     );

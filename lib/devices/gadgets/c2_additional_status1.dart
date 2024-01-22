@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../gatt/concept2.dart';
@@ -7,14 +7,14 @@ import '../metric_descriptors/short_metric_descriptor.dart';
 import 'complex_sensor.dart';
 
 class C2AdditionalStatus1 extends ComplexSensor {
-  static const serviceUuid = c2RowingPrimaryServiceUuid;
-  static const characteristicUuid = c2RowingAdditionalStatus1Uuid;
+  static const serviceUuid = c2ErgPrimaryServiceUuid;
+  static const characteristicUuid = c2ErgAdditionalStatus1Uuid;
 
   static const expectedDataPacketLength = 17;
-  static const speedLsbByteIndex = 5;
+  static const speedLsbByteIndex = 3;
   static const strokeRateByteIndex = 5;
   static const heartRateByteIndex = 6;
-  static const paceLsbByteIndex = 5;
+  static const paceLsbByteIndex = 7;
 
   MetricDescriptor? speedMetric;
   MetricDescriptor? paceMetric;
@@ -31,7 +31,7 @@ class C2AdditionalStatus1 extends ComplexSensor {
       speedMetric = ShortMetricDescriptor(
         lsb: speedLsbByteIndex,
         msb: speedLsbByteIndex + 1,
-        divider: 1000 * DeviceDescriptor.ms2kmh,
+        divider: 1000 * DeviceDescriptor.kmh2ms,
       );
       paceMetric = ShortMetricDescriptor(
         lsb: paceLsbByteIndex,
@@ -56,12 +56,13 @@ class C2AdditionalStatus1 extends ComplexSensor {
       return RecordWithSport(sport: ActivityType.rowing);
     }
 
+    final hr = data[heartRateByteIndex];
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       speed: getSpeed(data),
       pace: getPace(data),
       cadence: data[strokeRateByteIndex],
-      heartRate: data[heartRateByteIndex],
+      heartRate: hr < 255 && hr > 0 ? hr : null,
       sport: ActivityType.rowing,
     );
   }

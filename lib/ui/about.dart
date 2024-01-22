@@ -2,25 +2,27 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+
+import '../preferences/database_migration_needed.dart';
 import '../preferences/enforced_time_zone.dart';
-import '../preferences/welcome_presented.dart';
+// import '../preferences/welcome_presented.dart';
 import '../utils/constants.dart';
 import 'donation.dart';
 
 class AboutScreen extends StatefulWidget {
   static String shortTitle = "About";
-  static const hostUrl = "https://trackmyindoorworkout.github.io/";
-  static const quickStartUrl = "${hostUrl}2020/09/25/quick-start.html";
-  static const faqUrl = "${hostUrl}2020/09/22/frequently-asked-questions.html";
-  static const knownIssuesUrl = "${hostUrl}2020/09/26/known-issues.html";
-  static const changeLogUrl = "${hostUrl}changelog";
-  static const attributionsUrl = "${hostUrl}attributions";
-  static const privacyPolicyUrl = "${hostUrl}privacy/";
+  static const quickStartUrl = "${appUrl}2020/09/25/quick-start.html";
+  static const faqUrl = "${appUrl}2020/09/22/frequently-asked-questions.html";
+  static const knownIssuesUrl = "${appUrl}2020/09/26/known-issues.html";
+  static const changeLogUrl = "${appUrl}changelog";
+  static const attributionsUrl = "${appUrl}attributions";
+  static const privacyPolicyUrl = "${appUrl}privacy/";
 
-  const AboutScreen({Key? key}) : super(key: key);
+  const AboutScreen({super.key});
 
   @override
   AboutScreenState createState() => AboutScreenState();
@@ -60,7 +62,13 @@ class AboutScreenState extends State<AboutScreen> {
       actions.add(IconButton(
         icon: const Icon(Icons.build),
         onPressed: () async {
-          Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
+          Get.find<BasePrefService>()
+              .set(databaseMigrationNeededTag, databaseMigrationNeededDefault);
+          final database = Get.find<Isar>();
+          await database.writeTxn(() async {
+            await database.clear();
+          });
+          // Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
         },
       ));
     }

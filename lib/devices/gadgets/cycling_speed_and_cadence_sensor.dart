@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/wheel_circumference.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';
@@ -30,7 +30,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
 
   CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(4, 64, maxUint16);
-    wheelCadence = CadenceMixin();
+    wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(4, 64, maxUint32);
     readCircumference();
   }
@@ -106,7 +106,7 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       distance: distance,
       speed: speed,
       cadence: crankCadence?.toInt(),

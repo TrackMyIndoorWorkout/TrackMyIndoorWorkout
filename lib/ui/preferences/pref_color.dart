@@ -5,14 +5,14 @@ import '../parts/color_picker.dart';
 
 class PrefColor extends StatelessWidget {
   PrefColor({
-    Key? key,
+    super.key,
     this.title,
     required this.pref,
     this.subtitle,
     this.onChange,
     this.disabled,
     required this.defaultValue,
-  }) : super(key: key) {
+  }) {
     final prefService = Get.find<BasePrefService>();
     initialValue = prefService.get<int>(pref) ?? defaultValue;
   }

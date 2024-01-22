@@ -18,7 +18,7 @@ import 'workout.dart';
 import 'zones_hub.dart';
 
 class PreferencesHubScreen extends StatefulWidget {
-  const PreferencesHubScreen({Key? key}) : super(key: key);
+  const PreferencesHubScreen({super.key});
 
   @override
   PreferencesHubScreenState createState() => PreferencesHubScreenState();
@@ -31,10 +31,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headlineSmall!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.headlineSmall!.apply(fontFamily: fontFamily);
     _sizeDefault = _textStyle.fontSize! * 2;
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService(), permanent: true);

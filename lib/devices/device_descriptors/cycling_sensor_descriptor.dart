@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
@@ -12,39 +11,30 @@ import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
 abstract class CyclingSensorDescriptor extends DeviceDescriptor {
-  final String tag;
   final String serviceUuid;
   final String characteristicUuid;
   ComplexSensor? sensor;
 
   CyclingSensorDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    manufacturerNamePart,
-    manufacturerFitId,
-    model,
-    required deviceCategory,
-    required this.tag,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    required super.deviceCategory,
+    super.tag,
     required this.serviceUuid,
     required this.characteristicUuid,
-    flagByteSize = 2,
+    super.flagByteSize,
   }) : super(
           sport: ActivityType.ride,
           isMultiSport: false,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          manufacturerNamePart: manufacturerNamePart,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          deviceCategory: deviceCategory,
           dataServiceId: serviceUuid,
           dataCharacteristicId: characteristicUuid,
           controlCharacteristicId: "",
           listenOnControl: false,
           hasFeatureFlags: true,
-          flagByteSize: flagByteSize,
         );
 
   @override
@@ -94,8 +84,8 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
-    final requiredService =
-        services.firstWhereOrNull((service) => service.uuid.uuidString() == heartRateServiceUuid);
+    final requiredService = services
+        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == heartRateServiceUuid);
     if (requiredService == null) {
       return [];
     }
@@ -109,14 +99,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    Logging.log(
-      logLevel,
-      logLevelError,
-      tag,
-      "executeControlOperation",
-      "Not implemented!",
-    );
-    debugPrint("$tag executeControlOperation Not implemented!");
+    Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 
   @override
@@ -126,7 +109,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     }
 
     final requiredService =
-        services.firstWhereOrNull((service) => service.uuid.uuidString() == serviceUuid);
+        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceUuid);
     if (requiredService == null) {
       return;
     }

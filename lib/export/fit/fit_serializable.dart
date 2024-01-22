@@ -6,7 +6,7 @@ import 'fit_base_type.dart';
 import 'fit_crc.dart';
 
 abstract class FitSerializable {
-  static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0).millisecondsSinceEpoch;
+  static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0);
   late List<int> output = [];
 
   void addNonFloatingNumber(int? number, int length, {bool signed = false}) {
@@ -80,15 +80,11 @@ abstract class FitSerializable {
     return output;
   }
 
-  static int fitTimeStamp(int? unixMilliseconds) {
-    if (unixMilliseconds == null) {
+  static int fitTimeStamp(DateTime? dateTime) {
+    if (dateTime == null) {
       return 0;
     }
 
-    return (unixMilliseconds - fitEpoch) ~/ 1000;
-  }
-
-  static int fitDateTime(DateTime dateTime) {
-    return fitTimeStamp(dateTime.millisecondsSinceEpoch);
+    return dateTime.difference(fitEpoch).inSeconds;
   }
 }

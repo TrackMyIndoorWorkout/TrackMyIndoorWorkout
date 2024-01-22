@@ -27,7 +27,6 @@ void main() {
       test('for ${exportTarget.item2}', () async {
         final activity = FitActivity(0, exportTarget.item1);
         final exportModel = ExportModelForTests();
-        exportModel.activity.hydrate();
         final output = activity.serializeData(exportModel);
         final expected = activity.fields.fold<int>(0, (accu, field) => accu + field.size);
 

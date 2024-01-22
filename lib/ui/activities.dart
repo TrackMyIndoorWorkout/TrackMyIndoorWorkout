@@ -2,38 +2,50 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:listview_utils/listview_utils.dart';
+import 'package:isar/isar.dart';
+import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:tuple/tuple.dart';
+
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../export/json/json_export.dart';
 import '../export/tcx/tcx_export.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/database.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/unit_system.dart';
+import '../preferences/upload_display_mode.dart';
+import '../upload/constants.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
+import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
+import 'details/activity_detail_header_row_base.dart';
+import 'details/activity_detail_header_text_row.dart';
+import 'details/activity_detail_row_one_line.dart';
+import 'details/activity_detail_row_w_spacer.dart';
+import 'details/activity_detail_row_w_unit.dart';
 import 'calorie_tunes.dart';
 import 'device_usages.dart';
 import 'import_form.dart';
 import 'leaderboards/leaderboard_type_picker.dart';
 import 'parts/calorie_override.dart';
-import 'parts/circular_menu.dart';
 import 'parts/export_format_picker.dart';
 import 'parts/import_format_picker.dart';
 import 'parts/legend_dialog.dart';
@@ -44,22 +56,23 @@ import 'power_tunes.dart';
 import 'details/activity_details.dart';
 
 class ActivitiesScreen extends StatefulWidget {
-  final bool hasLeaderboardData;
-
-  const ActivitiesScreen({key, required this.hasLeaderboardData}) : super(key: key);
+  const ActivitiesScreen({super.key});
 
   @override
   ActivitiesScreenState createState() => ActivitiesScreenState();
 }
 
 class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingObserver {
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   int _editCount = 0;
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
+  String _uploadDisplayMode = uploadDisplayModeDefault;
   bool _calculateGps = calculateGpsDefault;
+  bool _machineNameInHeader = activityListMachineNameInHeaderDefault;
+  bool _bluetoothAddressInHeader = activityListBluetoothAddressInHeaderDefault;
   double? _mediaWidth;
   double _sizeDefault = 10.0;
   double _sizeDefault2 = 10.0;
@@ -88,7 +101,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
+    _uploadDisplayMode = prefService.get<String>(uploadDisplayModeTag) ?? uploadDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
+    _machineNameInHeader = prefService.get<bool>(activityListMachineNameInHeaderTag) ??
+        activityListMachineNameInHeaderDefault;
+    _bluetoothAddressInHeader = prefService.get<bool>(activityListBluetoothAddressInHeaderTag) ??
+        activityListBluetoothAddressInHeaderDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     final sizeAdjustInt =
         prefService.get<int>(measurementFontSizeAdjustTag) ?? measurementFontSizeAdjustDefault;
@@ -171,11 +189,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
 
-          final records = await _database.recordDao.findAllActivityRecords(activity.id ?? 0);
           ActivityExport exporter = getExporter(formatPick);
           final fileBytes = await exporter.getExport(
             activity,
-            records,
             formatPick == "CSV",
             _calculateGps,
             false,
@@ -275,7 +291,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             );
             if (sportPick != null) {
               activity.sport = sportPick;
-              await _database.activityDao.updateActivity(activity);
+              _database.writeTxnSync(() {
+                _database.activitys.putSync(activity);
+              });
+
               setState(() {
                 _editCount++;
               });
@@ -297,10 +316,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             confirm: TextButton(
               child: const Text("Yes"),
               onPressed: () async {
-                await _database.recordDao.deleteAllActivityRecords(activity.id ?? 0);
-                await _database.activityDao.deleteActivity(activity);
-                setState(() {
-                  _editCount++;
+                _database.writeTxnSync(() {
+                  _database.records.filter().activityIdEqualTo(activity.id).deleteAllSync();
+                  _database.activitys.deleteSync(activity.id);
+                  setState(() {
+                    _editCount++;
+                  });
                 });
                 Get.close(1);
               },
@@ -322,6 +343,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     ]);
 
     return FitHorizontally(
+      shrinkLimit: shrinkLimit,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: actionsRow,
@@ -391,7 +413,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       }),
     ];
 
-    if (_leaderboardFeature && widget.hasLeaderboardData) {
+    if (_leaderboardFeature && DbUtils().hasLeaderboardData()) {
       floatingActionButtons.add(
         _themeManager.getBlueFab(Icons.leaderboard, () async {
           Get.bottomSheet(
@@ -414,7 +436,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       );
     }
 
-    final circularFabMenu = CircularFabMenu(
+    final circularFabMenu = FabCircularMenuPlus(
       fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
       fabOpenColor: _themeManager.getBlueColor(),
       fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
@@ -453,8 +475,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final offset = page * limit;
-            final data = await _database.activityDao.findActivities(limit, offset);
+            final data = await _database.activitys
+                .where()
+                .sortByStartDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -472,9 +498,127 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         empty: const Center(child: Text('No activities found')),
         itemBuilder: (context, _, item) {
           final activity = item as Activity;
-          final startStamp = DateTime.fromMillisecondsSinceEpoch(activity.start);
-          final dateString = DateFormat.yMd().format(startStamp);
-          final timeString = DateFormat.Hms().format(startStamp);
+          final dateString = DateFormat.yMd().format(activity.start);
+          var timeString = DateFormat.Hms().format(activity.start);
+          if (_uploadDisplayMode == uploadDisplayModeAggregate && activity.isUploaded(anyChoice)) {
+            timeString += "\u2601";
+          }
+
+          final List<Widget> header = [
+            ActivityDetailHeaderTextRow(
+              themeManager: _themeManager,
+              icon: Icons.calendar_today,
+              iconSize: _sizeDefault2,
+              text: dateString,
+              textStyle: _headerStyle,
+            ),
+            ActivityDetailHeaderTextRow(
+              themeManager: _themeManager,
+              icon: Icons.watch,
+              iconSize: _sizeDefault2,
+              text: timeString,
+              textStyle: _headerStyle,
+            ),
+          ];
+
+          if (_machineNameInHeader) {
+            header.add(
+              ActivityDetailHeaderTextRow(
+                themeManager: _themeManager,
+                icon: getSportIcon(activity.sport),
+                iconSize: _sizeDefault,
+                text: activity.deviceName,
+                textStyle: _headerStyle,
+              ),
+            );
+          }
+
+          if (_bluetoothAddressInHeader && activity.deviceId.isNotEmpty) {
+            header.add(
+              ActivityDetailHeaderTextRow(
+                themeManager: _themeManager,
+                icon: Icons.numbers,
+                iconSize: _sizeDefault,
+                text: activity.deviceId.shortAddressString(),
+                textStyle: _headerStyle,
+              ),
+            );
+          }
+
+          if (_uploadDisplayMode == uploadDisplayModeDetailed && activity.isUploaded(anyChoice)) {
+            List<Widget> uploadIcons = [];
+            for (var portal in getPortalChoices(false, _themeManager)) {
+              if (activity.isUploaded(portal.name)) {
+                uploadIcons.add(portal.getSvg(true, _sizeDefault / 2));
+              }
+            }
+
+            header.add(
+              ActivityDetailHeaderRowBase(
+                themeManager: _themeManager,
+                icon: Icons.cloud_upload,
+                iconSize: _sizeDefault,
+                widget: Row(children: uploadIcons),
+              ),
+            );
+          }
+
+          List<Widget> body = [];
+          if (!_machineNameInHeader) {
+            body.add(
+              ActivityDetailRowOneLine(
+                themeManager: _themeManager,
+                icon: getSportIcon(activity.sport),
+                iconSize: _sizeDefault,
+                text: activity.deviceName,
+                textStyle: _textStyle,
+              ),
+            );
+          }
+
+          if (!_bluetoothAddressInHeader && activity.deviceId.isNotEmpty) {
+            body.add(
+              ActivityDetailRowOneLine(
+                themeManager: _themeManager,
+                icon: Icons.numbers,
+                iconSize: _sizeDefault,
+                text: activity.deviceId.shortAddressString(),
+                textStyle: _textStyle,
+              ),
+            );
+          }
+
+          body.addAll([
+            ActivityDetailRowWithSpacer(
+              themeManager: _themeManager,
+              icon: Icons.timer,
+              iconSize: _sizeDefault,
+              text: _timeDisplayMode == timeDisplayModeElapsed
+                  ? activity.elapsedString
+                  : activity.movingTimeString,
+              textStyle: _measurementStyle,
+            ),
+            ActivityDetailRowWithUnit(
+              themeManager: _themeManager,
+              icon: Icons.add_road,
+              iconSize: _sizeDefault,
+              text: activity.distanceString(_si, _highRes),
+              textStyle: _measurementStyle,
+              unitText: distanceUnit(_si, _highRes),
+              unitStyle: _unitStyle,
+            ),
+            ActivityDetailRowWithUnit(
+              themeManager: _themeManager,
+              icon: Icons.whatshot,
+              iconSize: _sizeDefault,
+              text: '${activity.calories}',
+              textStyle: _measurementStyle,
+              unitText: 'cal',
+              unitStyle: _unitStyle,
+            ),
+            _actionButtonRow(activity, _sizeDefault2),
+          ]);
+
           return Card(
             elevation: 6,
             child: ExpandablePanel(
@@ -483,24 +627,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               header: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault2),
-                      Text(dateString, style: _headerStyle),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      _themeManager.getBlueIcon(Icons.watch, _sizeDefault2),
-                      Text(timeString, style: _headerStyle),
-                    ],
-                  ),
-                ],
+                children: header,
               ),
               collapsed: Container(),
               expanded: ListTile(
@@ -510,72 +637,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 onTap: () =>
                     Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(
-                  children: [
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(getSportIcon(activity.sport), _sizeDefault),
-                          Expanded(
-                            child: TextOneLine(
-                              activity.deviceName,
-                              style: _textStyle,
-                              textAlign: TextAlign.right,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(Icons.timer, _sizeDefault),
-                          const Spacer(),
-                          Text(
-                            _timeDisplayMode == timeDisplayModeElapsed
-                                ? activity.elapsedString
-                                : activity.movingTimeString,
-                            style: _measurementStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(Icons.add_road, _sizeDefault),
-                          const Spacer(),
-                          Text(activity.distanceString(_si, _highRes), style: _measurementStyle),
-                          SizedBox(
-                            width: _sizeDefault,
-                            child: Text(distanceUnit(_si, _highRes), style: _unitStyle),
-                          ),
-                        ],
-                      ),
-                    ),
-                    FitHorizontally(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _themeManager.getBlueIcon(Icons.whatshot, _sizeDefault),
-                          const Spacer(),
-                          Text('${activity.calories}', style: _measurementStyle),
-                          SizedBox(
-                            width: _sizeDefault,
-                            child: Text('cal', style: _unitStyle),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _actionButtonRow(activity, _sizeDefault2),
-                  ],
+                  children: body,
                 ),
               ),
             ),

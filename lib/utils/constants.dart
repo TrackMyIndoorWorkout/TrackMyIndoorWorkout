@@ -1,5 +1,7 @@
 const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
+const appDomain = "TrackMyIndoorWorkout.GitHub.io";
+const appUrl = "https://$appDomain/";
 const eps = 1e-6;
 const displayEps = 1e-4;
 const workaroundEpsRatio = 0.05;
@@ -32,6 +34,7 @@ const fontSizeFactor = 1.2;
 const appName = "Track My Indoor Exercise";
 const displayAppName = "Track My Indoor Workout";
 const huaweiAppGalleryBuild = false;
+const shrinkLimit = 0.2;
 
 class ActivityType {
   static const String alpineSki = "AlpineSki";
@@ -80,6 +83,17 @@ const waterSports = [
   ActivityType.swim,
 ];
 
+const paddleSports = [
+  ActivityType.kayaking,
+  ActivityType.canoeing,
+];
+
+const c2Sports = [
+  ActivityType.rowing,
+  ActivityType.nordicSki,
+  ActivityType.ride,
+];
+
 const allSports = [
   ActivityType.ride,
   ActivityType.run,
@@ -88,4 +102,5 @@ const allSports = [
   ActivityType.canoeing,
   ActivityType.rowing,
   ActivityType.swim,
+  ActivityType.nordicSki,
 ];

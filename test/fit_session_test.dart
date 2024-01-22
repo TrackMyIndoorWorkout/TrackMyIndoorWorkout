@@ -5,7 +5,7 @@ import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/export/export_target.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_session.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:tuple/tuple.dart';
 import 'utils.dart';
 
@@ -34,16 +34,15 @@ void main() {
         test('for ${exportTarget.item2}', () async {
           final rng = Random();
           final session = FitSession(0, exportTarget.item1, withGps);
-          final now = DateTime.now();
           final exportRecord = withGps
               ? ExportRecord(
                   latitude: rng.nextDouble(),
                   longitude: rng.nextDouble(),
                   record: Record(
-                    timeStamp: now.millisecondsSinceEpoch,
+                    timeStamp: DateTime.now(),
                   ),
                 )
-              : ExportRecord(record: Record(timeStamp: now.millisecondsSinceEpoch));
+              : ExportRecord(record: Record(timeStamp: DateTime.now()));
 
           final exportModel = ExportModelForTests(records: [exportRecord])
             ..averageSpeed = 0.0

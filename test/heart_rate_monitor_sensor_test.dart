@@ -1,11 +1,11 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:isar/isar.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'heart_rate_monitor_sensor_test.mocks.dart';
 
 class TestPair {
   final List<int> data;
@@ -28,7 +28,8 @@ const polarH7SampleData = [
   [22, 116, 41, 2],
 ];
 
-@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
@@ -70,9 +71,9 @@ void main() {
 
         final record = hrm.processMeasurement(testPair.data);
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -133,9 +134,9 @@ void main() {
 
         final record = hrm.processMeasurement(moreTestData);
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, expectedRecord.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, expectedRecord.activityId);
         expect(record.distance, expectedRecord.distance);
         expect(record.elapsed, expectedRecord.elapsed);
@@ -201,9 +202,9 @@ void main() {
 
         final record = hrm.processMeasurement(polarH7TestData);
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, expectedRecord.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, expectedRecord.activityId);
         expect(record.distance, expectedRecord.distance);
         expect(record.elapsed, expectedRecord.elapsed);

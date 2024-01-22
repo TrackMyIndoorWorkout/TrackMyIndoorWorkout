@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
+import '../../utils/string_ex.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple3<String, String, String>> devices;
 
-  const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
+  const LeaderboardDeviceHubScreen({super.key, required this.devices});
 
   @override
   LeaderboardDeviceHubScreenState createState() => LeaderboardDeviceHubScreenState();
@@ -22,15 +23,9 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.titleLarge!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.titleLarge!.apply(fontFamily: fontFamily);
     _sizeDefault = _textStyle.fontSize! * 3;
-    _subTextStyle = Get.textTheme.titleLarge!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _subTextStyle = Get.textTheme.titleLarge!.apply(fontFamily: fontFamily);
   }
 
   @override
@@ -51,13 +46,13 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextOneLine(
-                          widget.devices[index].item2,
+                          widget.devices[index].item1,
                           style: _textStyle,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,
                         ),
                         TextOneLine(
-                          widget.devices[index].item1,
+                          widget.devices[index].item2.shortAddressString(),
                           style: _subTextStyle,
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,

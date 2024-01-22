@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/instant_upload.dart';
 import '../../preferences/training_peaks_upload_public.dart';
+import '../../preferences/upload_display_mode.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
@@ -14,7 +16,7 @@ class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreen
   static String shortTitle = "Integrations";
   static String title = "$shortTitle Preferences";
 
-  const IntegrationPreferencesScreen({Key? key}) : super(key: key);
+  const IntegrationPreferencesScreen({super.key});
 
   @override
   IntegrationPreferencesScreenState createState() => IntegrationPreferencesScreenState();
@@ -72,6 +74,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
 
   @override
   Widget build(BuildContext context) {
+    final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
     List<Widget> integrationPreferences = [
       const PrefCheckbox(
         title: Text(instantUpload),
@@ -84,12 +87,33 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         pref: trainingPeaksUploadPublicTag,
       ),
       PrefLabel(
+        title: Text(uploadDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
+      const PrefRadio<String>(
+        title: Text(uploadDisplayModeNoneTitle),
+        subtitle: Text(uploadDisplayModeNoneDescription),
+        value: uploadDisplayModeNone,
+        pref: uploadDisplayModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(uploadDisplayModeAggregateTitle),
+        subtitle: Text(uploadDisplayModeAggregateDescription),
+        value: uploadDisplayModeAggregate,
+        pref: uploadDisplayModeTag,
+      ),
+      const PrefRadio<String>(
+        title: Text(uploadDisplayModeDetailedTitle),
+        subtitle: Text(uploadDisplayModeDetailedDescription),
+        value: uploadDisplayModeDetailed,
+        pref: uploadDisplayModeTag,
+      ),
+      PrefLabel(
         title: Text("Available Integrations:", style: Get.textTheme.headlineSmall!, maxLines: 3),
       ),
     ];
 
     integrationPreferences.addAll(
-      getPortalChoices(_themeManager).asMap().entries.map(
+      getPortalChoices(true, _themeManager).asMap().entries.map(
             (e) => PrefButton(
               child: GestureDetector(
                 onTap: () async {
@@ -104,11 +128,16 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
                       size: _largerTextStyle.fontSize! * 1.5,
                       color: _themeManager.getProtagonistColor(),
                     ),
-                    SvgPicture.asset(
-                      e.value.assetName,
-                      colorFilter: ColorFilter.mode(e.value.color, BlendMode.srcIn),
-                      height: _largerTextStyle.fontSize! * e.value.heightMultiplier,
-                      semanticsLabel: '${e.value.name} Logo',
+                    SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.white,
+                      ),
+                      height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                      width: mediaWidth - 130,
+                      padding: const EdgeInsets.all(5),
+                      child: e.value.getSvg(false, _largerTextStyle.fontSize!),
                     ),
                   ],
                 ),

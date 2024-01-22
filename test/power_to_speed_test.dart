@@ -31,7 +31,7 @@ void main() {
     ]) {
       test("for ${testData.watts} -> ${testData.speed}", () async {
         await initPrefServiceForTest();
-        final speed2Power = PowerSpeedMixin();
+        final speed2Power = PowerSpeedMixinImpl();
         await speed2Power.initPower2SpeedConstants();
 
         final velocity =

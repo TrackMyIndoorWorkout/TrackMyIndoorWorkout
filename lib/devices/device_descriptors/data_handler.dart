@@ -1,8 +1,9 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 
 abstract class DataHandler {
+  final String tag;
   final bool hasFeatureFlags;
   final int flagByteSize;
   int featuresFlag = -1;
@@ -24,6 +25,7 @@ abstract class DataHandler {
   MetricDescriptor? caloriesPerMinuteMetric;
 
   DataHandler({
+    this.tag = "DATA_HANDLER",
     this.hasFeatureFlags = true,
     this.flagByteSize = 2,
     this.heartRateByteIndex,
@@ -38,6 +40,23 @@ abstract class DataHandler {
   DataHandler clone();
 
   bool isDataProcessable(List<int> data);
+
+  /// It tells if a gathered packet is the whole packet.
+  /// Gets significance for fragmented packet devices.
+  bool isWholePacket(List<int> data) {
+    return true;
+  }
+
+  /// It tells if a gathered packet should be just skipped,
+  /// and ignored.
+  /// Gets significance for fragmented packet devices,
+  /// and such which sometimes incorrectly emit packets
+  /// violating gathering of series of smaller packets
+  /// comprising larger packets (see isWholePacket above).
+  /// Kayak First abides by 20 bytes MTU only.
+  bool skipPacket(List<int> data) {
+    return false;
+  }
 
   void initFlag() {
     clearMetrics();

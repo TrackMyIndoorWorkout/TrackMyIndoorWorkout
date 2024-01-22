@@ -1,11 +1,15 @@
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/cross_trainer_device_descriptor.dart';
-import 'device_descriptors/concept2_rower.dart';
+import 'device_descriptors/concept2_bike_erg.dart';
+import 'device_descriptors/concept2_erg.dart';
+import 'device_descriptors/concept2_row_erg.dart';
+import 'device_descriptors/concept2_ski_erg.dart';
 import 'device_descriptors/cycling_power_meter_descriptor.dart';
 import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
+import 'device_descriptors/kayak_first_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
@@ -13,6 +17,7 @@ import 'device_descriptors/npe_runn_treadmill.dart';
 import 'device_descriptors/paddling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
+import 'device_descriptors/running_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
 import 'device_descriptors/schwinn_x70.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
@@ -244,6 +249,30 @@ class DeviceFactory {
     );
   }
 
+  static RunningSpeedAndCadenceDescriptor getTechnogymRun() {
+    return RunningSpeedAndCadenceDescriptor(
+      fourCC: technogymRunFourCC,
+      vendorName: "Technogym",
+      modelName: "Technogym Run",
+      manufacturerNamePart: "Technogym",
+      manufacturerFitId: technogymFitId,
+      model: "Treadmill",
+      deviceCategory: DeviceCategory.primarySensor,
+    );
+  }
+
+  static RunningSpeedAndCadenceDescriptor getStrydFootPod() {
+    return RunningSpeedAndCadenceDescriptor(
+      fourCC: technogymRunFourCC,
+      vendorName: "Stryd",
+      modelName: "Stryd Foot Pod",
+      manufacturerNamePart: "Stryd",
+      manufacturerFitId: strydFitId,
+      model: "",
+      deviceCategory: DeviceCategory.primarySensor,
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -296,11 +325,27 @@ class DeviceFactory {
       case cscSensorBasedPaddleFourCC:
         return DeviceFactory.getCSCBasedPaddler();
       case concept2RowerFourCC:
-        return Concept2Rower();
+        return Concept2RowErg();
+      case concept2SkiFourCC:
+        return Concept2SkiErg();
+      case concept2BikeFourCC:
+        return Concept2BikeErg();
+      case concept2ErgFourCC:
+        return Concept2Erg(
+          deviceSportDescriptors[concept2ErgFourCC]!.defaultSport,
+          deviceSportDescriptors[concept2ErgFourCC]!.isMultiSport,
+          concept2ErgFourCC,
+        );
       case merachMr667FourCC:
         return getMerachMr667();
       case virtufitUltimatePro2FourCC:
         return getVirtufitUltimatePro2();
+      case kayakFirstFourCC:
+        return KayakFirstDescriptor();
+      case technogymRunFourCC:
+        return getTechnogymRun();
+      case strydFootPodFourCC:
+        return getStrydFootPod();
     }
 
     return DeviceFactory.getGenericFTMSBike();
@@ -330,6 +375,9 @@ class DeviceFactory {
       case ActivityType.elliptical:
         fourCC = genericFTMSCrossTrainerFourCC;
         break;
+      case ActivityType.nordicSki:
+        fourCC = concept2SkiFourCC;
+        break;
     }
 
     return DeviceFactory.getDescriptorForFourCC(fourCC);
@@ -337,5 +385,16 @@ class DeviceFactory {
 
   static List<DeviceDescriptor> allDescriptors() {
     return [for (var fourCC in allFourCC) DeviceFactory.getDescriptorForFourCC(fourCC)];
+  }
+
+  static List<String> getSportChoices(String fourCC) {
+    if (fourCC == kayakFirstFourCC) {
+      return paddleSports;
+    } else if (fourCC == concept2ErgFourCC) {
+      return c2Sports;
+    }
+
+    // KayakPro
+    return waterSports;
   }
 }

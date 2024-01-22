@@ -1,0 +1,19 @@
+{
+  "channel": "beta",
+  "previews": [
+    {
+      "command": 
+        ["flutter", "build", "apk"]
+      ,
+      "id": "android",
+      "manager": "flutter"
+    },
+    {
+      "command": 
+        ["flutter", "build", "ios"]
+      ,
+      "id": "ios",
+      "manager": "flutter"
+    }
+  ]
+}

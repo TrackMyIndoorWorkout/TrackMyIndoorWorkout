@@ -16,7 +16,7 @@ import 'zone_palette.dart';
 class ZonesHubScreen extends StatefulWidget {
   static String shortTitle = "Zones";
 
-  const ZonesHubScreen({Key? key}) : super(key: key);
+  const ZonesHubScreen({super.key});
 
   @override
   ZonesHubScreenState createState() => ZonesHubScreenState();
@@ -29,10 +29,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headlineSmall!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.headlineSmall!.apply(fontFamily: fontFamily);
     _sizeDefault = _textStyle.fontSize! * 2;
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService(), permanent: true);

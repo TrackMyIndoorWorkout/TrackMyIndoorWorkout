@@ -11,7 +11,7 @@ import '../preferences/drive_train_loss.dart';
 import 'constants.dart';
 import 'init_preferences.dart';
 
-class PowerSpeedMixin {
+mixin PowerSpeedMixin {
   // https://www.gribble.org/cycling/power_v_speed.html
   static const epsilon = 0.001;
   static const maxIterations = 100;
@@ -112,6 +112,7 @@ class PowerSpeedMixin {
     switch (sport) {
       case ActivityType.run:
       case ActivityType.rowing:
+      case ActivityType.nordicSki:
         return 1.9;
       case ActivityType.kayaking:
       case ActivityType.canoeing:
@@ -157,3 +158,5 @@ class PowerSpeedMixin {
     return speed;
   }
 }
+
+class PowerSpeedMixinImpl with PowerSpeedMixin {}

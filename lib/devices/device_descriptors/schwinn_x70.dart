@@ -1,13 +1,11 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../preferences/log_level.dart';
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
+import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
@@ -55,6 +53,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
           manufacturerFitId: nautilusFitId,
           model: "",
+          tag: "SCH_X70",
           dataServiceId: schwinnX70ServiceUuid,
           dataCharacteristicId: schwinnX70MeasurementUuid,
           controlCharacteristicId: schwinnX70ControlUuid,
@@ -146,7 +145,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       calories: calories ~/ 2097152,
       power: integerPower,
       speed: speed,
-      cadence: min(computeCadence(), maxByte),
+      cadence: min(computeCadence().toInt(), maxByte),
       heartRate: null,
       sport: sport,
     );
@@ -163,7 +162,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
+    if (!(await isBluetoothOn())) {
       return;
     }
 
@@ -177,25 +176,18 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
     if (opCode == requestControl /* startOrResumeControl */) {
       List<int> startHrStreamCommand = [
-        0x5 /* length */,
-        0x3 /* seq-с ceiling */,
-        0xd9 /* crc = sum to 0 */,
-        0x0,
-        0x1f /* command */
+        0x05 /* length */,
+        0x03 /* seq-с ceiling */,
+        0xD9 /* crc = sum to 0 */,
+        0x00,
+        0x1F /* command */
       ];
 
       try {
         await controlPoint.write(startHrStreamCommand);
-      } on PlatformException catch (e, stack) {
-        Logging.log(
-          logLevel,
-          logLevelError,
-          "Sch x70",
-          "executeControlOperation",
-          "${e.message}",
-        );
-        debugPrint("$e");
-        debugPrintStack(stackTrace: stack, label: "trace:");
+      } on Exception catch (e, stack) {
+        Logging()
+            .logException(logLevel, tag, "executeControlOperation", "controlPoint.write", e, stack);
       }
     }
   }
@@ -203,14 +195,14 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   @override
   List<ComplexSensor> getAdditionalSensors(
       BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services
-        .firstWhereOrNull((service) => service.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    final requiredService = services.firstWhereOrNull(
+        (service) => service.serviceUuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
     if (requiredService == null) {
       return [];
     }
 
-    final requiredCharacteristic = requiredService.characteristics
-        .firstWhereOrNull((ch) => ch.uuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+    final requiredCharacteristic = requiredService.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == SchwinnX70HrSensor.characteristicUuid);
     if (requiredCharacteristic == null) {
       return [];
     }

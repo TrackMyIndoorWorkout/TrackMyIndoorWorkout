@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/power_meter.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
@@ -28,7 +28,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
 
   CyclingPowerMeterSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(4, 64, maxUint16);
-    wheelCadence = CadenceMixin();
+    wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(4, 32, maxUint32);
   }
 
@@ -46,7 +46,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       // Has Pedal Power Balance?
       if (flag % 2 == 1) {
         // Skip it
-        expectedLength += 1; // uint8
+        expectedLength++; // uint8
       }
       flag ~/= 4; // We also skip the  Pedal Power Balance Reference flag bit
 
@@ -158,7 +158,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     }
 
     return RecordWithSport(
-      timeStamp: DateTime.now().millisecondsSinceEpoch,
+      timeStamp: DateTime.now(),
       distance: distance,
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),

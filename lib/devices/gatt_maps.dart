@@ -17,5 +17,6 @@ const Map<String, String> sportToUuid = {
   ActivityType.rowing: rowerDeviceUuid,
   ActivityType.canoeing: rowerDeviceUuid,
   ActivityType.swim: rowerDeviceUuid,
+  ActivityType.nordicSki: rowerDeviceUuid,
   ActivityType.elliptical: crossTrainerUuid,
 };

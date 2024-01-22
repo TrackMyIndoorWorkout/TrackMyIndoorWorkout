@@ -6,7 +6,7 @@ import '../../utils/theme_manager.dart';
 
 class PrefInteger extends StatefulWidget {
   const PrefInteger({
-    Key? key,
+    super.key,
     this.title,
     required this.pref,
     this.subtitle,
@@ -14,7 +14,7 @@ class PrefInteger extends StatefulWidget {
     this.disabled,
     required this.min,
     required this.max,
-  }) : super(key: key);
+  });
 
   final Widget? title;
   final Widget? subtitle;

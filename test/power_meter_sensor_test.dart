@@ -1,13 +1,13 @@
 // import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:isar/isar.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cycling_power_meter_sensor.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'power_meter_sensor_test.mocks.dart';
 
 class TestPair {
   final List<int> data;
@@ -31,7 +31,8 @@ class CadenceTestData {
       required this.cadence});
 }
 
-@GenerateNiceMocks([MockSpec<BluetoothDevice>()])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
@@ -74,9 +75,9 @@ void main() {
 
         final record = powerMeter.processMeasurement(testPair.data);
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);

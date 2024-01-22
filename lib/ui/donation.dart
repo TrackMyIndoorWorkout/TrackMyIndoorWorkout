@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qr_widget/qr_widget.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class DonationScreen extends StatelessWidget {
-  const DonationScreen({Key? key}) : super(key: key);
+  const DonationScreen({super.key});
 
   Widget getListTile(String vendorName, String logoSvgPath, String url, String qrPostfix) {
     return ListTile(
@@ -16,7 +16,7 @@ class DonationScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
           child: SvgPicture.asset(
-            "assets/$logoSvgPath.svg",
+            "assets/donation/$logoSvgPath.svg",
             height: Get.textTheme.displayMedium!.fontSize!,
             semanticsLabel: "$vendorName Button",
           ),
@@ -39,20 +39,19 @@ class DonationScreen extends StatelessWidget {
             backgroundColor: Colors.white,
             Column(
               children: [
-                const Divider(height: 40),
+                const SizedBox(width: 40, height: 40),
                 SvgPicture.asset(
-                  "assets/$logoSvgPath.svg",
+                  "assets/donation/$logoSvgPath.svg",
                   height: Get.textTheme.displayMedium!.fontSize!,
                   semanticsLabel: "$vendorName Button",
                 ),
                 Expanded(
                   child: Center(
-                    child: QrImage(
+                    child: QrImageView(
                       data: "$url$qrPostfix",
                       version: QrVersions.auto,
                       size: min(Get.mediaQuery.size.width, Get.mediaQuery.size.height) * 2 / 3,
                       backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
                     ),
                   ),
                 ),

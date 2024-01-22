@@ -7,8 +7,7 @@ class BooleanQuestionBottomSheet extends StatefulWidget {
   final String title;
   final String content;
 
-  const BooleanQuestionBottomSheet({Key? key, required this.title, required this.content})
-      : super(key: key);
+  const BooleanQuestionBottomSheet({super.key, required this.title, required this.content});
 
   @override
   BooleanQuestionBottomSheetState createState() => BooleanQuestionBottomSheetState();
@@ -55,12 +54,20 @@ class BooleanQuestionBottomSheetState extends State<BooleanQuestionBottomSheet> 
           children: [
             ElevatedButton(
               onPressed: () => Get.back(result: false),
-              child: const Text("No", textScaleFactor: 2.0, textAlign: TextAlign.center),
+              child: const Text(
+                "No",
+                textScaler: TextScaler.linear(2.0),
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(width: 10, height: 10),
             ElevatedButton(
               onPressed: () => Get.back(result: true),
-              child: const Text("Yes", textScaleFactor: 2.0, textAlign: TextAlign.center),
+              child: const Text(
+                "Yes",
+                textScaler: TextScaler.linear(2.0),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),

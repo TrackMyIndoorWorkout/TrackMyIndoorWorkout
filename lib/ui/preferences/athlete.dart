@@ -13,7 +13,7 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
   static String shortTitle = "Athlete";
   static String title = "$shortTitle Preferences";
 
-  const AthletePreferencesScreen({Key? key}) : super(key: key);
+  const AthletePreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +32,6 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: athleteBodyWeightIntTag,
         min: athleteBodyWeightMin,
         max: athleteBodyWeightMax,
-      ),
-      const PrefCheckbox(
-        title: Text(rememberAthleteBodyWeight),
-        subtitle: Text(rememberAthleteBodyWeightDescription),
-        pref: rememberAthleteBodyWeightTag,
       ),
       const PrefCheckbox(
         title: Text(useHeartRateBasedCalorieCounting),

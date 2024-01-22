@@ -7,7 +7,7 @@ import 'sport_leaderboard.dart';
 class LeaderboardSportHubScreen extends StatefulWidget {
   final List<String> sports;
 
-  const LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
+  const LeaderboardSportHubScreen({super.key, required this.sports});
 
   @override
   LeaderboardSportHubScreenState createState() => LeaderboardSportHubScreenState();
@@ -20,10 +20,7 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.headlineMedium!.apply(
-      fontFamily: fontFamily,
-      color: Colors.white,
-    );
+    _textStyle = Get.textTheme.headlineMedium!.apply(fontFamily: fontFamily);
     _sizeDefault = _textStyle.fontSize! * 2;
   }
 

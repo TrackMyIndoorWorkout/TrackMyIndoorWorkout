@@ -1,6 +1,6 @@
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../export/export_target.dart';
-import '../persistence/models/activity.dart';
+import '../persistence/isar/activity.dart';
 import '../utils/constants.dart';
 import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';
@@ -61,9 +61,10 @@ class ExportModel {
       ExportRecord lastRecord = records.last;
       ExportRecord firstRecord = records.first;
       if (activity.elapsed == 0 &&
-          (lastRecord.record.timeStamp ?? 0) > 0 &&
-          (firstRecord.record.timeStamp ?? 0) > 0) {
-        activity.elapsed = (lastRecord.record.timeStamp! - firstRecord.record.timeStamp!) ~/ 1000;
+          lastRecord.record.timeStamp != null &&
+          firstRecord.record.timeStamp != null) {
+        activity.elapsed =
+            lastRecord.record.timeStamp!.difference(firstRecord.record.timeStamp!).inSeconds;
       }
 
       if (activity.distance < eps && (lastRecord.record.distance ?? 0.0) > eps) {

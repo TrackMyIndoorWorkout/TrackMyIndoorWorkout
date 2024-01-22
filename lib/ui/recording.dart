@@ -5,31 +5,35 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
+import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
+import 'package:isar/isar.dart';
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_fourcc.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
-import '../persistence/models/workout_summary.dart';
-import '../persistence/database.dart';
+import '../devices/device_descriptors/kayak_first_descriptor.dart';
+import '../persistence/isar/activity.dart';
+import '../persistence/isar/db_utils.dart';
+import '../persistence/isar/record.dart';
+import '../persistence/isar/workout_summary.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
-import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
@@ -49,6 +53,7 @@ import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/stage_mode.dart';
+import '../preferences/stationary_workout.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/two_column_layout.dart';
@@ -57,8 +62,8 @@ import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/workout_mode.dart';
 import '../track/calculator.dart';
 import '../track/constants.dart';
+import '../track/track_descriptor.dart';
 import '../track/track_painter.dart';
-import '../track/tracks.dart';
 import '../utils/bluetooth.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
@@ -70,13 +75,14 @@ import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
 import 'models/display_record.dart';
+import 'models/progress_state.dart';
 import 'models/row_configuration.dart';
-import 'parts/boolean_question.dart';
-import 'parts/circular_menu.dart';
 import 'parts/battery_status.dart';
 import 'parts/heart_rate_monitor_pairing.dart';
+import 'parts/kayak_first.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/pick_directory.dart';
+import 'parts/pre_measurement_progress.dart';
 import 'parts/spin_down.dart';
 import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
@@ -94,24 +100,25 @@ enum TargetHrState {
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
   final DeviceDescriptor descriptor;
-  final BluetoothDeviceState initialState;
+  final BluetoothConnectionState initialState;
   final Size size;
   final String sport;
 
   const RecordingScreen({
-    Key? key,
+    super.key,
     required this.device,
     required this.descriptor,
     required this.initialState,
     required this.size,
     required this.sport,
-  }) : super(key: key);
+  });
 
   @override
   RecordingState createState() => RecordingState();
 }
 
 class RecordingState extends State<RecordingScreen> {
+  static const String tag = "RECORDING";
   static const double _markerStyleSizeAdjust = 1.4;
   static const double _markerStyleSmallSizeAdjust = 0.9;
   static const int _unlockChoices = 6;
@@ -141,7 +148,8 @@ class RecordingState extends State<RecordingScreen> {
   HeartRateMonitor? _heartRateMonitor;
   TrackCalculator? _trackCalculator;
   PaletteSpec? _paletteSpec;
-  double _trackLength = trackLength;
+  double _trackLength = 0; // Just default
+  bool _busy = false;
   bool _measuring = false;
   bool _onStage = false;
   int _pointCount = 0;
@@ -183,7 +191,7 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
 
   Activity? _activity;
-  AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _simplerUi = simplerUiSlowDefault;
@@ -192,13 +200,11 @@ class RecordingState extends State<RecordingScreen> {
   bool _instantExport = instantExportDefault;
   String _instantExportLocation = instantExportLocationDefault;
   bool _calculateGps = calculateGpsDefault;
+  bool _stationaryWorkout = stationaryWorkoutDefault;
   bool _uxDebug = appDebugModeDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
-  Timer? _dataGapWatchdog;
-  int _dataGapWatchdogTime = dataStreamGapWatchdogDefault;
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
-  Timer? _dataGapBeeperTimer;
 
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
@@ -254,7 +260,7 @@ class RecordingState extends State<RecordingScreen> {
   int _unlockButtonIndex = 0;
   final Random _rng = Random();
   final List<GlobalKey> _unlockKeys = [];
-  final GlobalKey<CircularFabMenuState> _fabKey = GlobalKey();
+  final GlobalKey<FabCircularMenuPlusState> _fabKey = GlobalKey();
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
   StatisticsAccumulator _accu = StatisticsAccumulator(si: true, sport: ActivityType.ride);
@@ -262,17 +268,41 @@ class RecordingState extends State<RecordingScreen> {
   Socket? _sinkSocket;
 
   Future<void> _connectOnDemand() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+    if (!(await bluetoothCheck(true, _logLevel))) {
       return;
     }
 
+    setState(() {
+      _busy = true;
+    });
+
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
+      await _fitnessEquipment?.additionalSensorsOnDemand();
+      await _fitnessEquipment?.attach();
+      _startPumpingData();
+      if (!_uxDebug) {
+        await _fitnessEquipment?.postPumpStart();
+      }
+
       final prefService = Get.find<BasePrefService>();
       if (prefService.get<bool>(instantMeasurementStartTag) ?? instantMeasurementStartDefault) {
-        await _startMeasurement();
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          progressBottomSheet("Starting...", KayakFirstDescriptor.progressBarCompletionTime);
+          await Future.delayed(KayakFirstDescriptor.commandLongDelay);
+          await _startMeasurement(false);
+          ProgressState.optionallyCloseProgress();
+        });
       }
+
+      setState(() {
+        _busy = false;
+      });
     } else {
+      setState(() {
+        _busy = false;
+      });
+
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
         confirm: TextButton(
@@ -297,8 +327,151 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  Future<void> _startMeasurement() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+  Future<void> _recordHandlerFunction(RecordWithSport record) async {
+    if (!_measuring || !(_fitnessEquipment?.measuring ?? false)) {
+      return;
+    }
+
+    _sinkSocket?.add(record.binarySerialize());
+
+    final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
+    if (workoutState != WorkoutState.waitingForFirstMove) {
+      if (!_uxDebug &&
+          (workoutState == WorkoutState.moving ||
+              workoutState == WorkoutState.startedMoving ||
+              workoutState == WorkoutState.justPaused)) {
+        _database.writeTxnSync(() {
+          _database.records.putSync(record);
+        });
+      }
+
+      setState(() {
+        if (!_simplerUi) {
+          _graphData.add(DisplayRecord.fromRecord(record));
+          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            _graphAvgData.add(_accu.averageDisplayRecord(record.timeStamp));
+          }
+
+          if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            _graphMaxData.add(_accu.maximumDisplayRecord(record.timeStamp));
+          }
+
+          if (_pointCount > 0 && _graphData.length > _pointCount) {
+            _graphData.removeFirst();
+            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphAvgData.removeFirst();
+            }
+
+            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+              _graphMaxData.removeFirst();
+            }
+          }
+          graphData = _graphData.toList(growable: false);
+          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            graphAvgData = _graphAvgData.toList(growable: false);
+          }
+
+          if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+            graphMaxData = _graphMaxData.toList(growable: false);
+          }
+        }
+
+        _distance = record.distance ?? 0.0;
+        if (_displayLapCounter) {
+          _lapCount = (_distance / _trackLength).floor();
+        }
+
+        _elapsed = record.elapsed ?? 0;
+        if (_timeDisplayMode == timeDisplayModeHIITMoving) {
+          if (workoutState == WorkoutState.justPaused ||
+              workoutState == WorkoutState.startedMoving) {
+            _markedTime = _elapsed;
+          }
+
+          if (workoutState != WorkoutState.waitingForFirstMove) {
+            _elapsed -= _markedTime;
+          }
+        }
+
+        _movingTime = record.movingTime.round();
+        if (record.heartRate != null &&
+            (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
+          _heartRate = record.heartRate;
+        }
+
+        if (_leaderboardFeature || _showPacer) {
+          final selfRankTuple = _getSelfRank();
+          _selfRank = selfRankTuple.item1;
+          _selfAvgSpeed = selfRankTuple.item2;
+          _selfRankString = _getSelfRankString();
+        }
+
+        if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+          _accu.processRecord(record);
+
+          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+              _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                  _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                      _onStageStatisticsAlternationDuration) {
+            if (!_stationaryWorkout) {
+              _statistics[_power0Index] = _accu.avgPower.toInt().toString();
+              _statistics[_speed0Index] = speedOrPaceString(
+                _accu.avgSpeed,
+                _si,
+                widget.descriptor.sport,
+                limitSlowSpeed: true,
+              );
+            }
+
+            _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
+            _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
+          } else {
+            if (!_stationaryWorkout) {
+              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
+              _statistics[_speed0Index] = speedOrPaceString(
+                _accu.maxSpeedDisplay,
+                _si,
+                widget.descriptor.sport,
+                limitSlowSpeed: true,
+              );
+            }
+
+            _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
+            _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
+          }
+        }
+
+        _values = [
+          record.calories?.toString() ?? emptyMeasurement,
+          record.power?.toString() ?? emptyMeasurement,
+          record.speedOrPaceStringByUnit(_si, widget.descriptor.sport),
+          record.cadence?.toString() ?? emptyMeasurement,
+          record.heartRate?.toString() ?? emptyMeasurement,
+          record.distanceStringByUnit(_si, _highRes),
+        ];
+        if (!_stationaryWorkout) {
+          optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
+          optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
+        }
+
+        optionallyChangeMeasurementByZone(_cadenceNIndex, record.cadence ?? 0, true);
+        optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
+      });
+    }
+  }
+
+  void _startPumpingData() {
+    _fitnessEquipment?.pumpData((record) async => await _recordHandlerFunction(record));
+  }
+
+  Future<void> _startMeasurement(bool checkBluetooth) async {
+    if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return;
     }
 
@@ -322,22 +495,21 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    await _fitnessEquipment?.additionalSensorsOnDemand();
     final now = DateTime.now();
     var continued = false;
     if (!_uxDebug) {
-      final unfinished =
-          await _database.activityDao.findUnfinishedDeviceActivities(widget.device.id.id);
+      final dbUtils = DbUtils();
+      final unfinished = await dbUtils.unfinishedDeviceActivities(widget.device.remoteId.str);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
-        if (unfinished.first.start > yesterday.millisecondsSinceEpoch) {
+        if (unfinished.first.start.isAfter(yesterday)) {
           _activity = unfinished.first;
           continued = true;
         }
 
         for (final activity in unfinished) {
           if (!continued || _activity == null || _activity!.id != activity.id) {
-            await _database.finalizeActivity(activity);
+            await dbUtils.finalizeActivity(activity);
           }
         }
       }
@@ -351,10 +523,9 @@ class RecordingState extends State<RecordingScreen> {
       _activity = Activity(
         fourCC: widget.descriptor.fourCC,
         deviceName: widget.device.nonEmptyName,
-        deviceId: widget.device.id.id,
-        hrmId: _fitnessEquipment?.heartRateMonitor?.device?.id.id ?? "",
-        start: now.millisecondsSinceEpoch,
-        startDateTime: now,
+        deviceId: widget.device.remoteId.str,
+        hrmId: _fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? "",
+        start: now,
         sport: widget.descriptor.sport,
         powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
         calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
@@ -367,8 +538,9 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (!continued) {
-        final id = await _database.activityDao.insertActivity(_activity!);
-        _activity!.id = id;
+        _database.writeTxnSync(() {
+          _database.activitys.putSync(_activity!);
+        });
       }
     }
 
@@ -380,10 +552,16 @@ class RecordingState extends State<RecordingScreen> {
       _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
         _leaderboard = _rankingForSportOrDevice
-            ? await _database.workoutSummaryDao
-                .findAllWorkoutSummariesBySport(widget.descriptor.sport)
-            : await _database.workoutSummaryDao
-                .findAllWorkoutSummariesByDevice(widget.device.id.id);
+            ? await _database.workoutSummarys
+                .filter()
+                .sportEqualTo(widget.descriptor.sport)
+                .sortBySpeedDesc()
+                .findAll()
+            : await _database.workoutSummarys
+                .filter()
+                .deviceIdEqualTo(widget.device.remoteId.str)
+                .sortBySpeedDesc()
+                .findAll();
 
         if (_showPacer && _pacerWorkout != null) {
           int insertionPoint = 0;
@@ -405,7 +583,6 @@ class RecordingState extends State<RecordingScreen> {
 
     await _fitnessEquipment?.setActivity(_activity!);
 
-    await _fitnessEquipment?.attach();
     setState(() {
       _elapsed = 0;
       _movingTime = 0;
@@ -426,141 +603,6 @@ class RecordingState extends State<RecordingScreen> {
     });
     _fitnessEquipment?.measuring = true;
     _fitnessEquipment?.startWorkout();
-
-    _fitnessEquipment?.pumpData((record) async {
-      _dataGapWatchdog?.cancel();
-      _dataGapBeeperTimer?.cancel();
-      if (_dataGapWatchdogTime > 0 && !_circuitWorkout) {
-        _dataGapWatchdog = Timer(
-          Duration(seconds: _dataGapWatchdogTime),
-          _dataGapTimeoutHandler,
-        );
-      }
-
-      _sinkSocket?.add(record.binarySerialize());
-
-      final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
-      if (_measuring &&
-          (_fitnessEquipment?.measuring ?? false) &&
-          workoutState != WorkoutState.waitingForFirstMove) {
-        if (!_uxDebug &&
-            (workoutState == WorkoutState.moving ||
-                workoutState == WorkoutState.startedMoving ||
-                workoutState == WorkoutState.justPaused)) {
-          await _database.recordDao.insertRecord(record);
-        }
-
-        setState(() {
-          if (!_simplerUi) {
-            _graphData.add(record.display());
-            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              _graphAvgData.add(_accu.averageDisplayRecord(record.dt));
-            }
-
-            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              _graphMaxData.add(_accu.maximumDisplayRecord(record.dt));
-            }
-
-            if (_pointCount > 0 && _graphData.length > _pointCount) {
-              _graphData.removeFirst();
-              if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-                _graphAvgData.removeFirst();
-              }
-
-              if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-                _graphMaxData.removeFirst();
-              }
-            }
-            graphData = _graphData.toList();
-            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              graphAvgData = _graphAvgData.toList();
-            }
-
-            if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-              graphMaxData = _graphMaxData.toList();
-            }
-          }
-
-          _distance = record.distance ?? 0.0;
-          if (_displayLapCounter) {
-            _lapCount = (_distance / _trackLength).floor();
-          }
-
-          _elapsed = record.elapsed ?? 0;
-          if (_timeDisplayMode == timeDisplayModeHIITMoving) {
-            if (workoutState == WorkoutState.justPaused ||
-                workoutState == WorkoutState.startedMoving) {
-              _markedTime = _elapsed;
-            }
-
-            if (workoutState != WorkoutState.waitingForFirstMove) {
-              _elapsed -= _markedTime;
-            }
-          }
-
-          _movingTime = record.movingTime.round();
-          if (record.heartRate != null &&
-              (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
-            _heartRate = record.heartRate;
-          }
-
-          if (_leaderboardFeature || _showPacer) {
-            final selfRankTuple = _getSelfRank();
-            _selfRank = selfRankTuple.item1;
-            _selfAvgSpeed = selfRankTuple.item2;
-            _selfRankString = _getSelfRankString();
-          }
-
-          if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-            _accu.processRecord(record);
-
-            if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-                _onStageStatisticsType == onStageStatisticsTypeAlternating &&
-                    _elapsed % (_onStageStatisticsAlternationDuration * 2) <
-                        _onStageStatisticsAlternationDuration) {
-              _statistics[_power0Index] = _accu.avgPower.toInt().toString();
-              _statistics[_speed0Index] = speedOrPaceString(
-                _accu.avgSpeed,
-                _si,
-                widget.descriptor.sport,
-                limitSlowSpeed: true,
-              );
-              _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
-              _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
-            } else {
-              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
-              _statistics[_speed0Index] = speedOrPaceString(
-                _accu.maxSpeedDisplay,
-                _si,
-                widget.descriptor.sport,
-                limitSlowSpeed: true,
-              );
-              _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
-              _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
-            }
-          }
-
-          _values = [
-            record.calories?.toString() ?? emptyMeasurement,
-            record.power?.toString() ?? emptyMeasurement,
-            record.speedOrPaceStringByUnit(_si, widget.descriptor.sport),
-            record.cadence?.toString() ?? emptyMeasurement,
-            record.heartRate?.toString() ?? emptyMeasurement,
-            record.distanceStringByUnit(_si, _highRes),
-          ];
-          optionallyChangeMeasurementByZone(_speedNIndex, record.speed ?? 0.0, false);
-          optionallyChangeMeasurementByZone(_powerNIndex, record.power ?? 0, true);
-          optionallyChangeMeasurementByZone(_cadenceNIndex, record.cadence ?? 0, true);
-          optionallyChangeMeasurementByZone(_hrNIndex, record.heartRate ?? 0, true);
-        });
-      }
-    });
   }
 
   void _onToggleDetails(int index) {
@@ -618,16 +660,16 @@ class RecordingState extends State<RecordingScreen> {
     _chartTouchInteractionIndex = -1;
   }
 
-  Future<String> _initializeHeartRateMonitor() async {
-    if (!await bluetoothCheck(true, _logLevel)) {
+  Future<String> _initializeHeartRateMonitor(bool checkBluetooth) async {
+    if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return "";
     }
 
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     final discovered = (await _heartRateMonitor?.discover()) ?? false;
     if (discovered) {
-      if (_heartRateMonitor?.device?.id.id !=
-          (_fitnessEquipment?.heartRateMonitor?.device?.id.id ?? notAvailable)) {
+      if (_heartRateMonitor?.device?.remoteId.str !=
+          (_fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? notAvailable)) {
         _fitnessEquipment?.setHeartRateMonitor(_heartRateMonitor!);
       }
       _heartRateMonitor?.attach().then((_) async {
@@ -647,7 +689,7 @@ class RecordingState extends State<RecordingScreen> {
         });
       });
 
-      return _heartRateMonitor?.device?.id.id ?? "";
+      return _heartRateMonitor?.device?.remoteId.str ?? "";
     }
 
     return "";
@@ -659,9 +701,9 @@ class RecordingState extends State<RecordingScreen> {
 
     size = widget.size;
 
-    Wakelock.enable();
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    WakelockPlus.enable();
 
+    _busy = false;
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
     _unitStyle = TextStyle(
@@ -690,7 +732,7 @@ class RecordingState extends State<RecordingScreen> {
         fontSizeFactor: _markerStyleSmallSizeAdjust);
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
-      widget.device.id.id,
+      widget.device.remoteId.str,
     );
     if (Get.isRegistered<FitnessEquipment>()) {
       _fitnessEquipment = Get.find<FitnessEquipment>();
@@ -703,13 +745,9 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
-    _trackCalculator = TrackCalculator(
-      track: TrackDescriptor(
-        radiusBoost: trackPaintingRadiusBoost,
-        lengthFactor: widget.descriptor.lengthFactor,
-      ),
-    );
-    _trackLength = trackLength * widget.descriptor.lengthFactor;
+    final displayTrack = TrackDescriptor.forDisplay(widget.sport);
+    _trackCalculator = TrackCalculator(track: displayTrack);
+    _trackLength = displayTrack.length;
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes = prefService.get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
@@ -720,32 +758,42 @@ class RecordingState extends State<RecordingScreen> {
     _instantExportLocation =
         prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
+    _stationaryWorkout = prefService.get<bool>(stationaryWorkoutTag) ?? stationaryWorkoutDefault;
     _pointCount = min(60, size.width ~/ 2);
+    _onStageStatisticsType =
+        prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
     final now = DateTime.now();
-    _graphData = _simplerUi
-        ? ListQueue<DisplayRecord>(0)
-        : ListQueue.from(List<DisplayRecord>.generate(
+    if (!_simplerUi) {
+      _graphData = ListQueue.from(List<DisplayRecord>.generate(
+          _pointCount,
+          (i) =>
+              DisplayRecord.blank(widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+      graphData = _graphData.toList(growable: false);
+      if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+          _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+        _graphAvgData = ListQueue.from(List<DisplayRecord>.generate(
             _pointCount,
             (i) => DisplayRecord.blank(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
-    _graphAvgData = _simplerUi
-        ? ListQueue<DisplayRecord>(0)
-        : ListQueue.from(List<DisplayRecord>.generate(
+        graphAvgData = _graphAvgData.toList(growable: false);
+      }
+
+      if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+          _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+        _graphMaxData = ListQueue.from(List<DisplayRecord>.generate(
             _pointCount,
             (i) => DisplayRecord.blank(
                 widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
-    _graphMaxData = _simplerUi
-        ? ListQueue<DisplayRecord>(0)
-        : ListQueue.from(List<DisplayRecord>.generate(
-            _pointCount,
-            (i) => DisplayRecord.blank(
-                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+        graphMaxData = _graphMaxData.toList(growable: false);
+      }
+    }
 
     if (widget.sport != ActivityType.ride) {
       final slowPace = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(widget.sport)]!;
       widget.descriptor.slowPace = slowPace;
       _fitnessEquipment?.slowPace = slowPace;
     }
+
     _showPacer = prefService.get<bool>(showPacerTag) ?? showPacerDefault;
     if (_showPacer) {
       final pacerSpeed = SpeedSpec.pacerSpeeds[SportSpec.sport2Sport(widget.sport)]!;
@@ -766,11 +814,8 @@ class RecordingState extends State<RecordingScreen> {
 
     _circuitWorkout =
         (prefService.get<String>(workoutModeTag) ?? workoutModeDefault) == workoutModeCircuit;
-    _dataGapWatchdogTime =
-        prefService.get<int>(dataStreamGapWatchdogIntTag) ?? dataStreamGapWatchdogDefault;
     _dataGapSoundEffect =
         prefService.get<String>(dataStreamGapSoundEffectTag) ?? dataStreamGapSoundEffectDefault;
-
     _targetHrMode = prefService.get<String>(targetHeartRateModeTag) ?? targetHeartRateModeDefault;
     _targetHrBounds = getTargetHeartRateBounds(_targetHrMode, _preferencesSpecs[3], prefService);
     _targetHrAlerting = false;
@@ -859,15 +904,19 @@ class RecordingState extends State<RecordingScreen> {
     final expandedHeightStr =
         prefService.get<String>(measurementDetailSizeTag) ?? measurementDetailSizeDefault;
     _expandedState = List<bool>.generate(expandedStateStr.length, (int index) {
-      final expanded = expandedStateStr[index] == "1";
+      final expanded = expandedStateStr[index] == "1" && !_stationaryWorkout;
       ExpandableController rowController = ExpandableController(initialExpanded: expanded);
       _rowControllers.add(rowController);
       switch (index) {
         case _powerNIndex:
-          rowController.addListener(_onTogglePower);
+          if (!_stationaryWorkout) {
+            rowController.addListener(_onTogglePower);
+          }
           break;
         case _speedNIndex:
-          rowController.addListener(_onToggleSpeed);
+          if (!_stationaryWorkout) {
+            rowController.addListener(_onToggleSpeed);
+          }
           break;
         case _cadenceNIndex:
           rowController.addListener(_onToggleRpm);
@@ -877,7 +926,9 @@ class RecordingState extends State<RecordingScreen> {
           break;
         case _distanceNIndex:
         default:
-          rowController.addListener(_onToggleDistance);
+          if (!_stationaryWorkout) {
+            rowController.addListener(_onToggleDistance);
+          }
           break;
       }
 
@@ -907,10 +958,10 @@ class RecordingState extends State<RecordingScreen> {
     _accu = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
-      calculateAvgPower: true,
-      calculateMaxPower: true,
-      calculateAvgSpeed: true,
-      calculateMaxSpeed: true,
+      calculateAvgPower: !_stationaryWorkout,
+      calculateMaxPower: !_stationaryWorkout,
+      calculateAvgSpeed: !_stationaryWorkout,
+      calculateMaxSpeed: !_stationaryWorkout,
       calculateAvgCadence: true,
       calculateMaxCadence: true,
       calculateAvgHeartRate: true,
@@ -918,26 +969,36 @@ class RecordingState extends State<RecordingScreen> {
     );
     _zoneIndexes = [null, null, null, null];
 
-    _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
-    _rankRibbonVisualization =
-        prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
-    _rankingForSportOrDevice =
-        prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
     _leaderboard = [];
     _selfRankString = [];
-    _rankTrackVisualization =
-        prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
-    _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
-    _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
-    _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
+    _rankingForSportOrDevice =
+        prefService.get<bool>(rankingForSportOrDeviceTag) ?? rankingForSportOrDeviceDefault;
+    if (_stationaryWorkout) {
+      _leaderboardFeature = false;
+      _rankRibbonVisualization = false;
+      _rankTrackVisualization = false;
+      _rankInfoOnTrack = false;
+      _displayLapCounter = false;
+      _avgSpeedOnTrack = false;
+    } else {
+      _leaderboardFeature =
+          prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
+      _rankRibbonVisualization =
+          prefService.get<bool>(rankRibbonVisualizationTag) ?? rankRibbonVisualizationDefault;
+      _rankTrackVisualization =
+          prefService.get<bool>(rankTrackVisualizationTag) ?? rankTrackVisualizationDefault;
+      _rankInfoOnTrack = prefService.get<bool>(rankInfoOnTrackTag) ?? rankInfoOnTrackDefault;
+      _displayLapCounter = prefService.get<bool>(displayLapCounterTag) ?? displayLapCounterDefault;
+      _avgSpeedOnTrack = prefService.get<bool>(avgSpeedOnTrackTag) ?? avgSpeedOnTrackDefault;
+    }
 
     _rankInfoColumnCount = 2;
     if (_displayLapCounter) {
-      _rankInfoColumnCount += 1;
+      _rankInfoColumnCount++;
     }
 
     if (_avgSpeedOnTrack) {
-      _rankInfoColumnCount += 1;
+      _rankInfoColumnCount++;
     }
 
     final isLight = !_themeManager.isDark();
@@ -948,79 +1009,28 @@ class RecordingState extends State<RecordingScreen> {
     _lightGreen = isLight ? Colors.lightGreenAccent.shade100 : Colors.green.shade900;
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
-    _initializeHeartRateMonitor();
+    _initializeHeartRateMonitor(false);
     _connectOnDemand();
-    _database = Get.find<AppDatabase>();
     _isLocked = false;
     _unlockButtonIndex = 0;
     if (_unlockKeys.isEmpty) {
       _unlockKeys.addAll([for (var i = 0; i < _unlockChoices; ++i) GlobalKey()]);
     }
+
     _unlockKey = -2;
   }
 
-  _preDispose() async {
+  @override
+  void dispose() {
     _hrBeepPeriodTimer?.cancel();
-    _dataGapWatchdog?.cancel();
-    _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
     }
 
-    try {
-      await _heartRateMonitor?.detach();
-    } on PlatformException catch (e, stack) {
-      debugPrint("HRM device got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-
-    try {
-      await _fitnessEquipment?.detach();
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-  }
-
-  @override
-  void dispose() {
-    Wakelock.disable();
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    WakelockPlus.disable();
 
     super.dispose();
-  }
-
-  Future<void> _dataGapTimeoutHandler() async {
-    Get.snackbar("Warning", "Equipment might be disconnected!");
-
-    _fitnessEquipment?.measuring = false;
-    _hrBeepPeriodTimer?.cancel();
-
-    if (_dataGapSoundEffect != soundEffectNone) {
-      _dataTimeoutBeeper();
-    }
-
-    if (!_circuitWorkout) {
-      await _stopMeasurement(false);
-    }
-
-    try {
-      await _fitnessEquipment?.disconnect();
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-    }
-  }
-
-  Future<void> _dataTimeoutBeeper() async {
-    await Get.find<SoundService>().playDataTimeoutSoundEffect();
-    if (_measuring && _dataGapSoundEffect != soundEffectNone && _dataGapWatchdogTime >= 2) {
-      _dataGapBeeperTimer = Timer(Duration(seconds: _dataGapWatchdogTime), _dataTimeoutBeeper);
-    }
   }
 
   Future<void> _hrBeeper() async {
@@ -1066,17 +1076,16 @@ class RecordingState extends State<RecordingScreen> {
     if (_activity?.id == null || !_instantExport) return;
 
     if (_instantExportLocation.isEmpty) {
-      _instantExportLocation = await pickDirectory(context, _instantExportLocation);
+      _instantExportLocation =
+          await pickDirectory(context, instantExportLocationPickerTitle, _instantExportLocation);
       if (_instantExportLocation.isEmpty) {
         return;
       }
     }
 
-    final records = await _database.recordDao.findAllActivityRecords(_activity!.id!);
     final exporter = FitExport();
     final fileBytes = await exporter.getExport(
       _activity!,
-      records,
       false,
       _calculateGps,
       false,
@@ -1092,8 +1101,6 @@ class RecordingState extends State<RecordingScreen> {
     if (!_measuring || _activity == null) return;
 
     _hrBeepPeriodTimer?.cancel();
-    _dataGapWatchdog?.cancel();
-    _dataGapBeeperTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
       Get.find<SoundService>().stopAllSoundEffects();
@@ -1104,20 +1111,12 @@ class RecordingState extends State<RecordingScreen> {
     });
 
     try {
-      if (await FlutterBluePlus.instance.isOn) {
-        _fitnessEquipment?.detach();
+      if (await isBluetoothOn()) {
+        await _fitnessEquipment?.stopWorkout();
       }
-    } on PlatformException catch (e, stack) {
-      debugPrint("Equipment got turned off?");
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
-      Logging.log(
-        _logLevel,
-        logLevelError,
-        "RECORD",
-        "_stopMeasurement",
-        "${e.message}",
-      );
+    } on Exception catch (e, stack) {
+      Logging().logException(
+          _logLevel, tag, "_stopMeasurement", "_fitnessEquipment.stopWorkout()", e, stack);
     }
 
     final last = _fitnessEquipment?.lastRecord;
@@ -1127,27 +1126,29 @@ class RecordingState extends State<RecordingScreen> {
       last?.calories,
       last?.movingTime ?? 0,
     );
-    _fitnessEquipment?.stopWorkout();
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
-        await _database.workoutSummaryDao.insertWorkoutSummary(
-            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown"));
+        final workoutSummary =
+            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
+        _database.writeTxnSync(() {
+          _database.workoutSummarys.putSync(workoutSummary);
+        });
       }
 
-      final retVal = await _database.activityDao.updateActivity(_activity!);
-      if (retVal <= 0 && !quick) {
-        Get.snackbar("Warning", "Could not save activity");
-        return;
-      }
+      _database.writeTxnSync(() {
+        _database.activitys.putSync(_activity!);
+      });
 
       if (!quick && _activity != null) {
         if (_instantUpload) {
           await _activityUpload(true);
         }
 
-        if (_instantExportLocation.isNotEmpty) {
-          await _activityExport();
+        if (_instantExport) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await _activityExport();
+          });
         }
       }
     }
@@ -1160,7 +1161,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.power,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1171,7 +1172,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.power,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1184,7 +1185,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.power,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1199,7 +1200,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
         color: _chartTextColor,
         animationDuration: 0,
@@ -1211,7 +1212,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1224,7 +1225,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1239,7 +1240,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.cadence,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1251,7 +1252,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.cadence,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1264,7 +1265,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.cadence,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1279,7 +1280,7 @@ class RecordingState extends State<RecordingScreen> {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
         dataSource: graphData,
-        xValueMapper: (DisplayRecord record, _) => record.dt,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
         yValueMapper: (DisplayRecord record, _) => record.heartRate,
         color: _chartTextColor,
         animationDuration: 0,
@@ -1291,7 +1292,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.heartRate,
           color: _chartAvgColor,
           animationDuration: 0,
@@ -1304,7 +1305,7 @@ class RecordingState extends State<RecordingScreen> {
       series.add(
         charts.LineSeries<DisplayRecord, DateTime>(
           dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.dt,
+          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
           yValueMapper: (DisplayRecord record, _) => record.heartRate,
           color: _chartMaxColor,
           animationDuration: 0,
@@ -1313,40 +1314,6 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     return series;
-  }
-
-  Future<bool> _onWillPop() async {
-    if (!_measuring || _circuitWorkout) {
-      await _preDispose();
-      return true;
-    }
-
-    final verdict = await Get.bottomSheet(
-      const SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: BooleanQuestionBottomSheet(
-                  title: "About to navigate away",
-                  content: "The workout in progress will be finished. Are you sure?",
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      isScrollControlled: true,
-      ignoreSafeArea: false,
-      isDismissible: false,
-      enableDrag: false,
-    );
-
-    if (verdict) {
-      await _preDispose();
-    }
-
-    return verdict;
   }
 
   Color _getZoneColor({required metricIndex, required bool background}) {
@@ -1397,7 +1364,7 @@ class RecordingState extends State<RecordingScreen> {
         return Tuple2<int, double>(rank, averageSpeed);
       }
 
-      rank += 1;
+      rank++;
     }
 
     return Tuple2<int, double>(rank, averageSpeed);
@@ -1765,7 +1732,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Future<void> startStopAction() async {
     if (_measuring) {
-      if (_circuitWorkout) {
+      if (_circuitWorkout && !_uxDebug) {
         final selection = await Get.bottomSheet(
           const SafeArea(
             child: Column(
@@ -1773,7 +1740,8 @@ class RecordingState extends State<RecordingScreen> {
                 Expanded(
                   child: Center(
                     child: ThreeChoicesBottomSheet(
-                      title: "Circuit workout in progress",
+                      title:
+                          "Circuit workout in progress, use pause to move to a new machine without stopping the workout",
                       verticalActions: true,
                       firstChoice: "Continue workout",
                       secondChoice: "Finish on THIS machine for good",
@@ -1792,9 +1760,10 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final unfinished = await _database.activityDao.findUnfinishedActivities();
+            final dbUtils = DbUtils();
+            final unfinished = await dbUtils.unfinishedActivities();
             for (final activity in unfinished) {
-              await _database.finalizeActivity(activity);
+              await dbUtils.finalizeActivity(activity);
             }
           }
         }
@@ -1802,7 +1771,7 @@ class RecordingState extends State<RecordingScreen> {
         await _stopMeasurement(false);
       }
     } else {
-      await _startMeasurement();
+      await _startMeasurement(true);
     }
   }
 
@@ -1819,8 +1788,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   TextStyle getMeasurementStyle(int entryKey) {
-    return (entryKey == _calories0Index ||
-            entryKey == _distance0Index ||
+    return ([_calories0Index, _distance0Index].contains(entryKey) ||
             _onStageStatisticsType == onStageStatisticsTypeNone)
         ? _fullMeasurementStyle.apply()
         : _measurementStyle.apply();
@@ -1828,8 +1796,6 @@ class RecordingState extends State<RecordingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const separatorHeight = 1.0;
-
     final size = Get.mediaQuery.size;
     if (size.width != _mediaWidth || size.height != _mediaHeight) {
       _mediaWidth = size.width;
@@ -1901,12 +1867,12 @@ class RecordingState extends State<RecordingScreen> {
     if (_timeDisplayMode == timeDisplayModeHIITMoving &&
         workoutState != WorkoutState.waitingForFirstMove) {
       final timeColorIndex =
-          (workoutState == WorkoutState.justPaused || workoutState == WorkoutState.paused) ? 0 : 4;
+          [WorkoutState.justPaused, WorkoutState.paused].contains(workoutState) ? 0 : 4;
       timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
     }
 
     var timeIcon = (_timeDisplayMode == timeDisplayModeHIITMoving &&
-            (workoutState == WorkoutState.startedMoving || workoutState == WorkoutState.moving))
+            [WorkoutState.startedMoving, WorkoutState.moving].contains(workoutState))
         ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
         : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
@@ -1951,6 +1917,7 @@ class RecordingState extends State<RecordingScreen> {
       var measurementStyle = getMeasurementStyle(entry.key);
 
       if (entry.key == _speed0Index &&
+          !_stationaryWorkout &&
           (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
         speedTextStyle =
             measurementStyle.apply(color: _getSpeedColor(_selfRank, background: false));
@@ -1962,67 +1929,71 @@ class RecordingState extends State<RecordingScreen> {
         measurementStyle = targetHrTextStyle;
       }
 
-      if ((entry.key == _power0Index || entry.key == _cadence0Index) &&
+      if ((entry.key == _power0Index && !_stationaryWorkout || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = measurementStyle.apply(
             color: _getZoneColor(metricIndex: entry.key - 1, background: false));
       }
 
-      final rowChildren = (entry.key == _calories0Index ||
-              entry.key == _distance0Index ||
-              _onStageStatisticsType == onStageStatisticsTypeNone)
-          ? [
-              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
-              const Spacer(),
-              Text(_values[entry.key], style: measurementStyle),
+      final List<Widget> rowChildren = [];
+      if (_stationaryWorkout && [_power0Index, _speed0Index, _distance0Index].contains(entry.key)) {
+        rowChildren.add(const Divider());
+      } else if ([_calories0Index, _distance0Index].contains(entry.key) ||
+          _onStageStatisticsType == onStageStatisticsTypeNone) {
+        rowChildren.addAll([
+          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
+          const Spacer(),
+          Text(_values[entry.key], style: measurementStyle),
+          SizedBox(
+            width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
+            child: Center(
+              child: Text(
+                entry.value.unit,
+                maxLines: 2,
+                style: _fullUnitStyle,
+              ),
+            ),
+          ),
+        ]);
+      } else {
+        rowChildren.addAll([
+          SizedBox(
+            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(_values[entry.key], style: measurementStyle),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
               SizedBox(
-                width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
+                width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
                 child: Center(
                   child: Text(
                     entry.value.unit,
                     maxLines: 2,
-                    style: _fullUnitStyle,
+                    style: _unitStyle,
                   ),
                 ),
               ),
-            ]
-          : [
-              SizedBox(
-                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_values[entry.key], style: measurementStyle),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
-                  SizedBox(
-                    width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
-                    child: Center(
-                      child: Text(
-                        entry.value.unit,
-                        maxLines: 2,
-                        style: _unitStyle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_statistics[entry.key], style: measurementStyle),
-                  ],
-                ),
-              ),
-            ];
+            ],
+          ),
+          SizedBox(
+            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(_statistics[entry.key], style: measurementStyle),
+              ],
+            ),
+          ),
+        ]);
+      }
 
       rows.add(Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2031,8 +2002,8 @@ class RecordingState extends State<RecordingScreen> {
       ));
     }
 
-    final statString = (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-            _onStageStatisticsType == onStageStatisticsTypeNone ||
+    final statString = ([onStageStatisticsTypeAverage, onStageStatisticsTypeNone]
+                .contains(_onStageStatisticsType) ||
             _onStageStatisticsType == onStageStatisticsTypeAlternating &&
                 _elapsed % (_onStageStatisticsAlternationDuration * 2) <
                     _onStageStatisticsAlternationDuration)
@@ -2053,6 +2024,11 @@ class RecordingState extends State<RecordingScreen> {
     var extras = [];
     if (!_simplerUi) {
       for (var entry in _preferencesSpecs.asMap().entries) {
+        if (_stationaryWorkout && ["speed", "power"].contains(entry.value.metric)) {
+          extras.add(null);
+          continue;
+        }
+
         var height = 0.0;
         switch (_expandedHeights[entry.key]) {
           case 0:
@@ -2125,7 +2101,7 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       List<Widget> markers = [];
-      final markerPosition = _trackCalculator?.trackMarker(_distance);
+      final markerPosition = _stationaryWorkout ? null : _trackCalculator?.trackMarker(_distance);
       if (markerPosition != null) {
         var selfMarkerText = "";
         var selfMarkerColor = 0xFFFF0000;
@@ -2177,38 +2153,39 @@ class RecordingState extends State<RecordingScreen> {
 
     columnOne.addAll([
       rows[_time1Index],
-      const Divider(height: separatorHeight),
       rows[_calories1Index],
-      const Divider(height: separatorHeight),
     ]);
 
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       columnOne.add(statHeaderRow);
     }
 
-    columnOne.addAll([
-      ColoredBox(
-        color: _getZoneColor(metricIndex: _powerNIndex, background: true),
-        child: ExpandablePanel(
-          theme: _expandableThemeData,
-          header: rows[_power1Index],
-          collapsed: Container(),
-          expanded: _simplerUi ? Container() : extras[_powerNIndex],
-          controller: _rowControllers[_powerNIndex],
+    if (_stationaryWorkout) {
+      columnOne.addAll([const Divider(), const Divider()]);
+    } else {
+      columnOne.addAll([
+        ColoredBox(
+          color: _getZoneColor(metricIndex: _powerNIndex, background: true),
+          child: ExpandablePanel(
+            theme: _expandableThemeData,
+            header: rows[_power1Index],
+            collapsed: Container(),
+            expanded: _simplerUi ? Container() : extras[_powerNIndex],
+            controller: _rowControllers[_powerNIndex],
+          ),
         ),
-      ),
-      const Divider(height: separatorHeight),
-      ColoredBox(
-        color: _getSpeedColor(_selfRank, background: true),
-        child: ExpandablePanel(
-          theme: _expandableThemeData,
-          header: rows[_speed1Index],
-          collapsed: Container(),
-          expanded: _simplerUi ? Container() : extras[_speedNIndex],
-          controller: _rowControllers[_speedNIndex],
+        ColoredBox(
+          color: _getSpeedColor(_selfRank, background: true),
+          child: ExpandablePanel(
+            theme: _expandableThemeData,
+            header: rows[_speed1Index],
+            collapsed: Container(),
+            expanded: _simplerUi ? Container() : extras[_speedNIndex],
+            controller: _rowControllers[_speedNIndex],
+          ),
         ),
-      ),
-    ]);
+      ]);
+    }
 
     List<Widget> columnRest = [
       ColoredBox(
@@ -2221,7 +2198,6 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_cadenceNIndex],
         ),
       ),
-      const Divider(height: separatorHeight),
       ColoredBox(
         color: _getTargetHrColor(targetHrState, true),
         child: ExpandablePanel(
@@ -2232,20 +2208,20 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_hrNIndex],
         ),
       ),
-      const Divider(height: separatorHeight),
-      ExpandablePanel(
-        theme: _expandableThemeData,
-        header: rows[_distance1Index],
-        collapsed: Container(),
-        expanded: _simplerUi ? Container() : extras[_distanceNIndex],
-        controller: _rowControllers[_distanceNIndex],
-      ),
+      _stationaryWorkout
+          ? const Divider()
+          : ExpandablePanel(
+              theme: _expandableThemeData,
+              header: rows[_distance1Index],
+              collapsed: Container(),
+              expanded: _simplerUi ? Container() : extras[_distanceNIndex],
+              controller: _rowControllers[_distanceNIndex],
+            ),
     ];
 
     if (_landscape && _twoColumnLayout) {
       columnTwo.addAll(columnRest);
     } else {
-      columnOne.add(const Divider(height: separatorHeight));
       columnOne.addAll(columnRest);
     }
 
@@ -2327,10 +2303,8 @@ class RecordingState extends State<RecordingScreen> {
           _themeManager.getBlueFab(Icons.cloud_upload, () async {
             await _activityUpload(false);
           }),
-          _themeManager.getBlueFab(Icons.list_alt, () async {
-            final hasLeaderboardData =
-                (await _database.workoutSummaryDao.getLeaderboardDataCount() ?? 0) > 0;
-            Get.to(() => ActivitiesScreen(hasLeaderboardData: hasLeaderboardData));
+          _themeManager.getBlueFab(Icons.list_alt, () {
+            Get.to(() => const ActivitiesScreen());
           }),
           _themeManager.getBlueFab(Icons.battery_unknown, () async {
             Get.bottomSheet(
@@ -2351,16 +2325,19 @@ class RecordingState extends State<RecordingScreen> {
             );
           }),
           _themeManager.getBlueFab(Icons.build, () async {
-            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false)) {
+            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false) &&
+                _fitnessEquipment?.descriptor?.fourCC != kayakFirstFourCC) {
               Get.snackbar("Error", "Not compatible with the calibration method");
             } else {
               Get.bottomSheet(
-                const SafeArea(
+                SafeArea(
                   child: Column(
                     children: [
                       Expanded(
                         child: Center(
-                          child: SpinDownBottomSheet(),
+                          child: _fitnessEquipment?.descriptor?.fourCC == kayakFirstFourCC
+                              ? const KayakFirstBottomSheet()
+                              : const SpinDownBottomSheet(),
                         ),
                       ),
                     ],
@@ -2395,21 +2372,45 @@ class RecordingState extends State<RecordingScreen> {
             isDismissible: false,
             enableDrag: false,
           );
-          String hrmId = await _initializeHeartRateMonitor();
+          String hrmId = await _initializeHeartRateMonitor(true);
           if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
             _activity!.hrmId = hrmId;
-            _activity!.hrmCalorieFactor = await _database.calorieFactorValue(hrmId, true);
-            await _database.activityDao.updateActivity(_activity!);
+            _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+            _database.writeTxnSync(() {
+              _database.activitys.putSync(_activity!);
+            });
           }
         }),
-        _themeManager.getBlueFab(_measuring ? Icons.stop : Icons.play_arrow, () async {
-          await startStopAction();
+        _themeManager.getBlueFab(
+            _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
+            () async {
+          if (!_busy) {
+            await startStopAction();
+          }
         }),
       ]);
     }
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    final actions = [
+      IconButton(
+        icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
+        onPressed: () async {
+          await startStopAction();
+        },
+      )
+    ];
+    if (_circuitWorkout && _measuring) {
+      actions.insert(
+        0,
+        IconButton(
+          icon: const Icon(Icons.pause),
+          onPressed: () => Get.back(),
+        ),
+      );
+    }
+
+    return PopScope(
+      canPop: !_measuring || _circuitWorkout,
       child: GestureDetector(
         behavior: HitTestBehavior.deferToChild,
         onTapUp: (details) {
@@ -2457,25 +2458,24 @@ class RecordingState extends State<RecordingScreen> {
         },
         child: AbsorbPointer(
           absorbing: _isLocked,
-          ignoringSemantics: true,
           child: Scaffold(
             appBar: AppBar(
               title: TextOneLine(
                 widget.device.nonEmptyName,
                 overflow: TextOverflow.ellipsis,
               ),
-              actions: [
-                IconButton(
-                  icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
-                  onPressed: () async {
-                    await startStopAction();
-                  },
-                ),
-              ],
+              actions: _busy
+                  ? [
+                      HeartbeatProgressIndicator(
+                        child: IconButton(
+                            icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                      )
+                    ]
+                  : actions,
             ),
             body: body,
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: CircularFabMenu(
+            floatingActionButton: FabCircularMenuPlus(
               key: _fabKey,
               fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
                   color: _themeManager.getAntagonistColor()),

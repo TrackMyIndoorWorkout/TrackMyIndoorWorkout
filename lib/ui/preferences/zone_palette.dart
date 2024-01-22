@@ -14,11 +14,11 @@ class ZonePalettePreferencesScreen extends StatefulWidget {
   final int size;
 
   const ZonePalettePreferencesScreen({
-    Key? key,
+    super.key,
     required this.lightOrDark,
     required this.fgOrBg,
     required this.size,
-  }) : super(key: key);
+  });
 
   @override
   ZonePalettePreferencesScreenState createState() => ZonePalettePreferencesScreenState();

@@ -1,4 +1,4 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/isar/record.dart';
 import '../../utils/display.dart';
 
 class DisplayRecord {
@@ -6,29 +6,32 @@ class DisplayRecord {
   double? speed; // km/h
   int? cadence;
   int? heartRate;
-  DateTime? dt;
+  DateTime? timeStamp;
   String? sport;
 
-  DisplayRecord(Record? source) {
-    sport = source?.sport;
-    power = source?.power ?? 0;
-    speed = source?.speed ?? 0.0;
-    cadence = source?.cadence ?? 0;
-    heartRate = source?.heartRate ?? 0;
-    dt = source?.dt;
+  DisplayRecord();
+
+  factory DisplayRecord.fromRecord(Record? source) {
+    return DisplayRecord()
+      ..sport = source?.sport
+      ..timeStamp = source?.timeStamp
+      ..power = source?.power ?? 0
+      ..speed = source?.speed ?? 0.0
+      ..cadence = source?.cadence ?? 0
+      ..heartRate = source?.heartRate ?? 0;
   }
 
   factory DisplayRecord.blank(String sport, DateTime dateTime) {
-    return DisplayRecord(null)
+    return DisplayRecord()
       ..sport = sport
-      ..dt = dateTime;
+      ..timeStamp = dateTime;
   }
 
   factory DisplayRecord.forValues(
       String sport, DateTime? dateTime, int? power, double? speed, int? cadence, int? heartRate) {
-    return DisplayRecord(null)
+    return DisplayRecord()
       ..sport = sport
-      ..dt = dateTime
+      ..timeStamp = dateTime
       ..power = power
       ..speed = speed
       ..cadence = cadence

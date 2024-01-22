@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
+import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
+import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
@@ -15,6 +17,8 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
+import '../preferences/database_location.dart';
+import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/drag_force_tune.dart';
@@ -23,7 +27,6 @@ import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
 import '../preferences/generic.dart';
-import '../preferences/has_logged_messages.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../preferences/heart_rate_monitor_priority.dart';
@@ -31,6 +34,7 @@ import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/kayak_first_display_configuration.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -48,13 +52,16 @@ import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/stage_mode.dart';
+import '../preferences/stationary_workout.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/training_peaks_upload_public.dart';
+import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
+import '../preferences/upload_display_mode.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/water_wheel_circumference.dart';
@@ -62,8 +69,8 @@ import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
 import '../preferences/workout_mode.dart';
 import '../preferences/zone_index_display_coloring.dart';
-import '../utils/logging.dart';
 import '../utils/preferences.dart';
+import '../utils/time_zone.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
@@ -117,7 +124,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     rankInfoOnTrackTag: rankInfoOnTrackDefault,
     themeSelectionTag: themeSelectionDefault,
     athleteBodyWeightIntTag: athleteBodyWeightDefault,
-    rememberAthleteBodyWeightTag: rememberAthleteBodyWeightDefault,
     useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
     useHeartRateBasedCalorieCountingTag: useHeartRateBasedCalorieCountingDefault,
     athleteAgeTag: athleteAgeDefault,
@@ -139,7 +145,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     blockSignalStartStopTag: blockSignalStartStopDefault,
     timeDisplayModeTag: timeDisplayModeDefault,
     welcomePresentedTag: welcomePresentedDefault,
-    hasLoggedMessagesTag: hasLoggedMessagesDefault,
     instantExportTag: instantExportDefault,
     instantExportLocationTag: instantExportLocationDefault,
     enableAssertsTag: enableAssertsDefault,
@@ -153,6 +158,14 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
+    databaseMigrationNeededTag: databaseMigrationNeededDefault,
+    activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
+    activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
+    activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
+    databaseLocationTag: databaseLocationDefault,
+    treadmillRscOnlyModeTag: treadmillRscOnlyModeDefault,
+    uploadDisplayModeTag: uploadDisplayModeDefault,
+    stationaryWorkoutTag: stationaryWorkoutDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -187,6 +200,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
         });
       }
     }
+  }
+
+  for (final kayakFirstDisplaySlot in kayakFirstDisplaySlots) {
+    prefDefaults.addAll({kayakFirstDisplaySlot.item2: kayakFirstDisplaySlot.item4});
   }
 
   return prefDefaults;
@@ -375,6 +392,27 @@ Future<BasePrefService> initPreferences() async {
     }
   }
 
+  if (prefVersion <= preferencesVersionDefaultingOldTimeZone) {
+    final enforcedTimeZone =
+        prefService.get<String>(enforcedTimeZoneTag) ?? enforcedTimeZoneDefault;
+
+    if (enforcedTimeZone != enforcedTimeZoneDefault) {
+      final closestTimeZone = getClosestTimeZone(enforcedTimeZone);
+      if (closestTimeZone != enforcedTimeZone) {
+        prefService.set<String>(enforcedTimeZoneTag, closestTimeZone);
+      }
+    }
+
+    // Activities have stored timeZone, but we would need to convert those
+    // only if TrackManager.getTrack would get the timeZone besides the sport
+  }
+
+  if (prefVersion > preferencesVersionIsarMigration) {
+    if (await IsFirstRun.isFirstRun()) {
+      prefService.set<bool>(databaseMigrationNeededTag, false);
+    }
+  }
+
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -389,11 +427,6 @@ Future<BasePrefService> initPreferences() async {
         SpeedSpec.pacerSpeedDefaults[sport].toString();
     SpeedSpec.pacerSpeeds[sport] =
         double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];
-  }
-
-  final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-  if (logLevel != logLevelNone) {
-    await Logging.init(logLevel);
   }
 
   return prefService;

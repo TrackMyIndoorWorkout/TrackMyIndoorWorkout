@@ -30,7 +30,7 @@ class FitDeviceInfo extends FitDefinitionMessage {
 
     var data = FitData();
     data.output = [localMessageType];
-    data.addLong(FitSerializable.fitDateTime(DateTime.now()));
+    data.addLong(FitSerializable.fitTimeStamp(DateTime.now()));
     data.addByte(FitDeviceType.fitnessEquipment);
     data.addShort(model.descriptor.manufacturerFitId);
     data.addByte(model.descriptor.deviceCategory == DeviceCategory.antPlusDevice

@@ -11,13 +11,13 @@ class ThreeChoicesBottomSheet extends StatefulWidget {
   final String thirdChoice;
 
   const ThreeChoicesBottomSheet({
-    Key? key,
+    super.key,
     required this.title,
     required this.verticalActions,
     required this.firstChoice,
     required this.secondChoice,
     required this.thirdChoice,
-  }) : super(key: key);
+  });
 
   @override
   ThreeChoicesBottomSheetState createState() => ThreeChoicesBottomSheetState();
@@ -41,17 +41,29 @@ class ThreeChoicesBottomSheetState extends State<ThreeChoicesBottomSheet> {
     final actions = [
       ElevatedButton(
         onPressed: () => Get.back(result: 0),
-        child: Text(widget.firstChoice, textScaleFactor: 2.0, textAlign: TextAlign.center),
+        child: Text(
+          widget.firstChoice,
+          textScaler: const TextScaler.linear(2.0),
+          textAlign: TextAlign.center,
+        ),
       ),
       const SizedBox(width: 10, height: 10),
       ElevatedButton(
         onPressed: () => Get.back(result: 1),
-        child: Text(widget.secondChoice, textScaleFactor: 2.0, textAlign: TextAlign.center),
+        child: Text(
+          widget.secondChoice,
+          textScaler: const TextScaler.linear(2.0),
+          textAlign: TextAlign.center,
+        ),
       ),
       const SizedBox(width: 10, height: 10),
       ElevatedButton(
         onPressed: () => Get.back(result: 2),
-        child: Text(widget.thirdChoice, textScaleFactor: 2.0, textAlign: TextAlign.center),
+        child: Text(
+          widget.thirdChoice,
+          textScaler: const TextScaler.linear(2.0),
+          textAlign: TextAlign.center,
+        ),
       ),
     ];
 

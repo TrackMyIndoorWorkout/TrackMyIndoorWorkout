@@ -8,7 +8,7 @@ class AdvertisementCache {
   final Map<String, AdvertisementDigest> _advertisementMap = {};
 
   void addEntry(ScanResult scanResult, String deviceSport) {
-    final id = scanResult.device.id.id;
+    final id = scanResult.device.remoteId.str;
     final serviceUuids = scanResult.serviceUuids;
     final machineByteFlag = scanResult.getFtmsServiceDataMachineByte(deviceSport);
     final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);
@@ -17,7 +17,7 @@ class AdvertisementCache {
       id: id,
       serviceUuids: serviceUuids,
       companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
-      manufacturer: scanResult.manufacturerName(),
+      manufacturers: scanResult.manufacturerNames(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
       appearance: scanResult.advertisementData.appearance ?? 0,
       machineTypesByte: machineByteFlag,
