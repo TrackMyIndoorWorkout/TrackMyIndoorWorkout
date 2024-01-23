@@ -346,11 +346,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1684ae4452924c566121337f80c5fed589fd8c41"
-      resolved-ref: "1684ae4452924c566121337f80c5fed589fd8c41"
+      ref: "6781a9846f3b8cd63d94d811c59e8f2926a6321a"
+      resolved-ref: "6781a9846f3b8cd63d94d811c59e8f2926a6321a"
       url: "https://github.com/CsabaConsulting/flutter_blue_plus.git"
     source: git
-    version: "1.31.4"
+    version: "1.31.8"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
