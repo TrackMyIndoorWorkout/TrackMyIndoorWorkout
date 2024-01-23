@@ -27,7 +27,7 @@ dependencies:
   flutter_blue_plus:
     git:
       url: https://github.com/CsabaConsulting/flutter_blue_plus.git
-      ref: 6781a9846f3b8cd63d94d811c59e8f2926a6321a
+      ref: 9f532d6663947601c820803592dbe00e30a638b2
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.5
   flutter_spinbox: ^0.13.1

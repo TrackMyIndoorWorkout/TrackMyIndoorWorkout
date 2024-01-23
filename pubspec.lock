@@ -346,8 +346,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6781a9846f3b8cd63d94d811c59e8f2926a6321a"
-      resolved-ref: "6781a9846f3b8cd63d94d811c59e8f2926a6321a"
+      ref: "9f532d6663947601c820803592dbe00e30a638b2"
+      resolved-ref: "9f532d6663947601c820803592dbe00e30a638b2"
       url: "https://github.com/CsabaConsulting/flutter_blue_plus.git"
     source: git
     version: "1.31.8"
