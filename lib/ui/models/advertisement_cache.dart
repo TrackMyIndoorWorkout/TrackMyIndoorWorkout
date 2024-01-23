@@ -12,7 +12,8 @@ class AdvertisementCache {
     final serviceUuids = scanResult.serviceUuids;
     final machineByteFlag = scanResult.getFtmsServiceDataMachineByte(deviceSport);
     final machineTypes = scanResult.getFtmsServiceDataMachineTypes(machineByteFlag);
-    debugPrint("${scanResult.device.platformName} appearance: ${scanResult.advertisementData.appearance}");
+    debugPrint(
+        "${scanResult.device.platformName} appearance: ${scanResult.advertisementData.appearance}");
     _advertisementMap[id] = AdvertisementDigest(
       id: id,
       serviceUuids: serviceUuids,
