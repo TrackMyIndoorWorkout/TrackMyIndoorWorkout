@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.19.0-0.2.pre"
 
 dependency_overrides:
-  analyzer: ^6.3.0  # because of isar_generator
+  analyzer: ^6.4.0  # because of isar_generator
   intl: ^0.19.0  # because of syncfusion_flutter_charts
 
 dependencies:
