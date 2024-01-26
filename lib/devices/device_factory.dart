@@ -261,6 +261,18 @@ class DeviceFactory {
     );
   }
 
+  static RunningSpeedAndCadenceDescriptor getStrydFootPod() {
+    return RunningSpeedAndCadenceDescriptor(
+      fourCC: technogymRunFourCC,
+      vendorName: "Stryd",
+      modelName: "Stryd Foot Pod",
+      manufacturerNamePart: "Stryd",
+      manufacturerFitId: strydFitId,
+      model: "",
+      deviceCategory: DeviceCategory.primarySensor,
+    );
+  }
+
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
       case precorSpinnerChronoPowerFourCC:
@@ -332,6 +344,8 @@ class DeviceFactory {
         return KayakFirstDescriptor();
       case technogymRunFourCC:
         return getTechnogymRun();
+      case strydFootPodFourCC:
+        return getStrydFootPod();
     }
 
     return DeviceFactory.getGenericFTMSBike();

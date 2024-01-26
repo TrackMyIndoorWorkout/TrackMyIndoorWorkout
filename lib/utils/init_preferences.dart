@@ -52,6 +52,7 @@ import '../preferences/show_pacer.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/stage_mode.dart';
+import '../preferences/stationary_workout.dart';
 import '../preferences/stroke_rate_smoothing.dart';
 import '../preferences/target_heart_rate.dart';
 import '../preferences/theme_selection.dart';
@@ -60,6 +61,7 @@ import '../preferences/training_peaks_upload_public.dart';
 import '../preferences/treadmill_rsc_only_mode.dart';
 import '../preferences/two_column_layout.dart';
 import '../preferences/unit_system.dart';
+import '../preferences/upload_display_mode.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/water_wheel_circumference.dart';
@@ -162,6 +164,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
     databaseLocationTag: databaseLocationDefault,
     treadmillRscOnlyModeTag: treadmillRscOnlyModeDefault,
+    uploadDisplayModeTag: uploadDisplayModeDefault,
+    stationaryWorkoutTag: stationaryWorkoutDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

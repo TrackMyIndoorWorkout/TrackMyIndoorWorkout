@@ -29,12 +29,15 @@ import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/measurement_font_size_adjust.dart';
 import '../preferences/time_display_mode.dart';
 import '../preferences/unit_system.dart';
+import '../preferences/upload_display_mode.dart';
+import '../upload/constants.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/preferences.dart';
 import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
-import 'details/activity_detail_header_row.dart';
+import 'details/activity_detail_header_row_base.dart';
+import 'details/activity_detail_header_text_row.dart';
 import 'details/activity_detail_row_one_line.dart';
 import 'details/activity_detail_row_w_spacer.dart';
 import 'details/activity_detail_row_w_unit.dart';
@@ -66,6 +69,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
   bool _highRes = distanceResolutionDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
   String _timeDisplayMode = timeDisplayModeDefault;
+  String _uploadDisplayMode = uploadDisplayModeDefault;
   bool _calculateGps = calculateGpsDefault;
   bool _machineNameInHeader = activityListMachineNameInHeaderDefault;
   bool _bluetoothAddressInHeader = activityListBluetoothAddressInHeaderDefault;
@@ -97,6 +101,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _leaderboardFeature = prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
+    _uploadDisplayMode = prefService.get<String>(uploadDisplayModeTag) ?? uploadDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _machineNameInHeader = prefService.get<bool>(activityListMachineNameInHeaderTag) ??
         activityListMachineNameInHeaderDefault;
@@ -494,16 +499,20 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         itemBuilder: (context, _, item) {
           final activity = item as Activity;
           final dateString = DateFormat.yMd().format(activity.start);
-          final timeString = DateFormat.Hms().format(activity.start);
+          var timeString = DateFormat.Hms().format(activity.start);
+          if (_uploadDisplayMode == uploadDisplayModeAggregate && activity.isUploaded(anyChoice)) {
+            timeString += "\u2601";
+          }
+
           final List<Widget> header = [
-            ActivityDetailHeaderRow(
+            ActivityDetailHeaderTextRow(
               themeManager: _themeManager,
               icon: Icons.calendar_today,
               iconSize: _sizeDefault2,
               text: dateString,
               textStyle: _headerStyle,
             ),
-            ActivityDetailHeaderRow(
+            ActivityDetailHeaderTextRow(
               themeManager: _themeManager,
               icon: Icons.watch,
               iconSize: _sizeDefault2,
@@ -514,7 +523,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
 
           if (_machineNameInHeader) {
             header.add(
-              ActivityDetailHeaderRow(
+              ActivityDetailHeaderTextRow(
                 themeManager: _themeManager,
                 icon: getSportIcon(activity.sport),
                 iconSize: _sizeDefault,
@@ -526,12 +535,30 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
 
           if (_bluetoothAddressInHeader && activity.deviceId.isNotEmpty) {
             header.add(
-              ActivityDetailHeaderRow(
+              ActivityDetailHeaderTextRow(
                 themeManager: _themeManager,
                 icon: Icons.numbers,
                 iconSize: _sizeDefault,
                 text: activity.deviceId.shortAddressString(),
                 textStyle: _headerStyle,
+              ),
+            );
+          }
+
+          if (_uploadDisplayMode == uploadDisplayModeDetailed && activity.isUploaded(anyChoice)) {
+            List<Widget> uploadIcons = [];
+            for (var portal in getPortalChoices(false, _themeManager)) {
+              if (activity.isUploaded(portal.name)) {
+                uploadIcons.add(portal.getSvg(true, _sizeDefault / 2));
+              }
+            }
+
+            header.add(
+              ActivityDetailHeaderRowBase(
+                themeManager: _themeManager,
+                icon: Icons.cloud_upload,
+                iconSize: _sizeDefault,
+                widget: Row(children: uploadIcons),
               ),
             );
           }
