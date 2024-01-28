@@ -179,7 +179,7 @@ abstract class ActivityExport {
       'startStamp': activity.start,
       'name': '${activity.sport} at $dateString $timeString',
       'description':
-          '${activity.sport}, machine: ${activity.deviceName}, recorded with ${moderated ? appDomain : appUrl}',
+          '${activity.sport}, machine: ${activity.deviceName}, recorded with ${moderated ? appDomainCore : appUrl}',
       'fileName': fileName,
     };
   }
