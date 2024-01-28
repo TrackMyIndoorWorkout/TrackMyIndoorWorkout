@@ -112,7 +112,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       }
 
       flag ~/= 2;
-      // Has Accumulated Energy
+      // Has Accumulated Energy, kJoules (and we are converting to kCal)
       if (flag % 2 == 1) {
         caloriesMetric = ShortMetricDescriptor(
             lsb: expectedLength, msb: expectedLength + 1, divider: 1 / jToCal);
