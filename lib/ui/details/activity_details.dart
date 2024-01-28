@@ -612,8 +612,12 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             // final tm = TrackManager();
             // final track = await tm.getTrack(widget.activity.sport);
             // debugPrint(track.name);
-            await DbUtils().finalizeActivity(widget.activity);
-            // await database.recalculateDistance(widget.activity, true);
+
+            // await DbUtils().finalizeActivity(widget.activity);
+
+            // await DbUtils().recalculateCumulative(widget.activity);
+
+            // await DbUtils().appendActivities(438, 440);
           },
         ),
       );

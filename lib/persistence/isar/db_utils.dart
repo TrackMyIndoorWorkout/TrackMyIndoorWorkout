@@ -261,4 +261,38 @@ class DbUtils {
       addressNames.addAddressName(activity.deviceId, activity.deviceName);
     }
   }
+
+  Future<bool> appendActivities(int earlierId, int laterId) async {
+    final earlierRecords = await getRecords(earlierId);
+    final laterRecords = await getRecords(laterId);
+    if (earlierRecords.isEmpty || laterRecords.isEmpty) {
+      return false;
+    }
+
+    final earlier = database.activitys.getSync(earlierId);
+    if (earlier == null) {
+      return false;
+    }
+
+    final later = database.activitys.getSync(laterId);
+    if (later == null) {
+      return false;
+    }
+
+    final earlierWatermark = earlier.end ?? earlierRecords.last.timeStamp;
+    if (earlierWatermark == null || earlierWatermark.compareTo(later.start) > 0) {
+      return false;
+    }
+
+    database.writeTxnSync(() {
+      for (var laterRecord in laterRecords) {
+        laterRecord.activityId = earlier.id;
+        database.records.putSync(laterRecord);
+      }
+    });
+
+    recalculateCumulative(earlier);
+
+    return true;
+  }
 }
