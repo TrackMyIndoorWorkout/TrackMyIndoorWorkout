@@ -78,6 +78,10 @@ class DbUtils {
         }
       }
 
+      if ((record.heartRate ?? 0) <= 0 && (previousRecord.heartRate ?? 0) > 0) {
+        record.heartRate = previousRecord.heartRate;
+      }
+
       record.elapsed = movingTime ~/ 1000;
 
       // Recalculate distance
