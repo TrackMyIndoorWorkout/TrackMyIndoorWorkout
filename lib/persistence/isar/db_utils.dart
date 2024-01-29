@@ -57,7 +57,7 @@ class DbUtils {
     double moving = 0.0;
     for (final record in records.skip(1)) {
       final dTMillis = record.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
-      final dT = dTMillis / 1000.0;
+      final dTime = dTMillis / 1000.0;
 
       double speed = record.speed ?? 0.0;
       if (speed > 0.0) {
@@ -65,13 +65,13 @@ class DbUtils {
       }
 
       // Recalculate distance
-      double dD = speed * DeviceDescriptor.kmh2ms * dT;
-      distance += dD;
+      double dDistance = speed * DeviceDescriptor.kmh2ms * dTime;
+      distance += dDistance;
       record.distance = distance;
 
       // Recalculate calories
       double dCal = (record.power ?? 0) *
-          dT *
+          dTime *
           jToCal *
           activity.calorieFactor *
           DeviceDescriptor.powerCalorieFactorDefault;
