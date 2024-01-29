@@ -342,6 +342,26 @@ class Record {
     }
   }
 
+  factory Record.clone(Record record) {
+    return Record(
+      activityId: record.activityId,
+      timeStamp: record.timeStamp,
+      distance: record.distance,
+      elapsed: record.elapsed,
+      calories: record.calories,
+      power: record.power,
+      speed: record.speed,
+      cadence: record.cadence,
+      heartRate: record.heartRate,
+      elapsedMillis: record.elapsedMillis,
+      pace: record.pace,
+      strokeCount: record.strokeCount,
+      sport: record.sport,
+      caloriesPerHour: record.caloriesPerHour,
+      caloriesPerMinute: record.caloriesPerMinute,
+    );
+  }
+
   @override
   String toString() {
     return "id $id | "
