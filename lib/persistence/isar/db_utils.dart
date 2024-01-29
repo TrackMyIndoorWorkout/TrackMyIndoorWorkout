@@ -78,7 +78,7 @@ class DbUtils {
         }
       }
 
-      record.elapsed = movingTime.toInt();
+      record.elapsed = movingTime ~/ 1000;
 
       // Recalculate distance
       double dDistance = speed * DeviceDescriptor.kmh2ms * dTime;
