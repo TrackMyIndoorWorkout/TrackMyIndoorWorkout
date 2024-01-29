@@ -615,7 +615,10 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
             // await DbUtils().finalizeActivity(widget.activity);
 
-            await DbUtils().recalculateCumulative(widget.activity);
+            // await DbUtils().recalculateCumulative(widget.activity);
+
+            widget.activity.clearSuuntoUpload();
+            DbUtils().updateActivity(widget.activity);
 
             // await DbUtils().appendActivities(438, 440);
           },

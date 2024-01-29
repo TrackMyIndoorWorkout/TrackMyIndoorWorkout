@@ -114,9 +114,7 @@ class DbUtils {
     activity.elapsed = activity.end!.difference(activity.start).inSeconds;
     activity.movingTime = movingTime.toInt();
 
-    database.writeTxnSync(() {
-      database.activitys.putSync(activity);
-    });
+    updateActivity(activity);
 
     return true;
   }
@@ -227,9 +225,7 @@ class DbUtils {
     }
 
     if (updated > 0) {
-      database.writeTxnSync(() {
-        database.activitys.putSync(activity);
-      });
+      updateActivity(activity);
     }
 
     return updated > 0;
@@ -314,5 +310,11 @@ class DbUtils {
     recalculateCumulative(earlier);
 
     return true;
+  }
+
+  void updateActivity(Activity activity) {
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
+    });
   }
 }
