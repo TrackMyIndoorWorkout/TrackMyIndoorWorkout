@@ -54,15 +54,31 @@ class DbUtils {
     var previousRecord = records.first;
     double calories = 0.0;
     double distance = 0.0;
-    double moving = 0.0;
+    double movingTime = 0.0;
     for (final record in records.skip(1)) {
       final dTMillis = record.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
       final dTime = dTMillis / 1000.0;
 
       double speed = record.speed ?? 0.0;
-      if (speed > 0.0) {
-        moving += dTMillis;
+      int power = record.power ?? 0;
+      int cadence = record.cadence ?? 0;
+      bool moving = (speed > 0.0 || power > 0 || cadence > 0);
+      if (moving) {
+        movingTime += dTMillis;
+        if ((record.cadence ?? 0) <= 0 && (previousRecord.cadence ?? 0) > 0) {
+          record.cadence = previousRecord.cadence;
+        }
+
+        if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
+          record.power = previousRecord.power;
+        }
+
+        if ((record.speed ?? 0.0) <= eps && (previousRecord.speed ?? 0.0) > eps) {
+          record.speed = previousRecord.speed;
+        }
       }
+
+      record.elapsed = movingTime.toInt();
 
       // Recalculate distance
       double dDistance = speed * DeviceDescriptor.kmh2ms * dTime;
@@ -70,7 +86,7 @@ class DbUtils {
       record.distance = distance;
 
       // Recalculate calories
-      double dCal = (record.power ?? 0) *
+      double dCal = power *
           dTime *
           jToCal *
           activity.calorieFactor *
@@ -92,7 +108,7 @@ class DbUtils {
     }
 
     activity.elapsed = activity.end!.difference(activity.start).inSeconds;
-    activity.movingTime = moving.toInt();
+    activity.movingTime = movingTime.toInt();
 
     database.writeTxnSync(() {
       database.activitys.putSync(activity);
