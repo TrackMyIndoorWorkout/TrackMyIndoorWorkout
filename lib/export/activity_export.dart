@@ -118,7 +118,9 @@ abstract class ActivityExport {
               double? dCalories = dCaloriesInt?.toDouble();
               double? caloriesPart = dCalories != null ? dCalories / (dividerCount + 1) : null;
               double? calories = previousRecord.calories?.toDouble();
-              int? dElapsed = (previousRecord.elapsed != null && r.elapsed != null) ? r.elapsed! - previousRecord.elapsed! : null;
+              int? dElapsed = (previousRecord.elapsed != null && r.elapsed != null)
+                  ? r.elapsed! - previousRecord.elapsed!
+                  : null;
               int? elapsedPart = dElapsed != null ? dElapsed ~/ (dividerCount + 1) : null;
               int? elapsed = previousRecord.elapsed;
               for (final _ in List<int>.generate(dividerCount, (i) => i)) {
