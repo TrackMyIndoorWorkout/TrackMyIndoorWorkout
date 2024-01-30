@@ -113,6 +113,12 @@ class Activity {
     suuntoUploaded = true;
   }
 
+  void clearSuuntoUpload() {
+    suuntoUploadInitiated("", "");
+    suuntoWorkoutUrl = "";
+    suuntoUploaded = false;
+  }
+
   void markTrainingPeaksUploading(String fileTrackingUuid) {
     trainingPeaksFileTrackingUuid = fileTrackingUuid;
     trainingPeaksUploaded = false;

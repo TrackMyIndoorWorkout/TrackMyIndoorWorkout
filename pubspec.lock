@@ -29,10 +29,10 @@ packages:
     dependency: "direct main"
     description:
       name: assorted_layout_widgets
-      sha256: "7761293820450b1219364e8351dee81c3a828ba062da4b67490742fca2d3949b"
+      sha256: "7d7688db393f02b8811f28bacdd9d791cf218f5805dee925f913a1849858e192"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.0"
+    version: "9.0.1"
   async:
     dependency: transitive
     description:
@@ -109,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: built_value
-      sha256: c9aabae0718ec394e5bc3c7272e6bb0dc0b32201a08fe185ec1d8401d3e39309
+      sha256: a3ec2e0f967bc47f69f95009bb93db936288d61d5343b9436e378b28a2f830c6
       url: "https://pub.dev"
     source: hosted
-    version: "8.8.1"
+    version: "8.9.0"
   characters:
     dependency: transitive
     description:
@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: "3baf3bfb4876855316b34489204eb090ee5842ba174e47d3b9b2c378d8568fdf"
+      sha256: "3f7c5b9402919cfb16a6fc219adb9ed4ca2da77dceb9214732c77e58cf9569e8"
       url: "https://pub.dev"
     source: hosted
-    version: "1.31.8"
+    version: "1.31.12"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
@@ -651,10 +651,10 @@ packages:
     dependency: transitive
     description:
       name: matrix4_transform
-      sha256: "62124a87c6ed801667969bdfaaa3f7fdbfb829ff75f675280bdb260952da8803"
+      sha256: "42c42610deecc382be2653f4a21358537401bd5b027c168a174c7c6a64959908"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   meta:
     dependency: transitive
     description:
@@ -667,10 +667,10 @@ packages:
     dependency: transitive
     description:
       name: mime
-      sha256: e4ff8e8564c03f255408decd16e7899da1733852a9110a58fe6d1b817684a63e
+      sha256: "2e123074287cc9fd6c09de8336dae606d1ddb88d9ac47358826db698c176a1f2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.5"
   mock_data:
     dependency: "direct dev"
     description:
@@ -1024,26 +1024,26 @@ packages:
     dependency: "direct main"
     description:
       name: sqflite
-      sha256: "591f1602816e9c31377d5f008c2d9ef7b8aca8941c3f89cc5fd9d84da0c38a9a"
+      sha256: a9016f495c927cb90557c909ff26a6d92d9bd54fc42ba92e19d4e79d61e798c6
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.2"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: bb4738f15b23352822f4c42a531677e5c6f522e079461fd240ead29d8d8a54a6
+      sha256: "28d8c66baee4968519fb8bd6cdbedad982d6e53359091f0b74544a9f32ec72d5"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0+2"
+    version: "2.5.3"
   sqflite_common_ffi:
     dependency: transitive
     description:
       name: sqflite_common_ffi
-      sha256: "873677ee78738a723d1ded4ccb23980581998d873d30ee9c331f6a81748663ff"
+      sha256: d0e3f0d04fdf668e57db8db1df758f56c4193cb429092c708e7bfcc6ab04b27e
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.2"
   sqlite3:
     dependency: transitive
     description:
@@ -1120,10 +1120,10 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: a27bbaabe99f27c9ef2125552c8cdbe2f2c32d833b861479caf49f7f8770eee0
+      sha256: "224dfecbe5beb6e6e2a7eb82abe6510e386861c32e9b669ff256d156be788dd8"
       url: "https://pub.dev"
     source: hosted
-    version: "24.1.47"
+    version: "24.1.47+2"
   syncfusion_flutter_core:
     dependency: transitive
     description:
