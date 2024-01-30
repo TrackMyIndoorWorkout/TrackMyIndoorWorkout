@@ -362,6 +362,7 @@ class Record {
       sport: record.sport,
       caloriesPerHour: record.caloriesPerHour,
       caloriesPerMinute: record.caloriesPerMinute,
+      resistance: record.resistance,
     );
   }
 
