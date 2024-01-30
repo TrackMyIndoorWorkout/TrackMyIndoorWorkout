@@ -44,7 +44,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processCadenceFlag(flag);
     flag = skipFlag(flag); // Average Cadence
     flag = processTotalDistanceFlag(flag);
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
     flag = processExpandedEnergyFlag(flag);
@@ -70,6 +70,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
+      resistance: getResistance(data),
     );
   }
 
