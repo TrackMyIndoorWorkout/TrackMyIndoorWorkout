@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.19.0-0.2.pre"
 
 dependency_overrides:
-  analyzer: ^6.4.0  # because of isar_generator
+  analyzer: ^6.4.1  # because of isar_generator
 
 dependencies:
   assorted_layout_widgets: ^9.0.1
