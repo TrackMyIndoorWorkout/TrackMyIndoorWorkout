@@ -1040,10 +1040,10 @@ packages:
     dependency: transitive
     description:
       name: sqflite_common_ffi
-      sha256: d0e3f0d04fdf668e57db8db1df758f56c4193cb429092c708e7bfcc6ab04b27e
+      sha256: "754927d82de369a6b9e760fb60640aa81da650f35ffd468d5a992814d6022908"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "2.3.2+1"
   sqlite3:
     dependency: transitive
     description:
