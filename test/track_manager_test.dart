@@ -35,13 +35,13 @@ void main() {
 
           final haversineDistance =
               TrackCalculator.haversineDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
-          expect(haversineDistance, closeTo(50, 1.8));
+          expect(haversineDistance, closeTo(50, 0.27));
 
           final vincentyDistance =
               TrackCalculator.vincentyDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
-          expect(vincentyDistance, closeTo(50, 1.1));
+          expect(vincentyDistance, closeTo(50, 0.13));
 
-          expect(haversineDistance, closeTo(vincentyDistance, 0.5));
+          expect(haversineDistance, closeTo(vincentyDistance, 0.264));
         });
       }
     }
@@ -61,13 +61,13 @@ void main() {
           final expected = track.halfCircle / pi * 2.0;
           final haversineDistance =
               TrackCalculator.haversineDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
-          expect(haversineDistance, closeTo(expected, 0.6));
+          expect(haversineDistance, closeTo(expected, 0.51));
 
           final vincentyDistance =
               TrackCalculator.vincentyDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
-          expect(vincentyDistance, closeTo(expected, 0.7));
+          expect(vincentyDistance, closeTo(expected, 0.622));
 
-          expect(haversineDistance, closeTo(vincentyDistance, 0.4));
+          expect(haversineDistance, closeTo(vincentyDistance, 0.353));
         });
       }
     }
@@ -93,8 +93,8 @@ void main() {
             currentGps = nextGps;
           }
 
-          expect(haversineLap, closeTo(track.length, 1.7));
-          expect(vincentyLap, closeTo(track.length, 1.7));
+          expect(haversineLap, closeTo(track.length, 1.67));
+          expect(vincentyLap, closeTo(track.length, 0.259));
         });
       }
     }

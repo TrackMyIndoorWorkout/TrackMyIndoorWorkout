@@ -10,6 +10,7 @@ import '../../preferences/extend_tuning.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/stationary_workout.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
+import '../../preferences/use_long_track.dart';
 import '../../persistence/isar/db_utils.dart';
 import '../../utils/sound.dart';
 import 'pref_integer.dart';
@@ -29,6 +30,11 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         title: Text(calculateGps),
         subtitle: Text(calculateGpsDescription),
         pref: calculateGpsTag,
+      ),
+      const PrefCheckbox(
+        title: Text(useLongTrack),
+        subtitle: Text(useLongTrackDescription),
+        pref: useLongTrackTag,
       ),
       const PrefCheckbox(
         title: Text(stationaryWorkout),
