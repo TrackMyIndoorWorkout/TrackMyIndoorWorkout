@@ -31,8 +31,8 @@ mixin Upload {
       debugPrint('Token not yet known');
       return 0;
     }
-    var suuntoToken = Get.find<SuuntoToken>();
 
+    var suuntoToken = Get.find<SuuntoToken>();
     if (suuntoToken.accessToken == null) {
       // Token has not been yet stored in memory
       return 0;
@@ -53,13 +53,12 @@ mixin Upload {
       return await checkStatus(headers, activity);
     }
 
-    Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false, true);
     final postUri = Uri.parse(uploadsEndpoint);
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
-      body: '{"description": "${persistenceValues["description"]}", '
-          '"comment": "${persistenceValues["name"]}"}',
+      body: '{"description": "${activity.getDescription(true)}", '
+          '"comment": "${activity.getTitle()}"}',
     );
 
     // https://apizone.suunto.com/how-to-workout-upload

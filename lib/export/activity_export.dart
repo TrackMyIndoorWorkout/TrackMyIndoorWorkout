@@ -2,14 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../persistence/isar/activity.dart';
 import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/record.dart';
-import '../preferences/activity_description.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
@@ -228,28 +226,6 @@ abstract class ActivityExport {
       return fileBytes;
     }
     return GZipCodec(gzip: true).encode(fileBytes);
-  }
-
-  Map<String, dynamic> getPersistenceValues(Activity activity, bool compressed,
-      [bool moderated = false]) {
-    final dateString = DateFormat.yMd().format(activity.start);
-    final timeString = DateFormat.Hms().format(activity.start);
-    final fileName = 'Activity_${dateString}_$timeString.${fileExtension(compressed)}'
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
-    String description = Get.find<BasePrefService>().get<String>(activityDescriptionTag) ??
-        activityDescriptionDefault;
-    if (description.isEmpty) {
-      description = '${activity.sport}, machine: ${activity.deviceName}, '
-          'recorded with ${moderated ? appDomainCore : appUrl}';
-    }
-
-    return {
-      'startStamp': activity.start,
-      'name': '${activity.sport} at $dateString $timeString',
-      'description': description,
-      'fileName': fileName,
-    };
   }
 
   Future<List<int>> getFileCore(ExportModel exportModel);
