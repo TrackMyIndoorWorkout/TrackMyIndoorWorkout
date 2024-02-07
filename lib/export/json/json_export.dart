@@ -33,7 +33,6 @@ class JsonExport extends ActivityExport {
     );
     final jsonWorkout = JsonWorkout(
       exportModel.activity.start,
-      exportModel.name,
       jsonAggregates,
       exportModel.activity.timeZone,
       toUnderArmourSport(exportModel.activity.sport),
