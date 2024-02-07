@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import '../../preferences/activity_description.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/calculate_gps.dart';
@@ -35,6 +37,12 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         title: Text(useLongTrack),
         subtitle: Text(useLongTrackDescription),
         pref: useLongTrackTag,
+      ),
+      const PrefLabel(title: Text(activityDescriptionDescription, maxLines: 10)),
+      PrefText(
+        label: activityDescription,
+        pref: activityDescriptionTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s]"))],
       ),
       const PrefCheckbox(
         title: Text(stationaryWorkout),
