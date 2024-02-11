@@ -13,7 +13,7 @@ import 'heart_rate.dart';
 import 'integrations.dart';
 import 'leaderboard.dart';
 import 'target_heart_rate.dart';
-import 'ux_preferences.dart';
+import 'user_experience_preferences.dart';
 import 'workout.dart';
 import 'zones_hub.dart';
 
