@@ -37,30 +37,24 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
           itemBuilder: (context, index) => ElevatedButton(
                 onPressed: () =>
                     Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TextOneLine(
-                          widget.devices[index].item1,
-                          style: _textStyle,
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        TextOneLine(
-                          widget.devices[index].item2.shortAddressString(),
-                          style: _subTextStyle,
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
-                  ],
+                child: FitHorizontally(
+                  shrinkLimit: shrinkLimit,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.devices[index].item1, style: _textStyle),
+                          Text(widget.devices[index].item2.shortAddressString(),
+                              style: _subTextStyle),
+                        ],
+                      ),
+                      Icon(Icons.chevron_right, size: _sizeDefault),
+                    ],
+                  ),
                 ),
               ),
           separatorBuilder: (context, index) => const SizedBox(width: 10, height: 10),
