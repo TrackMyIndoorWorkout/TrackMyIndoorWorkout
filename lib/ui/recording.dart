@@ -1091,9 +1091,9 @@ class RecordingState extends State<RecordingScreen> {
       false,
       ExportTarget.regular,
     );
-    final persistenceValues = exporter.getPersistenceValues(_activity!, false);
-    String fileName = p.join(_instantExportLocation, persistenceValues['fileName']);
-    await File(fileName).writeAsBytes(fileBytes);
+    final fileName = _activity!.getFileNameStub() + exporter.fileExtension(false);
+    String fileFullPath = p.join(_instantExportLocation, fileName);
+    await File(fileFullPath).writeAsBytes(fileBytes);
   }
 
   _stopMeasurement(bool quick) async {

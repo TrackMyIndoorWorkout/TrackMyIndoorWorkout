@@ -6,13 +6,11 @@ import 'json_aggregates.dart';
 class JsonWorkout {
   JsonWorkout(
     this.startDatetime,
-    this.name,
     this.aggregates,
     this.startLocaleTimezone,
     this.activityType,
   );
 
-  String name;
   int activityType;
   DateTime startDatetime;
   String startLocaleTimezone;
@@ -78,7 +76,7 @@ class JsonWorkout {
     return sb.toString();
   }
 
-  String toJson(ExportModel exportModel) => '{"name": "$name",'
+  String toJson(ExportModel exportModel) => '{"name": "${exportModel.activity.getTitle()}",'
       '"activity_type": "/v7.1/activity_type/$activityType/",'
       '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",'
       '"start_locale_timezone": "$startLocaleTimezone",'

@@ -45,37 +45,76 @@ class DbUtils {
     return records.lastOrNull;
   }
 
-  Future<bool> recalculateDistance(Activity activity, [force = false]) async {
+  Future<bool> recalculateCumulative(Activity activity) async {
     final records = await getRecords(activity.id);
     if (records.isEmpty) {
       return false;
     }
 
     var previousRecord = records.first;
+    double calories = 0.0;
+    double distance = 0.0;
+    double movingTime = 0.0;
     for (final record in records.skip(1)) {
       final dTMillis = record.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
-      final dT = dTMillis / 1000.0;
-      if ((record.distance ?? 0.0) < eps || force) {
-        record.distance = (previousRecord.distance ?? 0.0);
-        if ((record.speed ?? 0.0) > 0 && dT > eps) {
-          // Speed already should have powerFactor effect
-          double dD = (record.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
-          record.distance = record.distance! + dD;
-          database.writeTxnSync(() {
-            database.records.putSync(record);
-          });
+      final dTime = dTMillis / 1000.0;
+
+      double speed = record.speed ?? 0.0;
+      int power = record.power ?? 0;
+      int cadence = record.cadence ?? 0;
+      bool moving = (speed > 0.0 || power > 0 || cadence > 0);
+      if (moving) {
+        movingTime += dTMillis;
+        if ((record.cadence ?? 0) <= 0 && (previousRecord.cadence ?? 0) > 0) {
+          record.cadence = previousRecord.cadence;
+        }
+
+        if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
+          record.power = previousRecord.power;
+        }
+
+        if ((record.speed ?? 0.0) <= eps && (previousRecord.speed ?? 0.0) > eps) {
+          record.speed = previousRecord.speed;
         }
       }
+
+      if ((record.heartRate ?? 0) <= 0 && (previousRecord.heartRate ?? 0) > 0) {
+        record.heartRate = previousRecord.heartRate;
+      }
+
+      record.elapsed = movingTime ~/ 1000;
+
+      // Recalculate distance
+      double dDistance = speed * DeviceDescriptor.kmh2ms * dTime;
+      distance += dDistance;
+      record.distance = distance;
+
+      // Recalculate calories
+      double dCal = power *
+          dTime *
+          jToCal *
+          activity.calorieFactor *
+          DeviceDescriptor.powerCalorieFactorDefault;
+      calories += dCal;
+      record.calories = calories ~/ 1000;
+
+      database.writeTxnSync(() {
+        database.records.putSync(record);
+      });
 
       previousRecord = record;
     }
 
-    if ((previousRecord.distance ?? 0.0) > eps && (activity.distance < eps || force)) {
-      activity.distance = previousRecord.distance!;
-      database.writeTxnSync(() {
-        database.activitys.putSync(activity);
-      });
+    activity.distance = previousRecord.distance!;
+    activity.calories = previousRecord.calories!;
+    if (activity.end == null || activity.end!.compareTo(previousRecord.timeStamp!) <= 0) {
+      activity.end = previousRecord.timeStamp;
     }
+
+    activity.elapsed = activity.end!.difference(activity.start).inSeconds;
+    activity.movingTime = movingTime.toInt();
+
+    updateActivity(activity);
 
     return true;
   }
@@ -186,9 +225,7 @@ class DbUtils {
     }
 
     if (updated > 0) {
-      database.writeTxnSync(() {
-        database.activitys.putSync(activity);
-      });
+      updateActivity(activity);
     }
 
     return updated > 0;
@@ -239,5 +276,45 @@ class DbUtils {
         .findAll()) {
       addressNames.addAddressName(activity.deviceId, activity.deviceName);
     }
+  }
+
+  Future<bool> appendActivities(int earlierId, int laterId) async {
+    final earlierRecords = await getRecords(earlierId);
+    final laterRecords = await getRecords(laterId);
+    if (earlierRecords.isEmpty || laterRecords.isEmpty) {
+      return false;
+    }
+
+    final earlier = database.activitys.getSync(earlierId);
+    if (earlier == null) {
+      return false;
+    }
+
+    final later = database.activitys.getSync(laterId);
+    if (later == null) {
+      return false;
+    }
+
+    final earlierWatermark = earlier.end ?? earlierRecords.last.timeStamp;
+    if (earlierWatermark == null || earlierWatermark.compareTo(later.start) > 0) {
+      return false;
+    }
+
+    database.writeTxnSync(() {
+      for (var laterRecord in laterRecords) {
+        laterRecord.activityId = earlier.id;
+        database.records.putSync(laterRecord);
+      }
+    });
+
+    recalculateCumulative(earlier);
+
+    return true;
+  }
+
+  void updateActivity(Activity activity) {
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
+    });
   }
 }

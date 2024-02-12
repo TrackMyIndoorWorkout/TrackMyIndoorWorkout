@@ -70,13 +70,13 @@ mixin Upload {
     final prefService = Get.find<BasePrefService>();
     final workoutPublic =
         prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
-    final persistenceValues = exporter.getPersistenceValues(activity, true);
+    final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
     String fileContentString = base64.encode(fileContent);
     String contentString = '{"UploadClient": "$appName",'
-        '"Filename": "${persistenceValues["fileName"]}",'
+        '"Filename": "$fileName",'
         '"Data": "$fileContentString",'
-        '"Title": "${persistenceValues["name"]}",'
-        '"Comment": "${persistenceValues["description"]}",'
+        '"Title": "${activity.getTitle()}",'
+        '"Comment": "${activity.getDescription(false)}",'
         '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.start)}",'
         '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.start)}",'
         '"SetWorkoutPublic": $workoutPublic,'

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -94,50 +93,111 @@ abstract class ActivityExport {
     final track = await TrackManager().getTrack(activity.sport);
     final calculator = TrackCalculator(track: track);
     final records = await DbUtils().getRecords(activity.id);
-    final exportRecords = records.map((r) {
-      final record = recordToExport(r, activity, calculator, calculateGps, rawData);
+    final List<ExportRecord> exportRecords = [];
+    Record? previousRecord;
+    for (final r in records) {
+      List<Record> prepRecords = [];
+      if (previousRecord != null && calculateGps) {
+        if (previousRecord.distance != null && r.distance != null ||
+            previousRecord.calories != null && r.calories != null) {
+          final dTMillis = r.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
+          if (dTMillis >= 2000) {
+            final dividerCount = (dTMillis - 500) ~/ 1000;
+            if (dividerCount > 0) {
+              int time = previousRecord.timeStamp!.millisecondsSinceEpoch;
+              int timePart = dTMillis ~/ (dividerCount + 1);
+              double? dDistance = (previousRecord.distance != null && r.distance != null)
+                  ? r.distance! - previousRecord.distance!
+                  : null;
+              double? distancePart = dDistance != null ? dDistance / (dividerCount + 1) : null;
+              double? distance = previousRecord.distance;
+              int? dCaloriesInt = (previousRecord.calories != null && r.calories != null)
+                  ? r.calories! - previousRecord.calories!
+                  : null;
+              double? dCalories = dCaloriesInt?.toDouble();
+              double? caloriesPart = dCalories != null ? dCalories / (dividerCount + 1) : null;
+              double? calories = previousRecord.calories?.toDouble();
+              int? dElapsed = (previousRecord.elapsed != null && r.elapsed != null)
+                  ? r.elapsed! - previousRecord.elapsed!
+                  : null;
+              int? elapsedPart = dElapsed != null ? dElapsed ~/ (dividerCount + 1) : null;
+              int? elapsed = previousRecord.elapsed;
+              for (final _ in List<int>.generate(dividerCount, (i) => i)) {
+                time += timePart;
+                final rClone = Record.clone(r);
+                rClone.timeStamp = DateTime.fromMillisecondsSinceEpoch(time);
+                if (elapsed != null && elapsedPart != null) {
+                  elapsed += elapsedPart;
+                  rClone.elapsed = elapsed;
+                }
 
-      if (!rawData) {
-        if ((record.record.speed ?? 0.0) > eps) {
-          // #101, #122
-          if ((record.record.cadence == null || record.record.cadence == 0) &&
-              _lastPositiveCadence > 0 &&
-              _cadenceGapWorkaround) {
-            record.record.cadence = _lastPositiveCadence;
-          } else if (record.record.cadence != null && record.record.cadence! > 0) {
-            _lastPositiveCadence = record.record.cadence!;
-          }
-        }
+                if (distance != null && distancePart != null) {
+                  distance += distancePart;
+                  rClone.distance = distance;
+                }
 
-        if (record.record.heartRate == null &&
-            heartRateLimitingMethod == heartRateLimitingWriteZero) {
-          record.record.heartRate = 0;
-        }
+                if (calories != null && caloriesPart != null) {
+                  calories += caloriesPart;
+                  rClone.calories = calories.toInt();
+                }
 
-        // #93, #113
-        if ((record.record.heartRate == 0 || record.record.heartRate == null) &&
-            _lastPositiveHeartRate > 0 &&
-            heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue) {
-          record.record.heartRate = _lastPositiveHeartRate;
-        } else if ((record.record.heartRate ?? 0) > 0) {
-          _lastPositiveHeartRate = record.record.heartRate!;
-        }
-
-        // #114
-        if (heartRateUpperLimit > 0 &&
-            record.record.heartRate != null &&
-            record.record.heartRate! > heartRateUpperLimit &&
-            heartRateLimitingMethod != heartRateLimitingNoLimit) {
-          if (heartRateLimitingMethod == heartRateLimitingCapAtLimit) {
-            record.record.heartRate = heartRateUpperLimit;
-          } else {
-            record.record.heartRate = 0;
+                prepRecords.add(rClone);
+              }
+            }
           }
         }
       }
 
-      return record;
-    }).toList(growable: false);
+      prepRecords.add(r);
+
+      for (final prepRecord in prepRecords) {
+        final record = recordToExport(prepRecord, activity, calculator, calculateGps, rawData);
+
+        if (!rawData) {
+          if ((record.record.speed ?? 0.0) > eps) {
+            // #101, #122
+            if ((record.record.cadence == null || record.record.cadence == 0) &&
+                _lastPositiveCadence > 0 &&
+                _cadenceGapWorkaround) {
+              record.record.cadence = _lastPositiveCadence;
+            } else if (record.record.cadence != null && record.record.cadence! > 0) {
+              _lastPositiveCadence = record.record.cadence!;
+            }
+          }
+
+          if (record.record.heartRate == null &&
+              heartRateLimitingMethod == heartRateLimitingWriteZero) {
+            record.record.heartRate = 0;
+          }
+
+          // #93, #113
+          if ((record.record.heartRate == 0 || record.record.heartRate == null) &&
+              _lastPositiveHeartRate > 0 &&
+              heartRateGapWorkaround == dataGapWorkaroundLastPositiveValue) {
+            record.record.heartRate = _lastPositiveHeartRate;
+          } else if ((record.record.heartRate ?? 0) > 0) {
+            _lastPositiveHeartRate = record.record.heartRate!;
+          }
+
+          // #114
+          if (heartRateUpperLimit > 0 &&
+              record.record.heartRate != null &&
+              record.record.heartRate! > heartRateUpperLimit &&
+              heartRateLimitingMethod != heartRateLimitingNoLimit) {
+            if (heartRateLimitingMethod == heartRateLimitingCapAtLimit) {
+              record.record.heartRate = heartRateUpperLimit;
+            } else {
+              record.record.heartRate = 0;
+            }
+          }
+        }
+
+        exportRecords.add(record);
+      }
+
+      previousRecord = r;
+    }
+
     final versionParts = version.split(".");
     ExportModel exportModel = ExportModel(
       activity: activity,
@@ -166,22 +226,6 @@ abstract class ActivityExport {
       return fileBytes;
     }
     return GZipCodec(gzip: true).encode(fileBytes);
-  }
-
-  Map<String, dynamic> getPersistenceValues(Activity activity, bool compressed,
-      [bool moderated = false]) {
-    final dateString = DateFormat.yMd().format(activity.start);
-    final timeString = DateFormat.Hms().format(activity.start);
-    final fileName = 'Activity_${dateString}_$timeString.${fileExtension(compressed)}'
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
-    return {
-      'startStamp': activity.start,
-      'name': '${activity.sport} at $dateString $timeString',
-      'description':
-          '${activity.sport}, machine: ${activity.deviceName}, recorded with ${moderated ? appDomain : appUrl}',
-      'fileName': fileName,
-    };
   }
 
   Future<List<int>> getFileCore(ExportModel exportModel);

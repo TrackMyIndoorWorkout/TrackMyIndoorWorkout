@@ -2,14 +2,14 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+// import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../preferences/database_migration_needed.dart';
 import '../preferences/enforced_time_zone.dart';
-// import '../preferences/welcome_presented.dart';
+import '../preferences/welcome_presented.dart';
 import '../utils/constants.dart';
 import 'donation.dart';
 
@@ -64,11 +64,12 @@ class AboutScreenState extends State<AboutScreen> {
         onPressed: () async {
           Get.find<BasePrefService>()
               .set(databaseMigrationNeededTag, databaseMigrationNeededDefault);
-          final database = Get.find<Isar>();
-          await database.writeTxn(() async {
-            await database.clear();
-          });
-          // Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
+          Get.find<BasePrefService>().set(welcomePresentedTag, welcomePresentedDefault);
+
+          // final database = Get.find<Isar>();
+          // await database.writeTxn(() async {
+          //   await database.clear();
+          // });
         },
       ));
     }

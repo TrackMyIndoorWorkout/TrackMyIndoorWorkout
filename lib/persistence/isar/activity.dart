@@ -1,12 +1,17 @@
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
-import '../../../devices/device_factory.dart';
-import '../../../devices/device_fourcc.dart';
-import '../../../devices/device_descriptors/device_descriptor.dart';
-import '../../../upload/constants.dart';
-import '../../../upload/strava/constants.dart';
-import '../../../upload/training_peaks/constants.dart';
-import '../../../upload/under_armour/constants.dart';
-import '../../../utils/display.dart' as display;
+import 'package:pref/pref.dart';
+import '../../devices/device_factory.dart';
+import '../../devices/device_fourcc.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../upload/constants.dart';
+import '../../upload/strava/constants.dart';
+import '../../upload/training_peaks/constants.dart';
+import '../../upload/under_armour/constants.dart';
+import '../../preferences/activity_description.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart' as display;
 import 'workout_summary.dart';
 
 part 'activity.g.dart';
@@ -113,6 +118,12 @@ class Activity {
     suuntoUploaded = true;
   }
 
+  void clearSuuntoUpload() {
+    suuntoUploadInitiated("", "");
+    suuntoWorkoutUrl = "";
+    suuntoUploaded = false;
+  }
+
   void markTrainingPeaksUploading(String fileTrackingUuid) {
     trainingPeaksFileTrackingUuid = fileTrackingUuid;
     trainingPeaksUploaded = false;
@@ -204,5 +215,28 @@ class Activity {
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
     );
+  }
+
+  String getTitle() {
+    final dateString = DateFormat.yMd().format(start);
+    final timeString = DateFormat.Hms().format(start);
+    return '$sport at $dateString $timeString';
+  }
+
+  String getDescription(bool moderated) {
+    String description = Get.find<BasePrefService>().get<String>(activityDescriptionTag) ??
+        activityDescriptionDefault;
+    if (description.isEmpty) {
+      description = '$sport, machine: $deviceName, '
+          'recorded with ${moderated ? appDomainCore : appUrl}';
+    }
+
+    return description;
+  }
+
+  String getFileNameStub() {
+    final dateString = DateFormat.yMd().format(start);
+    final timeString = DateFormat.Hms().format(start);
+    return 'Activity_${dateString}_$timeString.'.replaceAll('/', '-').replaceAll(':', '-');
   }
 }

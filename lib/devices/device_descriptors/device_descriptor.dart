@@ -68,6 +68,7 @@ abstract class DeviceDescriptor extends DataHandler {
     super.powerMetric,
     super.cadenceMetric,
     super.distanceMetric,
+    super.resistanceMetric,
   });
 
   String get fullName => '$vendorName $modelName';

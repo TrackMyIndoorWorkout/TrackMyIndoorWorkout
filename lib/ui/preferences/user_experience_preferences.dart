@@ -20,22 +20,22 @@ import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 import 'row_configuration_dialog.dart';
 
-class UXPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
-  static String shortTitle = "UX";
+class UserExperiencePreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
+  static String shortTitle = "User Experience";
   static String title = "$shortTitle Preferences";
 
-  const UXPreferencesScreen({super.key});
+  const UserExperiencePreferencesScreen({super.key});
 
   @override
-  UXPreferencesScreenState createState() => UXPreferencesScreenState();
+  UserExperiencePreferencesScreenState createState() => UserExperiencePreferencesScreenState();
 }
 
-class UXPreferencesScreenState extends State<UXPreferencesScreen> {
+class UserExperiencePreferencesScreenState extends State<UserExperiencePreferencesScreen> {
   int _locationEdit = 0;
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> uxPreferences = [
+    List<Widget> userExperiencePreferences = [
       PrefLabel(
         title: Text(themeSelection, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(themeSelectionDescription),
@@ -191,8 +191,8 @@ class UXPreferencesScreenState extends State<UXPreferencesScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(UXPreferencesScreen.title)),
-      body: PrefPage(children: uxPreferences),
+      appBar: AppBar(title: Text(UserExperiencePreferencesScreen.title)),
+      body: PrefPage(children: userExperiencePreferences),
     );
   }
 }
