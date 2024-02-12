@@ -24,6 +24,7 @@ import '../devices/device_fourcc.dart';
 import '../devices/gadgets/complex_sensor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
+import '../devices/gatt/appearance.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
@@ -507,13 +508,14 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _fitnessEquipment!.descriptor != null &&
           (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor ||
               _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.secondarySensor)) {
-        if (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor) {
+        if (primaryCyclingSensorAppearances.contains(advertisementDigest.appearance) ||
+            _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor) {
           // The user clicked twice on a primary sensor, probably there's no secondary sensor
           // And the user wants to navigate
           fitnessEquipment = _fitnessEquipment;
           preConnectLogic = false;
-        } else if (_fitnessEquipment!.descriptor!.deviceCategory ==
-            DeviceCategory.secondarySensor) {
+        } else if (advertisementDigest.appearance == appearanceCadenceSensor &&
+            _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.secondarySensor) {
           // The user clicked twice on a secondary sensor, ignore
           // But secondary sensor shouldn't have a FitnessEquipment anyway
           Get.snackbar("Warning", "Cannot measure distance and speed with a cadence sensor only!");
