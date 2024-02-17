@@ -11,6 +11,8 @@ environment:
 
 dependency_overrides:
   analyzer: ^6.4.1  # because of isar_generator
+  js: ^0.7.1 # for wakelock_plus because of isar
+  web: ^0.5.0 # because of package_info_plus
 
 dependencies:
   assorted_layout_widgets: ^9.0.1
@@ -31,7 +33,7 @@ dependencies:
   flutter_timezone: ^1.0.8
   get: ^4.6.6
   group_button: ^5.3.4
-  http: ^1.2.0
+  http: ^1.2.1
   http_parser: ^4.0.2
   internet_connection_checker: ^1.0.0+1
   intl: ^0.19.0
@@ -58,7 +60,7 @@ dependencies:
   uni_links: ^0.5.1
   url_launcher: ^6.2.4
   vector_math: ^2.1.4
-  wakelock_plus: ^1.1.4
+  wakelock_plus: ^1.1.5
   flutter:
     sdk: flutter
 
