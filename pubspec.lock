@@ -1120,10 +1120,10 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "6f681e3ae9de2e355524d78e5b665db70d0a5b32b8ceb4a0c08bca3fd240a530"
+      sha256: a17d07f4348d13570e81a96752cc30a8f3df3f4429a51b327ebe3fae8699ce60
       url: "https://pub.dev"
     source: hosted
-    version: "24.2.7"
+    version: "24.2.7+1"
   syncfusion_flutter_core:
     dependency: transitive
     description:
@@ -1232,10 +1232,10 @@ packages:
     dependency: "direct main"
     description:
       name: url_launcher
-      sha256: c512655380d241a337521703af62d2c122bf7b77a46ff7dd750092aa9433499c
+      sha256: "0ecc004c62fd3ed36a2ffcbe0dd9700aee63bd7532d0b642a488b1ec310f492e"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.4"
+    version: "6.2.5"
   url_launcher_android:
     dependency: transitive
     description:
