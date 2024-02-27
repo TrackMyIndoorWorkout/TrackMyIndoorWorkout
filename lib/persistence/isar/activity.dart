@@ -244,8 +244,8 @@ class Activity {
   }
 
   String getFileNameStub() {
-    final dateString = DateFormat.yMd().format(start);
-    final timeString = DateFormat.Hms().format(start);
-    return 'Activity_${dateString}_$timeString.'.replaceAll('/', '-').replaceAll(':', '-');
+    return substituteTemplate("Activity_{date}_{time}.", false)
+        .replaceAll('/', '-')
+        .replaceAll(':', '-');
   }
 }
