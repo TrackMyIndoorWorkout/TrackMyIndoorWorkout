@@ -38,7 +38,7 @@ mixin Upload {
     request.fields['data_type'] = exporter.fileExtension(true);
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
-    request.fields['name'] = activity.getTitle();
+    request.fields['name'] = activity.getTitle(false);
     request.fields['external_id'] = 'strava_flutter';
     request.fields['description'] = activity.getDescription(false);
 

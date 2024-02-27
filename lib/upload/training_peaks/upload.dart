@@ -75,7 +75,7 @@ mixin Upload {
     String contentString = '{"UploadClient": "$appName",'
         '"Filename": "$fileName",'
         '"Data": "$fileContentString",'
-        '"Title": "${activity.getTitle()}",'
+        '"Title": "${activity.getTitle(false)}",'
         '"Comment": "${activity.getDescription(false)}",'
         '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.start)}",'
         '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.start)}",'

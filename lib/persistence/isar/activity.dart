@@ -10,6 +10,7 @@ import '../../upload/strava/constants.dart';
 import '../../upload/training_peaks/constants.dart';
 import '../../upload/under_armour/constants.dart';
 import '../../preferences/activity_upload_description.dart';
+import '../../preferences/activity_upload_title.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart' as display;
 import 'workout_summary.dart';
@@ -227,10 +228,14 @@ class Activity {
         .replaceAll("{time}", DateFormat.Hms().format(start));
   }
 
-  String getTitle() {
-    final dateString = DateFormat.yMd().format(start);
-    final timeString = DateFormat.Hms().format(start);
-    return '$sport at $dateString $timeString';
+  String getTitle(bool moderated) {
+    String title = Get.find<BasePrefService>().get<String>(activityUploadTitleTag) ??
+        activityUploadTitleDefault;
+    if (title.isEmpty) {
+      title = activityUploadTitleDefault;
+    }
+
+    return substituteTemplate(title, moderated);
   }
 
   String getDescription(bool moderated) {

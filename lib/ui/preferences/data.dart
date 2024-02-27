@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/activity_upload_description.dart';
+import '../../preferences/activity_upload_title.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/calculate_gps.dart';
@@ -42,7 +43,13 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
       PrefText(
         label: activityUploadDescription,
         pref: activityUploadDescriptionTag,
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s]"))],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\}{]"))],
+      ),
+      const PrefLabel(title: Text(activityUploadTitleDescription, maxLines: 10)),
+      PrefText(
+        label: activityUploadTitle,
+        pref: activityUploadTitleTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\}{]"))],
       ),
       const PrefCheckbox(
         title: Text(stationaryWorkout),

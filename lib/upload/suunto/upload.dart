@@ -58,7 +58,7 @@ mixin Upload {
       postUri,
       headers: headers,
       body: '{"description": "${activity.getDescription(true)}", '
-          '"comment": "${activity.getTitle()}"}',
+          '"comment": "${activity.getTitle(true)}"}',
     );
 
     // https://apizone.suunto.com/how-to-workout-upload

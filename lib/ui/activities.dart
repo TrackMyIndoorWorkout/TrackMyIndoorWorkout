@@ -199,7 +199,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           );
           final fileName = activity.getFileNameStub() + exporter.fileExtension(false);
           ShareFilesAndScreenshotWidgets().shareFile(
-            activity.getTitle(),
+            activity.getTitle(false),
             fileName,
             Uint8List.fromList(fileBytes),
             exporter.mimeType(false),

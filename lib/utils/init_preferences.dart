@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
 import '../preferences/activity_upload_description.dart';
+import '../preferences/activity_upload_title.dart';
 import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
@@ -170,6 +171,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     stationaryWorkoutTag: stationaryWorkoutDefault,
     useLongTrackTag: useLongTrackDefault,
     activityUploadDescriptionTag: activityUploadDescriptionDefault,
+    activityUploadTitleTag: activityUploadTitleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

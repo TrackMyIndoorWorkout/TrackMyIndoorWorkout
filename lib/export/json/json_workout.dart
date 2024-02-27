@@ -76,7 +76,7 @@ class JsonWorkout {
     return sb.toString();
   }
 
-  String toJson(ExportModel exportModel) => '{"name": "${exportModel.activity.getTitle()}",'
+  String toJson(ExportModel exportModel) => '{"name": "${exportModel.activity.getTitle(false)}",'
       '"activity_type": "/v7.1/activity_type/$activityType/",'
       '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",'
       '"start_locale_timezone": "$startLocaleTimezone",'
