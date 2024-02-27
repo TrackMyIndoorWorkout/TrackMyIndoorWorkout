@@ -1,9 +1,6 @@
-import '../utils/constants.dart';
-
-const activityDescription = "Activity Description";
-const activityDescriptionTag = "activity_description";
-const activityDescriptionDefault = "";
-const activityDescriptionDescription =
-    "If empty the default template is used which is in the form of "
-    "'{sport}, machine: {BT name}, recorded with $appUrl'. "
-    "You can override that here with a static text of your liking.";
+const activityUploadDescription = "Activity Upload Description";
+const activityUploadDescriptionTag = "activity_upload_description";
+const activityUploadDescriptionDefault = "{sport}, machine: {bt_name}, recorded with {app}";
+const activityUploadDescriptionDescription =
+    "You can override here the description in a templated way. Template variables: "
+    "sport, bt_name, bt_address, app, date, time";

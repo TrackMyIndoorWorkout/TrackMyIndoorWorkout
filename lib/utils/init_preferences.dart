@@ -169,7 +169,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     uploadDisplayModeTag: uploadDisplayModeDefault,
     stationaryWorkoutTag: stationaryWorkoutDefault,
     useLongTrackTag: useLongTrackDefault,
-    activityDescriptionTag: activityDescriptionDefault,
+    activityUploadDescriptionTag: activityUploadDescriptionDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

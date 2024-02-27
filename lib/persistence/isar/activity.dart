@@ -217,6 +217,16 @@ class Activity {
     );
   }
 
+  String substituteTemplate(String template, moderated) {
+    return template
+        .replaceAll("{sport}", sport)
+        .replaceAll("{bt_name}", deviceName)
+        .replaceAll("{bt_address}", deviceId)
+        .replaceAll("{app}", moderated ? appDomainCore : appUrl)
+        .replaceAll("{date}", DateFormat.yMd().format(start))
+        .replaceAll("{time}", DateFormat.Hms().format(start));
+  }
+
   String getTitle() {
     final dateString = DateFormat.yMd().format(start);
     final timeString = DateFormat.Hms().format(start);
@@ -224,14 +234,13 @@ class Activity {
   }
 
   String getDescription(bool moderated) {
-    String description = Get.find<BasePrefService>().get<String>(activityDescriptionTag) ??
-        activityDescriptionDefault;
+    String description = Get.find<BasePrefService>().get<String>(activityUploadDescriptionTag) ??
+        activityUploadDescriptionDefault;
     if (description.isEmpty) {
-      description = '$sport, machine: $deviceName, '
-          'recorded with ${moderated ? appDomainCore : appUrl}';
+      description = activityUploadDescriptionDefault;
     }
 
-    return description;
+    return substituteTemplate(description, moderated);
   }
 
   String getFileNameStub() {

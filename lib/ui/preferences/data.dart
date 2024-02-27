@@ -38,10 +38,10 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         subtitle: Text(useLongTrackDescription),
         pref: useLongTrackTag,
       ),
-      const PrefLabel(title: Text(activityDescriptionDescription, maxLines: 10)),
+      const PrefLabel(title: Text(activityUploadDescriptionDescription, maxLines: 10)),
       PrefText(
-        label: activityDescription,
-        pref: activityDescriptionTag,
+        label: activityUploadDescription,
+        pref: activityUploadDescriptionTag,
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s]"))],
       ),
       const PrefCheckbox(
