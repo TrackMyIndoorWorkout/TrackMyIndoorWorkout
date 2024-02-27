@@ -59,7 +59,7 @@ void main() {
 
   group('needsMatrixSpecialTreatment works as expected', () {
     for (final testPair in [
-      const CompanyTestPair(companyId: CompanyRegistry.matrixIncKey, expected: false),
+      const CompanyTestPair(companyId: CompanyRegistry.matrixIncKey, expected: true),
       const CompanyTestPair(companyId: CompanyRegistry.johnsonHealthTechKey, expected: true),
       const CompanyTestPair(companyId: 0, expected: false),
     ]) {
