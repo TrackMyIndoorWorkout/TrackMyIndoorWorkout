@@ -53,6 +53,44 @@ void main() {
     }
   });
 
+  test('Matrix Treadmill interprets conforming FTMS Treadmill Data flags 1 properly', () async {
+    // Matrix Performance TouchXL packet 1
+    final treadmill = MatrixTreadmillDescriptor();
+    const flag = maxUint8 * 0 + 159;
+    treadmill.initFlag();
+    treadmill.stopWorkout();
+    treadmill.processFlag(flag);
+
+    expect(treadmill.speedMetric, null);
+    expect(treadmill.cadenceMetric, null);
+    expect(treadmill.distanceMetric, isNotNull);
+    expect(treadmill.powerMetric, null);
+    expect(treadmill.caloriesMetric, isNotNull);
+    expect(treadmill.timeMetric, null);
+    expect(treadmill.caloriesPerHourMetric, isNotNull);
+    expect(treadmill.caloriesPerMinuteMetric, isNotNull);
+    expect(treadmill.heartRateByteIndex, null);
+  });
+
+  test('Matrix Treadmill interprets conforming FTMS Treadmill Data flags 2 properly', () async {
+    // Matrix Performance TouchXL packet 2
+    final treadmill = MatrixTreadmillDescriptor();
+    const flag = maxUint8 * 31 + 0;
+    treadmill.initFlag();
+    treadmill.stopWorkout();
+    treadmill.processFlag(flag);
+
+    expect(treadmill.speedMetric, isNotNull);
+    expect(treadmill.cadenceMetric, null);
+    expect(treadmill.distanceMetric, null);
+    expect(treadmill.powerMetric, isNotNull);
+    expect(treadmill.caloriesMetric, null);
+    expect(treadmill.timeMetric, isNotNull);
+    expect(treadmill.caloriesPerHourMetric, null);
+    expect(treadmill.caloriesPerMinuteMetric, null);
+    expect(treadmill.heartRateByteIndex, isNotNull);
+  });
+
   group('Matrix Treadmill interprets faulty FTMS Treadmill Data properly', () {
     for (final testPair in [
       TestPair(
@@ -129,6 +167,38 @@ void main() {
           speed: 9.66,
           cadence: null,
           heartRate: null,
+          pace: null,
+          sport: ActivityType.run,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+        ),
+      ),
+      TestPair(
+        data: [159, 0, 97, 0, 54, 0, 0, 0, 0, 255, 127, 0, 0, 255, 255, 5, 0, 110, 0, 2],
+        record: RecordWithSport(
+          distance: 54.0,
+          elapsed: null,
+          calories: 5,
+          power: null,
+          speed: null,
+          cadence: null,
+          heartRate: null,
+          pace: null,
+          sport: ActivityType.run,
+          caloriesPerHour: 110.0,
+          caloriesPerMinute: 2.0,
+        ),
+      ),
+      TestPair(
+        data: [0, 31, 113, 0, 0, 2, 204, 0, 60, 6, 255, 127, 26, 0],
+        record: RecordWithSport(
+          distance: null,
+          elapsed: 204,
+          calories: null,
+          power: 26,
+          speed: 1.13,
+          cadence: null,
+          heartRate: 0,
           pace: null,
           sport: ActivityType.run,
           caloriesPerHour: null,
