@@ -431,8 +431,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 advertisementDigest.loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
-          if (mapEntry.key == technogymRunFourCC &&
-              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+          if (mapEntry.value.ambiguous ||
+              mapEntry.key == technogymRunFourCC &&
+                  _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
             continue;
           }
 
