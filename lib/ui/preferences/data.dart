@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../../preferences/activity_description.dart';
+import '../../preferences/activity_upload_description.dart';
 import '../../preferences/audio_volume.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/calculate_gps.dart';
