@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:collection/collection.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -422,7 +423,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
     final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
     final loweredPlatformName = device.platformName.toLowerCase();
-    for (final mapEntry in deviceNamePrefixes.entries) {
+    for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
       final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
       for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(lowerPrefix) &&
@@ -431,9 +432,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
                 advertisementDigest.loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
-          if (mapEntry.value.ambiguous ||
-              mapEntry.key == technogymRunFourCC &&
-                  _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+          if (mapEntry.key == technogymRunFourCC &&
+              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
             continue;
           }
 
