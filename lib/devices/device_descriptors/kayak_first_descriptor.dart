@@ -104,7 +104,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   }
 
   @override
-  void processFlag(int flag) {
+  void processFlag(int flag, int dataLength) {
     // Empty implementation, hard coded layouts overlook flags
   }
 

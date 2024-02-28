@@ -49,9 +49,9 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
-  void processFlag(int flag) {
-    if (![11 * 256 + 66, 11 * 256 + 60].contains(flag)) {
-      super.processFlag(flag);
+  void processFlag(int flag, int dataLength) {
+    if (![11 * 256 + 66, 11 * 256 + 60].contains(flag) || dataLength != 20) {
+      super.processFlag(flag, dataLength);
       return;
     }
 

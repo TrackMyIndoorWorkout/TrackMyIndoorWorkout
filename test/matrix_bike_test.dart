@@ -38,7 +38,7 @@ void main() {
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
         bike.initFlag();
         bike.stopWorkout();
-        bike.processFlag(flag);
+        bike.processFlag(flag, 20);
 
         expect(bike.speedMetric, isNotNull);
         expect(bike.cadenceMetric, isNotNull);
@@ -61,7 +61,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     bike.initFlag();
     bike.stopWorkout();
-    bike.processFlag(flag);
+    bike.processFlag(flag, 9);
 
     expect(bike.speedMetric, isNotNull);
     expect(bike.cadenceMetric, isNotNull);

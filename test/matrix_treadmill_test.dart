@@ -38,7 +38,7 @@ void main() {
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
         treadmill.initFlag();
         treadmill.stopWorkout();
-        treadmill.processFlag(flag);
+        treadmill.processFlag(flag, 20);
 
         expect(treadmill.speedMetric, isNotNull);
         expect(treadmill.cadenceMetric, null);
@@ -59,7 +59,7 @@ void main() {
     const flag = maxUint8 * 0 + 159;
     treadmill.initFlag();
     treadmill.stopWorkout();
-    treadmill.processFlag(flag);
+    treadmill.processFlag(flag, 20);
 
     expect(treadmill.speedMetric, null);
     expect(treadmill.cadenceMetric, null);
@@ -78,7 +78,7 @@ void main() {
     const flag = maxUint8 * 31 + 0;
     treadmill.initFlag();
     treadmill.stopWorkout();
-    treadmill.processFlag(flag);
+    treadmill.processFlag(flag, 14);
 
     expect(treadmill.speedMetric, isNotNull);
     expect(treadmill.cadenceMetric, null);

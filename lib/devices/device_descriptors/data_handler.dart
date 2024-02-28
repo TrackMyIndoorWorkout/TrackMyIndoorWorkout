@@ -68,7 +68,7 @@ abstract class DataHandler {
 
   bool isFlagValid(int flag);
 
-  void processFlag(int flag);
+  void processFlag(int flag, int dataLength);
 
   void preProcessFlag(List<int> data) {
     if (data.length > flagByteSize) {
@@ -84,7 +84,7 @@ abstract class DataHandler {
       if (flag != featuresFlag) {
         initFlag();
         featuresFlag = flag;
-        processFlag(flag);
+        processFlag(flag, data.length);
       }
     }
   }
