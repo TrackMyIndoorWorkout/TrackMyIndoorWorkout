@@ -422,38 +422,40 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Step 1. Try to infer from the Bluetooth advertised name
     final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
-    final loweredPlatformName = device.platformName.toLowerCase();
-    for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
-      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
-      for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
-        if (loweredPlatformName.startsWith(lowerPrefix) &&
-            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                advertisementDigest.loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
-          if (mapEntry.key == technogymRunFourCC &&
-              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
-            continue;
-          }
+    if (!advertisementDigest.needsMatrixSpecialTreatment()) {
+      final loweredPlatformName = device.platformName.toLowerCase();
+      for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
+        final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+        for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+          if (loweredPlatformName.startsWith(lowerPrefix) &&
+              (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+              (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                  advertisementDigest.loweredManufacturers
+                      .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                      .reduce((value, contains) => value || contains))) {
+            if (mapEntry.key == technogymRunFourCC &&
+                _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+              continue;
+            }
 
-          if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
-                  .contains(mapEntry.key) &&
-              advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-            // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
-            // TODO: What does SkiErg implement (if any at all)?
-            continue;
-          }
+            if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
+                    .contains(mapEntry.key) &&
+                advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+              // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
+              // TODO: What does SkiErg implement (if any at all)?
+              continue;
+            }
 
-          var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
-          if (descriptorCandidate.sport == ActivityType.run &&
-              mapEntry.key != technogymRunFourCC &&
-              _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
-            descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
-          }
+            var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+            if (descriptorCandidate.sport == ActivityType.run &&
+                mapEntry.key != technogymRunFourCC &&
+                _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
+              descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
+            }
 
-          descriptor = descriptorCandidate;
-          break;
+            descriptor = descriptorCandidate;
+            break;
+          }
         }
       }
     }
