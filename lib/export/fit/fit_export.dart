@@ -24,13 +24,13 @@ class FitExport extends ActivityExport {
     final productNameLength = exportModel.descriptor.fullName.length;
 
     var localMessageType = 0;
-    if (exportModel.exportTarget == ExportTarget.regular) {
-      // 0. File ID
-      final fileId = FitFileId(localMessageType, productNameLength);
-      body.output.addAll(fileId.binarySerialize());
-      body.output.addAll(fileId.serializeData(exportModel));
-      localMessageType++;
+    // 0. File ID
+    final fileId = FitFileId(localMessageType, productNameLength);
+    body.output.addAll(fileId.binarySerialize());
+    body.output.addAll(fileId.serializeData(exportModel));
+    localMessageType++;
 
+    if (exportModel.exportTarget == ExportTarget.regular) {
       // 1. File Creator
       final fileCreator = FitFileCreator(localMessageType);
       body.output.addAll(fileCreator.binarySerialize());
