@@ -41,6 +41,7 @@ class FitDataRecord extends FitDefinitionMessage {
       FitField(5, FitBaseTypes.uint32Type), // Distance (1/100 m)
       FitField(6, FitBaseTypes.uint16Type), // Speed (1/1000 m/s)
       FitField(7, FitBaseTypes.uint16Type), // Power (Watts)
+      FitField(32, FitBaseTypes.sint16Type), // Vertical Speed (1/1000 m/s)
     ]);
   }
 
@@ -79,6 +80,7 @@ class FitDataRecord extends FitDefinitionMessage {
     data.addLong(((model.record.distance ?? 0.0) * 100).round());
     data.addShort(((model.record.speed ?? 0.0) * 1000).round());
     data.addShort(model.record.power?.round() ?? 0);
+    data.addShort(0, signed: true);
 
     return data.output;
   }
