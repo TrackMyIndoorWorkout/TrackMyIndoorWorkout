@@ -25,7 +25,7 @@ class FitExport extends ActivityExport {
 
     var localMessageType = 0;
     // 0. File ID
-    final fileId = FitFileId(localMessageType, productNameLength);
+    final fileId = FitFileId(localMessageType, exportModel.exportTarget, productNameLength);
     body.output.addAll(fileId.binarySerialize());
     body.output.addAll(fileId.serializeData(exportModel));
     localMessageType++;
