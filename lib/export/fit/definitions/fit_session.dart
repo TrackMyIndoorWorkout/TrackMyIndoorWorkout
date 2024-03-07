@@ -41,9 +41,17 @@ class FitSession extends FitDefinitionMessage {
       ]);
     }
 
-    fields.addAll([
+    fields.add(
       FitField(5, FitBaseTypes.enumType), // Sport
-      FitField(6, FitBaseTypes.enumType), // Sub-Sport
+    );
+
+    if (exportTarget == ExportTarget.regular) {
+      fields.add(
+        FitField(6, FitBaseTypes.enumType), // Sub-Sport
+      );
+    }
+
+    fields.addAll([
       FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
       FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
@@ -88,7 +96,10 @@ class FitSession extends FitDefinitionMessage {
 
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
-    data.addByte(fitSport.item2);
+    if (exportTarget == ExportTarget.regular) {
+      data.addByte(fitSport.item2);
+    }
+
     data.addLong(model.activity.elapsed * 1000);
     data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());
