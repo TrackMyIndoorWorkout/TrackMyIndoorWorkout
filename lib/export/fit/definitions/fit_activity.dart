@@ -44,7 +44,7 @@ class FitActivity extends FitDefinitionMessage {
 
     dummy.addShort(1);
     dummy.addByte(FitActivityEnum.manual);
-    dummy.addByte(FitEvent.activity);
+    dummy.addByte(FitEventEnum.activity);
     dummy.addByte(FitEventType.stop);
 
     return dummy.output;

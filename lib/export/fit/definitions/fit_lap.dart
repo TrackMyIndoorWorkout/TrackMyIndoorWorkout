@@ -63,7 +63,7 @@ class FitLap extends FitDefinitionMessage {
     data.output = [localMessageType];
     data.addShort(0);
     data.addLong(FitSerializable.fitTimeStamp(last.record.timeStamp));
-    data.addByte(FitEvent.lap);
+    data.addByte(FitEventEnum.lap);
     data.addByte(FitEventType.stop);
     data.addLong(FitSerializable.fitTimeStamp(first.record.timeStamp));
     if (outputGps) {
