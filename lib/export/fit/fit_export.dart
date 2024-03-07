@@ -105,8 +105,10 @@ class FitExport extends ActivityExport {
       // 2. Event
       final event = FitEvent(localMessageType);
       body.output.addAll(event.binarySerialize());
-      body.output.addAll(event.serializeData(Tuple2<bool, ExportRecord>(true, exportModel.records.first)));
-      body.output.addAll(event.serializeData(Tuple2<bool, ExportRecord>(false, exportModel.records.last)));
+      body.output
+          .addAll(event.serializeData(Tuple2<bool, ExportRecord>(true, exportModel.records.first)));
+      body.output
+          .addAll(event.serializeData(Tuple2<bool, ExportRecord>(false, exportModel.records.last)));
       localMessageType++;
 
       // ? Lap
