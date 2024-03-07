@@ -64,6 +64,8 @@ class FitSession extends FitDefinitionMessage {
       FitField(19, FitBaseTypes.uint8Type), // MaxCadence (rpm or spm)
       FitField(20, FitBaseTypes.uint16Type), // AvgPower (Watts)
       FitField(21, FitBaseTypes.uint16Type), // MaxPower (Watts)
+      FitField(22, FitBaseTypes.uint16Type), // Total Ascent (m)
+      FitField(23, FitBaseTypes.uint16Type), // Total Descent (m)
     ]);
 
     if (exportTarget == ExportTarget.regular) {
@@ -112,6 +114,8 @@ class FitSession extends FitDefinitionMessage {
     data.addByte(max(model.maximumCadence, 0));
     data.addShort(model.averagePower > eps ? model.averagePower.round() : 0);
     data.addShort(model.maximumPower > eps ? model.maximumPower.round() : 0);
+    data.addShort(0);
+    data.addShort(0);
     if (exportTarget == ExportTarget.regular) {
       data.addByte(FitSessionTrigger.activityEnd);
     }
