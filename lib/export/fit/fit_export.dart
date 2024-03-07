@@ -51,8 +51,12 @@ class FitExport extends ActivityExport {
     localMessageType++;
 
     // 4. Session
-    final session =
-        FitSession(localMessageType, exportModel.exportTarget, exportModel.calculateGps);
+    final session = FitSession(
+      localMessageType,
+      exportModel.altitude,
+      exportModel.exportTarget,
+      exportModel.calculateGps,
+    );
     body.output.addAll(session.binarySerialize());
     body.output.addAll(session.serializeData(exportModel));
     localMessageType++;

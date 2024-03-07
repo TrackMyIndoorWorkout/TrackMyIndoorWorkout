@@ -7,6 +7,7 @@ import '../fit_definition_message.dart';
 import '../fit_field.dart';
 import '../fit_message.dart';
 import '../fit_serializable.dart';
+import '../fit_utils.dart';
 
 class FitDataRecord extends FitDefinitionMessage {
   final double altitude;
@@ -56,7 +57,7 @@ class FitDataRecord extends FitDefinitionMessage {
     if (outputGps) {
       data.addGpsCoordinate(model.latitude);
       data.addGpsCoordinate(model.longitude);
-      data.addShort(((altitude + 500) * 5).round());
+      data.addShort(convertAltitudeForFit(altitude));
     }
 
     if (model.record.heartRate != null) {

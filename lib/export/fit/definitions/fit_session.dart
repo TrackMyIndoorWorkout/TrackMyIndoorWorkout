@@ -13,12 +13,14 @@ import '../fit_field.dart';
 import '../fit_message.dart';
 import '../fit_serializable.dart';
 import '../fit_sport.dart';
+import '../fit_utils.dart';
 
 class FitSession extends FitDefinitionMessage {
+  final double altitude;
   final int exportTarget;
   final bool outputGps;
 
-  FitSession(localMessageType, this.exportTarget, this.outputGps)
+  FitSession(localMessageType, this.altitude, this.exportTarget, this.outputGps)
       : super(localMessageType, FitMessage.session) {
     fields = [
       FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
@@ -73,6 +75,11 @@ class FitSession extends FitDefinitionMessage {
         FitField(28, FitBaseTypes.enumType), // Trigger (Activity End)
       );
     }
+
+    fields.addAll([
+      FitField(50, FitBaseTypes.uint16Type), // Max Altitude (1/5 m with 500 offset)
+      FitField(71, FitBaseTypes.uint16Type), // Min Altitude (1/5 m with 500 offset)
+    ]);
   }
 
   @override
@@ -119,6 +126,9 @@ class FitSession extends FitDefinitionMessage {
     if (exportTarget == ExportTarget.regular) {
       data.addByte(FitSessionTrigger.activityEnd);
     }
+
+    data.addShort(convertAltitudeForFit(altitude));
+    data.addShort(convertAltitudeForFit(altitude));
 
     return data.output;
   }

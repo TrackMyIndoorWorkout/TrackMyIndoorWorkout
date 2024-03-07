@@ -17,7 +17,7 @@ void main() {
         const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
       ]) {
         test('for ${exportTarget.item2}', () async {
-          final session = FitSession(0, exportTarget.item1, withGps);
+          final session = FitSession(0, 100.0, exportTarget.item1, withGps);
 
           expect(session.globalMessageNumber, FitMessage.session);
         });
@@ -33,7 +33,7 @@ void main() {
       ]) {
         test('for ${exportTarget.item2}', () async {
           final rng = Random();
-          final session = FitSession(0, exportTarget.item1, withGps);
+          final session = FitSession(0, 100.0, exportTarget.item1, withGps);
           final exportRecord = withGps
               ? ExportRecord(
                   latitude: rng.nextDouble(),
