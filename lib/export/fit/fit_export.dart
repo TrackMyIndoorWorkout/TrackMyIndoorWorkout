@@ -59,7 +59,6 @@ class FitExport extends ActivityExport {
         localMessageType,
         exportModel.altitude,
         exportModel.exportTarget,
-        exportModel.calculateGps,
       );
       body.output.addAll(session.binarySerialize());
       body.output.addAll(session.serializeData(exportModel));
@@ -127,7 +126,6 @@ class FitExport extends ActivityExport {
         localMessageType,
         exportModel.altitude,
         exportModel.exportTarget,
-        exportModel.calculateGps,
       );
       body.output.addAll(session.binarySerialize());
       body.output.addAll(session.serializeData(exportModel));

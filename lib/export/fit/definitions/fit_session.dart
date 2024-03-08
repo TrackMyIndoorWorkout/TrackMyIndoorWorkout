@@ -18,34 +18,16 @@ import '../fit_utils.dart';
 class FitSession extends FitDefinitionMessage {
   final double altitude;
   final int exportTarget;
-  final bool outputGps;
 
-  FitSession(localMessageType, this.altitude, this.exportTarget, this.outputGps)
+  FitSession(localMessageType, this.altitude, this.exportTarget)
       : super(localMessageType, FitMessage.session) {
     fields = [
-      FitField(254, FitBaseTypes.uint16Type), // MessageIndex: 0
-    ];
-    if (exportTarget == ExportTarget.regular) {
-      fields.addAll([
-        FitField(253, FitBaseTypes.uint32Type), // Session end time
-        FitField(0, FitBaseTypes.enumType), // Event
-        FitField(1, FitBaseTypes.enumType), // EventType
-      ]);
-    }
-
-    fields.add(
+      FitField(253, FitBaseTypes.uint32Type), // Session end time
+      FitField(0, FitBaseTypes.enumType), // Event
+      FitField(1, FitBaseTypes.enumType), // EventType
       FitField(2, FitBaseTypes.uint32Type), // StartTime
-    );
-    if (exportTarget == ExportTarget.regular && outputGps) {
-      fields.addAll([
-        FitField(3, FitBaseTypes.sint32Type), // StartPositionLat
-        FitField(4, FitBaseTypes.sint32Type), // StartPositionLong
-      ]);
-    }
-
-    fields.add(
       FitField(5, FitBaseTypes.enumType), // Sport
-    );
+    ];
 
     if (exportTarget == ExportTarget.regular) {
       fields.add(
@@ -90,18 +72,10 @@ class FitSession extends FitDefinitionMessage {
     final last = model.records.isNotEmpty ? model.records.last : null;
     var data = FitData();
     data.output = [localMessageType];
-    data.addShort(0);
-    if (exportTarget == ExportTarget.regular) {
-      data.addLong(FitSerializable.fitTimeStamp(last?.record.timeStamp));
-      data.addByte(FitEventEnum.session);
-      data.addByte(FitEventType.stop);
-    }
-
+    data.addLong(FitSerializable.fitTimeStamp(last?.record.timeStamp));
+    data.addByte(FitEventEnum.session);
+    data.addByte(FitEventType.stop);
     data.addLong(FitSerializable.fitTimeStamp(first?.record.timeStamp));
-    if (exportTarget == ExportTarget.regular && outputGps && model.records.isNotEmpty) {
-      data.addGpsCoordinate(first!.latitude);
-      data.addGpsCoordinate(first.longitude);
-    }
 
     final fitSport = toFitSport(model.activity.sport);
     data.addByte(fitSport.item1);
