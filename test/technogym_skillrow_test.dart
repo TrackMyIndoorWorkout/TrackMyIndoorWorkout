@@ -33,7 +33,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     rower.initFlag();
     rower.stopWorkout();
-    rower.processFlag(flag);
+    rower.processFlag(flag, 15);
 
     expect(rower.strokeRateMetric, isNotNull);
     expect(rower.strokeCountMetric, isNotNull);
@@ -56,7 +56,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     rower.initFlag();
     rower.stopWorkout();
-    rower.processFlag(flag);
+    rower.processFlag(flag, 18);
 
     expect(rower.strokeRateMetric, null);
     expect(rower.strokeCountMetric, null);
@@ -79,7 +79,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     rower.initFlag();
     rower.stopWorkout();
-    rower.processFlag(flag);
+    rower.processFlag(flag, 19);
 
     expect(rower.strokeRateMetric, null);
     expect(rower.strokeCountMetric, null);

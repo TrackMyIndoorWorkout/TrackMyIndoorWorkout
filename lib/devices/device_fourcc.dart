@@ -86,11 +86,13 @@ class DeviceIdentifierHelperEntry {
   late final String deviceNameLoweredPostfix;
   final String manufacturerNamePrefix;
   late final String manufacturerNameLoweredPrefix;
+  late final bool ambiguous;
 
   DeviceIdentifierHelperEntry(
       {required this.deviceNamePrefixes,
       this.deviceNamePostfix = "",
-      this.manufacturerNamePrefix = ""}) {
+      this.manufacturerNamePrefix = "",
+      this.ambiguous = false}) {
     deviceNameLoweredPrefixes =
         deviceNamePrefixes.map((d) => d.toLowerCase()).toList(growable: false);
     deviceNameLoweredPostfix = deviceNamePostfix.toLowerCase();
@@ -112,12 +114,13 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   stagesSB20FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stages Bike"]),
   yesoulS3FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Yesoul"]),
   schwinnACPerfPlusFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Schwinn AC Perf+"]),
-  matrixBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["CTM", "Johnson", "Matrix"]),
+  matrixBikeFourCC: DeviceIdentifierHelperEntry(
+      deviceNamePrefixes: ["CTM", "Johnson", "Matrix"], ambiguous: true),
   kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
   mrCaptainRowerFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["XG"]),
   npeRunnFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["RUNN"]),
-  matrixTreadmillFourCC:
-      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["CTM", "Johnson", "Matrix"]),
+  matrixTreadmillFourCC: DeviceIdentifierHelperEntry(
+      deviceNamePrefixes: ["CTM", "Johnson", "Matrix"], ambiguous: true),
   genericFTMSTreadmillFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Treadmill"]),
   genericFTMSBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Bike"]),
   genericFTMSKayakFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Kayak"]),

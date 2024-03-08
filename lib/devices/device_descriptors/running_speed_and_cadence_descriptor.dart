@@ -62,7 +62,7 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
   }
 
   @override
-  void processFlag(int flag) {
+  void processFlag(int flag, int dataLength) {
     if (sensor == null) {
       return;
     }

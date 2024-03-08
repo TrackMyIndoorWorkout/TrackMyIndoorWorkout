@@ -31,7 +31,7 @@ class AdvertisementDigest {
   bool isMultiFtms() => machineTypes.where((element) => element.isSpecificFtms).length > 1;
 
   bool needsMatrixSpecialTreatment() {
-    return companyIds.contains(CompanyRegistry.johnsonHealthTechKey);
-    // companyIds.contains(CompanyRegistry.matrixIncKey) is hopefully not needed
+    return companyIds.contains(CompanyRegistry.johnsonHealthTechKey) ||
+        companyIds.contains(CompanyRegistry.matrixIncKey);
   }
 }

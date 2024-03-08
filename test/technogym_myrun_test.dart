@@ -69,7 +69,7 @@ void main() {
     final flag = maxUint8 * sampleData[0].data[1] + sampleData[0].data[0];
     treadmill.initFlag();
     treadmill.stopWorkout();
-    treadmill.processFlag(flag);
+    treadmill.processFlag(flag, 15);
 
     expect(treadmill.speedMetric, null); // only average speed
     expect(treadmill.cadenceMetric, null);
@@ -88,7 +88,7 @@ void main() {
     final flag = maxUint8 * sampleData[1].data[1] + sampleData[1].data[0];
     treadmill.initFlag();
     treadmill.stopWorkout();
-    treadmill.processFlag(flag);
+    treadmill.processFlag(flag, 12);
 
     expect(treadmill.speedMetric, isNotNull);
     expect(treadmill.cadenceMetric, null);
