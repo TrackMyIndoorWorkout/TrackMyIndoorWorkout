@@ -10,6 +10,7 @@ import 'definitions/fit_device_info.dart';
 import 'definitions/fit_event.dart';
 import 'definitions/fit_file_creator.dart';
 import 'definitions/fit_file_id.dart';
+import 'definitions/fit_lap.dart';
 import 'definitions/fit_session.dart';
 import 'definitions/fit_sport.dart';
 import 'fit_data.dart';
@@ -111,9 +112,17 @@ class FitExport extends ActivityExport {
           .addAll(event.serializeData(Tuple2<bool, ExportRecord>(false, exportModel.records.last)));
       localMessageType++;
 
-      // ? Lap
+      // 3. Lap
+      final lap = FitLap(
+        localMessageType,
+        exportModel.altitude,
+        exportModel.exportTarget,
+      );
+      body.output.addAll(lap.binarySerialize());
+      body.output.addAll(lap.serializeData(exportModel));
+      localMessageType++;
 
-      // 3. Session
+      // 4. Session
       final session = FitSession(
         localMessageType,
         exportModel.altitude,
@@ -124,7 +133,7 @@ class FitExport extends ActivityExport {
       body.output.addAll(session.serializeData(exportModel));
       localMessageType++;
 
-      // 4. Activity
+      // 5. Activity
       final activity = FitActivity(localMessageType, exportModel.exportTarget);
       body.output.addAll(activity.binarySerialize());
       body.output.addAll(activity.serializeData(exportModel));
