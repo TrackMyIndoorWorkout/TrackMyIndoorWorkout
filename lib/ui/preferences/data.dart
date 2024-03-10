@@ -19,11 +19,19 @@ import '../../utils/sound.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
-class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin {
+class DataPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = "Data";
   static String title = "$shortTitle Preferences";
 
   const DataPreferencesScreen({super.key});
+
+  @override
+  DataPreferencesScreenState createState() => DataPreferencesScreenState();
+}
+
+class DataPreferencesScreenState extends State<DataPreferencesScreen> {
+  int _uploadTitleEdit = 0;
+  int _uploadDescriptionEdit = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +47,45 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
         subtitle: Text(useLongTrackDescription),
         pref: useLongTrackTag,
       ),
+      const PrefLabel(title: Text(activityUploadTitleDescription, maxLines: 10)),
+      PrefText(
+        key: Key("activityUploadTitle$_uploadTitleEdit"),
+        label: activityUploadTitle,
+        pref: activityUploadTitleTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\}{]"))],
+      ),
+      PrefButton(
+        onTap: () async {
+          final uploadTitle = PrefService.of(context).get<String>(activityUploadTitleTag);
+          if (uploadTitle != activityUploadTitleDefault) {
+            setState(() {
+              PrefService.of(context).set(activityUploadTitleTag, activityUploadTitleDefault);
+              _uploadTitleEdit++;
+            });
+          }
+        },
+        child: const Text("Reset $activityUploadTitle to Default"),
+      ),
       const PrefLabel(title: Text(activityUploadDescriptionDescription, maxLines: 10)),
       PrefText(
+        key: Key("activityUploadDescription$_uploadDescriptionEdit"),
         label: activityUploadDescription,
         pref: activityUploadDescriptionTag,
         inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\}{]"))],
       ),
-      const PrefLabel(title: Text(activityUploadTitleDescription, maxLines: 10)),
-      PrefText(
-        label: activityUploadTitle,
-        pref: activityUploadTitleTag,
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\}{]"))],
+      PrefButton(
+        onTap: () async {
+          final uploadDescription =
+              PrefService.of(context).get<String>(activityUploadDescriptionTag);
+          if (uploadDescription != activityUploadDescriptionDefault) {
+            setState(() {
+              PrefService.of(context)
+                  .set(activityUploadDescriptionTag, activityUploadDescriptionDefault);
+              _uploadDescriptionEdit++;
+            });
+          }
+        },
+        child: const Text("Reset $activityUploadDescription to Default"),
       ),
       const PrefCheckbox(
         title: Text(stationaryWorkout),
@@ -175,7 +211,7 @@ class DataPreferencesScreen extends StatelessWidget with PreferencesScreenMixin 
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(DataPreferencesScreen.title)),
       body: PrefPage(children: dataPreferences),
     );
   }
