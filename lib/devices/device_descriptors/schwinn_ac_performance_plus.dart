@@ -41,7 +41,7 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   }
 
   @override
-  void processFlag(int flag) {
+  void processFlag(int flag, int dataLength) {
     final prefService = Get.find<BasePrefService>();
     final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     Logging().log(logLevel, logLevelError, tag, "processFlag", "Not implemented!");

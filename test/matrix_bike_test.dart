@@ -28,7 +28,7 @@ void main() {
     expect(bike.fourCC, matrixBikeFourCC);
   });
 
-  group('Matrix Bike interprets faulty FTMS Treadmill Data flags properly', () {
+  group('Matrix Bike interprets faulty FTMS Indoor Bike Data flags properly', () {
     for (final flagBytes in [
       const FlagBytes(lsb: 254, msb: 21, description: "before workout"),
       const FlagBytes(lsb: 254, msb: 29, description: "during workout"),
@@ -38,7 +38,7 @@ void main() {
         final flag = maxUint8 * flagBytes.msb + flagBytes.lsb;
         bike.initFlag();
         bike.stopWorkout();
-        bike.processFlag(flag);
+        bike.processFlag(flag, 20);
 
         expect(bike.speedMetric, isNotNull);
         expect(bike.cadenceMetric, isNotNull);
@@ -51,6 +51,27 @@ void main() {
         expect(bike.heartRateByteIndex, null);
       });
     }
+  });
+
+  test('Matrix Bike interprets conforming FTMS Indoor Bike Data flags properly', () async {
+    // Data from Schwinn IC4
+    final bike = MatrixBikeDescriptor();
+    const lsb = 68;
+    const msb = 2;
+    const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
+    bike.stopWorkout();
+    bike.processFlag(flag, 9);
+
+    expect(bike.speedMetric, isNotNull);
+    expect(bike.cadenceMetric, isNotNull);
+    expect(bike.distanceMetric, null);
+    expect(bike.powerMetric, isNotNull);
+    expect(bike.caloriesMetric, null);
+    expect(bike.timeMetric, null);
+    expect(bike.caloriesPerHourMetric, null);
+    expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.heartRateByteIndex, 8);
   });
 
   group('Matrix Bike interprets faulty FTMS Treadmill Data properly', () {

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/export/export_target.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_file_id.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -9,7 +10,7 @@ import 'utils.dart';
 
 void main() {
   test('FitFileId has the expected global message number', () async {
-    final fileId = FitFileId(0, 0);
+    final fileId = FitFileId(0, ExportTarget.regular, 0);
 
     expect(fileId.globalMessageNumber, FitMessage.fileId);
   });
@@ -18,9 +19,11 @@ void main() {
     final rnd = Random();
     DeviceFactory.allDescriptors().forEach((deviceDescriptor) {
       final globalMessageNumber = rnd.nextInt(maxUint16);
+      final exportTarget = rnd.nextBool() ? ExportTarget.regular : ExportTarget.suunto;
       final text = deviceDescriptor.fullName;
-      final fileId = FitFileId(globalMessageNumber, text.length);
+      final fileId = FitFileId(globalMessageNumber, exportTarget, text.length);
       final exportModel = ExportModelForTests(descriptor: deviceDescriptor);
+      exportModel.exportTarget = exportTarget;
       final expected = fileId.fields.fold<int>(0, (accu, field) => accu + field.size);
 
       test('$text(${text.length}) -> $expected', () async {

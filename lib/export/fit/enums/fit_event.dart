@@ -1,4 +1,4 @@
-class FitEvent {
+class FitEventEnum {
   static const int timer = 0;
   static const int workout = 3;
   static const int workoutStep = 4;

@@ -26,7 +26,7 @@ void main() {
     expect(rower.isMultiSport, false);
   });
 
-  test('Rower Device interprets Mr Captain flags properly', () async {
+  test('Rower Device interprets Mr Captain faulty flags properly', () async {
     final rower = MrCaptainDescriptor();
     const lsb = 60;
     const msb = 11;
@@ -46,7 +46,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     rower.initFlag();
     rower.stopWorkout();
-    rower.processFlag(flag);
+    rower.processFlag(flag, 20);
 
     expect(rower.strokeRateMetric, isNotNull);
     expect(rower.strokeCountMetric, isNotNull);
@@ -60,6 +60,41 @@ void main() {
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
     expect(rower.heartRateByteIndex, 19);
+  });
+
+  test('Rower Device interprets Mr Captain conforming flags properly', () async {
+    // Data from KayakPro
+    final rower = MrCaptainDescriptor();
+    const lsb = 44;
+    const msb = 9;
+    // C1 stroke rate uint8 (spm) 0.5
+    // C1 stroke count uint16
+    // C3 distance uint24 (m) 1
+    // C4 pace uint16 seconds 1
+    // C6 power sint16 (watts) 1
+    // -
+    // C9 total energy uint16 (kcal) 1
+    // C9 energy/h uint16 1
+    // C9 energy/min uint8 1
+    // C12 elapsed time uint16 (s) 1
+    // total length (1 + 2 + 3 + 2 + 2) + (2 + 2 + 1 + 2) = 10 + 7 = 17
+    const flag = maxUint8 * msb + lsb;
+    rower.initFlag();
+    rower.stopWorkout();
+    rower.processFlag(flag, 17);
+
+    expect(rower.strokeRateMetric, isNotNull);
+    expect(rower.strokeCountMetric, isNotNull);
+    expect(rower.paceMetric, isNotNull);
+    expect(rower.speedMetric, null);
+    expect(rower.cadenceMetric, null);
+    expect(rower.distanceMetric, isNotNull);
+    expect(rower.powerMetric, isNotNull);
+    expect(rower.caloriesMetric, isNotNull);
+    expect(rower.timeMetric, isNotNull);
+    expect(rower.caloriesPerHourMetric, isNotNull);
+    expect(rower.caloriesPerMinuteMetric, isNotNull);
+    expect(rower.heartRateByteIndex, null);
   });
 
   group('Rower Device interprets Mr Captain data properly', () {

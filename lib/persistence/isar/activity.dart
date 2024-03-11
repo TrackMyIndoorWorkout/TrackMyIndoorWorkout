@@ -1,12 +1,18 @@
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
-import '../../../devices/device_factory.dart';
-import '../../../devices/device_fourcc.dart';
-import '../../../devices/device_descriptors/device_descriptor.dart';
-import '../../../upload/constants.dart';
-import '../../../upload/strava/constants.dart';
-import '../../../upload/training_peaks/constants.dart';
-import '../../../upload/under_armour/constants.dart';
-import '../../../utils/display.dart' as display;
+import 'package:pref/pref.dart';
+import '../../devices/device_factory.dart';
+import '../../devices/device_fourcc.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../upload/constants.dart';
+import '../../upload/strava/constants.dart';
+import '../../upload/training_peaks/constants.dart';
+import '../../upload/under_armour/constants.dart';
+import '../../preferences/activity_upload_description.dart';
+import '../../preferences/activity_upload_title.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart' as display;
 import 'workout_summary.dart';
 
 part 'activity.g.dart';
@@ -113,6 +119,12 @@ class Activity {
     suuntoUploaded = true;
   }
 
+  void clearSuuntoUpload() {
+    suuntoUploadInitiated("", "");
+    suuntoWorkoutUrl = "";
+    suuntoUploaded = false;
+  }
+
   void markTrainingPeaksUploading(String fileTrackingUuid) {
     trainingPeaksFileTrackingUuid = fileTrackingUuid;
     trainingPeaksUploaded = false;
@@ -204,5 +216,41 @@ class Activity {
       powerFactor: powerFactor,
       calorieFactor: calorieFactor,
     );
+  }
+
+  String substituteTemplate(String template, moderated) {
+    return template
+        .replaceAll("{sport}", sport)
+        .replaceAll("{bt_name}", deviceName)
+        .replaceAll("{bt_address}", deviceId)
+        .replaceAll("{app}", moderated ? appDomainCore : appUrl)
+        .replaceAll("{date}", DateFormat.yMd().format(start))
+        .replaceAll("{time}", DateFormat.Hms().format(start));
+  }
+
+  String getTitle(bool moderated) {
+    String title = Get.find<BasePrefService>().get<String>(activityUploadTitleTag) ??
+        activityUploadTitleDefault;
+    if (title.isEmpty) {
+      title = activityUploadTitleDefault;
+    }
+
+    return substituteTemplate(title, moderated);
+  }
+
+  String getDescription(bool moderated) {
+    String description = Get.find<BasePrefService>().get<String>(activityUploadDescriptionTag) ??
+        activityUploadDescriptionDefault;
+    if (description.isEmpty) {
+      description = activityUploadDescriptionDefault;
+    }
+
+    return substituteTemplate(description, moderated);
+  }
+
+  String getFileNameStub() {
+    return substituteTemplate("Activity_{date}_{time}.", false)
+        .replaceAll('/', '-')
+        .replaceAll(':', '-');
   }
 }

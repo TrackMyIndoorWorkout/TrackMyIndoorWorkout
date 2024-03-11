@@ -49,7 +49,12 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
-  void processFlag(int flag) {
+  void processFlag(int flag, int dataLength) {
+    if (![11 * 256 + 66, 11 * 256 + 60].contains(flag) || dataLength != 20) {
+      super.processFlag(flag, dataLength);
+      return;
+    }
+
     // Mr Captain violates the FTMS Rower protocol several places f-ed up
     // Flag bytes:
     // 66  0011 1100
@@ -80,7 +85,7 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
     flag = advanceFlag(flag); // Average Pace C5
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power - advanceFlag ?
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processEffedUpExpandedEnergyFlag(flag); // Mixed up, f-ed up
     flag = skipFlag(flag, size: 1); // Elapsed Time, should be 2 bytes, but it's f-ed up single byte
     // flag = skipFlag(flag, size: 1); // Metabolic Equivalent

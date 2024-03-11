@@ -18,6 +18,7 @@ abstract class DataHandler {
   MetricDescriptor? speedMetric;
   MetricDescriptor? cadenceMetric;
   MetricDescriptor? distanceMetric;
+  MetricDescriptor? resistanceMetric;
   MetricDescriptor? powerMetric;
   MetricDescriptor? caloriesMetric;
   MetricDescriptor? timeMetric;
@@ -35,6 +36,7 @@ abstract class DataHandler {
     this.powerMetric,
     this.cadenceMetric,
     this.distanceMetric,
+    this.resistanceMetric,
   });
 
   DataHandler clone();
@@ -66,7 +68,7 @@ abstract class DataHandler {
 
   bool isFlagValid(int flag);
 
-  void processFlag(int flag);
+  void processFlag(int flag, int dataLength);
 
   void preProcessFlag(List<int> data) {
     if (data.length > flagByteSize) {
@@ -82,7 +84,7 @@ abstract class DataHandler {
       if (flag != featuresFlag) {
         initFlag();
         featuresFlag = flag;
-        processFlag(flag);
+        processFlag(flag, data.length);
       }
     }
   }
@@ -111,6 +113,10 @@ abstract class DataHandler {
     return distanceMetric?.getMeasurementValue(data);
   }
 
+  double? getResistance(List<int> data) {
+    return resistanceMetric?.getMeasurementValue(data);
+  }
+
   double? getPower(List<int> data) {
     return powerMetric?.getMeasurementValue(data);
   }
@@ -127,14 +133,14 @@ abstract class DataHandler {
     return caloriesPerMinuteMetric?.getMeasurementValue(data);
   }
 
-  double? getTime(List<int> data) {
-    return timeMetric?.getMeasurementValue(data);
-  }
-
   int? getHeartRate(List<int> data) {
     if (heartRateByteIndex == null || heartRateByteIndex! >= data.length) return null;
 
     return data[heartRateByteIndex!];
+  }
+
+  double? getTime(List<int> data) {
+    return timeMetric?.getMeasurementValue(data);
   }
 
   void clearMetrics() {
@@ -146,5 +152,6 @@ abstract class DataHandler {
     timeMetric = null;
     caloriesPerHourMetric = null;
     caloriesPerMinuteMetric = null;
+    resistanceMetric = null;
   }
 }

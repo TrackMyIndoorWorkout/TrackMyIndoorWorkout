@@ -43,7 +43,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
-  void processFlag(int flag) {
+  void processFlag(int flag, int dataLength) {
     // negated first bit!
     flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed
@@ -84,6 +84,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
+      resistance: getResistance(data),
     );
   }
 
@@ -116,7 +117,9 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   int processForceAndPowerFlag(int flag) {
     if (flag % 2 == 1) {
-      byteCounter += 2; // Skip force on belt: SInt16, Newton
+      // SInt16, Newton
+      resistanceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      byteCounter += 2;
       // SInt16, Watts
       powerMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;

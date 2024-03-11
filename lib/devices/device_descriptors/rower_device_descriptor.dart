@@ -51,7 +51,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override
-  void processFlag(int flag) {
+  void processFlag(int flag, int dataLength) {
     final prefService = Get.find<BasePrefService>();
     if (sport == ActivityType.rowing) {
       _strokeRateWindowSize = 0;
@@ -71,7 +71,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     flag = skipFlag(flag); // Average Pace
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
     flag = skipFlag(flag, size: 1); // Metabolic Equivalent
@@ -114,6 +114,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
+      resistance: getResistance(data),
     );
   }
 

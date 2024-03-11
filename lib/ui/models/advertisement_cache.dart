@@ -17,6 +17,7 @@ class AdvertisementCache {
       companyIds: scanResult.advertisementData.manufacturerData.keys.toList(growable: false),
       manufacturers: scanResult.manufacturerNames(),
       txPower: scanResult.advertisementData.txPowerLevel ?? -120,
+      appearance: scanResult.advertisementData.appearance ?? 0,
       machineTypesByte: machineByteFlag,
       machineType: scanResult.getMachineType(machineTypes, deviceSport),
       machineTypes: machineTypes,

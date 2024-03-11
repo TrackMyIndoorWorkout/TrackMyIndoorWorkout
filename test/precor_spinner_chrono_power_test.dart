@@ -35,6 +35,9 @@ void main() {
     expect(bike.caloriesPerMinuteMetric, null);
   });
 
+  // 0th flag: 83 = 0101 0011 (so Flag 1 and Flag 2 present)
+  // Flag 1: 89 = 0101 1001 C12 Cumulative Horizontal Distance, C10 Cadence, C9 Speed, C6 HR
+  // Flag 2: 22 = 0001 0110 C18 Power, C16 Energy Rate, C15 Cumulative Energy
   group('Precor Spinner Chrono Power interprets Data properly', () {
     for (final testPair in [
       TestPair(

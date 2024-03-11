@@ -46,6 +46,7 @@ void main() {
           companyIds: [],
           manufacturers: [],
           txPower: 0,
+          appearance: 0,
           machineTypesByte: testPair.machineTypes.first.bit,
           machineType: testPair.machineTypes.first,
           machineTypes: testPair.machineTypes,
@@ -58,7 +59,7 @@ void main() {
 
   group('needsMatrixSpecialTreatment works as expected', () {
     for (final testPair in [
-      const CompanyTestPair(companyId: CompanyRegistry.matrixIncKey, expected: false),
+      const CompanyTestPair(companyId: CompanyRegistry.matrixIncKey, expected: true),
       const CompanyTestPair(companyId: CompanyRegistry.johnsonHealthTechKey, expected: true),
       const CompanyTestPair(companyId: 0, expected: false),
     ]) {
@@ -69,6 +70,7 @@ void main() {
           companyIds: [testPair.companyId],
           manufacturers: [],
           txPower: 0,
+          appearance: 0,
           machineTypesByte: MachineType.treadmill.bit,
           machineType: MachineType.treadmill,
           machineTypes: [MachineType.treadmill],

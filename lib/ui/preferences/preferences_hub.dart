@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuple/tuple.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
@@ -13,7 +14,7 @@ import 'heart_rate.dart';
 import 'integrations.dart';
 import 'leaderboard.dart';
 import 'target_heart_rate.dart';
-import 'ux_preferences.dart';
+import 'user_experience_preferences.dart';
 import 'workout.dart';
 import 'zones_hub.dart';
 
@@ -47,232 +48,49 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
         .toList()
         .join("_");
     final integrationsKey = "integrations$keyPart";
+    final List<Tuple2<String, Function>> screenConfigs = [
+      Tuple2(UserExperiencePreferencesScreen.shortTitle,
+          () => const UserExperiencePreferencesScreen()),
+      Tuple2(DataPreferencesScreen.shortTitle, () => const DataPreferencesScreen()),
+      Tuple2(HeartRatePreferencesScreen.shortTitle, () => const HeartRatePreferencesScreen()),
+      Tuple2(TargetHrPreferencesScreen.shortTitle, () => const TargetHrPreferencesScreen()),
+      Tuple2(ZonesHubScreen.shortTitle, () => const ZonesHubScreen()),
+      Tuple2(LeaderboardPreferencesScreen.shortTitle, () => const LeaderboardPreferencesScreen()),
+      Tuple2(AthletePreferencesScreen.shortTitle, () => const AthletePreferencesScreen()),
+      Tuple2(EquipmentPreferencesScreen.shortTitle, () => const EquipmentPreferencesScreen()),
+      Tuple2(WorkoutPreferencesScreen.shortTitle, () => const WorkoutPreferencesScreen()),
+      Tuple2(IntegrationPreferencesScreen.shortTitle,
+          () => IntegrationPreferencesScreen(key: Key(integrationsKey))),
+      Tuple2(ExpertPreferencesScreen.shortTitle, () => const ExpertPreferencesScreen()),
+    ];
+
+    final List<Widget> screens = screenConfigs
+        .map(
+          (c) => Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(c.item2),
+              child: FitHorizontally(
+                shrinkLimit: shrinkLimit,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(c.item1, style: _textStyle),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        )
+        .toList(growable: false);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Preferences')),
       body: ListView(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const UXPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    UXPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const DataPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    DataPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const HeartRatePreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    HeartRatePreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const TargetHrPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    TargetHrPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const ZonesHubScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    ZonesHubScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const LeaderboardPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    LeaderboardPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const AthletePreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    AthletePreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const EquipmentPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    EquipmentPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const WorkoutPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    WorkoutPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () =>
-                  Get.to(() => IntegrationPreferencesScreen(key: Key(integrationsKey))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    IntegrationPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const ExpertPreferencesScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    ExpertPreferencesScreen.shortTitle,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
-              ),
-            ),
-          ),
-        ],
+        children: screens,
       ),
     );
   }

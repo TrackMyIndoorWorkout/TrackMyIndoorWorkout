@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
+import '../preferences/activity_upload_description.dart';
+import '../preferences/activity_upload_title.dart';
 import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
@@ -64,6 +66,7 @@ import '../preferences/unit_system.dart';
 import '../preferences/upload_display_mode.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
+import '../preferences/use_long_track.dart';
 import '../preferences/water_wheel_circumference.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
@@ -166,6 +169,9 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     treadmillRscOnlyModeTag: treadmillRscOnlyModeDefault,
     uploadDisplayModeTag: uploadDisplayModeDefault,
     stationaryWorkoutTag: stationaryWorkoutDefault,
+    useLongTrackTag: useLongTrackDefault,
+    activityUploadDescriptionTag: activityUploadDescriptionDefault,
+    activityUploadTitleTag: activityUploadTitleDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

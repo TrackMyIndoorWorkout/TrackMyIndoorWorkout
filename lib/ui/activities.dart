@@ -197,10 +197,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             false,
             ExportTarget.regular,
           );
-          final persistenceValues = exporter.getPersistenceValues(activity, false);
+          final fileName = activity.getFileNameStub() + exporter.fileExtension(false);
           ShareFilesAndScreenshotWidgets().shareFile(
-            persistenceValues['name'],
-            persistenceValues['fileName'],
+            activity.getTitle(false),
+            fileName,
             Uint8List.fromList(fileBytes),
             exporter.mimeType(false),
             text: 'Share a ride on ${activity.deviceName}',

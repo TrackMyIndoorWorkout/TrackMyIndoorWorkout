@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
+import 'package:collection/collection.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -24,6 +25,7 @@ import '../devices/device_fourcc.dart';
 import '../devices/gadgets/complex_sensor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
+import '../devices/gatt/appearance.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/ftms.dart';
@@ -420,38 +422,40 @@ class FindDevicesState extends State<FindDevicesScreen> {
     // Step 1. Try to infer from the Bluetooth advertised name
     final advertisementDigest = _advertisementCache.getEntry(device.remoteId.str)!;
     DeviceDescriptor? descriptor;
-    final loweredPlatformName = device.platformName.toLowerCase();
-    for (final mapEntry in deviceNamePrefixes.entries) {
-      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
-      for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
-        if (loweredPlatformName.startsWith(lowerPrefix) &&
-            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                advertisementDigest.loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
-          if (mapEntry.key == technogymRunFourCC &&
-              _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
-            continue;
-          }
+    if (!advertisementDigest.needsMatrixSpecialTreatment()) {
+      final loweredPlatformName = device.platformName.toLowerCase();
+      for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
+        final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+        for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+          if (loweredPlatformName.startsWith(lowerPrefix) &&
+              (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+              (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                  advertisementDigest.loweredManufacturers
+                      .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
+                      .reduce((value, contains) => value || contains))) {
+            if (mapEntry.key == technogymRunFourCC &&
+                _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+              continue;
+            }
 
-          if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
-                  .contains(mapEntry.key) &&
-              advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-            // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
-            // TODO: What does SkiErg implement (if any at all)?
-            continue;
-          }
+            if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
+                    .contains(mapEntry.key) &&
+                advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+              // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
+              // TODO: What does SkiErg implement (if any at all)?
+              continue;
+            }
 
-          var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
-          if (descriptorCandidate.sport == ActivityType.run &&
-              mapEntry.key != technogymRunFourCC &&
-              _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
-            descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
-          }
+            var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+            if (descriptorCandidate.sport == ActivityType.run &&
+                mapEntry.key != technogymRunFourCC &&
+                _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
+              descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
+            }
 
-          descriptor = descriptorCandidate;
-          break;
+            descriptor = descriptorCandidate;
+            break;
+          }
         }
       }
     }
@@ -507,18 +511,17 @@ class FindDevicesState extends State<FindDevicesScreen> {
           _fitnessEquipment!.descriptor != null &&
           (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor ||
               _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.secondarySensor)) {
-        if (_fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor) {
+        if (primaryCyclingSensorAppearances.contains(advertisementDigest.appearance) ||
+            _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.primarySensor) {
           // The user clicked twice on a primary sensor, probably there's no secondary sensor
           // And the user wants to navigate
           fitnessEquipment = _fitnessEquipment;
           preConnectLogic = false;
-        } else if (_fitnessEquipment!.descriptor!.deviceCategory ==
-            DeviceCategory.secondarySensor) {
+        } else if (advertisementDigest.appearance == appearanceCadenceSensor &&
+            _fitnessEquipment!.descriptor!.deviceCategory == DeviceCategory.secondarySensor) {
           // The user clicked twice on a secondary sensor, ignore
           // But secondary sensor shouldn't have a FitnessEquipment anyway
-          Get.snackbar(
-              "Warning",
-              "Cannot measure distance and speed with a cadence sensor only!");
+          Get.snackbar("Warning", "Cannot measure distance and speed with a cadence sensor only!");
           setState(() {
             _goingToRecording = false;
           });

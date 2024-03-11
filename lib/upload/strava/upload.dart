@@ -34,14 +34,13 @@ mixin Upload {
     debugPrint('Starting to upload activity');
 
     final postUri = Uri.parse(uploadsEndpoint);
-    final persistenceValues = exporter.getPersistenceValues(activity, true);
     var request = http.MultipartRequest("POST", postUri);
     request.fields['data_type'] = exporter.fileExtension(true);
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
-    request.fields['name'] = persistenceValues["name"];
+    request.fields['name'] = activity.getTitle(false);
     request.fields['external_id'] = 'strava_flutter';
-    request.fields['description'] = persistenceValues["description"];
+    request.fields['description'] = activity.getDescription(false);
 
     if (!Get.isRegistered<StravaToken>()) {
       debugPrint('Token not yet known');
@@ -58,8 +57,9 @@ mixin Upload {
 
     request.headers.addAll(header);
 
+    final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
     request.files.add(http.MultipartFile.fromBytes('file', fileContent,
-        filename: persistenceValues["fileName"], contentType: MediaType("application", "x-gzip")));
+        filename: fileName, contentType: MediaType("application", "x-gzip")));
     debugPrint(request.toString());
 
     final streamedResponse = await request.send();

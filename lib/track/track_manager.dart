@@ -1,7 +1,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/painting.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
 
+import '../preferences/use_long_track.dart';
 import '../utils/time_zone.dart';
 import 'track_descriptor.dart';
 import 'track_kind.dart';
@@ -607,7 +610,26 @@ class TrackManager {
     },
   };
 
+  // Fresno County Fairgrounds horse race track
+  // 1 mile in theory, 1.033 mi measured = 1662.4524 m
+  final longTrack = TrackDescriptor(
+    name: "BrianITatarianGrandstand",
+    kind: TrackKind.forLand,
+    center: const Offset(-119.747305, 36.73238),
+    radiusBoost: 1.0,
+    horizontalMeter: 0.000011243830715527682,
+    verticalMeter: 0.000009022039074256466,
+    altitude: 88.0,
+  )..lengthFactor = 4.15;
+
   Future<TrackDescriptor> getTrack(String sport) async {
+    final useLongTrack =
+        Get.find<BasePrefService>().get<bool>(useLongTrackTag) ?? useLongTrackDefault;
+    final trackKinds = getTrackKindForSport(sport);
+    if (useLongTrack && !trackKinds.contains(TrackKind.forWater)) {
+      return longTrack;
+    }
+
     final timeZoneName = await getTimeZone();
     String trackTimeZone = "";
     if (trackMaps.containsKey(timeZoneName)) {
@@ -622,12 +644,14 @@ class TrackManager {
 
       // TODO: when there will be multiple track in the same time zone
       // decide the closest one with Haversine or Vincenty distance
+      // however this would require location permission which
+      // we may not have now on Android 13+
       trackTimeZone = timeZoneDiffSortedEntries.first.item2;
     }
 
     Map<TrackKind, TrackDescriptor> timeZoneTracks = trackMaps[trackTimeZone]!;
     TrackDescriptor? track;
-    for (final trackKind in getTrackKindForSport(sport)) {
+    for (final trackKind in trackKinds) {
       if (timeZoneTracks.containsKey(trackKind)) {
         track = timeZoneTracks[trackKind]!;
         break;

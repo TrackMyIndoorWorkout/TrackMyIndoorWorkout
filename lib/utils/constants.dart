@@ -1,6 +1,7 @@
 const testing = bool.fromEnvironment('testing_mode', defaultValue: false);
 
-const appDomain = "TrackMyIndoorWorkout.GitHub.io";
+const appDomainCore = "TrackMyIndoorWorkout";
+const appDomain = "$appDomainCore.GitHub.io";
 const appUrl = "https://$appDomain/";
 const eps = 1e-6;
 const displayEps = 1e-4;
