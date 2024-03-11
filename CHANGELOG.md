@@ -1,3 +1,17 @@
+## 1.1.154
+* Using Bluetooth appearance data to tell apart cycling speed and cadence sensors,
+  power meters, heart rate monitors. Made possible by contributing to Flutter Blue Plus
+* SUUNTO upload description fix: only use app name and no URL or domain name
+* SUUNTO uploads now show heart rate details in the graph as well
+* Being able to bridge large gaps between GPS locations in case someone puts
+  the app in the background it'd stop receiving data for a while
+* Introducing mile long track for land sports only and only in the US Pacific Time Zone (Fresno).
+  Can be switch over in the preferences
+* Fixing Under Armour / MapMyRun / MapMyFitness activity title
+* User Experience fixes (UX -> User Experience, overflows, etc.)
+* Making Activity Title configurable and template-able
+* Making Activity Description configurable and template-able
+
 ## 1.1.153
 * Progress towards Stryd foot pod support
 * Optional aggregate or detailed upload status displays on the Activity List screen
