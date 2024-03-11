@@ -11,6 +11,8 @@
 * User Experience fixes (UX -> User Experience, overflows, etc.)
 * Making Activity Title configurable and template-able
 * Making Activity Description configurable and template-able
+* Upgrade Flutter to channel beta 3.20.0-1.2.pre, Dart 3.4.0-99.1.beta
+* Upgrade numerous plugins many times
 
 ## 1.1.153
 * Progress towards Stryd foot pod support
