@@ -23,6 +23,7 @@ const genericFTMSSwimFourCC = "GSwi";
 const genericFTMSEllipticalFourCC = "GEll";
 const genericFTMSCrossTrainerFourCC = "GXtr";
 const powerMeterBasedBikeFourCC = "PowB";
+const powerMeterBasedPaddleFourCC = "PowP";
 const cscSensorBasedBikeFourCC = "CSCB";
 const cscSensorBasedPaddleFourCC = "CSCP";
 const concept2RowerFourCC = "C2Rw";
@@ -59,6 +60,7 @@ List<String> allFourCC = [
   genericFTMSEllipticalFourCC,
   genericFTMSCrossTrainerFourCC,
   powerMeterBasedBikeFourCC,
+  powerMeterBasedPaddleFourCC,
   cscSensorBasedBikeFourCC,
   cscSensorBasedPaddleFourCC,
   concept2RowerFourCC,
@@ -132,6 +134,7 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   genericFTMSCrossTrainerFourCC:
       DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Cross Trainer"]),
   powerMeterBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stages IC"]),
+  powerMeterBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   cscSensorBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   cscSensorBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   concept2RowerFourCC:
@@ -186,6 +189,8 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   genericFTMSCrossTrainerFourCC:
       SportDescriptor(defaultSport: ActivityType.elliptical, isMultiSport: false),
   powerMeterBasedBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
+  powerMeterBasedPaddleFourCC:
+      SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),
   cscSensorBasedBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   cscSensorBasedPaddleFourCC:
       SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),

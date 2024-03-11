@@ -481,7 +481,11 @@ class FindDevicesState extends State<FindDevicesScreen> {
         } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
           descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
         } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
+          if (_paddlingWithCyclingSensors) {
+            descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedPaddleFourCC);
+          } else {
+            descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
+          }
         } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
           if (_paddlingWithCyclingSensors) {
             descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedPaddleFourCC);

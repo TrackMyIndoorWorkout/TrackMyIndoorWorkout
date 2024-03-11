@@ -1,19 +1,18 @@
 import 'dart:math';
 
 import '../../persistence/isar/record.dart';
-import '../../preferences/wheel_circumference.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'cadence_mixin.dart';
-import 'complex_sensor.dart';
+import 'flywheel_sensor_base.dart';
 
-class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
+class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin {
   static const serviceUuid = cyclingCadenceServiceUuid;
   static const characteristicUuid = cyclingCadenceMeasurementUuid;
-  String sport = ActivityType.ride;
+
   // Wheel revolution metrics
   // (can correlate to speed if it is a proper speed shifter bike on a trainer
   //  and not a spinning bike (fixed gear/fixie))
@@ -24,19 +23,11 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
   MetricDescriptor? crankRevolutionMetric;
   MetricDescriptor? crankRevolutionTime;
 
-  double _circumference = wheelCircumferenceDefault / 1000;
-  String circumferenceTag = wheelCircumferenceTag;
-  int circumferenceDefault = wheelCircumferenceDefault;
-
   CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(4, 64, maxUint16);
     wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(4, 64, maxUint32);
     readCircumference();
-  }
-
-  void readCircumference() {
-    _circumference = (prefService.get<int>(circumferenceTag) ?? circumferenceDefault) / 1000;
   }
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.csc_measurement.xml
@@ -91,12 +82,12 @@ class CyclingSpeedAndCadenceSensor extends ComplexSensor with CadenceMixin {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
       distance = (wheelCadence.overflowCounter * wheelCadence.revolutionOverflow +
               wheelCadence.cadenceData.last.revolutions) *
-          _circumference;
+          circumference;
       // https://endless-sphere.com/forums/viewtopic.php?t=16114
       // 26" wheel approx cadence at 80mph => 1024.0
       // Unit: rpm * 60 = rph (rotations / minute * 60 = rotations / hour)
       //       rph * m / 1000 = rph * km = kmh
-      speed = min(wheelCadence.computeCadence(), 1024.0) * 60.0 * _circumference / 1000.0;
+      speed = min(wheelCadence.computeCadence(), 1024.0) * 60.0 * circumference / 1000.0;
     }
 
     int? crankCadence;
