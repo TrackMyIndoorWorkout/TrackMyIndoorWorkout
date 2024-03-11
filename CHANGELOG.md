@@ -3,7 +3,7 @@
   power meters, heart rate monitors. Made possible by contributing to Flutter Blue Plus
 * SUUNTO upload description fix: only use app name and no URL or domain name
 * SUUNTO uploads now show heart rate details in the graph as well
-* Being able to bridge large gaps between GPS locations in case someone puts
+* Being able to interpolate large gaps between GPS locations in case someone puts
   the app in the background it'd stop receiving data for a while
 * Introducing mile long track for land sports only and only in the US Pacific Time Zone (Fresno).
   Can be switch over in the preferences
