@@ -2,7 +2,7 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.153+153
+version: 1.1.154+154
 isar_version: &isar_version ^3.1.0+1
 
 environment:
