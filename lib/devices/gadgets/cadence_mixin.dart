@@ -55,14 +55,52 @@ mixin CadenceMixin {
     final nonNullTime = time ?? 0.0;
     final nonNullRevolutions = revolutions ?? 0;
     if (cadenceData.isNotEmpty) {
-      // Prevent duplicate recording
+      // Prevent queuing of duplicate or bogus cadence data
       final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
       final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
-      if (timeDiff < eps && revDiff < eps) {
-        // Update the duplicate's timestamp
+      if (revDiff < 0.0) {
+        // The new revolution count is less than the last count,
+        // so there is no reason to record it.  Update last's timestamp.
         cadenceData.last.timeStamp = DateTime.now();
+        if (logLevel >= logLevelInfo) {
+          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
+              "Skipping negative revDiff: revDiff = $revDiff ; timeDiff = $timeDiff");
+        }
         return;
-      } else {
+      }
+      else if (revDiff > 5.0) {
+        // The new revolution count increased by an absurdedly large amount,
+        // so there is no reason to record it.  Update last's timestamp.
+        cadenceData.last.timeStamp = DateTime.now();
+        if (logLevel >= logLevelInfo) {
+          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
+              "Skipping absurdedly large rev count: revDiff = $revDiff ; timeDiff = $timeDiff");
+        }
+        return;
+      }
+      else if (timeDiff < eps && revDiff < eps) {
+        // The revolution count and time are the same as the recorded
+        // values, so there is no reason to record it.
+        // Update last's timestamp.
+        cadenceData.last.timeStamp = DateTime.now();
+        if (logLevel >= logLevelInfo) {
+          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
+              "Skipping duplicate rev count with same time: revDiff = $revDiff ; timeDiff = $timeDiff");
+        }
+        return;
+      }
+      else if (timeDiff > eps && revDiff < eps) {
+        // 0.0 <= revDiff < eps
+        // The packet time changed but the revolution count is the same,
+        // so there is no reason to record it.  Update last's timestamp.
+        cadenceData.last.timeStamp = DateTime.now();
+        if (logLevel >= logLevelInfo) {
+          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
+              "Skipping duplicate rev count with new time: revDiff = $revDiff ; timeDiff = $timeDiff");
+        }
+        return;
+      }
+      else {
         if (nonNullRevolutions < cadenceData.last.revolutions) {
           overflowCounter++;
         }
