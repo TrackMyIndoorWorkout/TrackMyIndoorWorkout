@@ -494,8 +494,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
-      final lastRecord = await DbUtils().getLastRecord(activity.id);
-      continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
+      final lastDbRecord = await DbUtils().getLastRecord(activity.id);
+      continuationRecord = lastDbRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
         Logging().log(logLevel, logLevelInfo, tag, "setActivity",
@@ -805,6 +805,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     final now = DateTime.now();
     if (logLevel >= logLevelInfo) {
       Logging().log(logLevel, logLevelInfo, tag, "processRecord", "stub at $now $stub");
+    }
+
+    if (stub == lastRecord) {
+      if (logLevel >= logLevelInfo) {
+        Logging().log(logLevel, logLevelInfo, tag, "processRecord", "stub == lastRecord - shortcut return of stub");
+      }
+      return stub;
     }
 
     if (_companionSensor != null && _companionSensor!.attached) {
