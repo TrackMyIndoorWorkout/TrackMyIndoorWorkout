@@ -120,8 +120,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   // https://github.com/ursoft/ANT_Libraries/blob/e122c007f5e1935a9b11c05e601a71f2992bad45/ANT_DLL/WROOM_esp32/WROOM_esp32.ino#L525
   double powerFromCadenceResistance(int cadence, int resistance) {
     final int idx = (resistance - 1) % 25;
-    final double ret = resistancePowerCoeffs[idx][0] * cadence * cadence + resistancePowerCoeffs[idx][1] * cadence + resistancePowerCoeffs[idx][2];
-    return ret > 0.0 ? ret : 0.0;
+    final double power = resistancePowerCoeffs[idx][0] * cadence * cadence + resistancePowerCoeffs[idx][1] * cadence + resistancePowerCoeffs[idx][2];
+    return max(power,0.0);
   }
 
   @override
