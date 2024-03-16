@@ -24,6 +24,7 @@ import '../../preferences/database_location.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/log_level.dart';
+import '../../preferences/recalculate_more.dart';
 import '../../utils/export.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -401,6 +402,11 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(enableAsserts),
         subtitle: Text(enableAssertsDescription),
         pref: enableAssertsTag,
+      ));
+      expertPreferences.add(const PrefCheckbox(
+        title: Text(recalculateMore),
+        subtitle: Text(recalculateMoreDescription),
+        pref: recalculateMoreTag,
       ));
     }
 

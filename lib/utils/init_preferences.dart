@@ -48,6 +48,7 @@ import '../preferences/metric_spec.dart';
 import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/palette_spec.dart';
+import '../preferences/recalculate_more.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
@@ -172,6 +173,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     useLongTrackTag: useLongTrackDefault,
     activityUploadDescriptionTag: activityUploadDescriptionDefault,
     activityUploadTitleTag: activityUploadTitleDefault,
+    recalculateMoreTag: recalculateMoreDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
