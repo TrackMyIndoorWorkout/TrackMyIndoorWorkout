@@ -16,6 +16,7 @@ import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
+import '../../preferences/recalculate_more.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
@@ -615,10 +616,13 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
             // await DbUtils().finalizeActivity(widget.activity);
 
-            // await DbUtils().recalculateCumulative(widget.activity);
+            final prefService = Get.find<BasePrefService>();
+            final recalculateMore =
+                prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
+            await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
 
-            widget.activity.clearSuuntoUpload();
-            DbUtils().updateActivity(widget.activity);
+            // widget.activity.clearSuuntoUpload();
+            // DbUtils().updateActivity(widget.activity);
 
             // await DbUtils().appendActivities(438, 440);
           },

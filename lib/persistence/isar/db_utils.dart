@@ -6,6 +6,7 @@ import 'package:tuple/tuple.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../utils/address_names.dart';
 import '../../utils/constants.dart';
+import '../../utils/power_speed_mixin.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
 import 'floor_migration.dart';
@@ -14,7 +15,7 @@ import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
 
-class DbUtils {
+class DbUtils with PowerSpeedMixin {
   late final Isar database;
 
   DbUtils() {
@@ -45,7 +46,7 @@ class DbUtils {
     return records.lastOrNull;
   }
 
-  Future<bool> recalculateCumulative(Activity activity) async {
+  Future<bool> recalculateCumulative(Activity activity, bool recalculateMore) async {
     final records = await getRecords(activity.id);
     if (records.isEmpty) {
       return false;
@@ -71,6 +72,13 @@ class DbUtils {
 
         if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
           record.power = previousRecord.power;
+        }
+
+        if (record.power != null &&
+            record.power! > 0.0 &&
+            recalculateMore &&
+            activity.sport == ActivityType.ride) {
+          record.speed = velocityForPowerCardano(record.power!) * DeviceDescriptor.ms2kmh;
         }
 
         if ((record.speed ?? 0.0) <= eps && (previousRecord.speed ?? 0.0) > eps) {
@@ -307,7 +315,7 @@ class DbUtils {
       }
     });
 
-    recalculateCumulative(earlier);
+    recalculateCumulative(earlier, false);
 
     return true;
   }
