@@ -828,13 +828,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
-//    if (stub == lastRecord) {
-//      if (logLevel >= logLevelInfo) {
-//        Logging().log(logLevel, logLevelInfo, tag, "processRecord", "stub == lastRecord - shortcut return of stub");
-//      }
-//      return stub;
-//    }
-
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
     bool isNotMoving = stub.isNotMoving();
@@ -957,11 +950,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     hasPowerReporting |= (stub.power ?? 0) > 0;
     hasSpeedReporting |= (stub.speed ?? 0.0) > 0.0;
 
-    // delta time needs to calculated before updating stub in case 
-    // stub and lastRecord are references to the same object.
-    final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
-    final dT = dTMillis / 1000.0;
-
     stub.elapsed = elapsed.round();
     stub.elapsedMillis = elapsedMillis;
 
@@ -981,6 +969,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
     }
 
+    final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
+    final dT = dTMillis / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
       stub.distance = (lastRecord.distance ?? 0.0);
       if ((stub.speed ?? 0.0) > 0 && dT > eps) {
