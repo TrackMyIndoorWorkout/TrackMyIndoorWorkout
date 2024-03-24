@@ -145,7 +145,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       speed: speed,
       cadence: min(computeCadence().toInt(), maxByte),
       heartRate: null,
-      resistance: getResistance(data),
+      resistance: getResistance(data)?.toInt(),
       sport: sport,
     );
     if (testing) {

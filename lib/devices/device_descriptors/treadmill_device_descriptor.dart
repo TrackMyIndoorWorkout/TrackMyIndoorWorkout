@@ -84,7 +84,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
-      resistance: getResistance(data),
+      resistance: getResistance(data)?.toInt(),
     );
   }
 
