@@ -441,6 +441,7 @@ class RecordWithSport extends Record {
       speed: spd,
       cadence: 30 + random.nextInt(100),
       heartRate: 60 + random.nextInt(120),
+      resistance: random.nextInt(100),
       sport: sport,
     );
   }
