@@ -11,6 +11,7 @@ import '../../preferences/instant_upload.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
+import '../../preferences/show_resistance_level.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
@@ -187,6 +188,11 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
           );
         },
         child: const Text("Measurement Row Setup"),
+      ),
+      const PrefCheckbox(
+        title: Text(showResistanceLevel),
+        subtitle: Text(showResistanceLevelDescription),
+        pref: showResistanceLevelTag,
       ),
     ];
 
