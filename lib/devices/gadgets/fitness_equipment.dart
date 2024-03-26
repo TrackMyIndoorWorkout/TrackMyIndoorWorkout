@@ -197,7 +197,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     merged.timeStamp = DateTime.now();
-    return merged;
+    final clone = RecordWithSport.clone(merged);
+    return clone;
   }
 
   void _throttlingTimerCallback() {
@@ -494,8 +495,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
-      final lastRecord = await DbUtils().getLastRecord(activity.id);
-      continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
+      final lastDbRecord = await DbUtils().getLastRecord(activity.id);
+      continuationRecord = lastDbRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
         Logging().log(logLevel, logLevelInfo, tag, "setActivity",
