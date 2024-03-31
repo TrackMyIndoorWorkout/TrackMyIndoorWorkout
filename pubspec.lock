@@ -85,10 +85,10 @@ packages:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "581bacf68f89ec8792f5e5a0b2c4decd1c948e97ce659dc783688c8a88fbec21"
+      sha256: "3ac61a79bfb6f6cc11f693591063a7f19a7af628dc52f141743edac5c16e8c22"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.8"
+    version: "2.4.9"
   build_runner_core:
     dependency: transitive
     description:
@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: af326029061bc2aac4fff3e50d6cbf1a1cda037e2373ac959a838b4b0aaac960
+      sha256: "1e53ba4b60c1097396fbeafdd31eac5c20b0876b56a0c1ab6f3dec5ee06d44d7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.31.17"
+    version: "1.32.0"
   flutter_circle_color_picker:
     dependency: "direct main"
     description:
@@ -1336,18 +1336,18 @@ packages:
     dependency: "direct main"
     description:
       name: wakelock_plus
-      sha256: "26ebc8b5e0037c15e2a1b661dcec8a475cb7205befcce8a33f545ae8c86b367c"
+      sha256: "104d94837bb28c735894dcd592877e990149c380e6358b00c04398ca1426eed4"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.6"
+    version: "1.2.1"
   wakelock_plus_platform_interface:
     dependency: transitive
     description:
       name: wakelock_plus_platform_interface
-      sha256: "40fabed5da06caff0796dc638e1f07ee395fb18801fbff3255a2372db2d80385"
+      sha256: "582f2f7aecc7376332d961a0dd1efa9378ce117657e0ade55d9ff72699a55e82"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   watcher:
     dependency: transitive
     description:
