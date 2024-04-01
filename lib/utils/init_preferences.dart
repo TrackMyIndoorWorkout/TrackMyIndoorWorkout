@@ -52,6 +52,7 @@ import '../preferences/recalculate_more.dart';
 import '../preferences/scan_duration.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
+import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
@@ -176,6 +177,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     activityUploadTitleTag: activityUploadTitleDefault,
     recalculateMoreTag: recalculateMoreDefault,
     showResistanceLevelTag: showResistanceLevelDefault,
+    showPerformanceOverlayTag: showPerformanceOverlayDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

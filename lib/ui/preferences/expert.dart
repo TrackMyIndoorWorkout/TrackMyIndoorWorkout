@@ -25,6 +25,7 @@ import '../../preferences/device_filtering.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/recalculate_more.dart';
+import '../../preferences/show_performance_overlay.dart';
 import '../../utils/export.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -391,6 +392,12 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         child: const Text(dataImport),
       ),
     ];
+
+    expertPreferences.add(const PrefCheckbox(
+      title: Text(showPerformanceOverlay),
+      subtitle: Text(showPerformanceOverlayDescription),
+      pref: showPerformanceOverlayTag,
+    ));
 
     if (kDebugMode) {
       expertPreferences.add(const PrefCheckbox(
