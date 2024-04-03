@@ -1056,10 +1056,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: "072128763f1547e3e9b4735ce846bfd226d68019ccda54db4cd427b12dfdedc9"
+      sha256: "6d373bf26087a63ebbd1898a07cb681e1c87d4bddb5e0582b67474b24199763c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.1+1"
   sqlparser:
     dependency: transitive
     description:
