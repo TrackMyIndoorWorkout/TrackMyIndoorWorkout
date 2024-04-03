@@ -11,8 +11,6 @@ environment:
 
 dependency_overrides:
   analyzer: ^6.4.1  # because of isar_generator
-  js: ^0.7.1 # for wakelock_plus because of isar
-  web: ^0.5.0 # because of package_info_plus
 
 dependencies:
   assorted_layout_widgets: ^9.0.1
