@@ -11,6 +11,8 @@ import 'package:pref/pref.dart';
 import '../import/csv_importer.dart';
 import '../persistence/isar/workout_summary.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
+import '../utils/logging.dart';
 
 typedef SetProgress = void Function(double progress);
 
@@ -191,12 +193,15 @@ class ImportFormState extends State<ImportForm> {
                               Get.snackbar(
                                   "Failure", "Problem while importing: ${importer.message}");
                             }
-                          } catch (e, callStack) {
+                          } on Exception catch (e, stack) {
                             setState(() {
                               _isLoading = false;
                             });
+                            final prefService = Get.find<BasePrefService>();
+                            final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+                            Logging().logException(logLevel, "IMPORT_FORM", "onPressed",
+                                "error during import", e, stack);
                             Get.snackbar("Error", "Import unsuccessful: $e");
-                            debugPrintStack(stackTrace: callStack);
                           }
                         } else {
                           Get.snackbar("Error", "Please correct form fields");
