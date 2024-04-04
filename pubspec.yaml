@@ -23,6 +23,7 @@ dependencies:
   file_picker: ^8.0.0+1
   flex_color_scheme: ^7.3.1
   floor: ^1.4.2
+  flutter_archive: ^6.0.0
   flutter_blue_plus: ^1.32.1
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.6
@@ -49,6 +50,7 @@ dependencies:
   qr_widget: ^4.1.0
   rxdart: ^0.27.7
   share_files_and_screenshot_widgets: ^1.0.6
+  share_plus: ^8.0.2
   soundpool: ^2.4.1
   sqflite: ^2.3.3
   string_validator: ^1.0.2

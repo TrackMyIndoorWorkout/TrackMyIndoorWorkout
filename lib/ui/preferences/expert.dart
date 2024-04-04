@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_archive/flutter_archive.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../persistence/isar/activity.dart';
 import '../../persistence/isar/calorie_tune.dart';
@@ -212,74 +214,96 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         onTap: () async {
           Get.snackbar("Export started", "In progress...");
 
+          final isoDateTime = DateTime.now().toUtc().toIso8601String();
+          final fileNameStub = "DataExport_${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}";
+          final Directory tempDir = await getTemporaryDirectory();
+          final filePathStub = "${tempDir.path}/$fileNameStub";
+          final List<File> files = [];
           final database = Get.find<Isar>();
-          final allBytes = BytesBuilder(copy: false);
 
-          await database.txn(() async {
-            await database.records.where().exportJsonRaw((recordBytes) {
-              allBytes.add(lengthToBytes(recordBytes.length));
-              allBytes.add(recordBytes);
+          {
+            await database.txn(() async {
+              await database.records.where().exportJsonRaw((recordBytes) async {
+                files.add(await File("${filePathStub}_Records.json")
+                    .writeAsBytes(recordBytes, flush: true));
+              });
             });
-          });
+          }
 
-          await database.txn(() async {
-            await database.activitys.where().exportJsonRaw((activityBytes) {
-              allBytes.add(lengthToBytes(activityBytes.length));
-              allBytes.add(activityBytes);
+          {
+            await database.txn(() async {
+              await database.activitys.where().exportJsonRaw((activityBytes) async {
+                files.add(await File("${filePathStub}_Activities.json")
+                    .writeAsBytes(activityBytes, flush: true));
+              });
             });
-          });
+          }
 
-          await database.txn(() async {
-            await database.logEntrys.where().exportJsonRaw((logBytes) {
-              allBytes.add(lengthToBytes(logBytes.length));
-              allBytes.add(logBytes);
+          {
+            await database.txn(() async {
+              await database.logEntrys.where().exportJsonRaw((logBytes) async {
+                files.add(await File("${filePathStub}_LogEntries.json")
+                    .writeAsBytes(logBytes, flush: true));
+              });
             });
-          });
+          }
 
-          await database.txn(() async {
-            await database.workoutSummarys.where().exportJsonRaw((workoutBytes) {
-              allBytes.add(lengthToBytes(workoutBytes.length));
-              allBytes.add(workoutBytes);
+          {
+            await database.txn(() async {
+              await database.workoutSummarys.where().exportJsonRaw((workoutBytes) async {
+                files.add(await File("${filePathStub}_WorkoutSummaries.json")
+                    .writeAsBytes(workoutBytes, flush: true));
+              });
             });
-          });
+          }
 
-          await database.txn(() async {
-            await database.powerTunes.where().exportJsonRaw((powerBytes) {
-              allBytes.add(lengthToBytes(powerBytes.length));
-              allBytes.add(powerBytes);
+          {
+            await database.txn(() async {
+              await database.powerTunes.where().exportJsonRaw((powerBytes) async {
+                files.add(await File("${filePathStub}_PowerTunes.json")
+                    .writeAsBytes(powerBytes, flush: true));
+              });
             });
-          });
+          }
 
-          await database.txn(() async {
-            await database.deviceUsages.where().exportJsonRaw((deviceBytes) {
-              allBytes.add(lengthToBytes(deviceBytes.length));
-              allBytes.add(deviceBytes);
+          {
+            await database.txn(() async {
+              await database.deviceUsages.where().exportJsonRaw((deviceBytes) async {
+                files.add(await File("${filePathStub}_DeviceUsages.json")
+                    .writeAsBytes(deviceBytes, flush: true));
+              });
             });
-          });
+          }
 
-          await database.txn(() async {
-            await database.calorieTunes.where().exportJsonRaw((calorieBytes) {
-              allBytes.add(lengthToBytes(calorieBytes.length));
-              allBytes.add(calorieBytes);
+          {
+            await database.txn(() async {
+              await database.calorieTunes.where().exportJsonRaw((calorieBytes) async {
+                files.add(await File("${filePathStub}_CalorieTunes.json")
+                    .writeAsBytes(calorieBytes, flush: true));
+              });
             });
-          });
+          }
 
           final prefService = Get.find<BasePrefService>();
-          final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
-          allBytes.add(lengthToBytes(settingsBytes.length));
-          allBytes.add(settingsBytes);
+          {
+            final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
+            files.add(await File("${filePathStub}_Preferences.json")
+                .writeAsBytes(settingsBytes, flush: true));
+          }
 
-          final compressedBytes = GZipCodec(gzip: true).encode(allBytes.toBytes());
-          final isoDateTime = DateTime.now().toUtc().toIso8601String();
-          final title = "Data Export $isoDateTime";
-          final fileName = "DataExport${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.bin.gz";
-          ShareFilesAndScreenshotWidgets().shareFile(
-            title,
-            fileName,
-            Uint8List.fromList(compressedBytes),
-            'application/x-gzip',
-            text: title,
-          );
+          final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+          const logTag = "DATA_EXPORT";
+          final zipFilePath = "$filePathStub.zip";
+          final zipFile = File("$filePathStub.zip");
+          try {
+            ZipFile.createFromFiles(sourceDir: tempDir, files: files, zipFile: zipFile);
+          } on Exception catch (e, stack) {
+            Logging().logException(
+                logLevel, logTag, "ZipFile.createFromFiles", "error during creation", e, stack);
+          }
+
+          final result = await Share.shareXFiles([XFile(zipFilePath)], text: "Exported DB");
+          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
         },
         child: const Text(dataExport),
       ),
