@@ -30,6 +30,7 @@ import '../../preferences/enable_asserts.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/recalculate_more.dart';
 import '../../preferences/show_performance_overlay.dart';
+import '../../utils/date_time_ex.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import '../parts/pick_directory.dart';
@@ -157,9 +158,8 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           }
 
           final fileBytes = await Logging().exportLogs();
-          final isoDateTime = DateTime.now().toUtc().toIso8601String();
-          final title = "Debug Logs $isoDateTime";
-          final fileName = "DebugLogs${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.txt.gz";
+          final title = "Debug Logs ${DateTimeEx.isoDateTime}";
+          final fileName = "DebugLogs_${DateTimeEx.namePart}.txt.gz";
           ShareFilesAndScreenshotWidgets().shareFile(
             title,
             fileName,
@@ -227,9 +227,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           files.add(await settingsFile.writeAsBytes(settingsBytes, flush: true));
           final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
           const logTag = "DATA_EXPORT";
-          final isoDateTime = DateTime.now().toUtc().toIso8601String();
-          final zipFilePath =
-              "${tempDir.path}/DataExport_${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.zip";
+          final zipFilePath = "${tempDir.path}/DataExport_${DateTimeEx.namePart}.zip";
           debugPrint("zip file: $zipFilePath");
           final zipFile = File(zipFilePath);
           bool zipped = false;
