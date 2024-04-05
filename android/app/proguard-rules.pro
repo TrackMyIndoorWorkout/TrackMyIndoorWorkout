@@ -28,6 +28,8 @@
 -keepclassmembernames class dev.fluttercommunity.plus.device_info.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
+-keep class com.kineapps.flutterarchive.** { *; }
+-keepclassmembernames class com.kineapps.flutterarchive.** { *; }
 -keep class com.lib.flutter_blue_plus.** { *; }
 -keepclassmembernames class com.lib.flutter_blue_plus.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
@@ -42,6 +44,8 @@
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
+-keep class dev.fluttercommunity.plus.share.** { *; }
+-keepclassmembernames class dev.fluttercommunity.plus.share.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }
 -keepclassmembernames class io.flutter.plugins.sharedpreferences.** { *; }
 -keep class pl.ukaszapps.soundpool.** { *; }

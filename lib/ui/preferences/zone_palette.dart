@@ -59,7 +59,7 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),
         child: ElevatedButton(
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)),
+          style: ButtonStyle(backgroundColor: WidgetStateProperty.all(color)),
           onPressed: () async {
             final Color? newColor = await Get.bottomSheet(
               SafeArea(
