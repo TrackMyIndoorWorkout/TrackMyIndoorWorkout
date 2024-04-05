@@ -239,17 +239,17 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           final Directory tempDir = await getTemporaryDirectory();
           final databaseFilePath = "${tempDir.path}/${Isar.defaultName}.isar";
           await database.copyToFile(databaseFilePath);
-          final databaseFile = File(databaseFilePath);
+          final databaseFile = await File(databaseFilePath).create();
           final List<File> files = [databaseFile];
           final prefService = Get.find<BasePrefService>();
           final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
-          final settingsFile = File("${tempDir.path}/preferences.json");
+          final settingsFile = await File("${tempDir.path}/preferences.json").create();
           files.add(await settingsFile.writeAsBytes(settingsBytes, flush: true));
           final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
           const logTag = "DATA_EXPORT";
           final zipFilePath = "${tempDir.path}/DataExport_${DateTimeEx.namePart}.zip";
           debugPrint("zip file: $zipFilePath");
-          final zipFile = File(zipFilePath);
+          final zipFile = await File(zipFilePath).create();
           bool zipped = false;
           try {
             await ZipFile.createFromFiles(sourceDir: tempDir, files: files, zipFile: zipFile);
