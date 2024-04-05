@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
-import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../persistence/isar/activity.dart';
@@ -157,16 +156,37 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return;
           }
 
-          final fileBytes = await Logging().exportLogs();
+          final Directory tempDir = await getTemporaryDirectory();
+          final fileNameStub = "DebugLogs_${DateTimeEx.namePart}";
+          final fileName = "$fileNameStub.csv";
+          final logFilePath = "${tempDir.path}/$fileName";
+          final logFile = await File(logFilePath).create();
+          await Logging().exportLogs(logFile);
+
+          final prefService = Get.find<BasePrefService>();
+          final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+          const logTag = "LOG_EXPORT";
+          final zipFilePath = "${tempDir.path}/$fileNameStub.zip";
+          debugPrint("zip file: $zipFilePath");
+          final zipFile = await File(zipFilePath).create();
+          bool zipped = false;
+          try {
+            await ZipFile.createFromFiles(sourceDir: tempDir, files: [logFile], zipFile: zipFile);
+            zipped = true;
+          } on Exception catch (e, stack) {
+            Logging().logException(
+                logLevel, logTag, "ZipFile.createFromFiles", "error during creation", e, stack);
+          }
+
+          await logFile.delete();
+          if (!zipped) {
+            Get.snackbar("Log export failed", "Unsuccessful zipping");
+            return;
+          }
+
           final title = "Debug Logs ${DateTimeEx.isoDateTime}";
-          final fileName = "DebugLogs_${DateTimeEx.namePart}.txt.gz";
-          ShareFilesAndScreenshotWidgets().shareFile(
-            title,
-            fileName,
-            Uint8List.fromList(fileBytes),
-            'application/x-gzip',
-            text: title,
-          );
+          final result = await Share.shareXFiles([XFile(zipFile.path)], text: title);
+          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
         },
         child: const Text("Export Logs..."),
       ),

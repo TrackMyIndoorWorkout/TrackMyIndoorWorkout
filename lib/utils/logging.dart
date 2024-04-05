@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -107,15 +106,15 @@ class Logging {
     });
   }
 
-  Future<List<int>> exportLogs() async {
-    final sb = StringBuffer();
-
-    sb.writeln("timeStamp,level,tag,subTag,message");
+  Future<void> exportLogs(File logFile) async {
+    await logFile.writeAsString("timeStamp,level,tag,subTag,message\n", mode: FileMode.write);
     for (final logEntry in await database.logEntrys.where().sortByTimeStamp().findAll()) {
-      sb.writeln(
-          "${logEntry.timeStamp},${logEntry.level},${logEntry.tag},${logEntry.subTag},${logEntry.message}");
+      await logFile.writeAsString(
+        "${logEntry.timeStamp},${logEntry.level},${logEntry.tag},${logEntry.subTag},${logEntry.message}\n",
+        mode: FileMode.append,
+      );
     }
 
-    return GZipCodec(gzip: true).encode(utf8.encode(sb.toString()));
+    await logFile.writeAsString("\n", mode: FileMode.append, flush: true);
   }
 }
