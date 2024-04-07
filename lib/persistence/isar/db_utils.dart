@@ -127,6 +127,47 @@ class DbUtils with PowerSpeedMixin {
     return true;
   }
 
+  Future<bool> bridgeDataGaps(Activity activity) async {
+    final records = await getRecords(activity.id);
+    if (records.isEmpty) {
+      return false;
+    }
+
+    var previousRecord = records.first;
+    for (final record in records.skip(1)) {
+      bool modified = false;
+      if ((record.cadence ?? 0) <= 0 && (previousRecord.cadence ?? 0) > 0) {
+        record.cadence = previousRecord.cadence;
+        modified = true;
+      }
+
+      if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
+        record.power = previousRecord.power;
+        modified = true;
+      }
+
+      if ((record.speed ?? 0.0) <= eps && (previousRecord.speed ?? 0.0) > eps) {
+        record.speed = previousRecord.speed;
+        modified = true;
+      }
+
+      if ((record.heartRate ?? 0) <= 0 && (previousRecord.heartRate ?? 0) > 0) {
+        record.heartRate = previousRecord.heartRate;
+        modified = true;
+      }
+
+      if (modified) {
+        database.writeTxnSync(() {
+          database.records.putSync(record);
+        });
+      }
+
+      previousRecord = record;
+    }
+
+    return true;
+  }
+
   Future<List<Activity>> unfinishedDeviceActivities(String mac) async {
     return database.activitys
         .where()

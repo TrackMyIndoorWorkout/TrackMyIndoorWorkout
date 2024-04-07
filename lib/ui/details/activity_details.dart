@@ -616,6 +616,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
             // await DbUtils().finalizeActivity(widget.activity);
 
+            await DbUtils().bridgeDataGaps(widget.activity);
             final prefService = Get.find<BasePrefService>();
             final recalculateMore =
                 prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
