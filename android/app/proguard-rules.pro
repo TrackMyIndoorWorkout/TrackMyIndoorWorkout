@@ -54,8 +54,6 @@
 -keepclassmembernames class pl.ukaszapps.soundpool.** { *; }
 -keep class com.tekartik.sqflite.** { *; }
 -keepclassmembernames class com.tekartik.sqflite.** { *; }
--keep class name.avioli.unilinks.** { *; }
--keepclassmembernames class name.avioli.unilinks.** { *; }
 -keep class io.flutter.plugins.urllauncher.** { *; }
 -keepclassmembernames class io.flutter.plugins.urllauncher.** { *; }
 -keep class dev.fluttercommunity.plus.wakelock.** { *; }
