@@ -13,6 +13,7 @@ dependency_overrides:
   analyzer: ^6.4.1  # because of isar_generator
 
 dependencies:
+  app_links: ^4.0.1
   assorted_layout_widgets: ^9.0.1
   collection: ^1.17.2
   datetime_picker_formfield_new: ^2.1.0
