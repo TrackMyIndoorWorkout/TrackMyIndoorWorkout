@@ -96,8 +96,9 @@ abstract class DeviceDescriptor extends DataHandler {
   /// Sends command to induce / signal a measurement polling operation to a
   /// device which operates that way. The command will be sent to the
   /// Bluetooth characteristic [controlPoint].
-  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
+  Future<bool> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
     Logging().log(logLevel, logLevelError, tag, "pollMeasurement", "Not implemented!");
+    return false;
   }
 
   /// Perform extra operations after a successful connect,
