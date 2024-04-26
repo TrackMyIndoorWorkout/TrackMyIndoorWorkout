@@ -17,28 +17,33 @@ const LogEntrySchema = CollectionSchema(
   name: r'LogEntry',
   id: -8268688274231935295,
   properties: {
-    r'level': PropertySchema(
+    r'counter': PropertySchema(
       id: 0,
+      name: r'counter',
+      type: IsarType.long,
+    ),
+    r'level': PropertySchema(
+      id: 1,
       name: r'level',
       type: IsarType.string,
     ),
     r'message': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'message',
       type: IsarType.string,
     ),
     r'subTag': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'subTag',
       type: IsarType.string,
     ),
     r'tag': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'tag',
       type: IsarType.string,
     ),
     r'timeStamp': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'timeStamp',
       type: IsarType.dateTime,
     )
@@ -90,11 +95,12 @@ void _logEntrySerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.level);
-  writer.writeString(offsets[1], object.message);
-  writer.writeString(offsets[2], object.subTag);
-  writer.writeString(offsets[3], object.tag);
-  writer.writeDateTime(offsets[4], object.timeStamp);
+  writer.writeLong(offsets[0], object.counter);
+  writer.writeString(offsets[1], object.level);
+  writer.writeString(offsets[2], object.message);
+  writer.writeString(offsets[3], object.subTag);
+  writer.writeString(offsets[4], object.tag);
+  writer.writeDateTime(offsets[5], object.timeStamp);
 }
 
 LogEntry _logEntryDeserialize(
@@ -104,12 +110,13 @@ LogEntry _logEntryDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = LogEntry(
+    counter: reader.readLongOrNull(offsets[0]) ?? 0,
     id: id,
-    level: reader.readString(offsets[0]),
-    message: reader.readString(offsets[1]),
-    subTag: reader.readString(offsets[2]),
-    tag: reader.readString(offsets[3]),
-    timeStamp: reader.readDateTime(offsets[4]),
+    level: reader.readString(offsets[1]),
+    message: reader.readString(offsets[2]),
+    subTag: reader.readString(offsets[3]),
+    tag: reader.readString(offsets[4]),
+    timeStamp: reader.readDateTime(offsets[5]),
   );
   return object;
 }
@@ -122,7 +129,7 @@ P _logEntryDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
@@ -130,6 +137,8 @@ P _logEntryDeserializeProp<P>(
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -318,6 +327,58 @@ extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
 }
 
 extension LogEntryQueryFilter on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {
+  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> counterEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'counter',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> counterGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'counter',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> counterLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'counter',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> counterBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'counter',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -940,6 +1001,18 @@ extension LogEntryQueryObject on QueryBuilder<LogEntry, LogEntry, QFilterConditi
 extension LogEntryQueryLinks on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {}
 
 extension LogEntryQuerySortBy on QueryBuilder<LogEntry, LogEntry, QSortBy> {
+  QueryBuilder<LogEntry, LogEntry, QAfterSortBy> sortByCounter() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'counter', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterSortBy> sortByCounterDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'counter', Sort.desc);
+    });
+  }
+
   QueryBuilder<LogEntry, LogEntry, QAfterSortBy> sortByLevel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'level', Sort.asc);
@@ -1002,6 +1075,18 @@ extension LogEntryQuerySortBy on QueryBuilder<LogEntry, LogEntry, QSortBy> {
 }
 
 extension LogEntryQuerySortThenBy on QueryBuilder<LogEntry, LogEntry, QSortThenBy> {
+  QueryBuilder<LogEntry, LogEntry, QAfterSortBy> thenByCounter() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'counter', Sort.asc);
+    });
+  }
+
+  QueryBuilder<LogEntry, LogEntry, QAfterSortBy> thenByCounterDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'counter', Sort.desc);
+    });
+  }
+
   QueryBuilder<LogEntry, LogEntry, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1076,6 +1161,12 @@ extension LogEntryQuerySortThenBy on QueryBuilder<LogEntry, LogEntry, QSortThenB
 }
 
 extension LogEntryQueryWhereDistinct on QueryBuilder<LogEntry, LogEntry, QDistinct> {
+  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByCounter() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'counter');
+    });
+  }
+
   QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByLevel({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'level', caseSensitive: caseSensitive);
@@ -1111,6 +1202,12 @@ extension LogEntryQueryProperty on QueryBuilder<LogEntry, LogEntry, QQueryProper
   QueryBuilder<LogEntry, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<LogEntry, int, QQueryOperations> counterProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'counter');
     });
   }
 

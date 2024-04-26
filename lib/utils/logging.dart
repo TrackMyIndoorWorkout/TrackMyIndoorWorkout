@@ -17,6 +17,9 @@ class Logging {
     logLevelInfo: logLevelInfoDescription,
   };
 
+  static LogEntry? lastEntry;
+  static int lastEntryId = -1;
+
   late final Isar database;
 
   Logging() {
@@ -73,16 +76,33 @@ class Logging {
     String subTag,
     String message,
   ) {
+    final level = levelToDescription[logLevel] ?? "UNK";
+    // Check last entry if it's identical to prevent flooding
+    if (lastEntry != null &&
+        lastEntryId > 0 &&
+        lastEntry?.level == level &&
+        lastEntry?.tag == tag &&
+        lastEntry?.subTag == subTag &&
+        lastEntry?.message == message) {
+      lastEntry = database.logEntrys.getSync(lastEntryId);
+      if (lastEntry != null) {
+        lastEntry?.incrementCounter();
+        database.writeTxnSync(() {
+          lastEntryId = database.logEntrys.putSync(lastEntry!);
+        });
+        return;
+      }
+    }
+
+    lastEntry = LogEntry(
+      timeStamp: DateTime.now(),
+      level: level,
+      tag: tag,
+      subTag: subTag,
+      message: message,
+    );
     database.writeTxnSync(() {
-      database.logEntrys.putSync(
-        LogEntry(
-          timeStamp: DateTime.now(),
-          level: levelToDescription[logLevel] ?? "UNK",
-          tag: tag,
-          subTag: subTag,
-          message: message,
-        ),
-      );
+      lastEntryId = database.logEntrys.putSync(lastEntry!);
     });
   }
 
