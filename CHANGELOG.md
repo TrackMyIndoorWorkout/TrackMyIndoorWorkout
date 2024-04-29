@@ -1,3 +1,12 @@
+## 1.1.155
+* Optionally displaying resistance level (no persistence)
+* Full data export / import or debug log export won't cause OOM (out of memory exception, causing the app to crash)
+* Poll style fitness machines won't cause ANR (application non responding) when the machine disconnects abruptly
+* Upgrade Flutter to channel beta 3.22.0-0.3.pre, Dart 3.4.0-282.3.beta
+* Upgrade numerous plugins many times
+* Phase out uni_links in favor of app_links
+* Start transitioning to new packages (share_files_and_screenshot_widgets -> share_plus)
+
 ## 1.1.154
 * Using Bluetooth appearance data to tell apart cycling speed and cadence sensors,
   power meters, heart rate monitors. Made possible by contributing to Flutter Blue Plus
