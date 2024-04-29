@@ -2,6 +2,8 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
+import 'preferences/show_performance_overlay.dart';
 import 'ui/find_devices.dart';
 import 'utils/theme_manager.dart';
 
@@ -29,6 +31,8 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
       service: widget.prefService,
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
+        showPerformanceOverlay: widget.prefService.get<bool>(showPerformanceOverlayTag) ??
+            showPerformanceOverlayDefault,
         color: _themeManager!.getHeaderColor(),
         theme: FlexThemeData.light(
           scheme: FlexScheme.indigoM3,

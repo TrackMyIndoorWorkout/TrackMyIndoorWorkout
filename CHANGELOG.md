@@ -1,9 +1,18 @@
+## 1.1.155
+* Optionally displaying resistance level (no persistence)
+* Full data export / import or debug log export won't cause OOM (out of memory exception, causing the app to crash)
+* Poll style fitness machines won't cause ANR (application non responding) when the machine disconnects abruptly
+* Upgrade Flutter to channel beta 3.22.0-0.3.pre, Dart 3.4.0-282.3.beta
+* Upgrade numerous plugins many times
+* Phase out uni_links in favor of app_links
+* Start transitioning to new packages (share_files_and_screenshot_widgets -> share_plus)
+
 ## 1.1.154
 * Using Bluetooth appearance data to tell apart cycling speed and cadence sensors,
   power meters, heart rate monitors. Made possible by contributing to Flutter Blue Plus
 * SUUNTO upload description fix: only use app name and no URL or domain name
 * SUUNTO uploads now show heart rate details in the graph as well
-* Being able to bridge large gaps between GPS locations in case someone puts
+* Being able to interpolate large gaps between GPS locations in case someone puts
   the app in the background it'd stop receiving data for a while
 * Introducing mile long track for land sports only and only in the US Pacific Time Zone (Fresno).
   Can be switch over in the preferences
@@ -11,6 +20,8 @@
 * User Experience fixes (UX -> User Experience, overflows, etc.)
 * Making Activity Title configurable and template-able
 * Making Activity Description configurable and template-able
+* Upgrade Flutter to channel beta 3.20.0-1.2.pre, Dart 3.4.0-99.1.beta
+* Upgrade numerous plugins many times
 
 ## 1.1.153
 * Progress towards Stryd foot pod support

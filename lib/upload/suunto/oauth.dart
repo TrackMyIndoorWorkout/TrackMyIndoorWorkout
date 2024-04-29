@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -110,7 +110,7 @@ mixin Auth {
     debugPrint('Running on iOS or Android');
 
     // Attach a listener to the stream
-    sub = uriLinkStream.listen((Uri? uri) {
+    sub = AppLinks().uriLinkStream.listen((Uri? uri) {
       if (uri == null) {
         debugPrint('Subscription was null');
         sub?.cancel();

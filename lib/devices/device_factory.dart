@@ -14,6 +14,7 @@ import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
 import 'device_descriptors/npe_runn_treadmill.dart';
+import 'device_descriptors/paddling_power_meter_descriptor.dart';
 import 'device_descriptors/paddling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/precor_spinner_chrono_power.dart';
 import 'device_descriptors/rower_device_descriptor.dart';
@@ -203,6 +204,17 @@ class DeviceFactory {
     );
   }
 
+  static PaddlingPowerMeterDescriptor getPowerMeterBasedPaddler() {
+    return PaddlingPowerMeterDescriptor(
+      fourCC: powerMeterBasedPaddleFourCC,
+      vendorName: "Unknown",
+      modelName: "ESP Ergometer",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "ESP Ergometer",
+    );
+  }
+
   static CyclingSpeedAndCadenceDescriptor getCSCBasedBike() {
     return CyclingSpeedAndCadenceDescriptor(
       fourCC: cscSensorBasedBikeFourCC,
@@ -320,6 +332,8 @@ class DeviceFactory {
         return DeviceFactory.getGenericFTMSCrossTrainer();
       case powerMeterBasedBikeFourCC:
         return DeviceFactory.getPowerMeterBasedBike();
+      case powerMeterBasedPaddleFourCC:
+        return DeviceFactory.getPowerMeterBasedPaddler();
       case cscSensorBasedBikeFourCC:
         return DeviceFactory.getCSCBasedBike();
       case cscSensorBasedPaddleFourCC:

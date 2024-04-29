@@ -147,7 +147,8 @@ extension ScanResultEx on ScanResult {
       return MachineType.indoorBike;
     }
 
-    if (serviceUuids.contains(cyclingCadenceServiceUuid)) {
+    if (serviceUuids.contains(cyclingCadenceServiceUuid) ||
+        serviceUuids.contains(cyclingPowerServiceUuid)) {
       final prefService = Get.find<BasePrefService>();
       final kayakingWithCyclingSensors =
           prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;

@@ -41,7 +41,7 @@ class Record {
   @ignore
   int movingTime = 0; // ms
   @ignore
-  double? resistance;
+  int? resistance;
 
   Record({
     this.id = Isar.autoIncrement,
@@ -423,7 +423,7 @@ class RecordWithSport extends Record {
       cadence: 0,
       heartRate: 0,
       elapsedMillis: 0,
-      resistance: 0.0,
+      resistance: 0,
       sport: sport,
     );
   }
@@ -441,6 +441,7 @@ class RecordWithSport extends Record {
       speed: spd,
       cadence: 30 + random.nextInt(100),
       heartRate: 60 + random.nextInt(120),
+      resistance: random.nextInt(100),
       sport: sport,
     );
   }

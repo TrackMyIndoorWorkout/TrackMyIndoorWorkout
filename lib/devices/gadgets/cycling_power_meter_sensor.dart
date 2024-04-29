@@ -7,12 +7,11 @@ import '../metric_descriptors/long_metric_descriptor.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import 'cadence_mixin.dart';
-import 'complex_sensor.dart';
+import 'flywheel_sensor_base.dart';
 
-class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
+class CyclingPowerMeterSensor extends FlywheelSensorBase with CadenceMixin {
   static const serviceUuid = cyclingPowerServiceUuid;
   static const characteristicUuid = cyclingPowerMeasurementUuid;
-  static const roadBikeWheelCircumference = 2.105; // m
 
   MetricDescriptor? powerMetric;
   // Wheel revolution metrics
@@ -30,12 +29,14 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
     initCadence(4, 64, maxUint16);
     wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(4, 32, maxUint32);
+    readCircumference();
   }
 
   @override
   void processFlag(int flag) {
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cycling_power_measurement.xml
     if (featureFlag != flag && flag >= 0) {
+      readCircumference();
       clearMetrics();
       featureFlag = flag;
       expectedLength = 2; // The flag itself + sint16 mandatory power
@@ -137,18 +138,19 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
   @override
   RecordWithSport processMeasurement(List<int> data) {
     if (!canMeasurementProcessed(data)) {
-      return RecordWithSport(sport: ActivityType.ride);
+      return RecordWithSport(sport: sport);
     }
 
     double? distance;
     double? speed;
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
-      distance = wheelCadence.cadenceData.last.revolutions * roadBikeWheelCircumference;
+      distance = (wheelCadence.overflowCounter * wheelCadence.revolutionOverflow +
+              wheelCadence.cadenceData.last.revolutions) *
+          circumference;
       // https://endless-sphere.com/forums/viewtopic.php?t=16114
       // 26" wheel approx cadence at 80mph => 1024.0
-      speed =
-          min(wheelCadence.computeCadence(), 1024.0) * 60.0 * roadBikeWheelCircumference / 1000.0;
+      speed = min(wheelCadence.computeCadence(), 1024.0) * 60.0 * circumference / 1000.0;
     }
 
     int? crankCadence;
@@ -164,7 +166,7 @@ class CyclingPowerMeterSensor extends ComplexSensor with CadenceMixin {
       power: getPower(data)?.toInt(),
       speed: speed,
       cadence: crankCadence?.toInt(),
-      sport: ActivityType.ride,
+      sport: sport,
     );
   }
 

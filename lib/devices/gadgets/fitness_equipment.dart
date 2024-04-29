@@ -1278,7 +1278,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
   void _startPollingTimer() {
     _timer = Timer(_pollDuration, _pollingTimerCallback);
-    descriptor?.pollMeasurement(getControlPoint()!, logLevel);
+    if (device?.isConnected ?? false) {
+      descriptor?.pollMeasurement(getControlPoint()!, logLevel);
+    }
   }
 
   Future<void> startWorkout() async {
