@@ -19,14 +19,14 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../export/export_target.dart';
-import '../export/fit/fit_export.dart';
 import '../devices/bluetooth_device_ex.dart';
 import '../devices/device_descriptors/device_descriptor.dart';
+import '../devices/device_descriptors/kayak_first_descriptor.dart';
 import '../devices/device_fourcc.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
-import '../devices/device_descriptors/kayak_first_descriptor.dart';
+import '../export/export_target.dart';
+import '../export/fit/fit_export.dart';
 import '../persistence/isar/activity.dart';
 import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/record.dart';
@@ -50,9 +50,9 @@ import '../preferences/palette_spec.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_resistance_level.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/sound_effects.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
-import '../preferences/sound_effects.dart';
 import '../preferences/stage_mode.dart';
 import '../preferences/stationary_workout.dart';
 import '../preferences/target_heart_rate.dart';
@@ -75,6 +75,7 @@ import '../utils/statistics_accumulator.dart';
 import '../utils/target_heart_rate.dart';
 import '../utils/theme_manager.dart';
 import '../utils/time_zone.dart';
+import 'activities.dart';
 import 'models/display_record.dart';
 import 'models/progress_state.dart';
 import 'models/row_configuration.dart';
@@ -87,7 +88,6 @@ import 'parts/pre_measurement_progress.dart';
 import 'parts/spin_down.dart';
 import 'parts/three_choices.dart';
 import 'parts/upload_portal_picker.dart';
-import 'activities.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -273,7 +273,10 @@ class RecordingState extends State<RecordingScreen> {
   final GlobalKey<FabCircularMenuPlusState> _fabKey = GlobalKey();
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
-  StatisticsAccumulator _accu = StatisticsAccumulator(si: true, sport: ActivityType.ride);
+  StatisticsAccumulator _workoutStats =
+      StatisticsAccumulator(si: true, sport: ActivityType.ride);
+  StatisticsAccumulator _graphStats =
+      StatisticsAccumulator(si: true, sport: ActivityType.ride);
   Tuple2<String, int> _sinkAddress = dummyAddressTuple;
   Socket? _sinkSocket;
 
@@ -360,12 +363,14 @@ class RecordingState extends State<RecordingScreen> {
           _graphData.add(DisplayRecord.fromRecord(record));
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphAvgData.add(_accu.averageDisplayRecord(record.timeStamp));
+            _graphAvgData
+                .add(_workoutStats.averageDisplayRecord(record.timeStamp));
           }
 
           if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphMaxData.add(_accu.maximumDisplayRecord(record.timeStamp));
+            _graphMaxData
+                .add(_workoutStats.maximumDisplayRecord(record.timeStamp));
           }
 
           if (_pointCount > 0 && _graphData.length > _pointCount) {
@@ -380,6 +385,7 @@ class RecordingState extends State<RecordingScreen> {
               _graphMaxData.removeFirst();
             }
           }
+
           graphData = _graphData.toList(growable: false);
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
@@ -389,6 +395,13 @@ class RecordingState extends State<RecordingScreen> {
           if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
             graphMaxData = _graphMaxData.toList(growable: false);
+          }
+
+          if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+            _graphStats.reset();
+            for (final data in _graphData) {
+              _graphStats.processDisplayRecord(data);
+            }
           }
         }
 
@@ -423,44 +436,52 @@ class RecordingState extends State<RecordingScreen> {
         }
 
         if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-          _accu.processRecord(record);
+          _workoutStats.processRecord(record);
 
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating &&
                   _elapsed % (_onStageStatisticsAlternationDuration * 2) <
                       _onStageStatisticsAlternationDuration) {
             if (!_stationaryWorkout) {
-              _statistics[_power0Index] = _accu.avgPower.toInt().toString();
+              _statistics[_power0Index] =
+                  _workoutStats.avgPower.toInt().toString();
               _statistics[_speed0Index] = speedOrPaceString(
-                _accu.avgSpeed,
+                _workoutStats.avgSpeed,
                 _si,
                 widget.descriptor.sport,
                 limitSlowSpeed: true,
               );
             }
 
-            _statistics[_cadence0Index] = _accu.avgCadence.toInt().toString();
-            _statistics[_hr0Index] = _accu.avgHeartRate.toInt().toString();
+            _statistics[_cadence0Index] =
+                _workoutStats.avgCadence.toInt().toString();
+            _statistics[_hr0Index] =
+                _workoutStats.avgHeartRate.toInt().toString();
 
             if (_showResistanceLevel) {
-              _extraStatistics[_resistanceIndex] = _accu.avgResistance.toInt().toString();
+              _extraStatistics[_resistanceIndex] =
+                  _workoutStats.avgResistance.toInt().toString();
             }
           } else {
             if (!_stationaryWorkout) {
-              _statistics[_power0Index] = _accu.maxPowerDisplay.toString();
+              _statistics[_power0Index] =
+                  _workoutStats.maxPowerDisplay.toString();
               _statistics[_speed0Index] = speedOrPaceString(
-                _accu.maxSpeedDisplay,
+                _workoutStats.maxSpeedDisplay,
                 _si,
                 widget.descriptor.sport,
                 limitSlowSpeed: true,
               );
             }
 
-            _statistics[_cadence0Index] = _accu.maxCadenceDisplay.toString();
-            _statistics[_hr0Index] = _accu.maxHeartRateDisplay.toString();
+            _statistics[_cadence0Index] =
+                _workoutStats.maxCadenceDisplay.toString();
+            _statistics[_hr0Index] =
+                _workoutStats.maxHeartRateDisplay.toString();
 
             if (_showResistanceLevel) {
-              _extraStatistics[_resistanceIndex] = _accu.maxResistance.toString();
+              _extraStatistics[_resistanceIndex] =
+                  _workoutStats.maxResistance.toString();
             }
           }
         }
@@ -539,7 +560,7 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
-      _accu.reset();
+      _workoutStats.reset();
     }
 
     if (!continued) {
@@ -1019,7 +1040,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _accu = StatisticsAccumulator(
+    _workoutStats = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
       calculateAvgPower: !_stationaryWorkout,
@@ -1032,6 +1053,29 @@ class RecordingState extends State<RecordingScreen> {
       calculateMaxHeartRate: true,
       calculateAvgResistance: _showResistanceLevel,
       calculateMaxResistance: _showResistanceLevel,
+    );
+    _graphStats = StatisticsAccumulator(
+      si: _si,
+      sport: widget.sport,
+      calculateAvgPower: false,
+      calculateMaxPower: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinPower: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateAvgSpeed: false,
+      calculateMaxSpeed: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinSpeed: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateAvgCadence: false,
+      calculateMaxCadence: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinCadence: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateAvgHeartRate: false,
+      calculateMaxHeartRate:
+          _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinHeartRate:
+          _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateAvgResistance: false,
+      calculateMaxResistance: _showResistanceLevel &&
+          _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinResistance: _showResistanceLevel &&
+          _onStageStatisticsType != onStageStatisticsTypeNone,
     );
     _zoneIndexes = [null, null, null, null];
 
@@ -1234,30 +1278,54 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.power,
-          color: _chartAvgColor,
-          animationDuration: 0,
-        ),
-      );
+    int minPowerThreshold = maxInit;
+    int maxPowerThreshold = minInit;
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minPower = _graphStats.minPower;
+      if (minPower < maxInit) {
+        minPowerThreshold = (minPower * 0.8).toInt();
+      }
+
+      final maxPower = _graphStats.maxPower;
+      if (maxPower > minInit) {
+        maxPowerThreshold = (maxPower * 1.2).toInt();
+      }
+    }
+
+    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating)) {
+      final latestAvgPower = _graphAvgData.last.power;
+      if (latestAvgPower != null &&
+          latestAvgPower >= minPowerThreshold &&
+          latestAvgPower <= maxPowerThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.power,
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.power,
-          color: _chartMaxColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestMaxPower = _graphMaxData.last.power;
+      if (latestMaxPower != null &&
+          latestMaxPower >= minPowerThreshold &&
+          latestMaxPower <= maxPowerThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.power,
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     return series;
@@ -1274,30 +1342,54 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
+    double minSpeedThreshold = maxInit.toDouble();
+    double maxSpeedThreshold = minInit.toDouble();
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minSpeed = _graphStats.minSpeed;
+      if (minSpeed < maxInit) {
+        minSpeedThreshold = minSpeed * 0.8;
+      }
+
+      final maxSpeed = _graphStats.maxSpeed;
+      if (maxSpeed > minInit) {
+        maxSpeedThreshold = maxSpeed * 1.2;
+      }
+    }
+
     if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
-          color: _chartAvgColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestAvgSpeed = _graphAvgData.last.speed;
+      if (latestAvgSpeed != null &&
+          latestAvgSpeed >= minSpeedThreshold &&
+          latestAvgSpeed <= maxSpeedThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
-          color: _chartMaxColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestMaxSpeed = _graphMaxData.last.speed;
+      if (latestMaxSpeed != null &&
+          latestMaxSpeed >= minSpeedThreshold &&
+          latestMaxSpeed <= maxSpeedThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.speedByUnit(_si),
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     return series;
@@ -1314,30 +1406,54 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
+    int minCadenceThreshold = maxInit;
+    int maxCadenceThreshold = minInit;
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minCadence = _graphStats.minCadence;
+      if (minCadence < maxInit) {
+        minCadenceThreshold = (minCadence * 0.8).toInt();
+      }
+
+      final maxCadence = _graphStats.maxCadence;
+      if (maxCadence > minInit) {
+        maxCadenceThreshold = (maxCadence * 1.2).toInt();
+      }
+    }
+
     if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.cadence,
-          color: _chartAvgColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestAvgCadence = _graphAvgData.last.cadence;
+      if (latestAvgCadence != null &&
+          latestAvgCadence >= minCadenceThreshold &&
+          latestAvgCadence <= maxCadenceThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.cadence,
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.cadence,
-          color: _chartMaxColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestMaxCadence = _graphMaxData.last.cadence;
+      if (latestMaxCadence != null &&
+          latestMaxCadence >= minCadenceThreshold &&
+          latestMaxCadence <= maxCadenceThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.cadence,
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     return series;
@@ -1354,30 +1470,54 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
+    int minHrThreshold = maxInit;
+    int maxHrThreshold = minInit;
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minHr = _graphStats.minHeartRate;
+      if (minHr < maxInit) {
+        minHrThreshold = (minHr * 0.8).toInt();
+      }
+
+      final maxHr = _graphStats.maxHeartRate;
+      if (maxHr > minInit) {
+        maxHrThreshold = (maxHr * 1.2).toInt();
+      }
+    }
+
     if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.heartRate,
-          color: _chartAvgColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestAvgHr = _graphAvgData.last.heartRate;
+      if (latestAvgHr != null &&
+          latestAvgHr >= minHrThreshold &&
+          latestAvgHr <= maxHrThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.heartRate,
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.heartRate,
-          color: _chartMaxColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestMaxHr = _graphMaxData.last.heartRate;
+      if (latestMaxHr != null &&
+          latestMaxHr >= minHrThreshold &&
+          latestMaxHr <= maxHrThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.heartRate,
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     return series;
@@ -1394,30 +1534,54 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
+    int minResistanceThreshold = maxInit;
+    int maxResistanceThreshold = minInit;
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minResistance = _graphStats.minResistance;
+      if (minResistance < maxInit) {
+        minResistanceThreshold = (minResistance * 0.8).toInt();
+      }
+
+      final maxResistance = _graphStats.maxResistance;
+      if (maxResistance > minInit) {
+        maxResistanceThreshold = (maxResistance * 1.2).toInt();
+      }
+    }
+
     if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphAvgData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.resistance,
-          color: _chartAvgColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestAvgResistance = _graphAvgData.last.resistance;
+      if (latestAvgResistance != null &&
+          latestAvgResistance >= minResistanceThreshold &&
+          latestAvgResistance <= maxResistanceThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.resistance,
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-      series.add(
-        charts.LineSeries<DisplayRecord, DateTime>(
-          dataSource: graphMaxData,
-          xValueMapper: (DisplayRecord record, _) => record.timeStamp,
-          yValueMapper: (DisplayRecord record, _) => record.resistance,
-          color: _chartMaxColor,
-          animationDuration: 0,
-        ),
-      );
+      final latestMaxResistance = _graphMaxData.last.resistance;
+      if (latestMaxResistance != null &&
+          latestMaxResistance >= minResistanceThreshold &&
+          latestMaxResistance <= maxResistanceThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.resistance,
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
     }
 
     return series;
@@ -2507,7 +2671,7 @@ class RecordingState extends State<RecordingScreen> {
                 }
               }
 
-              _accu.reset();
+              _workoutStats.reset();
             });
           }));
         }
