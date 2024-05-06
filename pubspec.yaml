@@ -10,7 +10,8 @@ environment:
   flutter: ">=3.22.0-0.3.pre"
 
 dependency_overrides:
-  analyzer: ^6.4.1  # because of isar_generator
+  analyzer: ^6.5.0  # because of isar_generator
+  meta: ^1.14.0  # analyzer
 
 dependencies:
   app_links: ^5.0.0
