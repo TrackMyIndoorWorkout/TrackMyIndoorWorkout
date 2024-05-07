@@ -1278,8 +1278,8 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating)) {
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
       final latestAvgPower = _graphAvgData.last.power;
       if (latestAvgPower != null &&
           latestAvgPower >= minPowerThreshold &&
