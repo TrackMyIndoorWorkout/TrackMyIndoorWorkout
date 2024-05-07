@@ -11,7 +11,7 @@ environment:
 
 dependency_overrides:
   analyzer: ^6.5.0  # because of isar_generator
-  meta: ^1.14.0  # analyzer
+  meta: ^1.15.0  # analyzer
 
 dependencies:
   app_links: ^6.0.1
@@ -26,7 +26,7 @@ dependencies:
   flex_color_scheme: ^7.3.1
   floor: ^1.4.2
   flutter_archive: ^6.0.3
-  flutter_blue_plus: ^1.32.4
+  flutter_blue_plus: ^1.32.5
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.6
   flutter_spinbox: ^0.13.1
