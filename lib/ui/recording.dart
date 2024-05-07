@@ -1264,16 +1264,16 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    int minPowerThreshold = maxInit;
-    int maxPowerThreshold = minInit;
+    int minPowerThreshold = minInit;
+    int maxPowerThreshold = maxInit;
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       final minPower = _graphStats.minPower;
-      if (minPower < maxInit) {
+      if (minPower < minInit) {
         minPowerThreshold = (minPower * 0.8).toInt();
       }
 
       final maxPower = _graphStats.maxPower;
-      if (maxPower > minInit) {
+      if (maxPower > maxInit) {
         maxPowerThreshold = (maxPower * 1.2).toInt();
       }
     }
@@ -1328,16 +1328,16 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    double minSpeedThreshold = maxInit.toDouble();
-    double maxSpeedThreshold = minInit.toDouble();
+    double minSpeedThreshold = minInit.toDouble();
+    double maxSpeedThreshold = maxInit.toDouble();
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       final minSpeed = _graphStats.minSpeed;
-      if (minSpeed < maxInit) {
+      if (minSpeed < minInit) {
         minSpeedThreshold = minSpeed * 0.8;
       }
 
       final maxSpeed = _graphStats.maxSpeed;
-      if (maxSpeed > minInit) {
+      if (maxSpeed > maxInit) {
         maxSpeedThreshold = maxSpeed * 1.2;
       }
     }
@@ -1392,16 +1392,16 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    int minCadenceThreshold = maxInit;
-    int maxCadenceThreshold = minInit;
+    int minCadenceThreshold = minInit;
+    int maxCadenceThreshold = maxInit;
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       final minCadence = _graphStats.minCadence;
-      if (minCadence < maxInit) {
+      if (minCadence < minInit) {
         minCadenceThreshold = (minCadence * 0.8).toInt();
       }
 
       final maxCadence = _graphStats.maxCadence;
-      if (maxCadence > minInit) {
+      if (maxCadence > maxInit) {
         maxCadenceThreshold = (maxCadence * 1.2).toInt();
       }
     }
@@ -1456,16 +1456,16 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    int minHrThreshold = maxInit;
-    int maxHrThreshold = minInit;
+    int minHrThreshold = minInit;
+    int maxHrThreshold = maxInit;
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       final minHr = _graphStats.minHeartRate;
-      if (minHr < maxInit) {
+      if (minHr < minInit) {
         minHrThreshold = (minHr * 0.8).toInt();
       }
 
       final maxHr = _graphStats.maxHeartRate;
-      if (maxHr > minInit) {
+      if (maxHr > maxInit) {
         maxHrThreshold = (maxHr * 1.2).toInt();
       }
     }
@@ -1516,16 +1516,16 @@ class RecordingState extends State<RecordingScreen> {
       ),
     ];
 
-    int minResistanceThreshold = maxInit;
-    int maxResistanceThreshold = minInit;
+    int minResistanceThreshold = minInit;
+    int maxResistanceThreshold = maxInit;
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       final minResistance = _graphStats.minResistance;
-      if (minResistance < maxInit) {
+      if (minResistance < minInit) {
         minResistanceThreshold = (minResistance * 0.8).toInt();
       }
 
       final maxResistance = _graphStats.maxResistance;
-      if (maxResistance > minInit) {
+      if (maxResistance > maxInit) {
         maxResistanceThreshold = (maxResistance * 1.2).toInt();
       }
     }
