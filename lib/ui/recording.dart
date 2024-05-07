@@ -273,10 +273,8 @@ class RecordingState extends State<RecordingScreen> {
   final GlobalKey<FabCircularMenuPlusState> _fabKey = GlobalKey();
   int _unlockKey = -2;
   int _logLevel = logLevelDefault;
-  StatisticsAccumulator _workoutStats =
-      StatisticsAccumulator(si: true, sport: ActivityType.ride);
-  StatisticsAccumulator _graphStats =
-      StatisticsAccumulator(si: true, sport: ActivityType.ride);
+  StatisticsAccumulator _workoutStats = StatisticsAccumulator(si: true, sport: ActivityType.ride);
+  StatisticsAccumulator _graphStats = StatisticsAccumulator(si: true, sport: ActivityType.ride);
   Tuple2<String, int> _sinkAddress = dummyAddressTuple;
   Socket? _sinkSocket;
 
@@ -363,14 +361,12 @@ class RecordingState extends State<RecordingScreen> {
           _graphData.add(DisplayRecord.fromRecord(record));
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphAvgData
-                .add(_workoutStats.averageDisplayRecord(record.timeStamp));
+            _graphAvgData.add(_workoutStats.averageDisplayRecord(record.timeStamp));
           }
 
           if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-            _graphMaxData
-                .add(_workoutStats.maximumDisplayRecord(record.timeStamp));
+            _graphMaxData.add(_workoutStats.maximumDisplayRecord(record.timeStamp));
           }
 
           if (_pointCount > 0 && _graphData.length > _pointCount) {
@@ -443,8 +439,7 @@ class RecordingState extends State<RecordingScreen> {
                   _elapsed % (_onStageStatisticsAlternationDuration * 2) <
                       _onStageStatisticsAlternationDuration) {
             if (!_stationaryWorkout) {
-              _statistics[_power0Index] =
-                  _workoutStats.avgPower.toInt().toString();
+              _statistics[_power0Index] = _workoutStats.avgPower.toInt().toString();
               _statistics[_speed0Index] = speedOrPaceString(
                 _workoutStats.avgSpeed,
                 _si,
@@ -453,19 +448,15 @@ class RecordingState extends State<RecordingScreen> {
               );
             }
 
-            _statistics[_cadence0Index] =
-                _workoutStats.avgCadence.toInt().toString();
-            _statistics[_hr0Index] =
-                _workoutStats.avgHeartRate.toInt().toString();
+            _statistics[_cadence0Index] = _workoutStats.avgCadence.toInt().toString();
+            _statistics[_hr0Index] = _workoutStats.avgHeartRate.toInt().toString();
 
             if (_showResistanceLevel) {
-              _extraStatistics[_resistanceIndex] =
-                  _workoutStats.avgResistance.toInt().toString();
+              _extraStatistics[_resistanceIndex] = _workoutStats.avgResistance.toInt().toString();
             }
           } else {
             if (!_stationaryWorkout) {
-              _statistics[_power0Index] =
-                  _workoutStats.maxPowerDisplay.toString();
+              _statistics[_power0Index] = _workoutStats.maxPowerDisplay.toString();
               _statistics[_speed0Index] = speedOrPaceString(
                 _workoutStats.maxSpeedDisplay,
                 _si,
@@ -474,14 +465,11 @@ class RecordingState extends State<RecordingScreen> {
               );
             }
 
-            _statistics[_cadence0Index] =
-                _workoutStats.maxCadenceDisplay.toString();
-            _statistics[_hr0Index] =
-                _workoutStats.maxHeartRateDisplay.toString();
+            _statistics[_cadence0Index] = _workoutStats.maxCadenceDisplay.toString();
+            _statistics[_hr0Index] = _workoutStats.maxHeartRateDisplay.toString();
 
             if (_showResistanceLevel) {
-              _extraStatistics[_resistanceIndex] =
-                  _workoutStats.maxResistance.toString();
+              _extraStatistics[_resistanceIndex] = _workoutStats.maxResistance.toString();
             }
           }
         }
@@ -1067,15 +1055,13 @@ class RecordingState extends State<RecordingScreen> {
       calculateMaxCadence: _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateMinCadence: _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateAvgHeartRate: false,
-      calculateMaxHeartRate:
-          _onStageStatisticsType != onStageStatisticsTypeNone,
-      calculateMinHeartRate:
-          _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMaxHeartRate: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinHeartRate: _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateAvgResistance: false,
-      calculateMaxResistance: _showResistanceLevel &&
-          _onStageStatisticsType != onStageStatisticsTypeNone,
-      calculateMinResistance: _showResistanceLevel &&
-          _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMaxResistance:
+          _showResistanceLevel && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinResistance:
+          _showResistanceLevel && _onStageStatisticsType != onStageStatisticsTypeNone,
     );
     _zoneIndexes = [null, null, null, null];
 
@@ -1487,9 +1473,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
       final latestAvgHr = _graphAvgData.last.heartRate;
-      if (latestAvgHr != null &&
-          latestAvgHr >= minHrThreshold &&
-          latestAvgHr <= maxHrThreshold) {
+      if (latestAvgHr != null && latestAvgHr >= minHrThreshold && latestAvgHr <= maxHrThreshold) {
         series.add(
           charts.LineSeries<DisplayRecord, DateTime>(
             dataSource: graphAvgData,
@@ -1505,9 +1489,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
         _onStageStatisticsType == onStageStatisticsTypeAlternating) {
       final latestMaxHr = _graphMaxData.last.heartRate;
-      if (latestMaxHr != null &&
-          latestMaxHr >= minHrThreshold &&
-          latestMaxHr <= maxHrThreshold) {
+      if (latestMaxHr != null && latestMaxHr >= minHrThreshold && latestMaxHr <= maxHrThreshold) {
         series.add(
           charts.LineSeries<DisplayRecord, DateTime>(
             dataSource: graphMaxData,

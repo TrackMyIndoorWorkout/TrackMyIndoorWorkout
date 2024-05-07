@@ -22,8 +22,7 @@ void main() {
         int sum = 0;
         int actualCount = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(power: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(power: number)));
           sum += number;
           if (number > 0) {
             actualCount++;
@@ -77,8 +76,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(power: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(power: number)));
           if (number > 0) {
             maximum = max(number, maximum);
           }
@@ -122,13 +120,12 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateMinPower: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinPower: true);
         final count = rnd.nextInt(99) + 1;
         int minimum = minInit;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(power: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(power: number)));
           if (number > 0) {
             minimum = min(number, minimum);
           }
@@ -180,8 +177,7 @@ void main() {
         var count = rnd.nextInt(99) + 1;
         double sum = 0.0;
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(speed: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(speed: number)));
           if (number > eps) {
             sum += number;
           } else {
@@ -236,8 +232,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double maximum = maxInit.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(speed: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(speed: number)));
           if (number > eps) {
             maximum = max(number, maximum);
           }
@@ -289,8 +284,7 @@ void main() {
         final count = rnd.nextInt(99) + 1;
         double minimum = minInit.toDouble();
         getRandomDoubles(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(speed: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(speed: number)));
           if (number > eps) {
             minimum = min(number, minimum);
           }
@@ -334,14 +328,13 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgHeartRate: true);
         final count = rnd.nextInt(99) + 1;
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(heartRate: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(heartRate: number)));
           sum += number;
           if (number > 0) {
             cnt++;
@@ -387,13 +380,12 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxHeartRate: true);
         final count = rnd.nextInt(99) + 1;
         int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(heartRate: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(heartRate: number)));
           if (number > 0) {
             maximum = max(number, maximum);
           }
@@ -437,13 +429,12 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateMinHeartRate: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinHeartRate: true);
         final count = rnd.nextInt(99) + 1;
         int minimum = minInit;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(heartRate: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(heartRate: number)));
           if (number > 0) {
             minimum = min(number, minimum);
           }
@@ -487,14 +478,13 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateAvgCadence: true);
         final count = rnd.nextInt(99) + 1;
         int sum = 0;
         int cnt = 0;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(cadence: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(cadence: number)));
           sum += number;
           if (number > 0) {
             cnt++;
@@ -540,13 +530,12 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMaxCadence: true);
         final count = rnd.nextInt(99) + 1;
         int maximum = maxInit;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(cadence: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(cadence: number)));
           if (number > 0) {
             maximum = max(number, maximum);
           }
@@ -590,13 +579,12 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-        final accu = StatisticsAccumulator(
-            si: rnd.nextBool(), sport: sport, calculateMinCadence: true);
+        final accu =
+            StatisticsAccumulator(si: rnd.nextBool(), sport: sport, calculateMinCadence: true);
         final count = rnd.nextInt(99) + 1;
         int minimum = minInit;
         getRandomInts(count, 100, rnd).forEach((number) {
-          accu.processDisplayRecord(
-              DisplayRecord.fromRecord(Record(cadence: number)));
+          accu.processDisplayRecord(DisplayRecord.fromRecord(Record(cadence: number)));
           if (number > 0) {
             minimum = min(number, minimum);
           }
@@ -745,8 +733,7 @@ void main() {
           expect(accu.avgPower, powerCount > 0 ? powerSum / powerCount : 0.0);
           expect(accu.avgSpeed, count > 0 ? speedSum / count : 0.0);
           expect(accu.avgHeartRate, hrCount > 0 ? hrSum ~/ hrCount : 0);
-          expect(accu.avgCadence,
-              cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);
+          expect(accu.avgCadence, cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);
         });
       }
     }
