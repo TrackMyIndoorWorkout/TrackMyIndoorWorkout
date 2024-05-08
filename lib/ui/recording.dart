@@ -2470,7 +2470,7 @@ class RecordingState extends State<RecordingScreen> {
     if (_showResistanceLevel) {
       final List<Widget> rowChildren = _onStageStatisticsType == onStageStatisticsTypeNone
           ? [
-              _themeManager.getBlueIcon(Icons.stairs, _sizeDefault),
+              _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault),
               const Spacer(),
               Text(_optionalValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
               SizedBox(
@@ -2493,7 +2493,7 @@ class RecordingState extends State<RecordingScreen> {
               ),
               Column(
                 children: [
-                  _themeManager.getBlueIcon(Icons.stairs, _sizeDefault / 2),
+                  _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault / 2),
                   SizedBox(
                     width: _sizeDefault * (_simplerUi ? 1 : 0.65),
                     child: Center(
