@@ -49,6 +49,7 @@ import '../preferences/metric_spec.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_resistance_level.dart';
+import '../preferences/show_strokes_strides_revs.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
 import '../preferences/speed_spec.dart';
@@ -143,8 +144,9 @@ class RecordingState extends State<RecordingScreen> {
   static const int _cadenceNIndex = _cadence0Index - 1;
   static const int _hrNIndex = _hr0Index - 1;
   static const int _distanceNIndex = _distance0Index - 1;
-  // Extra measurements
+  // Extra optional measurements
   static const int _resistanceIndex = 0;
+  static const int _strokeCountIndex = 1;
 
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
@@ -215,9 +217,9 @@ class RecordingState extends State<RecordingScreen> {
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
   List<String> _values = [];
-  List<String> _extraValues = [];
+  List<String> _optionalValues = [];
   List<String> _statistics = [];
-  List<String> _extraStatistics = [];
+  List<String> _optionalStatistics = [];
   List<int?> _zoneIndexes = [];
   double _distance = 0.0;
   int _elapsed = 0;
@@ -237,6 +239,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _targetHrAlerting = false;
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _showResistanceLevel = showResistanceLevelDefault;
+  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
   bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
   List<WorkoutSummary> _leaderboard = [];
@@ -452,7 +455,8 @@ class RecordingState extends State<RecordingScreen> {
             _statistics[_hr0Index] = _workoutStats.avgHeartRate.toInt().toString();
 
             if (_showResistanceLevel) {
-              _extraStatistics[_resistanceIndex] = _workoutStats.avgResistance.toInt().toString();
+              _optionalStatistics[_resistanceIndex] =
+                  _workoutStats.avgResistance.toInt().toString();
             }
           } else {
             if (!_stationaryWorkout) {
@@ -469,7 +473,7 @@ class RecordingState extends State<RecordingScreen> {
             _statistics[_hr0Index] = _workoutStats.maxHeartRateDisplay.toString();
 
             if (_showResistanceLevel) {
-              _extraStatistics[_resistanceIndex] = _workoutStats.maxResistance.toString();
+              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistance.toString();
             }
           }
         }
@@ -484,7 +488,12 @@ class RecordingState extends State<RecordingScreen> {
         ];
 
         if (_showResistanceLevel) {
-          _extraValues[_resistanceIndex] = record.resistance?.toString() ?? emptyMeasurement;
+          _optionalValues[_resistanceIndex] = record.resistance?.toString() ?? emptyMeasurement;
+        }
+
+        if (_showStrokesStridesRevs) {
+          _optionalValues[_strokeCountIndex] =
+              record.strokeCount?.toInt().toString() ?? emptyMeasurement;
         }
 
         if (!_stationaryWorkout) {
@@ -633,7 +642,7 @@ class RecordingState extends State<RecordingScreen> {
         _statistics[_hr0Index] = emptyMeasurement;
 
         if (_showResistanceLevel) {
-          _extraStatistics[_resistanceIndex] = emptyMeasurement;
+          _optionalStatistics[_resistanceIndex] = emptyMeasurement;
         }
       }
     });
@@ -888,6 +897,8 @@ class RecordingState extends State<RecordingScreen> {
         useHeartRateBasedCalorieCountingDefault;
     _showResistanceLevel =
         prefService.get<bool>(showResistanceLevelTag) ?? showResistanceLevelDefault;
+    _showStrokesStridesRevs =
+        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
 
     _instantOnStage = prefService.get<bool>(instantOnStageTag) ?? instantOnStageDefault;
     _onStageStatisticsType =
@@ -1011,7 +1022,8 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _extraValues = [
+    _optionalValues = [
+      emptyMeasurement,
       emptyMeasurement,
     ];
 
@@ -1024,7 +1036,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _extraStatistics = [
+    _optionalStatistics = [
       emptyMeasurement,
     ];
 
@@ -2460,7 +2472,7 @@ class RecordingState extends State<RecordingScreen> {
           ? [
               _themeManager.getBlueIcon(Icons.stairs, _sizeDefault),
               const Spacer(),
-              Text(_extraValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
+              Text(_optionalValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
               SizedBox(
                 width: _sizeDefault * (_simplerUi ? 2 : 1.3),
                 child: Center(
@@ -2475,7 +2487,7 @@ class RecordingState extends State<RecordingScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(_extraValues[_resistanceIndex], style: _measurementStyle.apply()),
+                    Text(_optionalValues[_resistanceIndex], style: _measurementStyle.apply()),
                   ],
                 ),
               ),
@@ -2496,7 +2508,7 @@ class RecordingState extends State<RecordingScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(_extraStatistics[_resistanceIndex], style: _measurementStyle.apply()),
+                    Text(_optionalStatistics[_resistanceIndex], style: _measurementStyle.apply()),
                   ],
                 ),
               )
@@ -2563,6 +2575,35 @@ class RecordingState extends State<RecordingScreen> {
           controller: _rowControllers[_hrNIndex],
         ),
       ),
+    ];
+
+    if (_showStrokesStridesRevs) {
+      columnRest.add(
+        ExpandablePanel(
+          theme: _expandableThemeData,
+          header: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _themeManager.getBlueIcon(Icons.numbers, _sizeDefault),
+              const Spacer(),
+              Text(_optionalValues[_strokeCountIndex], style: _fullMeasurementStyle.apply()),
+              SizedBox(
+                width: _sizeDefault * (_simplerUi ? 2 : 1.3),
+                child: Center(
+                  child: Text("#", maxLines: 2, style: _fullUnitStyle),
+                ),
+              ),
+            ],
+          ),
+          collapsed: Container(),
+          expanded: Container(),
+          controller: null,
+        ),
+      );
+    }
+
+    columnRest.add(
       _stationaryWorkout
           ? const Divider()
           : ExpandablePanel(
@@ -2572,7 +2613,7 @@ class RecordingState extends State<RecordingScreen> {
               expanded: _simplerUi ? Container() : regularExtras[_distanceNIndex],
               controller: _rowControllers[_distanceNIndex],
             ),
-    ];
+    );
 
     if (_landscape && _twoColumnLayout) {
       columnTwo.addAll(columnRest);
@@ -2649,7 +2690,7 @@ class RecordingState extends State<RecordingScreen> {
                 _statistics[_hr0Index] = emptyMeasurement;
 
                 if (_showResistanceLevel) {
-                  _extraStatistics[_resistanceIndex] = emptyMeasurement;
+                  _optionalStatistics[_resistanceIndex] = emptyMeasurement;
                 }
               }
 
