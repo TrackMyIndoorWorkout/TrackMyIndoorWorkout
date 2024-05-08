@@ -13,7 +13,7 @@ import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/show_resistance_level.dart';
-import '../../preferences/show_steps_revs_strokes.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
@@ -197,9 +197,9 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
         pref: showResistanceLevelTag,
       ),
       const PrefCheckbox(
-        title: Text(showStepsRevsStrokes),
-        subtitle: Text(showStepsRevsStrokesDescription),
-        pref: showStepsRevsStrokesTag,
+        title: Text(showStrokesStridesRevs),
+        subtitle: Text(showStrokesStridesRevsDescription),
+        pref: showStrokesStridesRevsTag,
       ),
     ];
 

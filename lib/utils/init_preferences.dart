@@ -54,7 +54,7 @@ import '../preferences/scan_duration.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
-import '../preferences/show_steps_revs_strokes.dart';
+import '../preferences/show_strokes_strides_revs.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
@@ -180,7 +180,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     recalculateMoreTag: recalculateMoreDefault,
     showResistanceLevelTag: showResistanceLevelDefault,
     showPerformanceOverlayTag: showPerformanceOverlayDefault,
-    showStepsRevsStrokesTag: showStepsRevsStrokesDefault,
+    showStrokesStridesRevsTag: showStrokesStridesRevsDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
