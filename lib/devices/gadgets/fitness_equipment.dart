@@ -7,21 +7,23 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+
+import '../../persistence/isar/activity.dart';
+import '../../persistence/isar/db_utils.dart';
+import '../../persistence/isar/record.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
-import '../../preferences/extend_tuning.dart';
 import '../../preferences/enable_asserts.dart';
+import '../../preferences/extend_tuning.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -73,14 +75,18 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double _residueCalories = 0.0;
   int _lastPositiveCadence = 0; // #101
   bool _cadenceGapWorkaround = cadenceGapWorkaroundDefault;
+  double _strokeCount = 0.0;
   double _lastPositiveCalories = 0.0; // #111
   bool _firstCalories = true; // #197 #234 #259
   double _startingCalories = 0.0;
   bool _firstDistance = true; // #197 #234 #259
   double _startingDistance = 0.0;
+  bool _firstStrokeCount = true; // #303
+  double _startingStrokeCount = 0.0;
   bool deviceHasTotalCalorieReporting = false;
   bool hrmHasTotalCalorieReporting = false;
   bool hasTotalDistanceReporting = false;
+  bool hasTotalStrokeCountReporting = false;
   bool hasPowerReporting = false;
   bool hasSpeedReporting = false;
   Timer? _timer;
@@ -101,6 +107,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
   bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _heartRateMonitorPriority = heartRateMonitorPriorityDefault;
+  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   int weight = athleteBodyWeightDefault;
   int age = athleteAgeDefault;
   bool isMale = true;
@@ -784,12 +791,17 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       record.distance = max(record.distance! - _startingDistance, 0.0);
     }
 
+    if (record.strokeCount != null) {
+      record.strokeCount = max(record.strokeCount! - _startingStrokeCount, 0.0);
+    }
+
     record.cumulativeMetricsEnforcements(
       lastRecord,
       logLevel,
       _enableAsserts,
       forDistance: !_firstDistance,
       forCalories: !_firstCalories,
+      forStrokeCount: _showStrokesStridesRevs && !_firstStrokeCount,
       force: true,
     );
 
@@ -907,9 +919,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "_startingCalories $_startingCalories, "
             "_firstDistance $_firstDistance, "
             "_startingDistance $_startingDistance, "
+            "_firstStrokeCount $_firstStrokeCount, "
+            "_startingStrokeCount $_startingStrokeCount, "
             "deviceHasTotalCalorieReporting $deviceHasTotalCalorieReporting, "
             "hrmHasTotalCalorieReporting $hrmHasTotalCalorieReporting, "
-            "hasTotalDistanceReporting $hasTotalDistanceReporting",
+            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
+            "hasTotalStrokeCountReporting $hasTotalStrokeCountReporting",
       );
     }
 
@@ -944,6 +959,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (hasTotalDistanceReporting && _firstDistance && (stub.distance ?? 0.0) >= 50.0) {
       _startingDistance = stub.distance!;
       _firstDistance = false;
+    }
+
+    hasTotalStrokeCountReporting |= stub.strokeCount != null;
+    if (hasTotalStrokeCountReporting && _firstStrokeCount && (stub.strokeCount ?? 0.0) >= 5.0) {
+      _startingStrokeCount = stub.strokeCount!;
+      _firstStrokeCount = false;
     }
 
     hasPowerReporting |= (stub.power ?? 0) > 0;
@@ -987,6 +1008,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     if (stub.movingTime >= 2000) {
       _firstDistance = false;
       _firstCalories = false;
+      _firstStrokeCount = false;
     }
 
     // #197
@@ -1002,6 +1024,21 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
 
       stub.distance = max(stub.distance! - _startingDistance, 0.0);
+    }
+
+    // #303
+    stub.strokeCount ??= 0.0;
+    if (_startingStrokeCount > eps) {
+      if (kDebugMode && _enableAsserts) {
+        assert(stub.strokeCount! >= _startingStrokeCount);
+      }
+
+      if (logLevel >= logLevelInfo) {
+        Logging().log(logLevel, logLevelInfo, tag, "processRecord",
+            "starting strokeCount adj ${stub.strokeCount!} - $_startingStrokeCount");
+      }
+
+      stub.strokeCount = max(stub.strokeCount! - _startingStrokeCount, 0.0);
     }
 
     // #376
@@ -1116,6 +1153,19 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     }
 
+    // #303
+    if (_showStrokesStridesRevs && (stub.strokeCount == null || stub.strokeCount! <= eps)) {
+      if (stub.preciseCadence != null && stub.preciseCadence! >= eps) {
+        _strokeCount += stub.preciseCadence! * dT / 60.0;
+      } else if (stub.cadence != null && stub.cadence! > 0) {
+        _strokeCount += stub.cadence! * dT / 60.0;
+      }
+
+      if (_strokeCount > eps) {
+        stub.strokeCount = _strokeCount;
+      }
+    }
+
     // #111
     if (calories < eps && _lastPositiveCalories > eps) {
       calories = _lastPositiveCalories;
@@ -1153,6 +1203,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         _enableAsserts,
         forDistance: !_firstDistance,
         forCalories: !_firstCalories,
+        forStrokeCount: _showStrokesStridesRevs && !_firstStrokeCount,
       );
     }
 
@@ -1173,9 +1224,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "_startingCalories $_startingCalories, "
             "_firstDistance $_firstDistance, "
             "_startingDistance $_startingDistance, "
+            "_firstStrokeCount $_firstStrokeCount, "
+            "_startingStrokeCount $_startingStrokeCount, "
             "deviceHasTotalCalorieReporting $deviceHasTotalCalorieReporting, "
             "hrmHasTotalCalorieReporting $hrmHasTotalCalorieReporting, "
-            "hasTotalDistanceReporting $hasTotalDistanceReporting",
+            "hasTotalDistanceReporting $hasTotalDistanceReporting, "
+            "hasTotalStrokeCountReporting $hasTotalStrokeCountReporting",
       );
     }
 
@@ -1234,6 +1288,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         useHeartRateBasedCalorieCountingDefault;
     _heartRateMonitorPriority =
         prefService.get<bool>(heartRateMonitorPriorityTag) ?? heartRateMonitorPriorityDefault;
+    _showStrokesStridesRevs =
+        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
     isMale =
@@ -1289,8 +1345,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _lastPositiveCalories = 0.0;
     _firstCalories = true;
     _firstDistance = true;
+    _firstStrokeCount = true;
     _startingCalories = 0.0;
     _startingDistance = 0.0;
+    _startingStrokeCount = 0.0;
     dataHandlers = {};
     lastRecord = RecordWithSport.getZero(sport);
 

@@ -219,6 +219,33 @@ class Record {
     }
   }
 
+  void cumulativeStrokeCountEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.strokeCount != null) {
+      if (strokeCount != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(strokeCount! >= lastRecord.strokeCount!);
+        }
+
+        if (strokeCount! < lastRecord.strokeCount!) {
+          if (logLevel >= logLevelError) {
+            Logging().log(
+              logLevel,
+              logLevelError,
+              tag,
+              "cumulativeStrokeCountEnforcement",
+              "violation $strokeCount < ${lastRecord.strokeCount}",
+            );
+          }
+
+          strokeCount = lastRecord.strokeCount;
+        }
+      } else if (force) {
+        strokeCount = lastRecord.strokeCount;
+      }
+    }
+  }
+
   void nonNegativeEnforcement(int logLevel, bool enableAsserts) {
     if (distance != null) {
       if (kDebugMode && enableAsserts) {
@@ -285,6 +312,7 @@ class Record {
     bool enableAsserts, {
     bool forDistance = false,
     bool forCalories = false,
+    bool forStrokeCount = false,
     bool force = false,
   }) {
     // Ensure that cumulative fields cannot decrease over time
@@ -297,6 +325,10 @@ class Record {
 
     if (forCalories) {
       cumulativeCaloriesEnforcement(lastRecord, logLevel, enableAsserts, force);
+    }
+
+    if (forStrokeCount) {
+      cumulativeStrokeCountEnforcement(lastRecord, logLevel, enableAsserts, force);
     }
 
     nonNegativeEnforcement(logLevel, enableAsserts);
@@ -452,7 +484,6 @@ class RecordWithSport extends Record {
       heartRate: 60 + random.nextInt(120),
       resistance: random.nextInt(100),
       preciseCadence: cadence,
-      strokeCount: random.nextDouble() * 1500,
       sport: sport,
     );
   }
