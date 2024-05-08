@@ -43,7 +43,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
     flag = processStepMetricsFlag(flag);
-    flag = skipFlag(flag); // Stride Count
+    flag = processStrideCountFlag(flag);
     flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
     flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
     flag = processResistanceFlag(flag);
@@ -57,6 +57,17 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
 
     // #320 The Reserved flag is set
     hasFutureReservedBytes = flag > 0;
+  }
+
+  int processStrideCountFlag(int flag) {
+    if (flag % 2 == 1) {
+      // UInt16
+      strokeCountMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 10.0);
+      byteCounter += 2;
+    }
+
+    return advanceFlag(flag);
   }
 
   @override
@@ -73,18 +84,21 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
+    final cadence = getCadence(data);
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
+      cadence: cadence?.toInt(),
       heartRate: getHeartRate(data),
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
       resistance: getResistance(data)?.toInt(),
+      preciseCadence: cadence,
+      strokeCount: getStrokeCount(data),
     );
   }
 

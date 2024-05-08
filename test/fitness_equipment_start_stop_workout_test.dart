@@ -10,6 +10,7 @@ import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
 import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
+
 import 'utils.dart';
 
 class MockBluetoothDevice extends Mock implements BluetoothDevice {}
@@ -38,9 +39,9 @@ void main() {
     expect(equipment.lastRecord.elapsedMillis, 0);
     expect(equipment.lastRecord.sport, descriptor.sport);
     expect(equipment.lastRecord.pace, null);
-    expect(equipment.lastRecord.strokeCount, null);
     expect(equipment.lastRecord.caloriesPerHour, null);
     expect(equipment.lastRecord.caloriesPerMinute, null);
+    expect(equipment.lastRecord.strokeCount, closeTo(0.0, eps));
 
     expect(equipment.residueCalories, closeTo(0.0, eps));
     expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
@@ -65,9 +66,9 @@ void main() {
     expect(equipment.lastRecord.elapsedMillis, 0);
     expect(equipment.lastRecord.sport, descriptor.sport);
     expect(equipment.lastRecord.pace, closeTo(0.0, eps));
-    expect(equipment.lastRecord.strokeCount, null);
     expect(equipment.lastRecord.caloriesPerHour, null);
     expect(equipment.lastRecord.caloriesPerMinute, null);
+    expect(equipment.lastRecord.strokeCount, closeTo(0.0, eps));
 
     expect(equipment.residueCalories, closeTo(0.0, eps));
     expect(equipment.lastPositiveCalories, closeTo(0.0, eps));
