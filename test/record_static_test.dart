@@ -71,7 +71,7 @@ void main() {
         expect(random.pace, null);
         expect(random.caloriesPerHour, null);
         expect(random.caloriesPerMinute, null);
-        expect(random.strokeCount, inInclusiveRange(0.0, 1500.0));
+        expect(random.strokeCount, null);
       });
     }
   });
