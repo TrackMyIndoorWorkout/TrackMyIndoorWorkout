@@ -2579,26 +2579,20 @@ class RecordingState extends State<RecordingScreen> {
 
     if (_showStrokesStridesRevs) {
       columnRest.add(
-        ExpandablePanel(
-          theme: _expandableThemeData,
-          header: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _themeManager.getBlueIcon(Icons.numbers, _sizeDefault),
-              const Spacer(),
-              Text(_optionalValues[_strokeCountIndex], style: _fullMeasurementStyle.apply()),
-              SizedBox(
-                width: _sizeDefault * (_simplerUi ? 2 : 1.3),
-                child: Center(
-                  child: Text("#", maxLines: 2, style: _fullUnitStyle),
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _themeManager.getBlueIcon(Icons.numbers, _sizeDefault),
+            const Spacer(),
+            Text(_optionalValues[_strokeCountIndex], style: _fullMeasurementStyle.apply()),
+            SizedBox(
+              width: _sizeDefault * 2,
+              child: Center(
+                child: Text("#", style: _fullUnitStyle),
               ),
-            ],
-          ),
-          collapsed: Container(),
-          expanded: Container(),
-          controller: null,
+            ),
+          ],
         ),
       );
     }
