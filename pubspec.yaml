@@ -3,7 +3,7 @@ description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
 version: 1.1.155+155
-isar_version: &isar_version ^3.1.0+1
+isar_version: &isar_version ^3.1.7
 
 environment:
   sdk: ">=3.4.0-282.3.beta"
@@ -39,8 +39,12 @@ dependencies:
   internet_connection_checker: ^1.0.0+1
   intl: ^0.19.0
   is_first_run: ^1.0.0
-  isar: *isar_version
-  isar_flutter_libs: *isar_version
+  isar:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
+  isar_flutter_libs:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
   listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
@@ -76,7 +80,9 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  isar_generator: *isar_version
+  isar_generator:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
   mocktail: ^1.0.3
   mock_data: ^2.0.1
   yaml: ^3.1.2
