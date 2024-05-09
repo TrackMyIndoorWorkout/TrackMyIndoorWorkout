@@ -24,7 +24,7 @@ dependencies:
   fab_circular_menu_plus: ^0.0.2
   file_picker: ^8.0.3
   flex_color_scheme: ^7.3.1
-  floor: ^1.4.2
+  floor: ^1.5.0
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.32.5
   flutter_circle_color_picker: ^0.3.0
@@ -68,7 +68,7 @@ dependencies:
 dev_dependencies:
   analyzer: ^6.3.0
   build_runner: ^2.4.9
-  floor_generator: ^1.4.2
+  floor_generator: ^1.5.0
   flutter_driver:
     sdk: flutter
   flutter_lints: ^3.0.2
