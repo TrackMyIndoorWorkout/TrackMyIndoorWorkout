@@ -1,15 +1,19 @@
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
-import 'device_descriptors/cross_trainer_device_descriptor.dart';
 import 'device_descriptors/concept2_bike_erg.dart';
 import 'device_descriptors/concept2_erg.dart';
 import 'device_descriptors/concept2_row_erg.dart';
 import 'device_descriptors/concept2_ski_erg.dart';
+import 'device_descriptors/cross_trainer_device_descriptor.dart';
 import 'device_descriptors/cycling_power_meter_descriptor.dart';
 import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
 import 'device_descriptors/kayak_first_descriptor.dart';
+import 'device_descriptors/life_fitness_bike_descriptor.dart';
+import 'device_descriptors/life_fitness_elliptical_descriptor.dart';
+import 'device_descriptors/life_fitness_stair_climber_descriptor.dart';
+import 'device_descriptors/life_fitness_treadmill_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
 import 'device_descriptors/mr_captain_descriptor.dart';
@@ -25,18 +29,6 @@ import 'device_descriptors/treadmill_device_descriptor.dart';
 import 'device_fourcc.dart';
 
 class DeviceFactory {
-  static IndoorBikeDeviceDescriptor getSchwinnIcBike() {
-    return IndoorBikeDeviceDescriptor(
-      fourCC: schwinnICBikeFourCC,
-      vendorName: "Nautilus, Inc",
-      modelName: "Schwinn IC4/IC8",
-      manufacturerNamePart: "Nautilus",
-      manufacturerFitId: nautilusFitId,
-      model: "IC BIKE",
-      canMeasureCalories: false,
-    );
-  }
-
   static IndoorBikeDeviceDescriptor getBowflexC7() {
     return IndoorBikeDeviceDescriptor(
       fourCC: bowflexC7BikeFourCC,
@@ -49,48 +41,25 @@ class DeviceFactory {
     );
   }
 
-  static IndoorBikeDeviceDescriptor getSchwinnUprightBike() {
-    return IndoorBikeDeviceDescriptor(
-      fourCC: schwinnUprightBikeFourCC,
-      vendorName: "Nautilus, Inc",
-      modelName: "Schwinn 230/510",
-      manufacturerNamePart: "Nautilus",
-      manufacturerFitId: nautilusFitId,
-      model: "SCH BIKE",
-    );
-  }
-
-  static IndoorBikeDeviceDescriptor getStagesSB20() {
-    return IndoorBikeDeviceDescriptor(
-      fourCC: stagesSB20FourCC,
-      vendorName: "Stages Cycling",
-      modelName: "SB20",
-      manufacturerNamePart: "Stages",
-      manufacturerFitId: stagesCyclingFitId,
-      model: "SB20",
-    );
-  }
-
-  static IndoorBikeDeviceDescriptor getYesoulS3() {
-    return IndoorBikeDeviceDescriptor(
-      fourCC: yesoulS3FourCC,
-      vendorName: "Yesoul",
-      modelName: "S3",
-      manufacturerNamePart: "Yesoul",
+  static CyclingSpeedAndCadenceDescriptor getCSCBasedBike() {
+    return CyclingSpeedAndCadenceDescriptor(
+      fourCC: cscSensorBasedBikeFourCC,
+      vendorName: "Unknown",
+      modelName: "Speed and Cadence Sensor Bike",
+      manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
-      model: "S3",
+      model: "Speed and Cadence Sensor Bike",
     );
   }
 
-  static RowerDeviceDescriptor getKayaPro() {
-    return RowerDeviceDescriptor(
-      sport: deviceSportDescriptors[kayakProGenesisPortFourCC]!.defaultSport,
-      fourCC: kayakProGenesisPortFourCC,
-      vendorName: "KayakPro",
-      modelName: "KayakPro Compact",
-      manufacturerNamePart: "North Pole Engineering",
-      manufacturerFitId: northPoleEngineeringFitId,
-      model: "64",
+  static PaddlingSpeedAndCadenceDescriptor getCSCBasedPaddler() {
+    return PaddlingSpeedAndCadenceDescriptor(
+      fourCC: cscSensorBasedPaddleFourCC,
+      vendorName: "Old Danube",
+      modelName: "Old Danube",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Old Danube",
     );
   }
 
@@ -193,6 +162,29 @@ class DeviceFactory {
     );
   }
 
+  static RowerDeviceDescriptor getKayaPro() {
+    return RowerDeviceDescriptor(
+      sport: deviceSportDescriptors[kayakProGenesisPortFourCC]!.defaultSport,
+      fourCC: kayakProGenesisPortFourCC,
+      vendorName: "KayakPro",
+      modelName: "KayakPro Compact",
+      manufacturerNamePart: "North Pole Engineering",
+      manufacturerFitId: northPoleEngineeringFitId,
+      model: "64",
+    );
+  }
+
+  static IndoorBikeDeviceDescriptor getMerachMr667() {
+    return IndoorBikeDeviceDescriptor(
+      fourCC: merachMr667FourCC,
+      vendorName: "Merach",
+      modelName: "MR667",
+      manufacturerNamePart: "HUAWEI Technologies", // HUAWEI Technologies Co., Ltd.
+      manufacturerFitId: stravaFitId,
+      model: "MR667",
+    );
+  }
+
   static CyclingPowerMeterDescriptor getPowerMeterBasedBike() {
     return CyclingPowerMeterDescriptor(
       fourCC: powerMeterBasedBikeFourCC,
@@ -215,36 +207,61 @@ class DeviceFactory {
     );
   }
 
-  static CyclingSpeedAndCadenceDescriptor getCSCBasedBike() {
-    return CyclingSpeedAndCadenceDescriptor(
-      fourCC: cscSensorBasedBikeFourCC,
-      vendorName: "Unknown",
-      modelName: "Speed and Cadence Sensor Bike",
-      manufacturerNamePart: "Unknown",
-      manufacturerFitId: stravaFitId,
-      model: "Speed and Cadence Sensor Bike",
-    );
-  }
-
-  static PaddlingSpeedAndCadenceDescriptor getCSCBasedPaddler() {
-    return PaddlingSpeedAndCadenceDescriptor(
-      fourCC: cscSensorBasedPaddleFourCC,
-      vendorName: "Old Danube",
-      modelName: "Old Danube",
-      manufacturerNamePart: "Unknown",
-      manufacturerFitId: stravaFitId,
-      model: "Old Danube",
-    );
-  }
-
-  static IndoorBikeDeviceDescriptor getMerachMr667() {
+  static IndoorBikeDeviceDescriptor getSchwinnIcBike() {
     return IndoorBikeDeviceDescriptor(
-      fourCC: merachMr667FourCC,
-      vendorName: "Merach",
-      modelName: "MR667",
-      manufacturerNamePart: "HUAWEI Technologies", // HUAWEI Technologies Co., Ltd.
-      manufacturerFitId: stravaFitId,
-      model: "MR667",
+      fourCC: schwinnICBikeFourCC,
+      vendorName: "Nautilus, Inc",
+      modelName: "Schwinn IC4/IC8",
+      manufacturerNamePart: "Nautilus",
+      manufacturerFitId: nautilusFitId,
+      model: "IC BIKE",
+      canMeasureCalories: false,
+    );
+  }
+
+  static IndoorBikeDeviceDescriptor getSchwinnUprightBike() {
+    return IndoorBikeDeviceDescriptor(
+      fourCC: schwinnUprightBikeFourCC,
+      vendorName: "Nautilus, Inc",
+      modelName: "Schwinn 230/510",
+      manufacturerNamePart: "Nautilus",
+      manufacturerFitId: nautilusFitId,
+      model: "SCH BIKE",
+    );
+  }
+
+  static IndoorBikeDeviceDescriptor getStagesSB20() {
+    return IndoorBikeDeviceDescriptor(
+      fourCC: stagesSB20FourCC,
+      vendorName: "Stages Cycling",
+      modelName: "SB20",
+      manufacturerNamePart: "Stages",
+      manufacturerFitId: stagesCyclingFitId,
+      model: "SB20",
+    );
+  }
+
+  static RunningSpeedAndCadenceDescriptor getStrydFootPod() {
+    return RunningSpeedAndCadenceDescriptor(
+      fourCC: technogymRunFourCC,
+      vendorName: "Stryd",
+      modelName: "Stryd Foot Pod",
+      manufacturerNamePart: "Stryd",
+      manufacturerFitId: strydFitId,
+      model: "",
+      deviceCategory: DeviceCategory.primarySensor,
+    );
+  }
+
+  static RunningSpeedAndCadenceDescriptor getTechnogymRun() {
+    return RunningSpeedAndCadenceDescriptor(
+      fourCC: technogymRunFourCC,
+      vendorName: "Technogym",
+      modelName: "Technogym Run",
+      manufacturerNamePart: "Technogym",
+      manufacturerFitId: technogymFitId,
+      model: "Treadmill",
+      deviceCategory: DeviceCategory.primarySensor,
     );
   }
 
@@ -261,58 +278,37 @@ class DeviceFactory {
     );
   }
 
-  static RunningSpeedAndCadenceDescriptor getTechnogymRun() {
-    return RunningSpeedAndCadenceDescriptor(
-      fourCC: technogymRunFourCC,
-      vendorName: "Technogym",
-      modelName: "Technogym Run",
-      manufacturerNamePart: "Technogym",
-      manufacturerFitId: technogymFitId,
-      model: "Treadmill",
-      deviceCategory: DeviceCategory.primarySensor,
-    );
-  }
-
-  static RunningSpeedAndCadenceDescriptor getStrydFootPod() {
-    return RunningSpeedAndCadenceDescriptor(
-      fourCC: technogymRunFourCC,
-      vendorName: "Stryd",
-      modelName: "Stryd Foot Pod",
-      manufacturerNamePart: "Stryd",
-      manufacturerFitId: strydFitId,
-      model: "",
-      deviceCategory: DeviceCategory.primarySensor,
+  static IndoorBikeDeviceDescriptor getYesoulS3() {
+    return IndoorBikeDeviceDescriptor(
+      fourCC: yesoulS3FourCC,
+      vendorName: "Yesoul",
+      modelName: "S3",
+      manufacturerNamePart: "Yesoul",
+      manufacturerFitId: stravaFitId,
+      model: "S3",
     );
   }
 
   static DeviceDescriptor getDescriptorForFourCC(String fourCC) {
     switch (fourCC) {
-      case precorSpinnerChronoPowerFourCC:
-        return PrecorSpinnerChronoPower();
-      case schwinnICBikeFourCC:
-        return DeviceFactory.getSchwinnIcBike();
       case bowflexC7BikeFourCC:
         return DeviceFactory.getBowflexC7();
-      case schwinnUprightBikeFourCC:
-        return DeviceFactory.getSchwinnUprightBike();
-      case schwinnX70BikeFourCC:
-        return SchwinnX70();
-      case stagesSB20FourCC:
-        return DeviceFactory.getStagesSB20();
-      case yesoulS3FourCC:
-        return DeviceFactory.getYesoulS3();
-      case schwinnACPerfPlusFourCC:
-        return SchwinnACPerformancePlus();
-      case matrixBikeFourCC:
-        return MatrixBikeDescriptor();
-      case kayakProGenesisPortFourCC:
-        return DeviceFactory.getKayaPro();
-      case mrCaptainRowerFourCC:
-        return MrCaptainDescriptor();
-      case npeRunnFourCC:
-        return NpeRunnTreadmill();
-      case matrixTreadmillFourCC:
-        return MatrixTreadmillDescriptor();
+      case concept2RowerFourCC:
+        return Concept2RowErg();
+      case concept2SkiFourCC:
+        return Concept2SkiErg();
+      case concept2BikeFourCC:
+        return Concept2BikeErg();
+      case concept2ErgFourCC:
+        return Concept2Erg(
+          deviceSportDescriptors[concept2ErgFourCC]!.defaultSport,
+          deviceSportDescriptors[concept2ErgFourCC]!.isMultiSport,
+          concept2ErgFourCC,
+        );
+      case cscSensorBasedBikeFourCC:
+        return DeviceFactory.getCSCBasedBike();
+      case cscSensorBasedPaddleFourCC:
+        return DeviceFactory.getCSCBasedPaddler();
       case genericFTMSTreadmillFourCC:
         return DeviceFactory.getGenericFTMSTreadmill();
       case genericFTMSBikeFourCC:
@@ -330,36 +326,52 @@ class DeviceFactory {
         return DeviceFactory.getGenericFTMSElliptical();
       case genericFTMSCrossTrainerFourCC:
         return DeviceFactory.getGenericFTMSCrossTrainer();
+      case kayakFirstFourCC:
+        return KayakFirstDescriptor();
+      case kayakProGenesisPortFourCC:
+        return DeviceFactory.getKayaPro();
+      case lifeFitnessBikeFourCC:
+        return LifeFitnessBikeDescriptor();
+      case lifeFitnessEllipticalFourCC:
+        return LifeFitnessEllipticalDescriptor();
+      case lifeFitnessStairFourCC:
+        return LifeFitnessStairClimberDescriptor();
+      case lifeFitnessTreadmillFourCC:
+        return LifeFitnessTreadmillDescriptor();
+      case matrixBikeFourCC:
+        return MatrixBikeDescriptor();
+      case matrixTreadmillFourCC:
+        return MatrixTreadmillDescriptor();
+      case merachMr667FourCC:
+        return getMerachMr667();
+      case mrCaptainRowerFourCC:
+        return MrCaptainDescriptor();
+      case npeRunnFourCC:
+        return NpeRunnTreadmill();
       case powerMeterBasedBikeFourCC:
         return DeviceFactory.getPowerMeterBasedBike();
       case powerMeterBasedPaddleFourCC:
         return DeviceFactory.getPowerMeterBasedPaddler();
-      case cscSensorBasedBikeFourCC:
-        return DeviceFactory.getCSCBasedBike();
-      case cscSensorBasedPaddleFourCC:
-        return DeviceFactory.getCSCBasedPaddler();
-      case concept2RowerFourCC:
-        return Concept2RowErg();
-      case concept2SkiFourCC:
-        return Concept2SkiErg();
-      case concept2BikeFourCC:
-        return Concept2BikeErg();
-      case concept2ErgFourCC:
-        return Concept2Erg(
-          deviceSportDescriptors[concept2ErgFourCC]!.defaultSport,
-          deviceSportDescriptors[concept2ErgFourCC]!.isMultiSport,
-          concept2ErgFourCC,
-        );
-      case merachMr667FourCC:
-        return getMerachMr667();
-      case virtufitUltimatePro2FourCC:
-        return getVirtufitUltimatePro2();
-      case kayakFirstFourCC:
-        return KayakFirstDescriptor();
-      case technogymRunFourCC:
-        return getTechnogymRun();
+      case precorSpinnerChronoPowerFourCC:
+        return PrecorSpinnerChronoPower();
+      case schwinnACPerfPlusFourCC:
+        return SchwinnACPerformancePlus();
+      case schwinnICBikeFourCC:
+        return DeviceFactory.getSchwinnIcBike();
+      case schwinnUprightBikeFourCC:
+        return DeviceFactory.getSchwinnUprightBike();
+      case schwinnX70BikeFourCC:
+        return SchwinnX70();
+      case stagesSB20FourCC:
+        return DeviceFactory.getStagesSB20();
       case strydFootPodFourCC:
         return getStrydFootPod();
+      case technogymRunFourCC:
+        return getTechnogymRun();
+      case virtufitUltimatePro2FourCC:
+        return getVirtufitUltimatePro2();
+      case yesoulS3FourCC:
+        return DeviceFactory.getYesoulS3();
     }
 
     return DeviceFactory.getGenericFTMSBike();
