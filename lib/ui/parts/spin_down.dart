@@ -166,7 +166,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     )
         .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
-        if (response[0] != userWeightSuccessOpcode) {
+        if (response[0] != userDataSetSuccessOpcode) {
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
