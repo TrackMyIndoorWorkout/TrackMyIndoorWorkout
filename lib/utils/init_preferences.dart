@@ -8,6 +8,7 @@ import '../preferences/activity_upload_title.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
+import '../preferences/athlete_body_height.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
@@ -181,6 +182,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     showResistanceLevelTag: showResistanceLevelDefault,
     showPerformanceOverlayTag: showPerformanceOverlayDefault,
     showStrokesStridesRevsTag: showStrokesStridesRevsDefault,
+    athleteBodyHeightTag: athleteBodyHeightDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
