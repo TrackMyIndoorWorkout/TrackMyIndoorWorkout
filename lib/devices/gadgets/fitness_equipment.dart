@@ -8,13 +8,12 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 
+import '../../persistence/athlete.dart';
 import '../../persistence/isar/activity.dart';
 import '../../persistence/isar/db_utils.dart';
 import '../../persistence/isar/record.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
-import '../../preferences/athlete_gender.dart';
-import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/enable_asserts.dart';
@@ -108,10 +107,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _heartRateMonitorPriority = heartRateMonitorPriorityDefault;
   bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
-  int weight = athleteBodyWeightDefault;
-  int age = athleteAgeDefault;
-  bool isMale = true;
-  int vo2Max = athleteVO2MaxDefault;
   Activity? _activity;
   bool measuring = false;
   WorkoutState workoutState = WorkoutState.waitingForFirstMove;
@@ -120,6 +115,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double? slowPace;
   bool _equipmentDiscovery = false;
   bool _extendTuning = false;
+  Athlete athlete = Athlete();
 
   int readFeatures = 0;
   int writeFeatures = 0;
@@ -1081,9 +1077,14 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     } else {
       var deltaCalories = 0.0;
       if (useHrBasedCalorieCounting && (stub.heartRate ?? 0) > 0) {
-        stub.caloriesPerMinute =
-            hrBasedCaloriesPerMinute(stub.heartRate!, weight, age, isMale, vo2Max) *
-                _hrCalorieFactor;
+        stub.caloriesPerMinute = hrBasedCaloriesPerMinute(
+              stub.heartRate!,
+              athlete.weight,
+              athlete.age,
+              athlete.isMale,
+              athlete.vo2Max,
+            ) *
+            _hrCalorieFactor;
       }
 
       if (deltaCalories < eps && stub.caloriesPerHour != null && stub.caloriesPerHour! > eps) {
@@ -1290,12 +1291,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         prefService.get<bool>(heartRateMonitorPriorityTag) ?? heartRateMonitorPriorityDefault;
     _showStrokesStridesRevs =
         prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
-    weight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
-    age = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
-    isMale =
-        (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) == athleteGenderMale;
-    vo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
-    useHrBasedCalorieCounting &= (weight > athleteBodyWeightMin && age > athleteAgeMin);
+    athlete = Athlete.fromPreferences(prefService);
+    useHrBasedCalorieCounting &=
+        (athlete.weight > athleteBodyWeightMin && athlete.age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
@@ -1314,10 +1312,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "heartRateLimitingMethod $_heartRateLimitingMethod, "
             "useHrmReportedCalories $_useHrmReportedCalories, "
             "useHrBasedCalorieCounting $useHrBasedCalorieCounting, "
-            "weight $weight, "
-            "age $age, "
-            "isMale $isMale, "
-            "vo2Max $vo2Max, "
+            "athlete $athlete, "
             "extendTuning $_extendTuning, "
             "logLevel $logLevel",
       );
