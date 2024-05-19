@@ -1,8 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/ui/parts/spin_down.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+import 'package:track_my_indoor_exercise/utils/user_data.dart';
+
 import 'utils.dart';
 
 main() {
@@ -16,9 +17,8 @@ main() {
       }
 
       test('$weight ${si ? "kg" : "lbs"}', () async {
-        final weightBytes = SpinDownBottomSheetState.getWeightBytes(weight, si);
-        final weight2 =
-            SpinDownBottomSheetState.getWeightFromBytes(weightBytes.item1, weightBytes.item2, si);
+        final weightBytes = getWeightBytes(weight, si);
+        final weight2 = getWeightFromBytes(weightBytes.item1, weightBytes.item2, si);
 
         expect(weight2, closeTo(weight, 1.0));
       });
@@ -35,7 +35,7 @@ main() {
       }
 
       test('$weight ${si ? "kg" : "lbs"}', () async {
-        final weightBytes = SpinDownBottomSheetState.getWeightBytes(weight, si);
+        final weightBytes = getWeightBytes(weight, si);
         final weightMultiplied = (weight * 200 * (si ? 1.0 : lbToKg)).round();
 
         expect(weightBytes.item1, weightMultiplied % 256);
@@ -52,7 +52,7 @@ main() {
       test('$lsb $msb $si', () async {
         int expectedWeight = (lsb + maxUint8 * msb) * (si ? 1.0 : kgToLb) ~/ 200;
 
-        final weight = SpinDownBottomSheetState.getWeightFromBytes(lsb, msb, si);
+        final weight = getWeightFromBytes(lsb, msb, si);
 
         expect(weight, expectedWeight);
       });
