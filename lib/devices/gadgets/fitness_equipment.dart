@@ -522,6 +522,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     return success;
   }
 
+  Future<void> prePumpConfiguration() async {
+    await descriptor?.prePumpConfiguration(services, athlete, logLevel);
+  }
+
   Future<void> postPumpStart() async {
     await descriptor?.postPumpStart(getControlPoint(), logLevel);
   }

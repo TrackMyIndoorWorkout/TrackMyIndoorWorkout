@@ -293,6 +293,10 @@ class RecordingState extends State<RecordingScreen> {
     bool success = await _fitnessEquipment?.connectOnDemand() ?? false;
     if (success) {
       await _fitnessEquipment?.additionalSensorsOnDemand();
+      if (!_uxDebug) {
+        await _fitnessEquipment?.prePumpConfiguration();
+      }
+
       await _fitnessEquipment?.attach();
       _startPumpingData();
       if (!_uxDebug) {
