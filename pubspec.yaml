@@ -14,7 +14,7 @@ dependency_overrides:
   meta: ^1.15.0  # analyzer
 
 dependencies:
-  app_links: ^6.0.2
+  app_links: ^6.1.1
   assorted_layout_widgets: ^9.0.1
   collection: ^1.17.2
   datetime_picker_formfield_new: ^2.1.0
@@ -28,7 +28,7 @@ dependencies:
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.32.7
   flutter_circle_color_picker: ^0.3.0
-  flutter_layout_grid: ^2.0.6
+  flutter_layout_grid: ^2.0.7
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.0.10+1
   flutter_timezone: ^1.0.8
@@ -60,7 +60,7 @@ dependencies:
   soundpool: ^2.4.1
   sqflite: ^2.3.3+1
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^25.2.4
+  syncfusion_flutter_charts: ^25.2.5
   timezone: ^0.9.3
   tuple: ^2.0.2
   url_launcher: ^6.2.6
