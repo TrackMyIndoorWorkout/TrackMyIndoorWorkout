@@ -7,8 +7,8 @@ import 'package:tuple/tuple.dart';
 
 import '../devices/company_registry.dart';
 import '../devices/device_fourcc.dart';
-import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
+import '../devices/gatt/csc.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/hrm.dart';
 import '../devices/gatt/kayak_first.dart';
@@ -179,15 +179,19 @@ extension ScanResultEx on ScanResult {
     final loweredPlatformName = device.platformName.toLowerCase();
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    final ftmsServiceSports =
+        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       if (multiSportFourCCs.contains(mapEntry.key) && mapEntry.key != concept2ErgFourCC) {
         continue;
       }
 
       final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+      final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
@@ -258,11 +262,15 @@ extension ScanResultEx on ScanResult {
 
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    final ftmsServiceSports =
+        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+      final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))

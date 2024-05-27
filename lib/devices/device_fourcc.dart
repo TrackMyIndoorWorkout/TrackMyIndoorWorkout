@@ -97,12 +97,14 @@ class DeviceIdentifierHelperEntry {
   final String manufacturerNamePrefix;
   late final String manufacturerNameLoweredPrefix;
   late final bool ambiguous;
+  late final bool sportsMatch;
 
   DeviceIdentifierHelperEntry(
       {required this.deviceNamePrefixes,
       this.deviceNamePostfix = "",
       this.manufacturerNamePrefix = "",
-      this.ambiguous = false}) {
+      this.ambiguous = false,
+      this.sportsMatch = false}) {
     deviceNameLoweredPrefixes =
         deviceNamePrefixes.map((d) => d.toLowerCase()).toList(growable: false);
     deviceNameLoweredPostfix = deviceNamePostfix.toLowerCase();
@@ -137,13 +139,13 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
   lifeFitnessBikeFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness"),
+      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessEllipticalFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness"),
+      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessStairFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness"),
+      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessTreadmillFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness"),
+      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   matrixBikeFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["CTM", "Johnson", "Matrix"], ambiguous: true),
   matrixTreadmillFourCC: DeviceIdentifierHelperEntry(
