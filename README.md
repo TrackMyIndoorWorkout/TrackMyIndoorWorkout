@@ -44,8 +44,5 @@ With certain data persistence or testing Mock changes you may need code regenera
 
 ## License
 
-This work is licensed under GPL 3.0.
-
-In a nutshell if you borrow or modify any code that work must be mandatorily open source as well!
-
-`SPDX-License-Identifier: GPL-3.0`
+This work is licensed under Apache 2.0.
+`SPDX-License-Identifier: Apache-2.0`
