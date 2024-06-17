@@ -181,7 +181,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     final values = _listDeduplicationMap.entries
         .where((entry1) => now.difference(entry1.value.timeStamp).inMilliseconds <= dataMapExpiry)
         .map((entry2) => dataHandlers[entry2.key]?.wrappedStubRecord(entry2.value.byteList))
-        .whereNotNull()
+        .nonNulls
         .toList(growable: false);
 
     if (values.isEmpty) {
