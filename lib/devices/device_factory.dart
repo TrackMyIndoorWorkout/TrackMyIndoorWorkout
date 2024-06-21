@@ -25,6 +25,7 @@ import 'device_descriptors/rower_device_descriptor.dart';
 import 'device_descriptors/running_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
 import 'device_descriptors/schwinn_x70.dart';
+import 'device_descriptors/stair_climber_device_descriptor.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
 import 'device_fourcc.dart';
 
@@ -108,6 +109,17 @@ class DeviceFactory {
       manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Canoe Ergometer",
+    );
+  }
+
+  static StairClimberDeviceDescriptor getGenericFTMSClimber() {
+    return StairClimberDeviceDescriptor(
+      fourCC: genericFTMSClimberFourCC,
+      vendorName: "Unknown",
+      modelName: "Generic Stair Climber",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Generic Stair Climber",
     );
   }
 
@@ -317,6 +329,8 @@ class DeviceFactory {
         return DeviceFactory.getGenericFTMSKayaker();
       case genericFTMSCanoeFourCC:
         return DeviceFactory.getGenericFTMSCanoeer();
+      case genericFTMSClimberFourCC:
+        return DeviceFactory.getGenericFTMSClimber();
       case genericFTMSRowerFourCC:
         return DeviceFactory.getGenericFTMSRower();
       case genericFTMSSwimFourCC:
@@ -391,6 +405,9 @@ class DeviceFactory {
         break;
       case ActivityType.canoeing:
         fourCC = genericFTMSCanoeFourCC;
+        break;
+      case ActivityType.rockClimbing:
+        fourCC = genericFTMSClimberFourCC;
         break;
       case ActivityType.rowing:
         fourCC = genericFTMSRowerFourCC;

@@ -4,17 +4,17 @@ import '../../devices/gadgets/life_fitness_mixin.dart';
 import '../../export/fit/fit_manufacturer.dart';
 import '../../persistence/athlete.dart';
 import '../device_fourcc.dart';
-import 'cross_trainer_device_descriptor.dart';
+import 'stair_climber_device_descriptor.dart';
 
-class LifeFitnessStairClimberDescriptor extends CrossTrainerDeviceDescriptor with LifeFitnessMixin {
+class LifeFitnessStairClimberDescriptor extends StairClimberDeviceDescriptor with LifeFitnessMixin {
   LifeFitnessStairClimberDescriptor()
       : super(
           fourCC: lifeFitnessStairFourCC,
           vendorName: LifeFitnessMixin.lfManufacturer,
-          modelName: "${LifeFitnessMixin.lfManufacturer} Treadmill",
+          modelName: "${LifeFitnessMixin.lfManufacturer} Stair Climber",
           manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
           manufacturerFitId: stravaFitId,
-          model: "${LifeFitnessMixin.lfManufacturer} Treadmill",
+          model: "${LifeFitnessMixin.lfManufacturer} Stair Climber",
         );
 
   @override

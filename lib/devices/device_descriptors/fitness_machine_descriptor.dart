@@ -52,6 +52,14 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
+  int skipFlagInverse(int flag, {int size = 2}) {
+    if (flag % 2 == 0) {
+      byteCounter += size;
+    }
+
+    return advanceFlag(flag);
+  }
+
   int skipFlag(int flag, {int size = 2}) {
     if (flag % 2 == 1) {
       byteCounter += size;

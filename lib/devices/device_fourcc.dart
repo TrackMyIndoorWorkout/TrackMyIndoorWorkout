@@ -9,6 +9,7 @@ const cscSensorBasedBikeFourCC = "CSCB";
 const cscSensorBasedPaddleFourCC = "CSCP";
 const genericFTMSBikeFourCC = "GRid";
 const genericFTMSCanoeFourCC = "GCan";
+const genericFTMSClimberFourCC = "GClb";
 const genericFTMSCrossTrainerFourCC = "GXtr";
 const genericFTMSEllipticalFourCC = "GEll";
 const genericFTMSKayakFourCC = "GKay";
@@ -50,6 +51,7 @@ List<String> allFourCC = [
   cscSensorBasedPaddleFourCC,
   genericFTMSBikeFourCC,
   genericFTMSCanoeFourCC,
+  genericFTMSClimberFourCC,
   genericFTMSCrossTrainerFourCC,
   genericFTMSEllipticalFourCC,
   genericFTMSKayakFourCC,
@@ -128,6 +130,7 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   cscSensorBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   genericFTMSBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Bike"]),
   genericFTMSCanoeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Canoe"]),
+  genericFTMSClimberFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Climb"]),
   // Delete this?
   genericFTMSCrossTrainerFourCC:
       DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Cross Trainer"]),
@@ -190,6 +193,8 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
       SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),
   genericFTMSBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   genericFTMSCanoeFourCC: SportDescriptor(defaultSport: ActivityType.canoeing, isMultiSport: false),
+  genericFTMSClimberFourCC:
+      SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
   genericFTMSCrossTrainerFourCC:
       SportDescriptor(defaultSport: ActivityType.elliptical, isMultiSport: false),
   // Delete this?
