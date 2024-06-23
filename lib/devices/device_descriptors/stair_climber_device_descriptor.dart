@@ -39,8 +39,8 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
     // 7e 0111 1110 Floors, Step/min, Avg. Step Rate, Pos. Elev. Gain, Stride Count, Total Enery (kCal) + (Energy / hr + Energy / min), Heart rate
     // 01 0000 0001 Elapsed Time (sec)
     // negated first bit!
-    flag = skipFlagInverse(flag); // Floors
-    flag = processCadenceFlag(flag); // Steps / min
+    flag = skipFlag(flag, inverse: true); // Floors
+    flag = processCadenceFlag(flag, divider: 1.0); // Steps / min
     flag = skipFlag(flag); // Average step rate
     flag = processTotalDistanceFlag(flag); // Pos elevation gain
     flag = processStrideCountFlag(flag);
@@ -52,17 +52,6 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
 
     // #320 The Reserved flag is set
     hasFutureReservedBytes = flag > 0;
-  }
-
-  @override
-  int processCadenceFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16, steps / minute
-      cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      byteCounter += 2;
-    }
-
-    return advanceFlag(flag);
   }
 
   @override

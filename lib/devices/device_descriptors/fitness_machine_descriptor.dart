@@ -52,16 +52,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
-  int skipFlagInverse(int flag, {int size = 2}) {
-    if (flag % 2 == 0) {
-      byteCounter += size;
-    }
-
-    return advanceFlag(flag);
-  }
-
-  int skipFlag(int flag, {int size = 2}) {
-    if (flag % 2 == 1) {
+  int skipFlag(int flag, {int size = 2, inverse = false}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
       byteCounter += size;
     }
 
@@ -79,10 +71,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return advanceFlag(flag);
   }
 
-  int processCadenceFlag(int flag) {
-    if (flag % 2 == 1) {
+  int processCadenceFlag(int flag, {divider = 2.0, inverse = false}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
       // UInt16, revolutions / minute with 0.5 resolution
-      cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
+      cadenceMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
       byteCounter += 2;
     }
 
