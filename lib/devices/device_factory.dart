@@ -112,9 +112,9 @@ class DeviceFactory {
     );
   }
 
-  static StairClimberDeviceDescriptor getGenericFTMSClimber() {
+  static StairClimberDeviceDescriptor getGenericFTMSStairClimber() {
     return StairClimberDeviceDescriptor(
-      fourCC: genericFTMSClimberFourCC,
+      fourCC: genericFTMSStairClimberFourCC,
       vendorName: "Unknown",
       modelName: "Generic Stair Climber",
       manufacturerNamePart: "Unknown",
@@ -329,8 +329,8 @@ class DeviceFactory {
         return DeviceFactory.getGenericFTMSKayaker();
       case genericFTMSCanoeFourCC:
         return DeviceFactory.getGenericFTMSCanoeer();
-      case genericFTMSClimberFourCC:
-        return DeviceFactory.getGenericFTMSClimber();
+      case genericFTMSStairClimberFourCC:
+        return DeviceFactory.getGenericFTMSStairClimber();
       case genericFTMSRowerFourCC:
         return DeviceFactory.getGenericFTMSRower();
       case genericFTMSSwimFourCC:
@@ -407,7 +407,7 @@ class DeviceFactory {
         fourCC = genericFTMSCanoeFourCC;
         break;
       case ActivityType.rockClimbing:
-        fourCC = genericFTMSClimberFourCC;
+        fourCC = genericFTMSStairClimberFourCC;
         break;
       case ActivityType.rowing:
         fourCC = genericFTMSRowerFourCC;

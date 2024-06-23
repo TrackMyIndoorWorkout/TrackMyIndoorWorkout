@@ -14,8 +14,8 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
     required super.model,
     super.heartRateByteIndex,
   }) : super(
-          sport: deviceSportDescriptors[genericFTMSClimberFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[genericFTMSClimberFourCC]!.isMultiSport,
+          sport: deviceSportDescriptors[genericFTMSStairClimberFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[genericFTMSStairClimberFourCC]!.isMultiSport,
           dataServiceId: fitnessMachineUuid,
           dataCharacteristicId: stairClimberUuid,
           flagByteSize: 2,

@@ -9,7 +9,7 @@ const cscSensorBasedBikeFourCC = "CSCB";
 const cscSensorBasedPaddleFourCC = "CSCP";
 const genericFTMSBikeFourCC = "GRid";
 const genericFTMSCanoeFourCC = "GCan";
-const genericFTMSClimberFourCC = "GClb";
+const genericFTMSStairClimberFourCC = "GSrC";
 const genericFTMSCrossTrainerFourCC = "GXtr";
 const genericFTMSEllipticalFourCC = "GEll";
 const genericFTMSKayakFourCC = "GKay";
@@ -51,7 +51,7 @@ List<String> allFourCC = [
   cscSensorBasedPaddleFourCC,
   genericFTMSBikeFourCC,
   genericFTMSCanoeFourCC,
-  genericFTMSClimberFourCC,
+  genericFTMSStairClimberFourCC,
   genericFTMSCrossTrainerFourCC,
   genericFTMSEllipticalFourCC,
   genericFTMSKayakFourCC,
@@ -130,8 +130,8 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   cscSensorBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   genericFTMSBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Bike"]),
   genericFTMSCanoeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Canoe"]),
-  genericFTMSClimberFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Climb"]),
-  // Delete this?
+  genericFTMSStairClimberFourCC:
+      DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Stair Climb"]),
   genericFTMSCrossTrainerFourCC:
       DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Cross Trainer"]),
   genericFTMSEllipticalFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Elliptical"]),
@@ -193,7 +193,7 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
       SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: false),
   genericFTMSBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   genericFTMSCanoeFourCC: SportDescriptor(defaultSport: ActivityType.canoeing, isMultiSport: false),
-  genericFTMSClimberFourCC:
+  genericFTMSStairClimberFourCC:
       SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
   genericFTMSCrossTrainerFourCC:
       SportDescriptor(defaultSport: ActivityType.elliptical, isMultiSport: false),
