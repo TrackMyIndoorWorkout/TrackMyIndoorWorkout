@@ -210,7 +210,8 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   lifeFitnessBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   lifeFitnessEllipticalFourCC:
       SportDescriptor(defaultSport: ActivityType.elliptical, isMultiSport: false),
-  lifeFitnessStairFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
+  lifeFitnessStairFourCC:
+      SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
   lifeFitnessTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
   matrixBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   matrixTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
