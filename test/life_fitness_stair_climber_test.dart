@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
-import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/life_fitness_stair_climber_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -14,7 +14,7 @@ class TestPair {
 
 void main() {
   test('Life Fitness Stair CLimber Device constructor tests', () async {
-    final sClimber = DeviceFactory.getGenericFTMSStairClimber();
+    final sClimber = LifeFitnessStairClimberDescriptor();
 
     expect(sClimber.sport, ActivityType.rockClimbing);
     expect(sClimber.fourCC, genericFTMSStairClimberFourCC);
@@ -22,7 +22,7 @@ void main() {
   });
 
   test('Stair Climber Device interprets Life Fitness Stair Climber flags properly 1', () async {
-    final sClimber = DeviceFactory.getGenericFTMSStairClimber();
+    final sClimber = LifeFitnessStairClimberDescriptor();
     const lsb = 0x3e;
     const msb = 0x01;
     const flag = maxUint8 * msb + lsb;
@@ -44,7 +44,7 @@ void main() {
   });
 
   test('Stair Climber Device interprets Life Fitness Stair Climber flags properly 2', () async {
-    final sClimber = DeviceFactory.getGenericFTMSStairClimber();
+    final sClimber = LifeFitnessStairClimberDescriptor();
     const lsb = 0x7e;
     const msb = 0x01;
     const flag = maxUint8 * msb + lsb;
@@ -102,7 +102,7 @@ void main() {
     ]) {
       final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
-        final sClimber = DeviceFactory.getGenericFTMSStairClimber();
+        final sClimber = LifeFitnessStairClimberDescriptor();
         sClimber.initFlag();
         expect(sClimber.isDataProcessable(testPair.data), true);
         sClimber.stopWorkout();
