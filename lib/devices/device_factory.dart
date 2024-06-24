@@ -26,6 +26,7 @@ import 'device_descriptors/running_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/schwinn_ac_performance_plus.dart';
 import 'device_descriptors/schwinn_x70.dart';
 import 'device_descriptors/stair_climber_device_descriptor.dart';
+import 'device_descriptors/step_climber_device_descriptor.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
 import 'device_fourcc.dart';
 
@@ -64,17 +65,6 @@ class DeviceFactory {
     );
   }
 
-  static TreadmillDeviceDescriptor getGenericFTMSTreadmill() {
-    return TreadmillDeviceDescriptor(
-      fourCC: genericFTMSTreadmillFourCC,
-      vendorName: "Unknown",
-      modelName: "Generic Treadmill",
-      manufacturerNamePart: "Unknown",
-      manufacturerFitId: stravaFitId,
-      model: "Generic Treadmill",
-    );
-  }
-
   static IndoorBikeDeviceDescriptor getGenericFTMSBike() {
     return IndoorBikeDeviceDescriptor(
       fourCC: genericFTMSBikeFourCC,
@@ -83,19 +73,6 @@ class DeviceFactory {
       manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
       model: "Generic Indoor Bike",
-    );
-  }
-
-  static RowerDeviceDescriptor getGenericFTMSKayaker() {
-    return RowerDeviceDescriptor(
-      sport: deviceSportDescriptors[genericFTMSKayakFourCC]!.defaultSport,
-      isMultiSport: deviceSportDescriptors[genericFTMSKayakFourCC]!.isMultiSport,
-      fourCC: genericFTMSKayakFourCC,
-      vendorName: "Unknown",
-      modelName: "Generic Kayak Ergometer",
-      manufacturerNamePart: "Unknown",
-      manufacturerFitId: stravaFitId,
-      model: "Generic Kayak Ergometer",
     );
   }
 
@@ -112,14 +89,40 @@ class DeviceFactory {
     );
   }
 
-  static StairClimberDeviceDescriptor getGenericFTMSStairClimber() {
-    return StairClimberDeviceDescriptor(
-      fourCC: genericFTMSStairClimberFourCC,
+  static CrossTrainerDeviceDescriptor getGenericFTMSCrossTrainer() {
+    return CrossTrainerDeviceDescriptor(
+      fourCC: genericFTMSCrossTrainerFourCC,
       vendorName: "Unknown",
-      modelName: "Generic Stair Climber",
+      modelName: "Generic Cross Trainer",
       manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
-      model: "Generic Stair Climber",
+      model: "Generic Cross Trainer",
+    );
+  }
+
+  static RowerDeviceDescriptor getGenericFTMSElliptical() {
+    return RowerDeviceDescriptor(
+      sport: deviceSportDescriptors[genericFTMSEllipticalFourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[genericFTMSEllipticalFourCC]!.isMultiSport,
+      fourCC: genericFTMSEllipticalFourCC,
+      vendorName: "Unknown",
+      modelName: "Generic Cross Elliptical",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Generic Elliptical",
+    );
+  }
+
+  static RowerDeviceDescriptor getGenericFTMSKayaker() {
+    return RowerDeviceDescriptor(
+      sport: deviceSportDescriptors[genericFTMSKayakFourCC]!.defaultSport,
+      isMultiSport: deviceSportDescriptors[genericFTMSKayakFourCC]!.isMultiSport,
+      fourCC: genericFTMSKayakFourCC,
+      vendorName: "Unknown",
+      modelName: "Generic Kayak Ergometer",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Generic Kayak Ergometer",
     );
   }
 
@@ -136,6 +139,28 @@ class DeviceFactory {
     );
   }
 
+  static StairClimberDeviceDescriptor getGenericFTMSStairClimber() {
+    return StairClimberDeviceDescriptor(
+      fourCC: genericFTMSStairClimberFourCC,
+      vendorName: "Unknown",
+      modelName: "Generic Stair Climber",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Generic Stair Climber",
+    );
+  }
+
+  static StepClimberDeviceDescriptor getGenericFTMSStepClimber() {
+    return StepClimberDeviceDescriptor(
+      fourCC: genericFTMSStepClimberFourCC,
+      vendorName: "Unknown",
+      modelName: "Generic Step Climber",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: stravaFitId,
+      model: "Generic Step Climber",
+    );
+  }
+
   static RowerDeviceDescriptor getGenericFTMSSwimmer() {
     return RowerDeviceDescriptor(
       sport: deviceSportDescriptors[genericFTMSSwimFourCC]!.defaultSport,
@@ -149,28 +174,14 @@ class DeviceFactory {
     );
   }
 
-  // Delete this?
-  static RowerDeviceDescriptor getGenericFTMSElliptical() {
-    return RowerDeviceDescriptor(
-      sport: deviceSportDescriptors[genericFTMSEllipticalFourCC]!.defaultSport,
-      isMultiSport: deviceSportDescriptors[genericFTMSEllipticalFourCC]!.isMultiSport,
-      fourCC: genericFTMSEllipticalFourCC,
+  static TreadmillDeviceDescriptor getGenericFTMSTreadmill() {
+    return TreadmillDeviceDescriptor(
+      fourCC: genericFTMSTreadmillFourCC,
       vendorName: "Unknown",
-      modelName: "Generic Cross Elliptical",
+      modelName: "Generic Treadmill",
       manufacturerNamePart: "Unknown",
       manufacturerFitId: stravaFitId,
-      model: "Generic Elliptical",
-    );
-  }
-
-  static CrossTrainerDeviceDescriptor getGenericFTMSCrossTrainer() {
-    return CrossTrainerDeviceDescriptor(
-      fourCC: genericFTMSCrossTrainerFourCC,
-      vendorName: "Unknown",
-      modelName: "Generic Cross Trainer",
-      manufacturerNamePart: "Unknown",
-      manufacturerFitId: stravaFitId,
-      model: "Generic Cross Trainer",
+      model: "Generic Treadmill",
     );
   }
 
@@ -321,25 +332,26 @@ class DeviceFactory {
         return DeviceFactory.getCSCBasedBike();
       case cscSensorBasedPaddleFourCC:
         return DeviceFactory.getCSCBasedPaddler();
-      case genericFTMSTreadmillFourCC:
-        return DeviceFactory.getGenericFTMSTreadmill();
       case genericFTMSBikeFourCC:
         return DeviceFactory.getGenericFTMSBike();
-      case genericFTMSKayakFourCC:
-        return DeviceFactory.getGenericFTMSKayaker();
       case genericFTMSCanoeFourCC:
         return DeviceFactory.getGenericFTMSCanoeer();
-      case genericFTMSStairClimberFourCC:
-        return DeviceFactory.getGenericFTMSStairClimber();
-      case genericFTMSRowerFourCC:
-        return DeviceFactory.getGenericFTMSRower();
-      case genericFTMSSwimFourCC:
-        return DeviceFactory.getGenericFTMSSwimmer();
-      // Delete this?
-      case genericFTMSEllipticalFourCC:
-        return DeviceFactory.getGenericFTMSElliptical();
       case genericFTMSCrossTrainerFourCC:
         return DeviceFactory.getGenericFTMSCrossTrainer();
+      case genericFTMSEllipticalFourCC:
+        return DeviceFactory.getGenericFTMSElliptical();
+      case genericFTMSKayakFourCC:
+        return DeviceFactory.getGenericFTMSKayaker();
+      case genericFTMSRowerFourCC:
+        return DeviceFactory.getGenericFTMSRower();
+      case genericFTMSStairClimberFourCC:
+        return DeviceFactory.getGenericFTMSStairClimber();
+      case genericFTMSStepClimberFourCC:
+        return DeviceFactory.getGenericFTMSStepClimber();
+      case genericFTMSSwimFourCC:
+        return DeviceFactory.getGenericFTMSSwimmer();
+      case genericFTMSTreadmillFourCC:
+        return DeviceFactory.getGenericFTMSTreadmill();
       case kayakFirstFourCC:
         return KayakFirstDescriptor();
       case kayakProGenesisPortFourCC:
