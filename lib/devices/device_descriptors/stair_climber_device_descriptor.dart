@@ -1,7 +1,6 @@
 import '../../devices/device_fourcc.dart';
 import '../../persistence/isar/record.dart';
 import '../gatt/ftms.dart';
-import '../metric_descriptors/short_metric_descriptor.dart';
 import 'fitness_machine_descriptor.dart';
 
 class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
@@ -42,7 +41,7 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
     flag = skipFlag(flag, inverse: true); // Floors
     flag = processCadenceFlag(flag, divider: 1.0); // Steps / min
     flag = skipFlag(flag); // Average step rate
-    flag = processTotalDistanceFlag(flag); // Pos elevation gain
+    flag = processTotalDistanceFlag(flag, numBytes: 2); // Pos elevation gain
     flag = processStrideCountFlag(flag);
     flag = processExpandedEnergyFlag(flag);
     flag = processHeartRateFlag(flag);
@@ -52,27 +51,6 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
 
     // #320 The Reserved flag is set
     hasFutureReservedBytes = flag > 0;
-  }
-
-  @override
-  int processTotalDistanceFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16, meters
-      distanceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      byteCounter += 2;
-    }
-
-    return advanceFlag(flag);
-  }
-
-  int processStrideCountFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16
-      strokeCountMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
-      byteCounter += 2;
-    }
-
-    return advanceFlag(flag);
   }
 
   @override

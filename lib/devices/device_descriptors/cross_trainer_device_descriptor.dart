@@ -1,7 +1,6 @@
 import '../../devices/device_fourcc.dart';
 import '../../persistence/isar/record.dart';
 import '../gatt/ftms.dart';
-import '../metric_descriptors/short_metric_descriptor.dart';
 import 'fitness_machine_descriptor.dart';
 
 class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
@@ -46,7 +45,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processStrideCountFlag(flag);
     flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
     flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
-    flag = processResistanceFlag(flag);
+    flag = processResistanceFlag(flag, divider: 10.0);
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
     flag = processExpandedEnergyFlag(flag);
@@ -57,29 +56,6 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
 
     // #320 The Reserved flag is set
     hasFutureReservedBytes = flag > 0;
-  }
-
-  int processStrideCountFlag(int flag) {
-    if (flag % 2 == 1) {
-      // UInt16
-      strokeCountMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 10.0);
-      byteCounter += 2;
-    }
-
-    return advanceFlag(flag);
-  }
-
-  @override
-  int processResistanceFlag(int flag) {
-    if (flag % 2 == 1) {
-      // SInt16
-      resistanceMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 10.0);
-      byteCounter += 2;
-    }
-
-    return advanceFlag(flag);
   }
 
   @override
