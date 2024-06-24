@@ -109,7 +109,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
-          resistance: null,
+          resistance: 13,
         ),
       ),
       // High RPM
@@ -156,7 +156,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
-          resistance: null,
+          resistance: 13,
         ),
       ),
       // High Power (and speed)
@@ -203,7 +203,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
-          resistance: null,
+          resistance: 19,
         ),
       ),
       TestPair(
@@ -249,7 +249,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
-          resistance: null,
+          resistance: 7,
         ),
       ),
     ]) {
@@ -279,6 +279,7 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
         expect(record.strokeCount, testPair.record.strokeCount);
+        expect(record.resistance, testPair.record.resistance);
       });
     }
   });
