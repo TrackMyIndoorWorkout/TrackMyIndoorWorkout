@@ -23,7 +23,7 @@ void main() {
 
   test('Stair Climber Device interprets Life Fitness Stair Climber flags properly 1', () async {
     final sClimber = LifeFitnessStairClimberDescriptor();
-    const lsb = 0x3e;
+    const lsb = 0x3e; // 62
     const msb = 0x01;
     const flag = maxUint8 * msb + lsb;
     sClimber.initFlag();
@@ -34,18 +34,18 @@ void main() {
     expect(sClimber.cadenceMetric, isNotNull);
     expect(sClimber.distanceMetric, isNotNull);
     expect(sClimber.powerMetric, null);
-    expect(sClimber.caloriesMetric, isNotNull);
     expect(sClimber.timeMetric, isNotNull);
     expect(sClimber.caloriesMetric, isNotNull);
     expect(sClimber.caloriesPerHourMetric, isNotNull);
     expect(sClimber.caloriesPerMinuteMetric, isNotNull);
     expect(sClimber.heartRateByteIndex, null);
     expect(sClimber.strokeCountMetric, isNotNull);
+    expect(sClimber.resistanceMetric, null);
   });
 
   test('Stair Climber Device interprets Life Fitness Stair Climber flags properly 2', () async {
     final sClimber = LifeFitnessStairClimberDescriptor();
-    const lsb = 0x7e;
+    const lsb = 0x7e; // 126
     const msb = 0x01;
     const flag = maxUint8 * msb + lsb;
     sClimber.initFlag();
@@ -56,13 +56,13 @@ void main() {
     expect(sClimber.cadenceMetric, isNotNull);
     expect(sClimber.distanceMetric, isNotNull);
     expect(sClimber.powerMetric, null);
-    expect(sClimber.caloriesMetric, isNotNull);
     expect(sClimber.timeMetric, isNotNull);
     expect(sClimber.caloriesMetric, isNotNull);
     expect(sClimber.caloriesPerHourMetric, isNotNull);
     expect(sClimber.caloriesPerMinuteMetric, isNotNull);
     expect(sClimber.heartRateByteIndex, isNotNull);
     expect(sClimber.strokeCountMetric, isNotNull);
+    expect(sClimber.resistanceMetric, null);
   });
 
   group('Stair Climber Device interprets Life Fitness Stair Climber data properly', () {
@@ -80,7 +80,7 @@ void main() {
           sport: ActivityType.rockClimbing,
           caloriesPerHour: null,
           caloriesPerMinute: null,
-          strokeCount: 35,
+          strokeCount: 22,
         ),
       ),
       TestPair(
@@ -96,7 +96,7 @@ void main() {
           sport: ActivityType.rockClimbing,
           caloriesPerHour: null,
           caloriesPerMinute: null,
-          strokeCount: 44,
+          strokeCount: 54,
         ),
       ),
     ]) {
@@ -121,6 +121,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.sport, testPair.record.sport);
+        expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
+        expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
+        expect(record.resistance, testPair.record.resistance);
       });
     }
   });
