@@ -6,7 +6,7 @@ const Map<String, String> uuidToSport = {
   indoorBikeUuid: ActivityType.ride,
   rowerDeviceUuid: ActivityType.rowing,
   stairClimberUuid: ActivityType.rockClimbing,
-  stepClimberUuid: ActivityType.rockClimbing,
+  stepClimberUuid: ActivityType.stairStepper,
   treadmillUuid: ActivityType.run,
 };
 
@@ -19,5 +19,6 @@ const Map<String, String> sportToUuid = {
   ActivityType.rockClimbing: stairClimberUuid,
   ActivityType.run: treadmillUuid,
   ActivityType.rowing: rowerDeviceUuid,
+  ActivityType.stairStepper: stepClimberUuid,
   ActivityType.swim: rowerDeviceUuid,
 };

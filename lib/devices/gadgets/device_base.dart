@@ -260,8 +260,10 @@ abstract class DeviceBase {
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
-    } else if (characteristicId == stepClimberUuid || characteristicId == stairClimberUuid) {
+    } else if (characteristicId == stairClimberUuid) {
       sports.add(ActivityType.rockClimbing);
+    } else if (characteristicId == stepClimberUuid) {
+      sports.add(ActivityType.stairStepper);
     } else if (characteristicId == kayakFirstAllAroundUuid) {
       sports.addAll([ActivityType.kayaking, ActivityType.canoeing]);
     }

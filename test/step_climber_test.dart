@@ -12,10 +12,10 @@ class TestPair {
 }
 
 void main() {
-  test('Step CLimber Device constructor tests', () async {
+  test('Step Climber Device constructor tests', () async {
     final sClimber = DeviceFactory.getGenericFTMSStepClimber();
 
-    expect(sClimber.sport, ActivityType.rockClimbing);
+    expect(sClimber.sport, ActivityType.stairStepper);
     expect(sClimber.fourCC, genericFTMSStepClimberFourCC);
     expect(sClimber.isMultiSport, false);
   });

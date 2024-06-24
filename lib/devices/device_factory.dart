@@ -13,6 +13,7 @@ import 'device_descriptors/kayak_first_descriptor.dart';
 import 'device_descriptors/life_fitness_bike_descriptor.dart';
 import 'device_descriptors/life_fitness_elliptical_descriptor.dart';
 import 'device_descriptors/life_fitness_stair_climber_descriptor.dart';
+import 'device_descriptors/life_fitness_step_climber_descriptor.dart';
 import 'device_descriptors/life_fitness_treadmill_descriptor.dart';
 import 'device_descriptors/matrix_bike_descriptor.dart';
 import 'device_descriptors/matrix_treadmill_descriptor.dart';
@@ -362,6 +363,8 @@ class DeviceFactory {
         return LifeFitnessEllipticalDescriptor();
       case lifeFitnessStairClimberFourCC:
         return LifeFitnessStairClimberDescriptor();
+      case lifeFitnessStepClimberFourCC:
+        return LifeFitnessStepClimberDescriptor();
       case lifeFitnessTreadmillFourCC:
         return LifeFitnessTreadmillDescriptor();
       case matrixBikeFourCC:
@@ -423,6 +426,9 @@ class DeviceFactory {
         break;
       case ActivityType.rowing:
         fourCC = genericFTMSRowerFourCC;
+        break;
+      case ActivityType.stairStepper:
+        fourCC = genericFTMSStepClimberFourCC;
         break;
       case ActivityType.swim:
         fourCC = genericFTMSSwimFourCC;

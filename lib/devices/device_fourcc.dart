@@ -153,6 +153,8 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessStairClimberFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
+  lifeFitnessStepClimberFourCC: DeviceIdentifierHelperEntry(
+      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessTreadmillFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   matrixBikeFourCC: DeviceIdentifierHelperEntry(
@@ -208,7 +210,7 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   genericFTMSStairClimberFourCC:
       SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
   genericFTMSStepClimberFourCC:
-      SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
+      SportDescriptor(defaultSport: ActivityType.stairStepper, isMultiSport: false),
   genericFTMSSwimFourCC: SportDescriptor(defaultSport: ActivityType.swim, isMultiSport: false),
   genericFTMSTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
   kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
@@ -219,6 +221,8 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
       SportDescriptor(defaultSport: ActivityType.elliptical, isMultiSport: false),
   lifeFitnessStairClimberFourCC:
       SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
+  lifeFitnessStepClimberFourCC:
+      SportDescriptor(defaultSport: ActivityType.stairStepper, isMultiSport: false),
   lifeFitnessTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
   matrixBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   matrixTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
