@@ -9,7 +9,7 @@ import 'stair_climber_device_descriptor.dart';
 class LifeFitnessStairClimberDescriptor extends StairClimberDeviceDescriptor with LifeFitnessMixin {
   LifeFitnessStairClimberDescriptor()
       : super(
-          fourCC: lifeFitnessStairFourCC,
+          fourCC: lifeFitnessStairClimberFourCC,
           vendorName: LifeFitnessMixin.lfManufacturer,
           modelName: "${LifeFitnessMixin.lfManufacturer} Stair Climber",
           manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,

@@ -13,11 +13,11 @@ class TestPair {
 }
 
 void main() {
-  test('Life Fitness Stair CLimber Device constructor tests', () async {
+  test('Life Fitness Stair Climber Device constructor tests', () async {
     final sClimber = LifeFitnessStairClimberDescriptor();
 
     expect(sClimber.sport, ActivityType.rockClimbing);
-    expect(sClimber.fourCC, genericFTMSStairClimberFourCC);
+    expect(sClimber.fourCC, lifeFitnessStairClimberFourCC);
     expect(sClimber.isMultiSport, false);
   });
 

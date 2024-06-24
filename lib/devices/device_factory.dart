@@ -360,7 +360,7 @@ class DeviceFactory {
         return LifeFitnessBikeDescriptor();
       case lifeFitnessEllipticalFourCC:
         return LifeFitnessEllipticalDescriptor();
-      case lifeFitnessStairFourCC:
+      case lifeFitnessStairClimberFourCC:
         return LifeFitnessStairClimberDescriptor();
       case lifeFitnessTreadmillFourCC:
         return LifeFitnessTreadmillDescriptor();

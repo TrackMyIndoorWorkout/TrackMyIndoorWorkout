@@ -21,7 +21,8 @@ const kayakFirstFourCC = "K1st";
 const kayakProGenesisPortFourCC = "KPro";
 const lifeFitnessBikeFourCC = "LFBk";
 const lifeFitnessEllipticalFourCC = "LFEl";
-const lifeFitnessStairFourCC = "LFSt";
+const lifeFitnessStairClimberFourCC = "LFSr";
+const lifeFitnessStepClimberFourCC = "LFSp";
 const lifeFitnessTreadmillFourCC = "LFTm";
 const npeRunnFourCC = "RUNN";
 const matrixBikeFourCC = "MxBk";
@@ -64,7 +65,8 @@ List<String> allFourCC = [
   kayakProGenesisPortFourCC,
   lifeFitnessBikeFourCC,
   lifeFitnessEllipticalFourCC,
-  lifeFitnessStairFourCC,
+  lifeFitnessStairClimberFourCC,
+  lifeFitnessStepClimberFourCC,
   lifeFitnessTreadmillFourCC,
   matrixBikeFourCC,
   matrixTreadmillFourCC,
@@ -149,7 +151,7 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessEllipticalFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
-  lifeFitnessStairFourCC: DeviceIdentifierHelperEntry(
+  lifeFitnessStairClimberFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
   lifeFitnessTreadmillFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
@@ -215,7 +217,7 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   lifeFitnessBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   lifeFitnessEllipticalFourCC:
       SportDescriptor(defaultSport: ActivityType.elliptical, isMultiSport: false),
-  lifeFitnessStairFourCC:
+  lifeFitnessStairClimberFourCC:
       SportDescriptor(defaultSport: ActivityType.rockClimbing, isMultiSport: false),
   lifeFitnessTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
   matrixBikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
