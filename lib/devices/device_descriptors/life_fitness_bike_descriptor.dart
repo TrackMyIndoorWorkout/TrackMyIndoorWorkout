@@ -47,7 +47,8 @@ class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitn
     // C10 uint8 (1 byte) Heart Rate
     // C12 uint16 (2 bytes) Elapsed Time
     //
-    // In reality:
+    // In reality: it does have the Instant cadence (C3) as well
+    // even though flags don't indicate that
     // C1  uint16 (2 bytes) Instant Speed (negated bit 0 means present)
     // C2  uint16 (2 bytes) Avg Speed
     // C3  uint16 (2 bytes) Instant Cadence

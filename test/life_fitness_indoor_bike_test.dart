@@ -21,7 +21,8 @@ void main() {
     expect(bike.isMultiSport, false);
   });
 
-  test('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags 1 properly', () async {
+  test('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags wo Heart Rate properly',
+      () async {
     final bike = LifeFitnessBikeDescriptor();
     const lsb = 250;
     const msb = 9;
@@ -43,7 +44,8 @@ void main() {
     expect(bike.resistanceMetric, isNotNull);
   });
 
-  test('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags 2 properly', () async {
+  test('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags w Heart Rate properly',
+      () async {
     final bike = LifeFitnessBikeDescriptor();
     const lsb = 250;
     const msb = 11;
