@@ -67,11 +67,11 @@ mixin LifeFitnessMixin {
 
     await Future.delayed(someDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.email_address.xml
-    // uint8
+    // UTF-8s
     final emailData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userEmailCharacteristicUuid);
     try {
-      await emailData?.write([]);
+      await emailData?.write([0x40, 0x00]);
     } on Exception catch (e, stack) {
       Logging()
           .logException(logLvl, lfNamePrefix, "prePumpConfig", "userEmailData.write", e, stack);
