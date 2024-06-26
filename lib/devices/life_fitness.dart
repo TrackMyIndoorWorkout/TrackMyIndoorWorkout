@@ -11,6 +11,7 @@ const lifeFitnessUserControl2MagicNumber = [0x00, 0x00, 0x00, 0x01, 0xb8, 0x5b, 
 
 const lifeFitnessUserServiceUuid = '4b91';
 const lifeFitnessUserUnk1Uuid = '4cf2';
+// f77ab82b7a2440078f33c5aa6ee7a31b
 const lifeFitnessUserUnk1MagicNumber = [
   0x66,
   0x37,
@@ -43,7 +44,44 @@ const lifeFitnessUserUnk1MagicNumber = [
   0x61,
   0x33,
   0x31,
-  0x62
+  0x62,
+];
+// 8feda8891dba401f89900230795f0860
+// Note: Qdomyos for some reason breaks this up into two writes
+// like there was 20 byte MTU, but in the snoops it is
+const lifeFitnessUserUnk1MagicNumberQdomyos1 = [
+  0x38,
+  0x66,
+  0x65,
+  0x64,
+  0x61,
+  0x38,
+  0x38,
+  0x39,
+  0x31,
+  0x64,
+  0x62,
+  0x61,
+  0x34,
+  0x30,
+  0x31,
+  0x66,
+  0x38,
+  0x39,
+  0x39,
+  0x30,
+  0x30,
+  0x32,
+  0x33,
+  0x30,
+  0x37,
+  0x39,
+  0x35,
+  0x66,
+  0x30,
+  0x38,
+  0x36,
+  0x30,
 ];
 const lifeFitnessUserUnk2Uuid = 'e85e';
 const lifeFitnessUserUnk2MagicNumber = 0x00;
