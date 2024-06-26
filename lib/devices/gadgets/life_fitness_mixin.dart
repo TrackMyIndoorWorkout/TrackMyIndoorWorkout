@@ -114,6 +114,9 @@ mixin LifeFitnessMixin {
     final unk1Data =
         BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, lifeFitnessUserUnk1Uuid);
     try {
+      // TODO: should we break the magic number up into two chunks at the 20 byte mark?
+      // The MTU is 672, but Qdomyos does this chop: initData2a and initData2b
+      // https://github.com/cagnulein/qdomyos-zwift/blame/5a6afbb500e5937c6808304577c6cdc4269a87c9/src/devices/lifefitnesstreadmill/lifefitnesstreadmill.cpp#L97
       await unk1Data?.write(lifeFitnessUserUnk1MagicNumber);
     } on Exception catch (e, stack) {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "unk1Data.write", e, stack);
