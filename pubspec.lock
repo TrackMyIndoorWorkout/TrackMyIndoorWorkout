@@ -266,10 +266,10 @@ packages:
     dependency: transitive
     description:
       name: dev_build
-      sha256: "4a4c8e3aaaaa9a7de4039dc711ee573de5612a35a4469d01ecf30e5ae74cbcfd"
+      sha256: "5d23104ed6212275cca89b2226b5288833c6bb15529d4ad66a35a4b30fcb792b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.16.7+4"
+    version: "1.0.0+1"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -928,10 +928,10 @@ packages:
     dependency: transitive
     description:
       name: process_run
-      sha256: "8d9c6198b98fbbfb511edd42e7364e24d85c163e47398919871b952dc86a423e"
+      sha256: "6052115540ad88715d6bcee60656970f70c68c85846d1948b92e435f0382899e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.14.2"
+    version: "1.0.0+1"
   progress_indicators:
     dependency: "direct main"
     description:
@@ -1237,10 +1237,10 @@ packages:
     dependency: transitive
     description:
       name: strings
-      sha256: b33f40c4dd3e597bf6d9e7f4f4dc282dad0f19b07d9f320cb5c2183859cbccf5
+      sha256: "052836499f03897d3860a603b330c1ea3c8a14177b21f34b15a1295f36024aae"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "3.1.2"
   sync_http:
     dependency: transitive
     description:
