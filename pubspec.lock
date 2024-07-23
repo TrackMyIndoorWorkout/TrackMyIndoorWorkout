@@ -920,10 +920,10 @@ packages:
     dependency: transitive
     description:
       name: process_run
-      sha256: "6052115540ad88715d6bcee60656970f70c68c85846d1948b92e435f0382899e"
+      sha256: "0eb8ca4762ac4146a7cd1770c2158bc0f43c3019683454a6db3be5037e95593f"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0+1"
+    version: "1.0.0+2"
   progress_indicators:
     dependency: "direct main"
     description:
@@ -1389,10 +1389,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_windows
-      sha256: ecf9725510600aa2bb6d7ddabe16357691b6d2805f66216a97d1b881e21beff7
+      sha256: "49c10f879746271804767cb45551ec5592cdab00ee105c06dddde1a98f73b185"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "3.1.2"
   uuid:
     dependency: transitive
     description:
