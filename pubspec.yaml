@@ -19,7 +19,7 @@ dependencies:
   assorted_layout_widgets: ^9.0.2
   collection: ^1.19.0
   datetime_picker_formfield_new: ^2.1.0
-  device_info_plus: ^10.1.0
+  device_info_plus: ^10.1.1
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.2
@@ -49,7 +49,7 @@ dependencies:
   listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
-  package_info_plus: ^8.0.0
+  package_info_plus: ^8.0.1
   path: ^1.9.0
   path_provider: ^2.1.3
   pref: ^2.8.0
@@ -57,11 +57,11 @@ dependencies:
   qr_widget: ^4.1.0
   rxdart: ^0.28.0
   share_files_and_screenshot_widgets: ^1.0.6
-  share_plus: ^9.0.0
+  share_plus: ^10.0.0
   soundpool: ^2.4.1
   sqflite: ^2.3.3+1
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^26.1.42
+  syncfusion_flutter_charts: ^26.2.5+1
   timezone: ^0.9.4
   tuple: ^2.0.2
   url_launcher: ^6.3.0
