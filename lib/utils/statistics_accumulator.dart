@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import '../export/export_record.dart';
-import '../ui/models/display_record.dart';
 import '../persistence/isar/record.dart';
+import '../ui/models/display_record.dart';
 import 'constants.dart';
 import 'streaming_median_calculator.dart';
 
@@ -211,6 +211,99 @@ class StatisticsAccumulator {
 
       if (calculateMinResistance) {
         minResistance = min(minResistance, exportRecord.record.resistance!);
+      }
+    }
+  }
+
+  void processDisplayRecord(DisplayRecord displayRecord) {
+    if ((displayRecord.power ?? 0) > 0) {
+      if (calculateAvgPower) {
+        powerSum += displayRecord.power!;
+        powerCount++;
+      }
+
+      if (calculateMaxPower) {
+        maxPower = max(maxPower, displayRecord.power!);
+      }
+
+      if (calculateMinPower) {
+        minPower = min(minPower, displayRecord.power!);
+      }
+
+      if (calculateMedian) {
+        powerMedianCalc.processElement(displayRecord.power!);
+      }
+    }
+
+    if ((displayRecord.speed ?? 0.0) > eps) {
+      if (calculateAvgSpeed) {
+        speedSum += displayRecord.speed!;
+        speedCount++;
+      }
+
+      if (calculateMaxSpeed) {
+        maxSpeed = max(maxSpeed, displayRecord.speed!);
+      }
+
+      if (calculateMinSpeed) {
+        minSpeed = min(minSpeed, displayRecord.speed!);
+      }
+
+      if (calculateMedian) {
+        speedMedianCalc.processElement(displayRecord.speed!);
+      }
+    }
+
+    if ((displayRecord.heartRate ?? 0) > 0) {
+      if (calculateAvgHeartRate) {
+        heartRateSum += displayRecord.heartRate!;
+        heartRateCount++;
+      }
+
+      if (calculateMaxHeartRate) {
+        maxHeartRate = max(maxHeartRate, displayRecord.heartRate!);
+      }
+
+      if (calculateMinHeartRate) {
+        minHeartRate = min(minHeartRate, displayRecord.heartRate!);
+      }
+
+      if (calculateMedian) {
+        heartRateMedianCalc.processElement(displayRecord.heartRate!);
+      }
+    }
+
+    if ((displayRecord.cadence ?? 0) > 0) {
+      if (calculateAvgCadence) {
+        cadenceSum += displayRecord.cadence!;
+        cadenceCount++;
+      }
+
+      if (calculateMaxCadence) {
+        maxCadence = max(maxCadence, displayRecord.cadence!);
+      }
+
+      if (calculateMinCadence) {
+        minCadence = min(minCadence, displayRecord.cadence!);
+      }
+
+      if (calculateMedian) {
+        cadenceMedianCalc.processElement(displayRecord.cadence!);
+      }
+    }
+
+    if ((displayRecord.resistance ?? 0) > 0) {
+      if (calculateAvgResistance) {
+        resistanceSum += displayRecord.resistance!;
+        resistanceCount++;
+      }
+
+      if (calculateMaxResistance) {
+        maxResistance = max(maxResistance, displayRecord.resistance!);
+      }
+
+      if (calculateMinResistance) {
+        minResistance = min(minResistance, displayRecord.resistance!);
       }
     }
   }

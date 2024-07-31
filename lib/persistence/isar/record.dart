@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:isar/isar.dart';
 import 'package:flutter/foundation.dart';
+import 'package:isar/isar.dart';
 
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
@@ -31,8 +31,6 @@ class Record {
   @ignore
   double? pace;
   @ignore
-  double? strokeCount;
-  @ignore
   String? sport;
   @ignore
   double? caloriesPerHour;
@@ -42,6 +40,10 @@ class Record {
   int movingTime = 0; // ms
   @ignore
   int? resistance;
+  @ignore
+  double? preciseCadence;
+  @ignore
+  double? strokeCount; // strides / steps / revolutions
 
   Record({
     this.id = Isar.autoIncrement,
@@ -56,11 +58,12 @@ class Record {
     this.heartRate,
     this.elapsedMillis,
     this.pace,
-    this.strokeCount,
     this.sport,
     this.caloriesPerHour,
     this.caloriesPerMinute,
     this.resistance,
+    this.preciseCadence,
+    this.strokeCount,
   }) {
     timeStamp ??= DateTime.now();
     paceToSpeed();
@@ -216,6 +219,33 @@ class Record {
     }
   }
 
+  void cumulativeStrokeCountEnforcement(
+      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    if (lastRecord.strokeCount != null) {
+      if (strokeCount != null) {
+        if (!testing && kDebugMode && enableAsserts) {
+          assert(strokeCount! >= lastRecord.strokeCount!);
+        }
+
+        if (strokeCount! < lastRecord.strokeCount!) {
+          if (logLevel >= logLevelError) {
+            Logging().log(
+              logLevel,
+              logLevelError,
+              tag,
+              "cumulativeStrokeCountEnforcement",
+              "violation $strokeCount < ${lastRecord.strokeCount}",
+            );
+          }
+
+          strokeCount = lastRecord.strokeCount;
+        }
+      } else if (force) {
+        strokeCount = lastRecord.strokeCount;
+      }
+    }
+  }
+
   void nonNegativeEnforcement(int logLevel, bool enableAsserts) {
     if (distance != null) {
       if (kDebugMode && enableAsserts) {
@@ -282,6 +312,7 @@ class Record {
     bool enableAsserts, {
     bool forDistance = false,
     bool forCalories = false,
+    bool forStrokeCount = false,
     bool force = false,
   }) {
     // Ensure that cumulative fields cannot decrease over time
@@ -294,6 +325,10 @@ class Record {
 
     if (forCalories) {
       cumulativeCaloriesEnforcement(lastRecord, logLevel, enableAsserts, force);
+    }
+
+    if (forStrokeCount) {
+      cumulativeStrokeCountEnforcement(lastRecord, logLevel, enableAsserts, force);
     }
 
     nonNegativeEnforcement(logLevel, enableAsserts);
@@ -358,11 +393,12 @@ class Record {
       heartRate: record.heartRate,
       elapsedMillis: record.elapsedMillis,
       pace: record.pace,
-      strokeCount: record.strokeCount,
       sport: record.sport,
       caloriesPerHour: record.caloriesPerHour,
       caloriesPerMinute: record.caloriesPerMinute,
       resistance: record.resistance,
+      preciseCadence: record.preciseCadence,
+      strokeCount: record.strokeCount,
     );
   }
 
@@ -380,10 +416,11 @@ class Record {
         "heartRate $heartRate | "
         "elapsedMillis $elapsedMillis | "
         "pace $pace | "
-        "strokeCount $strokeCount | "
         "caloriesPerHour $caloriesPerHour | "
         "caloriesPerMinute $caloriesPerMinute | "
-        "resistance $resistance";
+        "resistance $resistance | "
+        "preciseCadence $preciseCadence | "
+        "strokeCount $strokeCount";
   }
 }
 
@@ -401,11 +438,12 @@ class RecordWithSport extends Record {
     super.heartRate,
     super.elapsedMillis,
     super.pace,
-    super.strokeCount,
     required super.sport,
     super.caloriesPerHour,
     super.caloriesPerMinute,
     super.resistance,
+    super.preciseCadence,
+    super.strokeCount,
   })  : assert(sport != null),
         super(
           id: id ?? Isar.autoIncrement,
@@ -424,6 +462,8 @@ class RecordWithSport extends Record {
       heartRate: 0,
       elapsedMillis: 0,
       resistance: 0,
+      preciseCadence: 0.0,
+      strokeCount: 0.0,
       sport: sport,
     );
   }
@@ -434,14 +474,16 @@ class RecordWithSport extends Record {
         : (sport == ActivityType.ride
             ? 30.0 + random.nextDouble() * 20.0
             : 2.0 + random.nextDouble() * 10.0);
+    final cadence = 30.0 + random.nextDouble() * 100.0;
     return RecordWithSport(
       timeStamp: DateTime.now(),
       calories: random.nextInt(1500),
       power: 50 + random.nextInt(500),
       speed: spd,
-      cadence: 30 + random.nextInt(100),
+      cadence: cadence.toInt(),
       heartRate: 60 + random.nextInt(120),
       resistance: random.nextInt(100),
+      preciseCadence: cadence,
       sport: sport,
     );
   }
@@ -456,6 +498,8 @@ class RecordWithSport extends Record {
     cadence ??= record.cadence;
     heartRate ??= record.heartRate;
     resistance ??= record.resistance;
+    preciseCadence ??= record.preciseCadence;
+    strokeCount ??= record.strokeCount;
     return this;
   }
 
@@ -472,11 +516,12 @@ class RecordWithSport extends Record {
       heartRate: record.heartRate,
       elapsedMillis: record.elapsedMillis,
       pace: record.pace,
-      strokeCount: record.strokeCount,
       sport: record.sport,
       caloriesPerHour: record.caloriesPerHour,
       caloriesPerMinute: record.caloriesPerMinute,
       resistance: record.resistance,
+      preciseCadence: record.preciseCadence,
+      strokeCount: record.strokeCount,
     );
   }
 
@@ -588,7 +633,7 @@ class RecordWithSport extends Record {
         const flagMsb = 11;
         const flagLsb = 44;
         final cadence2 = min((cadence ?? 0) * 2, maxByte);
-        final strokeCount0 = (strokeCount ?? 0).toInt();
+        final strokeCount0 = (strokeCount ?? 0.0).toInt();
         final pace0 = (pace ?? 0.0).round();
         final distance0 = (distance ?? 0.0).round();
         final power0 = power ?? 0;

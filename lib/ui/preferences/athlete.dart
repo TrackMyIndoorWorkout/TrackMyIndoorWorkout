@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/athlete_age.dart';
+import '../../preferences/athlete_body_height.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/athlete_gender.dart';
 import '../../preferences/athlete_vo2max.dart';
@@ -32,6 +34,21 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: athleteBodyWeightIntTag,
         min: athleteBodyWeightMin,
         max: athleteBodyWeightMax,
+      ),
+      PrefSlider<int>(
+        title: const Text(athleteBodyHeight),
+        subtitle: const Text(athleteBodyHeightDescription),
+        pref: athleteBodyHeightTag,
+        trailing: (num value) => Text("$value cm"),
+        min: athleteBodyHeightMin,
+        max: athleteBodyHeightMax,
+        divisions: athleteBodyHeightDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: athleteBodyHeightTag,
+        min: athleteBodyHeightMin,
+        max: athleteBodyHeightMax,
       ),
       const PrefCheckbox(
         title: Text(useHeartRateBasedCalorieCounting),

@@ -1,12 +1,14 @@
 import 'package:get/get.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
+
+import '../preferences/activity_ui.dart';
 import '../preferences/activity_upload_description.dart';
 import '../preferences/activity_upload_title.dart';
-import '../preferences/activity_ui.dart';
 import '../preferences/air_temperature.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
+import '../preferences/athlete_body_height.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
 import '../preferences/athlete_vo2max.dart';
@@ -50,10 +52,11 @@ import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/recalculate_more.dart';
 import '../preferences/scan_duration.dart';
-import '../preferences/simpler_ui.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
+import '../preferences/show_strokes_strides_revs.dart';
+import '../preferences/simpler_ui.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/stage_mode.dart';
@@ -178,6 +181,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     recalculateMoreTag: recalculateMoreDefault,
     showResistanceLevelTag: showResistanceLevelDefault,
     showPerformanceOverlayTag: showPerformanceOverlayDefault,
+    showStrokesStridesRevsTag: showStrokesStridesRevsDefault,
+    athleteBodyHeightTag: athleteBodyHeightDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

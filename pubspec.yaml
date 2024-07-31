@@ -2,81 +2,89 @@ name: track_my_indoor_exercise
 description: Recording indoor exercises as if circling on a track.
 publish_to: "none"
 
-version: 1.1.155+155
-isar_version: &isar_version ^3.1.0+1
+version: 1.1.156+156
+isar_version: &isar_version ^3.1.7
 
 environment:
-  sdk: ">=3.4.0-282.3.beta"
-  flutter: ">=3.22.0-0.3.pre"
+  sdk: ">=3.4.4"
+  flutter: ">=3.22.3"
 
 dependency_overrides:
-  analyzer: ^6.4.1  # because of isar_generator
+  analyzer: ^6.5.0  # because of isar_generator
+  collection: ^1.19.0 # Flutter SDK
+  meta: ^1.15.0  # analyzer
 
 dependencies:
-  app_links: ^5.0.0
-  assorted_layout_widgets: ^9.0.1
-  collection: ^1.17.2
+  app_links: ^6.1.4
+  assorted_layout_widgets: ^9.0.2
+  collection: ^1.19.0
   datetime_picker_formfield_new: ^2.1.0
-  device_info_plus: ^10.1.0
+  device_info_plus: ^10.1.1
   edit_distance: ^0.5.0-nullsafety.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.2
-  file_picker: ^8.0.3
+  file_picker: ^8.0.6
   flex_color_scheme: ^7.3.1
-  floor: ^1.4.2
+  floor: ^1.5.0
   flutter_archive: ^6.0.3
-  flutter_blue_plus: ^1.32.4
+  flutter_blue_plus: ^1.32.11
   flutter_circle_color_picker: ^0.3.0
-  flutter_layout_grid: ^2.0.6
+  flutter_layout_grid: ^2.0.7
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.0.10+1
-  flutter_timezone: ^1.0.8
+  flutter_timezone: ^2.1.0
   get: ^4.6.6
   group_button: ^5.3.4
-  http: ^1.2.1
-  http_parser: ^4.0.2
+  http: ^1.2.2
+  http_parser: ^4.1.0
   internet_connection_checker: ^1.0.0+1
   intl: ^0.19.0
   is_first_run: ^1.0.0
-  isar: *isar_version
-  isar_flutter_libs: *isar_version
+  isar:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
+  isar_flutter_libs:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
   listview_utils_plus: ^0.0.3
   loading_overlay: ^0.3.0
   number_selector: ^1.0.7
-  package_info_plus: ^7.0.0
+  package_info_plus: ^8.0.1
   path: ^1.9.0
   path_provider: ^2.1.3
   pref: ^2.8.0
   progress_indicators: ^1.0.0
   qr_widget: ^4.1.0
-  rxdart: ^0.27.7
+  rxdart: ^0.28.0
   share_files_and_screenshot_widgets: ^1.0.6
-  share_plus: ^9.0.0
+  share_plus: ^10.0.0
   soundpool: ^2.4.1
-  sqflite: ^2.3.3
-  string_validator: ^1.0.2
-  syncfusion_flutter_charts: ^25.1.41+2
-  timezone: ^0.9.3
+  sqflite: ^2.3.3+1
+  string_validator: ^1.1.0
+  syncfusion_flutter_charts: ^26.2.7
+  timezone: ^0.9.4
   tuple: ^2.0.2
-  url_launcher: ^6.2.6
+  url_launcher: ^6.3.0
   vector_math: ^2.1.4
-  wakelock_plus: ^1.2.4
+  wakelock_plus: ^1.2.5
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^6.3.0
-  build_runner: ^2.4.9
-  floor_generator: ^1.4.2
+  analyzer: ^6.5.0
+  build_runner: ^2.4.11
+  floor_generator: ^1.5.0
   flutter_driver:
     sdk: flutter
-  flutter_lints: ^3.0.2
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  isar_generator: *isar_version
-  mocktail: ^1.0.3
+  isar_generator:
+    version: *isar_version
+    hosted: https://pub.isar-community.dev/
+  mocktail: ^1.0.4
   mock_data: ^2.0.1
   yaml: ^3.1.2
 

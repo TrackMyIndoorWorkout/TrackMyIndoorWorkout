@@ -71,7 +71,7 @@ const PowerTuneSchema = CollectionSchema(
   getId: _powerTuneGetId,
   getLinks: _powerTuneGetLinks,
   attach: _powerTuneAttach,
-  version: '3.1.0+1',
+  version: '3.1.7',
 );
 
 int _powerTuneEstimateSize(

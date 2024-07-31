@@ -5,9 +5,9 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar/isar.dart';
@@ -26,8 +26,8 @@ import '../devices/gadgets/complex_sensor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/appearance.dart';
-import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
+import '../devices/gatt/csc.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
@@ -60,6 +60,9 @@ import '../utils/machine_type.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
+import 'about.dart';
+import 'activities.dart';
+import 'donation.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
 import 'parts/database_migration.dart';
@@ -67,9 +70,6 @@ import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
-import 'about.dart';
-import 'activities.dart';
-import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {
@@ -424,11 +424,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
     DeviceDescriptor? descriptor;
     if (!advertisementDigest.needsMatrixSpecialTreatment()) {
       final loweredPlatformName = device.platformName.toLowerCase();
+      final ftmsServiceSports =
+          advertisementDigest.machineTypes.map((m) => m.sport).toList(growable: false);
       for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
         final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+        final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
           if (loweredPlatformName.startsWith(lowerPrefix) &&
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+              (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
               (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                   advertisementDigest.loweredManufacturers
                       .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))

@@ -1,5 +1,6 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../../persistence/athlete.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
@@ -69,6 +70,7 @@ abstract class DeviceDescriptor extends DataHandler {
     super.cadenceMetric,
     super.distanceMetric,
     super.resistanceMetric,
+    super.strokeCountMetric,
   });
 
   String get fullName => '$vendorName $modelName';
@@ -102,7 +104,14 @@ abstract class DeviceDescriptor extends DataHandler {
   }
 
   /// Perform extra operations after a successful connect,
-  /// service + characteristics discovery, attach, setNotifyValue(true)
+  /// service + characteristics discovery, attach but before setNotifyValue(true)
+  Future<void> prePumpConfiguration(
+      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    Logging().log(logLvl, logLevelInfo, tag, "prePumpConfiguration", "Not implemented!");
+  }
+
+  /// Perform extra operations after a successful connect,
+  /// service + characteristics discovery, attach, and after setNotifyValue(true)
   Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
     Logging().log(logLevel, logLevelError, tag, "postPumpStart", "Not implemented!");
   }

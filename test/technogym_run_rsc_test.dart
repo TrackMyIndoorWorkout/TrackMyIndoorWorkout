@@ -57,6 +57,7 @@ void main() {
         sport: ActivityType.run,
         caloriesPerHour: null,
         caloriesPerMinute: null,
+        strokeCount: null,
       );
 
       final sum = sample.fold<int>(0, (a, b) => a + b);
@@ -82,10 +83,10 @@ void main() {
         expect(record.heartRate, expected.heartRate);
         expect(record.elapsedMillis, expected.elapsedMillis);
         expect(record.pace, expected.pace);
-        expect(record.strokeCount, expected.strokeCount);
         expect(record.sport, expected.sport);
         expect(record.caloriesPerHour, expected.caloriesPerHour);
         expect(record.caloriesPerMinute, expected.caloriesPerMinute);
+        expect(record.strokeCount, expected.strokeCount);
       });
     }
   });

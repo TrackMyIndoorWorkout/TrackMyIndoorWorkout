@@ -52,8 +52,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
-  int skipFlag(int flag, {int size = 2}) {
-    if (flag % 2 == 1) {
+  int skipFlag(int flag, {int size = 2, inverse = false}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
       byteCounter += size;
     }
 
@@ -71,30 +71,32 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return advanceFlag(flag);
   }
 
-  int processCadenceFlag(int flag) {
-    if (flag % 2 == 1) {
+  int processCadenceFlag(int flag, {divider = 2.0, inverse = false}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
       // UInt16, revolutions / minute with 0.5 resolution
-      cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
+      cadenceMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
       byteCounter += 2;
     }
 
     return advanceFlag(flag);
   }
 
-  int processTotalDistanceFlag(int flag) {
+  int processTotalDistanceFlag(int flag, {int numBytes = 3}) {
     if (flag % 2 == 1) {
       // UInt24, meters
-      distanceMetric = ThreeByteMetricDescriptor(lsb: byteCounter, msb: byteCounter + 2);
-      byteCounter += 3;
+      distanceMetric = ThreeByteMetricDescriptor(lsb: byteCounter, msb: byteCounter + numBytes - 1);
+      byteCounter += numBytes;
     }
 
     return advanceFlag(flag);
   }
 
-  int processResistanceFlag(int flag) {
+  int processResistanceFlag(int flag, {divider = 1.0}) {
     if (flag % 2 == 1) {
       // SInt16
-      resistanceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      resistanceMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
       byteCounter += 2;
     }
 
@@ -165,6 +167,18 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       cadenceMetric ??= ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
       // UInt16 average step rate
+      byteCounter += 2;
+    }
+
+    return advanceFlag(flag);
+  }
+
+  int processStrideCountFlag(int flag, {inverse = false, int skipBytes = 0}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
+      // UInt16: Floors
+      byteCounter += skipBytes;
+      // UInt16: Step Count
+      strokeCountMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       byteCounter += 2;
     }
 

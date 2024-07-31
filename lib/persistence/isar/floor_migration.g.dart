@@ -58,7 +58,7 @@ const FloorMigrationSchema = CollectionSchema(
   getId: _floorMigrationGetId,
   getLinks: _floorMigrationGetLinks,
   attach: _floorMigrationAttach,
-  version: '3.1.0+1',
+  version: '3.1.7',
 );
 
 int _floorMigrationEstimateSize(

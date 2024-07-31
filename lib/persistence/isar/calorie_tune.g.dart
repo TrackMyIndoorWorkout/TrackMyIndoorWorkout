@@ -76,7 +76,7 @@ const CalorieTuneSchema = CollectionSchema(
   getId: _calorieTuneGetId,
   getLinks: _calorieTuneGetLinks,
   attach: _calorieTuneAttach,
-  version: '3.1.0+1',
+  version: '3.1.7',
 );
 
 int _calorieTuneEstimateSize(

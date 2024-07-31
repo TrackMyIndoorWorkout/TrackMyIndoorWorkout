@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -342,8 +343,8 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             Get.put<Isar>(isar, permanent: true);
 
             final settingsFile = File("${tempDir.path}/preferences.json");
-            final settingsBytes = await settingsFile.readAsBytes();
-            final settingsJson = jsonDecode(utf8.decode(settingsBytes));
+            final settingsString = await settingsFile.readAsString();
+            final settingsJson = jsonDecode(settingsString);
             prefService.fromMap(settingsJson);
 
             Get.snackbar("Import finished", "Success!!");
