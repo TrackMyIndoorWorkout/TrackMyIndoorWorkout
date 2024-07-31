@@ -1,3 +1,11 @@
+## 1.1.156
+* Life Fitness machines support alpha version
+* FTMS Stair Climber and Step Climber support alpha version (no GPS)
+* Optionally display steps / revolutions / strokes
+* Don't display avg and max on the graphs if they are too far from the time window min/max
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
 ## 1.1.155
 * Optionally displaying resistance level (no persistence)
 * Full data export / import or debug log export won't cause OOM (out of memory exception, causing the app to crash)
