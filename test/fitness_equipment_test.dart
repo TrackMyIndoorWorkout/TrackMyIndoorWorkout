@@ -51,7 +51,7 @@ main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(() => mockDevice.discoverServices())
+      when(() => mockDevice.discoverServices(subscribeToServicesChanged: false))
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
@@ -67,7 +67,7 @@ main() {
       const anotherUid = '00000000-0000-1000-8000-00805f9b34fb';
       final mockFtmsService = createMockFtmsService(characteristicUid: anotherUid);
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(() => mockDevice.discoverServices())
+      when(() => mockDevice.discoverServices(subscribeToServicesChanged: false))
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
@@ -81,7 +81,7 @@ main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(() => mockDevice.discoverServices())
+      when(() => mockDevice.discoverServices(subscribeToServicesChanged: false))
           .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final equipment = FitnessEquipment(descriptor: null, device: mockDevice);

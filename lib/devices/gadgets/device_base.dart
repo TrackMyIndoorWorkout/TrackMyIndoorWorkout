@@ -211,7 +211,7 @@ abstract class DeviceBase {
 
     discovering = true;
     try {
-      services = await device!.discoverServices();
+      services = await device!.discoverServices(subscribeToServicesChanged: false);
     } on Exception catch (e, stack) {
       Logging().logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
 
@@ -220,7 +220,7 @@ abstract class DeviceBase {
       await Future.delayed(someDelay);
 
       try {
-        services = await device!.discoverServices();
+        services = await device!.discoverServices(subscribeToServicesChanged: false);
       } on Exception catch (e, stack) {
         Logging().logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
 
