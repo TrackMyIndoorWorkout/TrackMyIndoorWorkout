@@ -1,13 +1,14 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:get/get.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
+
 import '../import/csv_importer.dart';
 import '../persistence/isar/workout_summary.dart';
 import '../preferences/leaderboard_and_rank.dart';
@@ -118,22 +119,22 @@ class ImportFormState extends State<ImportForm> {
                     hintText: 'Pick date & time',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    return await showDatePicker(
+                    final pickedDate = await showDatePicker(
                       context: context,
                       firstDate: DateTime(1920),
                       initialDate: currentValue ?? DateTime.now(),
                       lastDate: DateTime(2030),
-                    ).then((DateTime? date) async {
-                      if (date != null) {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                        );
-                        return DateTimeField.combine(date, time);
-                      } else {
-                        return currentValue;
-                      }
-                    });
+                    );
+
+                    if (pickedDate == null || !context.mounted) {
+                      return currentValue;
+                    }
+
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    return DateTimeField.combine(pickedDate, time);
                   },
                   validator: (value) {
                     if (value == null && !widget.migration) {
