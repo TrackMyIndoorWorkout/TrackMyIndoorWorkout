@@ -6,13 +6,11 @@ version: 1.1.156+156
 isar_version: &isar_version ^3.1.7
 
 environment:
-  sdk: ">=3.4.4"
-  flutter: ">=3.22.3"
+  sdk: ">=3.5.0"
+  flutter: ">=3.24.0"
 
 dependency_overrides:
-  analyzer: ^6.5.0  # because of isar_generator
   collection: ^1.19.0 # Flutter SDK
-  meta: ^1.15.0  # analyzer
 
 dependencies:
   app_links: ^6.1.4
@@ -71,7 +69,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^6.5.0
+  analyzer: ^6.8.0
   build_runner: ^2.4.11
   floor_generator: ^1.5.0
   flutter_driver:
