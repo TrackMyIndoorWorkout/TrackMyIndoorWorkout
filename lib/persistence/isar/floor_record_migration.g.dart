@@ -58,7 +58,7 @@ const FloorRecordMigrationSchema = CollectionSchema(
   getId: _floorRecordMigrationGetId,
   getLinks: _floorRecordMigrationGetLinks,
   attach: _floorRecordMigrationAttach,
-  version: '3.1.7',
+  version: '3.1.8',
 );
 
 int _floorRecordMigrationEstimateSize(

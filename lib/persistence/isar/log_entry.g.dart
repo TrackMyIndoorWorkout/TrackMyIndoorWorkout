@@ -73,7 +73,7 @@ const LogEntrySchema = CollectionSchema(
   getId: _logEntryGetId,
   getLinks: _logEntryGetLinks,
   attach: _logEntryAttach,
-  version: '3.1.7',
+  version: '3.1.8',
 );
 
 int _logEntryEstimateSize(
