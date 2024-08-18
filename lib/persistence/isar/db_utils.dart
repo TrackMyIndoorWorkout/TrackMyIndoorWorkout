@@ -52,6 +52,10 @@ class DbUtils with PowerSpeedMixin {
       return false;
     }
 
+    if (recalculateMore && activity.sport == ActivityType.ride) {
+      initPower2SpeedConstants();
+    }
+
     var previousRecord = records.first;
     double calories = 0.0;
     double distance = 0.0;

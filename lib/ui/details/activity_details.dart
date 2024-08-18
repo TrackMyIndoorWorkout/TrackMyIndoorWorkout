@@ -1,13 +1,14 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+
 import '../../persistence/isar/activity.dart';
 import '../../persistence/isar/db_utils.dart';
 import '../../persistence/isar/record.dart';
@@ -23,11 +24,11 @@ import '../../utils/display.dart';
 import '../../utils/statistics_accumulator.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
+import '../about.dart';
 import '../models/display_record.dart';
 import '../models/histogram_data.dart';
 import '../models/measurement_counter.dart';
 import '../models/tile_configuration.dart';
-import '../about.dart';
 import 'activity_detail_graphs.dart';
 import 'activity_detail_row_fit_horizontal.dart';
 import 'activity_detail_row_w_unit.dart';
@@ -621,6 +622,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             final recalculateMore =
                 prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
             await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
+
+            // await DbUtils().offsetActivity(widget.activity, 1440);
 
             // widget.activity.clearSuuntoUpload();
             // DbUtils().updateActivity(widget.activity);
