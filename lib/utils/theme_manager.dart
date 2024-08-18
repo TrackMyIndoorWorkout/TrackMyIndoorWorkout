@@ -29,7 +29,6 @@ class ThemeManager {
       return true;
     }
 
-    // ThemeMode.system;
     return Get.isPlatformDarkMode;
   }
 
