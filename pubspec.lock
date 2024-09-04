@@ -26,10 +26,10 @@ packages:
     dependency: "direct main"
     description:
       name: app_links
-      sha256: "50437e5916e6f56c1ca53e967cbfd6d53b3451465b41eef05ba1533bf1e1c5ea"
+      sha256: "7e058edbc78bd40b6a8227941b955f38320a4e799bc0983c8146bda41593a491"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.0"
+    version: "6.3.1"
   app_links_linux:
     dependency: transitive
     description:
@@ -1269,18 +1269,18 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_charts
-      sha256: "9758bdd07ea3d9599bfe19d679ce18fa9c875a9506cb5b91ef841c2cf9c21d2f"
+      sha256: "5245afd7b60bcbb99f5b9815a15bb2b1c05cb57e9cf91fe4092c48d8791c2b0f"
       url: "https://pub.dev"
     source: hosted
-    version: "26.2.11"
+    version: "26.2.12"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "85f96b7b06f32a60b19ab0bb8c32bf162a0474f2d94f4844384be1118e6b4954"
+      sha256: "038390d6f633368dc306c250877f93d2e3932de58a781945a3b7ed10c4df5171"
       url: "https://pub.dev"
     source: hosted
-    version: "26.2.11"
+    version: "26.2.12"
   synchronized:
     dependency: transitive
     description:
