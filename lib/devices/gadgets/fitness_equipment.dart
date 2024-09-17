@@ -193,7 +193,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         ? values.first
         : values.skip(1).fold<RecordWithSport>(
               values.first,
-              (prev, element) => prev.merge(element),
+              (prev, element) => prev.mergeBest(element),
             );
     if (logLevel >= logLevelInfo) {
       Logging().log(logLevel, logLevelInfo, tag, "mergedToYield", "merged $merged");
@@ -825,7 +825,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "merging companion sensor ${_companionSensor!.record}");
       }
 
-      stub.merge(_companionSensor!.record);
+      stub.mergeBest(_companionSensor!.record);
     }
 
     for (final sensor in _additionalSensors) {
@@ -835,7 +835,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               "merging additional sensor ${sensor.record}");
         }
 
-        stub.merge(sensor.record);
+        stub.mergeBest(sensor.record);
       }
     }
 
