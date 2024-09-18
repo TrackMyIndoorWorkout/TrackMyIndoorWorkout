@@ -628,7 +628,17 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             // widget.activity.clearSuuntoUpload();
             // DbUtils().updateActivity(widget.activity);
 
-            // await DbUtils().appendActivities(438, 440);
+            // // KPro
+            // await DbUtils().appendActivities(30, 31);
+            // await DbUtils().appendActivities(30, 32);
+            // await DbUtils().appendActivities(30, 33);
+            // // PSCP
+            // await DbUtils().appendActivities(34, 35);
+            // await DbUtils().appendActivities(34, 36);
+            // await DbUtils().appendActivities(34, 37);
+            // await DbUtils().appendActivities(34, 38);
+            // await DbUtils().appendActivities(34, 39);
+            // await DbUtils().appendActivities(34, 40);
           },
         ),
       );
