@@ -426,7 +426,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       final loweredPlatformName = device.platformName.toLowerCase();
       final ftmsServiceSports =
           advertisementDigest.machineTypes.map((m) => m.sport).toList(growable: false);
+      var found = false;
       for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
+        if (found) break;
         final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
         final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
@@ -458,6 +460,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             }
 
             descriptor = descriptorCandidate;
+            found = true;
             break;
           }
         }

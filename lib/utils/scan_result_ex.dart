@@ -340,7 +340,7 @@ extension ScanResultEx on ScanResult {
         }
       }
 
-      if (multiSportFourCCs.contains(mapEntry.key)) {
+      if (multiSportFourCCs.contains(mapEntry.key) || mapEntry.value.sportsMatch) {
         continue;
       }
 
