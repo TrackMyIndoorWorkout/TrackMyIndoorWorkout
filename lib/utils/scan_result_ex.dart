@@ -205,6 +205,7 @@ extension ScanResultEx on ScanResult {
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
@@ -284,6 +285,7 @@ extension ScanResultEx on ScanResult {
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
@@ -347,6 +349,7 @@ extension ScanResultEx on ScanResult {
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {

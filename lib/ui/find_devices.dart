@@ -436,6 +436,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
               (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
               (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                  advertisementDigest.loweredManufacturers.isEmpty ||
                   advertisementDigest.loweredManufacturers
                       .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                       .reduce((value, contains) => value || contains))) {
