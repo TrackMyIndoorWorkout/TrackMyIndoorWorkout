@@ -191,6 +191,10 @@ extension ScanResultEx on ScanResult {
     final loweredPlatformName = device.platformName.toLowerCase();
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
     final ftmsServiceSports =
         ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
@@ -275,6 +279,10 @@ extension ScanResultEx on ScanResult {
 
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
     final ftmsServiceSports =
         ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
