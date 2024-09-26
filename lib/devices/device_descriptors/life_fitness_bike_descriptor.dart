@@ -15,6 +15,7 @@ class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitn
           manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
           manufacturerFitId: stravaFitId,
           model: "${LifeFitnessMixin.lfManufacturer} Bike",
+          doNotReadManufacturerName: true,
         );
 
   @override

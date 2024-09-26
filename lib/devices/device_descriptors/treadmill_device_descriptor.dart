@@ -23,6 +23,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     required super.manufacturerFitId,
     required super.model,
     super.heartRateByteIndex,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,

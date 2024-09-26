@@ -15,6 +15,7 @@ class LifeFitnessStepClimberDescriptor extends StepClimberDeviceDescriptor with 
           manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
           manufacturerFitId: stravaFitId,
           model: "${LifeFitnessMixin.lfManufacturer} Step Climber",
+          doNotReadManufacturerName: true,
         );
 
   @override

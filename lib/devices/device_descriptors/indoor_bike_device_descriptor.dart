@@ -13,6 +13,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     required super.model,
     super.heartRateByteIndex,
     super.canMeasureCalories,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,

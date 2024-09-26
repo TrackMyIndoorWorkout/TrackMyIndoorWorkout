@@ -682,7 +682,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await _fitnessMachineFeature();
 
     // Check manufacturer name
-    if (manufacturerName == null) {
+    if (manufacturerName == null && !descriptor!.doNotReadManufacturerName) {
       final deviceInfo = BluetoothDeviceEx.filterService(services, deviceInformationUuid);
       await _getManufacturerName(deviceInfo);
     }
@@ -712,7 +712,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         true;
   }
 
-  Future<String?> _getManufacturerName(deviceInfo) async {
+  Future<String?> _getManufacturerName(BluetoothService? deviceInfo) async {
     final nameCharacteristic =
         BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
     if (nameCharacteristic == null) {

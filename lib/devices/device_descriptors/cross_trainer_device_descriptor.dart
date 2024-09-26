@@ -12,6 +12,7 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     required super.manufacturerFitId,
     required super.model,
     super.heartRateByteIndex,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.isMultiSport,

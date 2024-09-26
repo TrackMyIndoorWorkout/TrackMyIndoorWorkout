@@ -15,6 +15,7 @@ class LifeFitnessTreadmillDescriptor extends TreadmillDeviceDescriptor with Life
           manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
           manufacturerFitId: stravaFitId,
           model: "${LifeFitnessMixin.lfManufacturer} Treadmill",
+          doNotReadManufacturerName: true,
         );
 
   @override
