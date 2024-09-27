@@ -1136,7 +1136,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (isMoving &&
         !hasPowerReporting &&
-        sport == ActivityType.ride &&
         (stub.power ?? 0) < eps &&
         stub.speed != null &&
         stub.speed! > displayEps) {
