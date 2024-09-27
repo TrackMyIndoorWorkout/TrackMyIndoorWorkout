@@ -8,7 +8,6 @@ import '../../devices/life_fitness.dart';
 import '../../persistence/athlete.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
-import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import '../../utils/user_data.dart';
 
@@ -19,7 +18,8 @@ mixin LifeFitnessMixin {
   // StreamSubscription? lfControlPointSubscription;
 
   Future<void> prePumpConfig(List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
-    const someDelay = Duration(milliseconds: pollThreshold); // pollThreshold
+    const lfLongerDelay = Duration(milliseconds: 2000);
+    const lfShorterDelay = Duration(milliseconds: 500);
 
     final lfControlPoint = BluetoothDeviceEx.filterService(svcs, lifeFitnessControlServiceUuid);
     final lfStatus1 = BluetoothDeviceEx.filterCharacteristic(
@@ -33,7 +33,7 @@ mixin LifeFitnessMixin {
       }
     });
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfLongerDelay);
     final lfControl1 = BluetoothDeviceEx.filterCharacteristic(
         lfControlPoint?.characteristics, lifeFitnessControl1Uuid);
     try {
@@ -42,42 +42,46 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lfControl1.write 1", e, stack);
     }
 
+    await Future.delayed(lfLongerDelay);
     final userData = BluetoothDeviceEx.filterService(svcs, lifeFitnessUserServiceUuid);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.first_name.xml
     // UTF-8s
     final firstNameData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userFirstNameCharacteristicUuid);
     try {
-      await firstNameData?.write([0x20]);
+      const firstName = 'Csaba';
+      await firstNameData?.write(firstName.codeUnits + [0x00]); // [0x20]
     } on Exception catch (e, stack) {
       Logging()
           .logException(logLvl, lfNamePrefix, "prePumpConfig", "firstNameData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.last_name.xml
     // UTF-8s
     final lastNameData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userLastNameCharacteristicUuid);
     try {
-      await lastNameData?.write([0x20]);
+      const lastName = 'Toth';
+      await lastNameData?.write(lastName.codeUnits + [0x00]);
     } on Exception catch (e, stack) {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lastNameData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.email_address.xml
     // UTF-8s
     final emailData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userEmailCharacteristicUuid);
     try {
-      await emailData?.write([0x40, 0x00]);
+      const email = 'csaba.toth.us@outlook.com';
+      await emailData?.write(email.codeUnits + [0x00]); // [0x40, 0x00]
     } on Exception catch (e, stack) {
       Logging()
           .logException(logLvl, lfNamePrefix, "prePumpConfig", "userEmailData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.age.xml
     final ageData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userAgeCharacteristicUuid);
@@ -87,7 +91,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "userAgeData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.gender.xml
     // uint8 enum: 0 - male, 1 - female, 2 - undef
     final genderData = BluetoothDeviceEx.filterCharacteristic(
@@ -99,7 +103,7 @@ mixin LifeFitnessMixin {
           .logException(logLvl, lfNamePrefix, "prePumpConfig", "userGenderData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.language.xml
     // utf8s ISO639-1 https://en.wikipedia.org/w/index.php?title=List_of_ISO_639-1_codes&redirect=no
     final languageData = BluetoothDeviceEx.filterCharacteristic(
@@ -110,7 +114,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "languageData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     final unk1Data =
         BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, lifeFitnessUserUnk1Uuid);
     try {
@@ -122,7 +126,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "unk1Data.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     final unk2Data =
         BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, lifeFitnessUserUnk2Uuid);
     try {
@@ -131,7 +135,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "unk2Data.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.weight.xml
     // uint16, kg with 0.005 resolution
     final weightData = BluetoothDeviceEx.filterCharacteristic(
@@ -145,7 +149,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "weightData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.height.xml
     // uint16, meters with 0.01 precision (= centimeters)
     final heightData = BluetoothDeviceEx.filterCharacteristic(
@@ -156,7 +160,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "heightData.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     final lfControl2 = BluetoothDeviceEx.filterCharacteristic(
         lfControlPoint?.characteristics, lifeFitnessControl2Uuid);
     try {
@@ -165,7 +169,7 @@ mixin LifeFitnessMixin {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lfControl2.write", e, stack);
     }
 
-    await Future.delayed(someDelay);
+    await Future.delayed(lfShorterDelay);
     try {
       await lfControl1?.write([lifeFitnessUserControl1MagicNumber2]);
     } on Exception catch (e, stack) {
