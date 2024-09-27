@@ -25,7 +25,9 @@ class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitn
   @override
   void processFlag(int flag, int dataLength) {
     if (!(flag == 9 * 256 + 250 && dataLength == 26 ||
-        flag == 11 * 256 + 250 && dataLength == 27)) {
+        flag == 11 * 256 + 250 && dataLength == 27 ||
+        flag == 25 * 256 + 250 && dataLength == 28 ||
+        flag == 27 * 256 + 250 && dataLength == 29)) {
       super.processFlag(flag, dataLength);
       return;
     }
@@ -35,6 +37,9 @@ class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitn
     // 250  1111 1010 instant speed, avg speed, avg cadence, distance, resistance level, instant power, avg power
     //   9  0000 1001 total energy, elapsed time
     //  11  0000 1011 total energy, heart rate, elapsed time
+    //  cooldown:
+    //  25  0001 1001 total energy, elapsed time, remaining time
+    //  27  0001 1011 total energy, heart rate, elapsed time, remaining time
     //
     // Promised in theory:
     // C1  uint16 (2 bytes) Instant Speed (negated bit 0 means present)
