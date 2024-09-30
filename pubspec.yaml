@@ -58,9 +58,9 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   share_plus: ^10.0.2
   soundpool: ^2.4.1
-  sqflite: ^2.3.3+1
+  sqflite: ^2.3.3+2
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^26.2.14
+  syncfusion_flutter_charts: ^27.1.50
   timezone: ^0.9.4
   tuple: ^2.0.2
   url_launcher: ^6.3.0
@@ -75,7 +75,7 @@ dev_dependencies:
   floor_generator: ^1.5.0
   flutter_driver:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
   integration_test:
