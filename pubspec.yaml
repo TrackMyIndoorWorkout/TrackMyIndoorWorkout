@@ -19,6 +19,7 @@ dependencies:
   datetime_picker_formfield_new: ^2.1.0
   device_info_plus: ^10.1.2
   edit_distance: ^0.5.0-nullsafety.0
+  email_validator: ^3.0.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.2
   file_picker: ^8.1.2

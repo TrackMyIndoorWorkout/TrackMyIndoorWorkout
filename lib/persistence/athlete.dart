@@ -3,7 +3,9 @@ import 'package:pref/pref.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_height.dart';
 import '../preferences/athlete_body_weight.dart';
+import '../preferences/athlete_email.dart';
 import '../preferences/athlete_gender.dart';
+import '../preferences/athlete_name.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/unit_system.dart';
 
@@ -20,9 +22,9 @@ class Athlete {
 
   Athlete({
     this.si = false,
-    this.firstName = " ",
-    this.lastName = " ",
-    this.email = "",
+    this.firstName = athleteFirstNameDefault,
+    this.lastName = athleteLastNameDefault,
+    this.email = athleteEmailDefault,
     this.age = athleteAgeDefault,
     this.isMale = true,
     this.weight = athleteBodyWeightDefault,
@@ -32,6 +34,9 @@ class Athlete {
 
   static Athlete fromPreferences(BasePrefService prefService) {
     final storedSi = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    final firstName = prefService.get<String>(athleteFirstNameTag) ?? athleteFirstNameDefault;
+    final lastName = prefService.get<String>(athleteLastNameTag) ?? athleteLastNameDefault;
+    final email = prefService.get<String>(athleteEmailTag) ?? athleteEmailDefault;
     final storedAge = prefService.get<int>(athleteAgeTag) ?? athleteAgeDefault;
     final storedIsMale =
         (prefService.get<String>(athleteGenderTag) ?? athleteGenderDefault) == athleteGenderMale;
@@ -40,6 +45,9 @@ class Athlete {
     final storedVo2Max = prefService.get<int>(athleteVO2MaxTag) ?? athleteVO2MaxDefault;
     return Athlete(
       si: storedSi,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
       age: storedAge,
       isMale: storedIsMale,
       weight: storedWeight,
@@ -50,6 +58,7 @@ class Athlete {
 
   @override
   String toString() {
-    return "(Age $age, isMale $isMale, Wt $weight, Ht $height, VO2Mx $vo2Max)";
+    return "($firstName $lastName $email Age $age, isMale $isMale, "
+        "Wt $weight, Ht $height, VO2Mx $vo2Max)";
   }
 }

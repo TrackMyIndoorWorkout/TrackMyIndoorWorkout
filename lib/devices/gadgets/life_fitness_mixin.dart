@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gatt/generic.dart';
 import '../../devices/life_fitness.dart';
 import '../../persistence/athlete.dart';
+import '../../preferences/athlete_email.dart';
+import '../../preferences/athlete_name.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
@@ -43,14 +47,15 @@ mixin LifeFitnessMixin {
     }
 
     await Future.delayed(lfLongerDelay);
+    final prefService = Get.find<BasePrefService>();
     final userData = BluetoothDeviceEx.filterService(svcs, lifeFitnessUserServiceUuid);
     // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.first_name.xml
     // UTF-8s
     final firstNameData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userFirstNameCharacteristicUuid);
     try {
-      const firstName = 'Csaba';
-      await firstNameData?.write(firstName.codeUnits + [0x00]); // [0x20]
+      final firstName = prefService.get<String>(athleteFirstNameTag) ?? athleteFirstNameDefault;
+      await firstNameData?.write(firstName.codeUnits + [0x00]);
     } on Exception catch (e, stack) {
       Logging()
           .logException(logLvl, lfNamePrefix, "prePumpConfig", "firstNameData.write", e, stack);
@@ -62,7 +67,7 @@ mixin LifeFitnessMixin {
     final lastNameData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userLastNameCharacteristicUuid);
     try {
-      const lastName = 'Toth';
+      final lastName = prefService.get<String>(athleteLastNameTag) ?? athleteLastNameDefault;
       await lastNameData?.write(lastName.codeUnits + [0x00]);
     } on Exception catch (e, stack) {
       Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lastNameData.write", e, stack);
@@ -74,8 +79,8 @@ mixin LifeFitnessMixin {
     final emailData = BluetoothDeviceEx.filterCharacteristic(
         userData?.characteristics, userEmailCharacteristicUuid);
     try {
-      const email = 'csaba.toth.us@outlook.com';
-      await emailData?.write(email.codeUnits + [0x00]); // [0x40, 0x00]
+      final email = prefService.get<String>(athleteEmailTag) ?? athleteEmailDefault;
+      await emailData?.write(email.codeUnits + [0x00]);
     } on Exception catch (e, stack) {
       Logging()
           .logException(logLvl, lfNamePrefix, "prePumpConfig", "userEmailData.write", e, stack);
