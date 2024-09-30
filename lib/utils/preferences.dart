@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:tuple/tuple.dart';
@@ -93,30 +93,31 @@ bool isDummyAddress(Tuple2<String, int> addressTuple) {
 }
 
 Future<bool> hasInternetConnection() async {
-  var connectionChecker = InternetConnectionChecker();
   final prefService = Get.find<BasePrefService>();
   String addressesString =
       prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+  final List<InternetCheckOption> checkOptions = [];
   if (addressesString.isNotEmpty) {
     final addressTuples = parseNetworkAddresses(addressesString);
-    if (addressTuples.isNotEmpty) {
-      final addresses = addressTuples
-          .map(
-            (addressTuple) => AddressCheckOption(
-              uri: Uri(
-                scheme: "tcp",
-                host: addressTuple.item1,
-                port: addressTuple.item2,
-              ),
-            ),
-          )
-          .toList(growable: false);
-      connectionChecker = InternetConnectionChecker.createInstance(
-        customCheckOptions: addresses,
-        useDefaultOptions: false,
+    for (final addressTuple in addressTuples) {
+      checkOptions.add(
+        InternetCheckOption(
+          uri: Uri(
+            scheme: "http",
+            host: addressTuple.item1,
+            port: addressTuple.item2,
+          ),
+        ),
       );
     }
   }
 
-  return await connectionChecker.hasConnection;
+  var connectionChecker = checkOptions.isEmpty
+      ? InternetConnection()
+      : InternetConnection.createInstance(
+          customCheckOptions: checkOptions,
+          useDefaultOptions: false,
+        );
+
+  return await connectionChecker.hasInternetAccess;
 }
