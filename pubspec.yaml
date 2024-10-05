@@ -26,7 +26,7 @@ dependencies:
   flex_color_scheme: ^7.3.1
   floor: ^1.5.0
   flutter_archive: ^6.0.3
-  flutter_blue_plus: ^1.32.12
+  flutter_blue_plus: ^1.33.0
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.7
   flutter_spinbox: ^0.13.1
@@ -60,7 +60,7 @@ dependencies:
   soundpool: ^2.4.1
   sqflite: ^2.3.3+2
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^27.1.50
+  syncfusion_flutter_charts: ^27.1.51
   timezone: ^0.9.4
   tuple: ^2.0.2
   url_launcher: ^6.3.0
@@ -71,7 +71,7 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^6.8.0
-  build_runner: ^2.4.12
+  build_runner: ^2.4.13
   floor_generator: ^1.5.0
   flutter_driver:
     sdk: flutter
