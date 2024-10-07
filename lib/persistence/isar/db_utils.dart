@@ -52,7 +52,7 @@ class DbUtils with PowerSpeedMixin {
       return false;
     }
 
-    if (recalculateMore && activity.sport == ActivityType.ride) {
+    if (recalculateMore) {
       initPower2SpeedConstants();
     }
 

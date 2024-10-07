@@ -979,11 +979,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return pausedRecord(stub);
     }
 
-    if (!hasSpeedReporting &&
-        isMoving &&
-        sport == ActivityType.ride &&
-        stub.speed == null &&
-        (stub.power ?? 0) > eps) {
+    if (!hasSpeedReporting && isMoving && stub.speed == null && (stub.power ?? 0) > eps) {
       // When cycling supplement speed from power if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
       stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
