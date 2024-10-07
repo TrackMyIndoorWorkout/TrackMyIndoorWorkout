@@ -42,8 +42,8 @@ void main() {
         expect(blank.elapsedMillis, 0);
         expect(blank.sport, sport);
         expect(blank.pace, sport == ActivityType.ride ? null : closeTo(0.0, eps));
-        expect(blank.caloriesPerHour, null);
-        expect(blank.caloriesPerMinute, null);
+        expect(blank.caloriesPerHour, closeTo(0.0, eps));
+        expect(blank.caloriesPerMinute, closeTo(0.0, eps));
         expect(blank.strokeCount, closeTo(0.0, eps));
       });
     }

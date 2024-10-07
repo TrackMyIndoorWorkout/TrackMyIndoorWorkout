@@ -1,3 +1,10 @@
+## 1.1.157
+* Life Fitness machines support beta version
+* YOSUDA rower support (not standard advertisement data)
+* Correcting default heart rate zones (the three top heart rate boundary, only new installs)
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
 ## 1.1.156
 * Life Fitness machines support alpha version
 * FTMS Stair Climber and Step Climber support alpha version (no GPS)

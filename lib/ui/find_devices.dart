@@ -426,7 +426,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
       final loweredPlatformName = device.platformName.toLowerCase();
       final ftmsServiceSports =
           advertisementDigest.machineTypes.map((m) => m.sport).toList(growable: false);
+      var found = false;
       for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
+        if (found) break;
         final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
         final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
@@ -434,6 +436,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
               (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
               (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                  advertisementDigest.loweredManufacturers.isEmpty ||
                   advertisementDigest.loweredManufacturers
                       .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                       .reduce((value, contains) => value || contains))) {
@@ -458,6 +461,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             }
 
             descriptor = descriptorCandidate;
+            found = true;
             break;
           }
         }

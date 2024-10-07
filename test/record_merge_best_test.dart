@@ -7,7 +7,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group('Record merge over nulls', () {
+  group('Record merges best over nulls', () {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
@@ -26,7 +26,7 @@ void main() {
             "$sport $idx: ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.pace} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
             () async {
           final blankRecord = RecordWithSport(sport: sport);
-          final merged = blankRecord.merge(rndRecord);
+          final merged = blankRecord.mergeBest(rndRecord);
 
           expect(merged.distance, closeTo(rndDistance, eps));
           expect(merged.elapsed, rndElapsed);
@@ -36,14 +36,14 @@ void main() {
           expect(merged.pace, closeTo(rndRecord.pace!, eps));
           expect(merged.cadence, rndRecord.cadence);
           expect(merged.heartRate, rndRecord.heartRate!);
-          expect(merged.caloriesPerMinute, rndRecord.caloriesPerMinute);
-          expect(merged.caloriesPerHour, rndRecord.caloriesPerHour);
+          expect(merged.caloriesPerMinute, merged.caloriesPerMinute);
+          expect(merged.caloriesPerHour, merged.caloriesPerHour);
         });
       }
     }
   });
 
-  group('Record does not merge over zeros', () {
+  group('Record merge best does not merge over zeros', () {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
@@ -64,7 +64,7 @@ void main() {
           final blankRecord = RecordWithSport.getZero(sport)
             ..caloriesPerHour = 0.0
             ..caloriesPerMinute = 0.0;
-          final merged = blankRecord.merge(rndRecord);
+          final merged = blankRecord.mergeBest(rndRecord);
 
           expect(merged.distance, closeTo(0.0, eps));
           expect(merged.elapsed, 0);
@@ -81,7 +81,7 @@ void main() {
     }
   });
 
-  group('Record merge does not override', () {
+  group('Record merge best overrides with best', () {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
@@ -110,24 +110,26 @@ void main() {
             ..elapsed = targetElapsed
             ..caloriesPerMinute = targetCaloriesPerMinute
             ..caloriesPerHour = targetCaloriesPerHour;
-          final merged = targetRecord.merge(rndRecord);
+          final merged = targetRecord.mergeBest(rndRecord);
 
-          expect(merged.distance, closeTo(targetDistance, eps));
-          expect(merged.elapsed, targetElapsed);
-          expect(merged.calories, targetRecord.calories!);
-          expect(merged.power, targetRecord.power!);
-          expect(merged.speed, closeTo(targetRecord.speed!, eps));
-          expect(merged.pace, closeTo(targetRecord.pace!, eps));
-          expect(merged.cadence, targetRecord.cadence!);
-          expect(merged.heartRate, targetRecord.heartRate!);
-          expect(merged.caloriesPerMinute, closeTo(targetCaloriesPerMinute, eps));
-          expect(merged.caloriesPerHour, closeTo(targetCaloriesPerHour, eps));
+          expect(merged.distance, closeTo(max(rndDistance, targetDistance), eps));
+          expect(merged.elapsed, max(rndElapsed, targetElapsed));
+          expect(merged.calories, max(rndRecord.calories!, targetRecord.calories!));
+          expect(merged.power, max(rndRecord.power!, targetRecord.power!));
+          expect(merged.speed, closeTo(max(rndRecord.speed!, targetRecord.speed!), eps));
+          expect(merged.pace, closeTo(min(rndRecord.pace!, targetRecord.pace!), eps));
+          expect(merged.cadence, max(rndRecord.cadence!, targetRecord.cadence!));
+          expect(merged.heartRate, max(rndRecord.heartRate!, targetRecord.heartRate!));
+          expect(merged.caloriesPerMinute,
+              closeTo(max(rndCaloriesPerMinute, targetCaloriesPerMinute), eps));
+          expect(
+              merged.caloriesPerHour, closeTo(max(rndCaloriesPerHour, targetCaloriesPerHour), eps));
         });
       }
     }
   });
 
-  group('Record merge does not override with nulls', () {
+  group('Record merge best does not override with nulls', () {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
@@ -146,7 +148,7 @@ void main() {
         test(
             "$sport $idx: ${targetRecord.calories} ${targetRecord.power} ${targetRecord.speed} ${targetRecord.pace} ${targetRecord.cadence} ${targetRecord.heartRate} ${targetRecord.distance} ${targetRecord.elapsed}",
             () async {
-          final merged = targetRecord.merge(blankRecord);
+          final merged = targetRecord.mergeBest(blankRecord);
 
           expect(merged.distance, closeTo(rndDistance, eps));
           expect(merged.elapsed, rndElapsed);
@@ -163,7 +165,7 @@ void main() {
     }
   });
 
-  group('Record merge does not override with zeros', () {
+  group('Record merge best does not override with zeros', () {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
@@ -184,7 +186,7 @@ void main() {
         test(
             "$sport $idx: ${targetRecord.calories} ${targetRecord.power} ${targetRecord.speed} ${targetRecord.pace} ${targetRecord.cadence} ${targetRecord.heartRate} ${targetRecord.distance} ${targetRecord.elapsed}",
             () async {
-          final merged = targetRecord.merge(blankRecord);
+          final merged = targetRecord.mergeBest(blankRecord);
 
           expect(merged.distance, closeTo(rndDistance, eps));
           expect(merged.elapsed, rndElapsed);

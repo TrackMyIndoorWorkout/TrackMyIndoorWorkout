@@ -52,6 +52,10 @@ class DbUtils with PowerSpeedMixin {
       return false;
     }
 
+    if (recalculateMore) {
+      initPower2SpeedConstants();
+    }
+
     var previousRecord = records.first;
     double calories = 0.0;
     double distance = 0.0;
@@ -365,5 +369,31 @@ class DbUtils with PowerSpeedMixin {
     database.writeTxnSync(() {
       database.activitys.putSync(activity);
     });
+  }
+
+  Future<bool> offsetActivity(Activity activity, int minutes) async {
+    final offset = Duration(minutes: minutes);
+    activity.start = activity.start.add(offset);
+    if (activity.end != null) {
+      activity.end = activity.end!.add(offset);
+    }
+
+    updateActivity(activity);
+
+    final records = await getRecords(activity.id);
+    if (records.isEmpty) {
+      return false;
+    }
+
+    database.writeTxnSync(() {
+      for (final record in records) {
+        if (record.timeStamp != null) {
+          record.timeStamp = record.timeStamp!.add(offset);
+          database.records.putSync(record);
+        }
+      }
+    });
+
+    return true;
   }
 }

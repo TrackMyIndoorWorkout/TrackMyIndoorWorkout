@@ -12,6 +12,7 @@ class StepClimberDeviceDescriptor extends FitnessMachineDescriptor {
     required super.manufacturerFitId,
     required super.model,
     super.heartRateByteIndex,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSStepClimberFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSStepClimberFourCC]!.isMultiSport,

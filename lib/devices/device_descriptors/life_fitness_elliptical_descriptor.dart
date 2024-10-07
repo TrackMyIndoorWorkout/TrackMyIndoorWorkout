@@ -15,6 +15,7 @@ class LifeFitnessEllipticalDescriptor extends CrossTrainerDeviceDescriptor with 
           manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
           manufacturerFitId: stravaFitId,
           model: "${LifeFitnessMixin.lfManufacturer} Elliptical",
+          doNotReadManufacturerName: true,
         );
 
   @override

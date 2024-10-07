@@ -102,15 +102,17 @@ class DeviceIdentifierHelperEntry {
   late final String deviceNameLoweredPostfix;
   final String manufacturerNamePrefix;
   late final String manufacturerNameLoweredPrefix;
-  late final bool ambiguous;
-  late final bool sportsMatch;
+  final bool ambiguous;
+  final bool sportsMatch;
+  final bool doNotReadManufacturerName;
 
   DeviceIdentifierHelperEntry(
       {required this.deviceNamePrefixes,
       this.deviceNamePostfix = "",
       this.manufacturerNamePrefix = "",
       this.ambiguous = false,
-      this.sportsMatch = false}) {
+      this.sportsMatch = false,
+      this.doNotReadManufacturerName = false}) {
     deviceNameLoweredPrefixes =
         deviceNamePrefixes.map((d) => d.toLowerCase()).toList(growable: false);
     deviceNameLoweredPostfix = deviceNamePostfix.toLowerCase();
@@ -148,15 +150,30 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
   lifeFitnessBikeFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
+      deviceNamePrefixes: ["LF"],
+      manufacturerNamePrefix: "LifeFitness",
+      sportsMatch: true,
+      doNotReadManufacturerName: true),
   lifeFitnessEllipticalFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
+      deviceNamePrefixes: ["LF"],
+      manufacturerNamePrefix: "LifeFitness",
+      sportsMatch: true,
+      doNotReadManufacturerName: true),
   lifeFitnessStairClimberFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
+      deviceNamePrefixes: ["LF"],
+      manufacturerNamePrefix: "LifeFitness",
+      sportsMatch: true,
+      doNotReadManufacturerName: true),
   lifeFitnessStepClimberFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
+      deviceNamePrefixes: ["LF"],
+      manufacturerNamePrefix: "LifeFitness",
+      sportsMatch: true,
+      doNotReadManufacturerName: true),
   lifeFitnessTreadmillFourCC: DeviceIdentifierHelperEntry(
-      deviceNamePrefixes: ["LF"], manufacturerNamePrefix: "LifeFitness", sportsMatch: true),
+      deviceNamePrefixes: ["LF"],
+      manufacturerNamePrefix: "LifeFitness",
+      sportsMatch: true,
+      doNotReadManufacturerName: true),
   matrixBikeFourCC: DeviceIdentifierHelperEntry(
       deviceNamePrefixes: ["CTM", "Johnson", "Matrix"], ambiguous: true),
   matrixTreadmillFourCC: DeviceIdentifierHelperEntry(

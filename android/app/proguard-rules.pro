@@ -26,6 +26,8 @@
 # This is from iterating over GeneratedPLuginRegistrant.java [
 -keep class com.llfbandit.app_links.** { *; }
 -keepclassmembernames class com.llfbandit.app_links.** { *; }
+-keep class dev.fluttercommunity.plus.connectivity.** { *; }
+-keepclassmembernames class dev.fluttercommunity.plus.connectivity.** { *; }
 -keep class dev.fluttercommunity.plus.device_info.** { *; }
 -keepclassmembernames class dev.fluttercommunity.plus.device_info.** { *; }
 -keep class com.mr.flutter.plugin.filepicker.** { *; }

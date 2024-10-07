@@ -193,7 +193,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         ? values.first
         : values.skip(1).fold<RecordWithSport>(
               values.first,
-              (prev, element) => prev.merge(element),
+              (prev, element) => prev.mergeBest(element),
             );
     if (logLevel >= logLevelInfo) {
       Logging().log(logLevel, logLevelInfo, tag, "mergedToYield", "merged $merged");
@@ -682,7 +682,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     await _fitnessMachineFeature();
 
     // Check manufacturer name
-    if (manufacturerName == null) {
+    if (manufacturerName == null && !descriptor!.doNotReadManufacturerName) {
       final deviceInfo = BluetoothDeviceEx.filterService(services, deviceInformationUuid);
       await _getManufacturerName(deviceInfo);
     }
@@ -712,7 +712,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         true;
   }
 
-  Future<String?> _getManufacturerName(deviceInfo) async {
+  Future<String?> _getManufacturerName(BluetoothService? deviceInfo) async {
     final nameCharacteristic =
         BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
     if (nameCharacteristic == null) {
@@ -825,7 +825,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "merging companion sensor ${_companionSensor!.record}");
       }
 
-      stub.merge(_companionSensor!.record);
+      stub.mergeBest(_companionSensor!.record);
     }
 
     for (final sensor in _additionalSensors) {
@@ -835,7 +835,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
               "merging additional sensor ${sensor.record}");
         }
 
-        stub.merge(sensor.record);
+        stub.mergeBest(sensor.record);
       }
     }
 
@@ -979,11 +979,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return pausedRecord(stub);
     }
 
-    if (!hasSpeedReporting &&
-        isMoving &&
-        sport == ActivityType.ride &&
-        stub.speed == null &&
-        (stub.power ?? 0) > eps) {
+    if (!hasSpeedReporting && isMoving && stub.speed == null && (stub.power ?? 0) > eps) {
       // When cycling supplement speed from power if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
       stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
@@ -1136,7 +1132,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     if (isMoving &&
         !hasPowerReporting &&
-        sport == ActivityType.ride &&
         (stub.power ?? 0) < eps &&
         stub.speed != null &&
         stub.speed! > displayEps) {

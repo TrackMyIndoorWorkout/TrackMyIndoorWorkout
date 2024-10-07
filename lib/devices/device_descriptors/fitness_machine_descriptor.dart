@@ -23,6 +23,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     super.flagByteSize,
     super.heartRateByteIndex,
     super.canMeasureCalories = true,
+    super.doNotReadManufacturerName = false,
   }) : super(
           deviceCategory: DeviceCategory.smartDevice,
           tag: "FTMS",

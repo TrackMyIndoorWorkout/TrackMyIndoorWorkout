@@ -38,6 +38,7 @@ abstract class DeviceDescriptor extends DataHandler {
   String statusCharacteristicId;
 
   bool canMeasureCalories;
+  bool doNotReadManufacturerName;
 
   double? slowPace;
 
@@ -59,6 +60,7 @@ abstract class DeviceDescriptor extends DataHandler {
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
     this.canMeasureCalories = true,
+    this.doNotReadManufacturerName = false,
     tag = "DEVICE_DESCRIPTOR",
     super.hasFeatureFlags = true,
     super.flagByteSize = 2,

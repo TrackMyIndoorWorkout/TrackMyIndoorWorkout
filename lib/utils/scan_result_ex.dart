@@ -101,8 +101,20 @@ extension ScanResultEx on ScanResult {
     for (MapEntry<Guid, List<int>> entry in advertisementData.serviceData.entries) {
       if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
-        if (serviceData.length > 2 && serviceData[0] >= 1 && serviceData[1] > 0) {
-          return serviceData[1];
+        if (serviceData.length > 2 &&
+            serviceData[0] >= 1 &&
+            (serviceData[1] > 0 || serviceData[2] > 0)) {
+          // Note: related documentation is Fitness Machine Service FTMS_v1.0 PDF
+          // 3 Service Advertising Data
+          // The real meat is 1 + 2 = 3 bytes
+          // 3.1.1 Flags Field UINT8 - just indicating FTMS present with 1
+          // 3.1.2 Fitness Machine Type Field - two bytes flag bytes
+          // currently only bits 0-5 are defined, 6-15 is unreserved
+          // So normally it'd be serviceData[1] > 0 && serviceData[2] == 0
+          // However some outliers such as YOSUDA rower #513 flip the two bytes
+          // (Erroneously big endian instead of little endian)
+          // So when serviceData[2] > 0 we assume it's an accidental flip
+          return serviceData[serviceData[1] > 0 ? 1 : 2];
         }
       }
     }
@@ -179,6 +191,10 @@ extension ScanResultEx on ScanResult {
     final loweredPlatformName = device.platformName.toLowerCase();
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
     final ftmsServiceSports =
         ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
@@ -193,6 +209,7 @@ extension ScanResultEx on ScanResult {
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
@@ -262,6 +279,10 @@ extension ScanResultEx on ScanResult {
 
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
     final ftmsServiceSports =
         ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
@@ -272,6 +293,7 @@ extension ScanResultEx on ScanResult {
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {
@@ -328,13 +350,14 @@ extension ScanResultEx on ScanResult {
         }
       }
 
-      if (multiSportFourCCs.contains(mapEntry.key)) {
+      if (multiSportFourCCs.contains(mapEntry.key) || mapEntry.value.sportsMatch) {
         continue;
       }
 
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
+                loweredManufacturers.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
                     .reduce((value, contains) => value || contains))) {

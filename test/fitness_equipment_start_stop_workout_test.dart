@@ -39,8 +39,8 @@ void main() {
     expect(equipment.lastRecord.elapsedMillis, 0);
     expect(equipment.lastRecord.sport, descriptor.sport);
     expect(equipment.lastRecord.pace, null);
-    expect(equipment.lastRecord.caloriesPerHour, null);
-    expect(equipment.lastRecord.caloriesPerMinute, null);
+    expect(equipment.lastRecord.caloriesPerHour, closeTo(0.0, eps));
+    expect(equipment.lastRecord.caloriesPerMinute, closeTo(0.0, eps));
     expect(equipment.lastRecord.strokeCount, closeTo(0.0, eps));
 
     expect(equipment.residueCalories, closeTo(0.0, eps));
@@ -66,8 +66,8 @@ void main() {
     expect(equipment.lastRecord.elapsedMillis, 0);
     expect(equipment.lastRecord.sport, descriptor.sport);
     expect(equipment.lastRecord.pace, closeTo(0.0, eps));
-    expect(equipment.lastRecord.caloriesPerHour, null);
-    expect(equipment.lastRecord.caloriesPerMinute, null);
+    expect(equipment.lastRecord.caloriesPerHour, closeTo(0.0, eps));
+    expect(equipment.lastRecord.caloriesPerMinute, closeTo(0.0, eps));
     expect(equipment.lastRecord.strokeCount, closeTo(0.0, eps));
 
     expect(equipment.residueCalories, closeTo(0.0, eps));

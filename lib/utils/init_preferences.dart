@@ -10,7 +10,9 @@ import '../preferences/app_debug_mode.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_height.dart';
 import '../preferences/athlete_body_weight.dart';
+import '../preferences/athlete_email.dart';
 import '../preferences/athlete_gender.dart';
+import '../preferences/athlete_name.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
@@ -183,6 +185,9 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     showPerformanceOverlayTag: showPerformanceOverlayDefault,
     showStrokesStridesRevsTag: showStrokesStridesRevsDefault,
     athleteBodyHeightTag: athleteBodyHeightDefault,
+    athleteFirstNameTag: athleteFirstNameDefault,
+    athleteLastNameTag: athleteLastNameDefault,
+    athleteEmailTag: athleteEmailDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
