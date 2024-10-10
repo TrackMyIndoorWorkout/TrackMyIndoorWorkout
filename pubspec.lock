@@ -282,10 +282,10 @@ packages:
     dependency: transitive
     description:
       name: dev_build
-      sha256: "4683bc149176b86a8124e938ca85004cce44db0644972ddb7f5bff7831ce7fbe"
+      sha256: "46b90adc804d5f8694ef8d60a422d92843e0b9ce39d3c812db48522d63c2f378"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0+14"
+    version: "1.0.1"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -776,10 +776,10 @@ packages:
     dependency: transitive
     description:
       name: mime
-      sha256: "801fd0b26f14a4a58ccb09d5892c3fbdeff209594300a542492cf13fba9d247a"
+      sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "2.0.0"
   mock_data:
     dependency: "direct dev"
     description:
@@ -864,10 +864,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: f7544c346a0742aee1450f9e5c0f5269d7c602b9c95fdbcd9fb8f5b1df13b1cc
+      sha256: c464428172cb986b758c6d1724c603097febb8fb855aa265aeecc9280c294d4a
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.11"
+    version: "2.2.12"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -952,10 +952,10 @@ packages:
     dependency: transitive
     description:
       name: process_run
-      sha256: "6e796612d726905a62368b8896677318fb7232ab3e1c694af0c390132f39541b"
+      sha256: "8c8d7cc12ebaae5b46d478f12a94dd36ee4823910499dadfafa1a02f1d099ffe"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0+3"
+    version: "1.2.1"
   progress_indicators:
     dependency: "direct main"
     description:
