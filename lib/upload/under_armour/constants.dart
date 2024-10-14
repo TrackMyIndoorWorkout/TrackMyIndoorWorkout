@@ -1,10 +1,10 @@
-const auApiUrlBase = "https://api.ua.com/v7.1/";
-const auUrlBase = "https://www.mapmyfitness.com/v7.1/";
-const auUrl = "${auUrlBase}oauth2/uacf/";
-const auApiUrl = "${auApiUrlBase}oauth2/uacf/";
-const tokenEndpoint = "${auApiUrl}access_token";
-const authorizationEndpoint = "${auUrl}authorize";
-const uploadsEndpoint = "${auApiUrlBase}workout/";
+const uaApiUrlBase = "https://api.mapmyfitness.com/v7.1/";
+const uaUrlBase = "https://www.mapmyfitness.com/v7.1/";
+const uaUrl = "${uaUrlBase}oauth2/uacf/";
+const uaApiUrl = "${uaApiUrlBase}oauth2/uacf/";
+const tokenEndpoint = "${uaApiUrl}access_token";
+const authorizationEndpoint = "${uaUrl}authorize";
+const uploadsEndpoint = "${uaApiUrlBase}workout/";
 
 // To use with iOS or Android
 const redirectUrlScheme = "mapmyfitnessflutter";
@@ -15,4 +15,4 @@ const underArmourRefreshTokenTag = "underArmour_refreshToken";
 const underArmourExpiresAtTag = "underArmour_expire";
 const underArmourTokenScopeTag = "underArmour_scope";
 
-const underArmourWorkoutUrlBase = "https://www.mapmyrun.com/workout/";
+const underArmourWorkoutUrlBase = "https://www.mapmyfitness.com/workout/";

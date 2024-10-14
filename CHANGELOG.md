@@ -1,7 +1,13 @@
+## 1.1.158
+* Crucial Flutter Blue Plus plugin updates, most importantly permission related
+* Migrate Under Armour API to MapMyFitness (Outside bought UA), Nov. 15 deadline!
+* Upgrade numerous plugins
+
 ## 1.1.157
-* Life Fitness machines support beta version
+* Life Fitness machines support beta version (athlete needs to let the app initialize the machine before moving)
 * YOSUDA rower support (not standard advertisement data)
 * Correcting default heart rate zones (the three top heart rate boundary, only new installs)
+* Workaround for Strava URL removal (see https://road.cc/content/news/strava-no-longer-allows-you-add-links-310685)
 * Upgrade Flutter SDK and Dart many times
 * Upgrade numerous plugins many times
 
