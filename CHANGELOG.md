@@ -1,3 +1,8 @@
+## 1.1.158
+* Crucial Flutter Blue Plus plugin updates, most importantly permission related
+* Migrate Under Armour API to MapMyFitness (Outside bought UA), Nov. 15 deadline!
+* Upgrade numerous plugins
+
 ## 1.1.157
 * Life Fitness machines support beta version (athlete needs to let the app initialize the machine before moving)
 * YOSUDA rower support (not standard advertisement data)
