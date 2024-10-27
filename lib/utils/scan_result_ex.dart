@@ -55,8 +55,11 @@ extension ScanResultEx on ScanResult {
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (final mapEntry in deviceNamePrefixes.values) {
+      final lowerPostfix = mapEntry.deviceNameLoweredPostfix;
       for (final loweredPrefix in mapEntry.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.shouldBeExcluded(loweredPlatformName) &&
             (mapEntry.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers
                     .map((m) => m.contains(mapEntry.manufacturerNameLoweredPrefix))
@@ -207,6 +210,7 @@ extension ScanResultEx on ScanResult {
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcluded(loweredPlatformName) &&
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers.isEmpty ||
@@ -291,6 +295,7 @@ extension ScanResultEx on ScanResult {
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcluded(loweredPlatformName) &&
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers.isEmpty ||
@@ -356,6 +361,8 @@ extension ScanResultEx on ScanResult {
 
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcluded(loweredPlatformName) &&
             (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                 loweredManufacturers.isEmpty ||
                 loweredManufacturers

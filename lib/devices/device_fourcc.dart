@@ -95,11 +95,20 @@ List<String> multiSportFourCCs = [
   kayakFirstFourCC,
 ];
 
+List<String> allConcept2FourCCs = [
+  concept2BikeFourCC,
+  concept2ErgFourCC,
+  concept2RowerFourCC,
+  concept2SkiFourCC,
+];
+
 class DeviceIdentifierHelperEntry {
   final List<String> deviceNamePrefixes;
   late final List<String> deviceNameLoweredPrefixes;
   final String deviceNamePostfix;
   late final String deviceNameLoweredPostfix;
+  List<String>? deviceNamePostfixExclusions;
+  late final List<String> deviceNameLoweredPostfixExclusions;
   final String manufacturerNamePrefix;
   late final String manufacturerNameLoweredPrefix;
   final bool ambiguous;
@@ -110,13 +119,23 @@ class DeviceIdentifierHelperEntry {
       {required this.deviceNamePrefixes,
       this.deviceNamePostfix = "",
       this.manufacturerNamePrefix = "",
+      this.deviceNamePostfixExclusions,
       this.ambiguous = false,
       this.sportsMatch = false,
       this.doNotReadManufacturerName = false}) {
     deviceNameLoweredPrefixes =
         deviceNamePrefixes.map((d) => d.toLowerCase()).toList(growable: false);
+    deviceNameLoweredPostfixExclusions =
+        deviceNamePostfixExclusions?.map((d) => d.toLowerCase()).toList(growable: false) ?? [];
     deviceNameLoweredPostfix = deviceNamePostfix.toLowerCase();
     manufacturerNameLoweredPrefix = manufacturerNamePrefix.toLowerCase();
+  }
+
+  bool shouldBeExcluded(String loweredPlatformName) {
+    return deviceNameLoweredPostfixExclusions.isNotEmpty &&
+        deviceNameLoweredPostfixExclusions
+            .map((m) => loweredPlatformName.endsWith(m))
+            .reduce((value, endsWith) => value || endsWith);
   }
 }
 
@@ -127,7 +146,8 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   bowflexC7BikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["C7-"]),
   concept2BikeFourCC:
       DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"], deviceNamePostfix: "Bike"),
-  concept2ErgFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"]),
+  concept2ErgFourCC: DeviceIdentifierHelperEntry(
+      deviceNamePrefixes: ["PM5"], deviceNamePostfixExclusions: ["Bike", "Row", "Ski"]),
   concept2RowerFourCC:
       DeviceIdentifierHelperEntry(deviceNamePrefixes: ["PM5"], deviceNamePostfix: "Row"),
   concept2SkiFourCC:

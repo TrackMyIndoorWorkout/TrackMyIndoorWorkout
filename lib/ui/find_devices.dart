@@ -434,6 +434,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
           if (loweredPlatformName.startsWith(lowerPrefix) &&
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+              !mapEntry.value.shouldBeExcluded(loweredPlatformName) &&
               (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
               (mapEntry.value.manufacturerNamePrefix.isEmpty ||
                   advertisementDigest.loweredManufacturers.isEmpty ||
@@ -445,8 +446,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
               continue;
             }
 
-            if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
-                    .contains(mapEntry.key) &&
+            if (allConcept2FourCCs.contains(mapEntry.key) &&
                 advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
               // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
               // TODO: What does SkiErg implement (if any at all)?
