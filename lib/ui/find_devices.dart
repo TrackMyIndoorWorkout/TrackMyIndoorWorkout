@@ -434,13 +434,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
           if (loweredPlatformName.startsWith(lowerPrefix) &&
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-              !mapEntry.value.shouldBeExcluded(loweredPlatformName) &&
+              !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
               (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
-              (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                  advertisementDigest.loweredManufacturers.isEmpty ||
-                  advertisementDigest.loweredManufacturers
-                      .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                      .reduce((value, contains) => value || contains))) {
+              advertisementDigest.isPrefixContained(mapEntry.value.manufacturerNameLoweredPrefix)) {
             if (mapEntry.key == technogymRunFourCC &&
                 _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
               continue;

@@ -51,24 +51,24 @@ void main() {
     }
   });
 
-  group('No name exclusion will not cause exclusion', () {
+  group('No device name postfix exclusion will not cause any exclusions', () {
     for (final fourCC in [concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC]) {
       final deviceHelper = deviceNamePrefixes[fourCC]!;
       final deviceName = 'Concept2 ${deviceHelper.deviceNamePostfix}'.toLowerCase();
       test(deviceName, () async {
-        final shouldExclude = deviceHelper.shouldBeExcluded(deviceName);
+        final shouldExclude = deviceHelper.shouldBeExcludedByBluetoothName(deviceName);
         expect(shouldExclude, false);
       });
     }
   });
 
-  group('Name exclusion will cause exclusion', () {
+  group('Device name postfix exclusion will cause exclusion', () {
     final deviceHelper = deviceNamePrefixes[concept2ErgFourCC]!;
     for (final fourCC in [concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC]) {
       final extraDeviceHelper = deviceNamePrefixes[fourCC]!;
       final deviceName = 'Concept2 ${extraDeviceHelper.deviceNamePostfix}'.toLowerCase();
       test(deviceName, () async {
-        final shouldExclude = deviceHelper.shouldBeExcluded(deviceName);
+        final shouldExclude = deviceHelper.shouldBeExcludedByBluetoothName(deviceName);
         expect(shouldExclude, true);
       });
     }

@@ -80,4 +80,44 @@ void main() {
       });
     }
   });
+
+  test('Non matching manufacturer name will not cause inclusion', () async {
+    final advertisementDigest = AdvertisementDigest(
+      id: "",
+      serviceUuids: [],
+      companyIds: [],
+      manufacturers: ["LifeFitness"],
+      txPower: 0,
+      appearance: 0,
+      machineTypesByte: MachineType.treadmill.bit,
+      machineType: MachineType.treadmill,
+      machineTypes: [MachineType.treadmill],
+    );
+
+    expect(advertisementDigest.isPrefixContained("johnson"), false);
+    expect(advertisementDigest.isPrefixContained("health"), false);
+    expect(advertisementDigest.isPrefixContained("Life"), false);
+    expect(advertisementDigest.isPrefixContained("Fitness"), false);
+    expect(advertisementDigest.isPrefixContained("life"), true);
+    expect(advertisementDigest.isPrefixContained("fitness"), true);
+  });
+
+  test('Manufacturer name matching will cause inclusion', () async {
+    final advertisementDigest = AdvertisementDigest(
+      id: "",
+      serviceUuids: [],
+      companyIds: [],
+      manufacturers: ["Johnson Health Tech"],
+      txPower: 0,
+      appearance: 0,
+      machineTypesByte: MachineType.treadmill.bit,
+      machineType: MachineType.treadmill,
+      machineTypes: [MachineType.treadmill],
+    );
+
+    expect(advertisementDigest.isPrefixContained("Johnson"), false);
+    expect(advertisementDigest.isPrefixContained("johnson"), true);
+    expect(advertisementDigest.isPrefixContained("Health"), false);
+    expect(advertisementDigest.isPrefixContained("health"), true);
+  });
 }

@@ -131,7 +131,15 @@ class DeviceIdentifierHelperEntry {
     manufacturerNameLoweredPrefix = manufacturerNamePrefix.toLowerCase();
   }
 
-  bool shouldBeExcluded(String loweredPlatformName) {
+  bool shouldBeIncludedByManufacturer(List<String> loweredManufacturers) {
+    return manufacturerNamePrefix.isEmpty ||
+        loweredManufacturers.isEmpty ||
+        loweredManufacturers
+            .map((m) => m.contains(manufacturerNameLoweredPrefix))
+            .reduce((value, contains) => value || contains);
+  }
+
+  bool shouldBeExcludedByBluetoothName(String loweredPlatformName) {
     return deviceNameLoweredPostfixExclusions.isNotEmpty &&
         deviceNameLoweredPostfixExclusions
             .map((m) => loweredPlatformName.endsWith(m))
