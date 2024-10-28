@@ -38,9 +38,10 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
 
     final dataLength = data.length;
-    return byteCounter >= flagByteSize &&
-        (!hasFutureReservedBytes && dataLength == byteCounter ||
-            hasFutureReservedBytes && dataLength >= byteCounter);
+    // #525
+    // relaxing criteria, not dependent on hasFutureReservedBytes any more:
+    // if the packet has at least as many bytes as needed then it's a go
+    return byteCounter >= flagByteSize && dataLength >= byteCounter;
   }
 
   @override
