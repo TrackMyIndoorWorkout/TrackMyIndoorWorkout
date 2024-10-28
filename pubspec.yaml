@@ -6,8 +6,8 @@ version: 1.1.158+158
 isar_version: &isar_version ^3.1.8
 
 environment:
-  sdk: ">=3.5.3"
-  flutter: ">=3.24.3"
+  sdk: ">=3.5.4"
+  flutter: ">=3.24.4"
 
 dependency_overrides:
   collection: ^1.19.0 # Flutter SDK
