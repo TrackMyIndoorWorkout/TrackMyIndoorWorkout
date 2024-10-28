@@ -78,7 +78,7 @@ void main() {
     expect(rower.paceMetric, null);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
-    expect(rower.distanceMetric,  null);
+    expect(rower.distanceMetric, null);
     expect(rower.powerMetric, null);
     expect(rower.caloriesMetric, isNotNull);
     expect(rower.timeMetric, null);
@@ -91,7 +91,7 @@ void main() {
   group('Rower Device interprets Old Concept2 FTMS Rower data properly', () {
     for (final testPair in [
       TestPair(
-        data: [maxByte, 10, 52, 203, 0, 0,  192, 0,  207, 0,  50, 0,  39, 0,  140, 0,  0,  84, 0,  0],
+        data: [maxByte, 10, 52, 203, 0, 0, 192, 0, 207, 0, 50, 0, 39, 0, 140, 0, 0, 84, 0, 0],
         record: RecordWithSport(
           distance: 203.0,
           elapsed: 84,
@@ -127,7 +127,7 @@ void main() {
         ),
       ),
       TestPair(
-        data: [maxByte, 10, 48, 82, 1, 0,  173, 0,  193, 0,  67, 0,  48, 0,  118, 0,  0,  131, 0,  0],
+        data: [maxByte, 10, 48, 82, 1, 0, 173, 0, 193, 0, 67, 0, 48, 0, 118, 0, 0, 131, 0, 0],
         record: RecordWithSport(
           distance: 338.0,
           elapsed: 131,
