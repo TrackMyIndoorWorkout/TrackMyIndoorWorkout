@@ -37,7 +37,6 @@ import '../devices/gatt_maps.dart';
 import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/device_usage.dart';
 import '../preferences/auto_connect.dart';
-import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
@@ -65,7 +64,6 @@ import 'activities.dart';
 import 'donation.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
-import 'parts/database_migration.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
@@ -166,26 +164,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "Scan already in progress");
 
       return;
-    }
-
-    final prefService = Get.find<BasePrefService>();
-    if (prefService.get<bool>(databaseMigrationNeededTag) ?? databaseMigrationNeededDefault) {
-      await Get.bottomSheet(
-        const SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: DatabaseMigrationBottomSheet(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        isScrollControlled: true,
-        ignoreSafeArea: false,
-        enableDrag: false,
-      );
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
