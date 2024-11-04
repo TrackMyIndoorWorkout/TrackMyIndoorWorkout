@@ -9,8 +9,6 @@ import '../../utils/constants.dart';
 import '../../utils/power_speed_mixin.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
-import 'floor_migration.dart';
-import 'floor_record_migration.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
@@ -282,38 +280,6 @@ class DbUtils with PowerSpeedMixin {
     }
 
     return updated > 0;
-  }
-
-  Future<int?> getIsarId(String entityName, int floorId) async {
-    if (floorId == Isar.autoIncrement) {
-      return null;
-    }
-
-    final isarIds = await database.floorMigrations
-        .filter()
-        .entityNameEqualTo(entityName)
-        .and()
-        .floorIdEqualTo(floorId)
-        .isarIdProperty()
-        .findAll();
-
-    return isarIds.isNotEmpty ? isarIds.first : null;
-  }
-
-  Future<int?> latestFloorRecordId(int activityId) async {
-    if (activityId == Isar.autoIncrement) {
-      return null;
-    }
-
-    final floorIds = await database.floorRecordMigrations
-        .where()
-        .filter()
-        .activityIdEqualTo(activityId)
-        .sortByFloorIdDesc()
-        .floorIdProperty()
-        .findAll();
-
-    return floorIds.isNotEmpty ? floorIds.first : null;
   }
 
   Future<void> getAddressNameDictionary(AddressNames addressNames) async {

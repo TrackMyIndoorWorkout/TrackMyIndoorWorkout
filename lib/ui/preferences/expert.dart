@@ -15,8 +15,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../persistence/isar/activity.dart';
 import '../../persistence/isar/calorie_tune.dart';
 import '../../persistence/isar/device_usage.dart';
-import '../../persistence/isar/floor_migration.dart';
-import '../../persistence/isar/floor_record_migration.dart';
 import '../../persistence/isar/log_entry.dart';
 import '../../persistence/isar/power_tune.dart';
 import '../../persistence/isar/record.dart';
@@ -333,8 +331,6 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
               ActivitySchema,
               CalorieTuneSchema,
               DeviceUsageSchema,
-              FloorMigrationSchema,
-              FloorRecordMigrationSchema,
               LogEntrySchema,
               PowerTuneSchema,
               RecordSchema,
