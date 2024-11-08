@@ -57,7 +57,6 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   share_plus: ^10.1.1
   soundpool: ^2.4.1
-  sqflite: ^2.4.0
   string_validator: ^1.1.0
   syncfusion_flutter_charts: ^27.1.57
   timezone: ^0.9.4
