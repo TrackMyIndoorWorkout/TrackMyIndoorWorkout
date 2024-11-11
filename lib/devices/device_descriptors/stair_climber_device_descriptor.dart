@@ -36,7 +36,8 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag, int dataLength) {
     // LifePro FlexStride Pro
-    // 7e 0111 1110 Floors, Step/min, Avg. Step Rate, Pos. Elev. Gain, Stride Count, Total Enery (kCal) + (Energy / hr + Energy / min), Heart rate
+    // 7e (126) 0111 1110 Floors, Step/min, Avg. Step Rate, Pos. Elev. Gain, Stride Count, Total Enery (kCal) + (Energy / hr + Energy / min), Heart rate
+    // 7a (122) 0111 1010 Floors, Step/min, Pos. Elev. Gain, Stride Count, Total Enery (kCal) + (Energy / hr + Energy / min), Heart rate
     // 01 0000 0001 Elapsed Time (sec)
     // negated first bit!
     flag = skipFlag(flag, inverse: true); // Floors
