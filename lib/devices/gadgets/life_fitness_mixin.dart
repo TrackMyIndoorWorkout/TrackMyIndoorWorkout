@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -19,7 +20,6 @@ mixin LifeFitnessMixin {
   static const String lfNamePrefix = "LF";
   static const String lfManufacturer = "LifeFitness";
   StreamSubscription? lfStatusSubscription;
-  // StreamSubscription? lfControlPointSubscription;
 
   Future<void> prePumpConfig(List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
     const lfLongerDelay = Duration(milliseconds: 2000);
@@ -28,14 +28,20 @@ mixin LifeFitnessMixin {
     final lfControlPoint = BluetoothDeviceEx.filterService(svcs, lifeFitnessControlServiceUuid);
     final lfStatus1 = BluetoothDeviceEx.filterCharacteristic(
         lfControlPoint?.characteristics, lifeFitnessStatus1Uuid);
-    await lfStatus1?.setNotifyValue(true);
-    // TODO: should we sign up for any characteristics on the lfControl1 and lfControl2?
-    lfStatusSubscription = lfStatus1?.lastValueStream.listen((controlResponse) async {
-      if (logLvl >= logLevelInfo) {
-        Logging().log(
-            logLvl, logLevelInfo, lfNamePrefix, "lfStatus1 statusSub", controlResponse.toString());
+    try {
+      await lfStatus1?.setNotifyValue(true);
+      // TODO: should we sign up for any characteristics on the lfControl1 and lfControl2?
+      lfStatusSubscription = lfStatus1?.lastValueStream.listen((controlResponse) async {
+        if (logLvl >= logLevelInfo) {
+          Logging().log(logLvl, logLevelInfo, lfNamePrefix, "lfStatus1 statusSub",
+              controlResponse.toString());
+        }
+      });
+    } on Exception catch (e) {
+      if (e is PlatformException && e.code != 'setNotifyValue') {
+        rethrow;
       }
-    });
+    }
 
     await Future.delayed(lfLongerDelay);
     final lfControl1 = BluetoothDeviceEx.filterCharacteristic(
