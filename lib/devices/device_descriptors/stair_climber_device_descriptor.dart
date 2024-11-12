@@ -35,11 +35,12 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.stair_climber_data.xml
   @override
   void processFlag(int flag, int dataLength) {
-    // LifePro FlexStride Pro
-    // 7e (126) 0111 1110 Floors, Step/min, Avg. Step Rate, Pos. Elev. Gain, Stride Count, Total Enery (kCal) + (Energy / hr + Energy / min), Heart rate
-    // 7a (122) 0111 1010 Floors, Step/min, Pos. Elev. Gain, Stride Count, Total Enery (kCal) + (Energy / hr + Energy / min), Heart rate
-    // 01 0000 0001 Elapsed Time (sec)
     // negated first bit!
+    // LifePro FlexStride Pro
+    // 1. 7e (126) 0111 1110 Floors, Step/min, Avg. Step Rate, Pos. Elev. Gain, Stride Count, Total Energy (kCal) + (Energy / hr + Energy / min), Heart rate
+    // Life Fitness Stair Climber
+    // 1. 7a (122) 0111 1010 Floors, Step/min, Pos. Elev. Gain, Stride Count, Total Energy (kCal) + (energy / hr + energy / min), Heart rate
+    // 2. 01 0000 0001 Elapsed Time (sec)
     flag = skipFlag(flag, inverse: true); // Floors
     flag = processCadenceFlag(flag, divider: 1.0); // Steps / min
     flag = skipFlag(flag); // Average step rate
