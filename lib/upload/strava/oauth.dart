@@ -1,20 +1,20 @@
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
-import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../utils/constants.dart';
-import 'strava_status_code.dart';
 import 'constants.dart';
-import 'strava_token.dart';
 import 'fault.dart';
+import 'strava_status_code.dart';
+import 'strava_token.dart';
 
 ///===========================================
 /// Class related to Authorization process
@@ -151,7 +151,7 @@ mixin Auth {
           if (uri.scheme.compareTo('${redirectUrlScheme}_$clientID') != 0) {
             debugPrint('This is not the good scheme ${uri.scheme}');
           }
-          final code = uri.queryParameters["code"] ?? "N/A";
+          final code = uri.queryParameters["code"] ?? notAvailable;
           final error = uri.queryParameters["error"];
 
           debugPrint('code $code, error $error');
@@ -333,7 +333,7 @@ mixin Auth {
       debugPrint('Error while refreshing the token');
     }
 
-    returnToken.fault = Fault(resp.statusCode, resp.reasonPhrase ?? "N/A");
+    returnToken.fault = Fault(resp.statusCode, resp.reasonPhrase ?? notAvailable);
     return returnToken;
   }
 
