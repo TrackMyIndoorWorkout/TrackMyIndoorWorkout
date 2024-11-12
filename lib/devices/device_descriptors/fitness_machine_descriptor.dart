@@ -175,12 +175,13 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return advanceFlag(flag);
   }
 
-  int processStrideCountFlag(int flag, {inverse = false, int skipBytes = 0}) {
+  int processStrideCountFlag(int flag, {divider = 1.0, inverse = false, int skipBytes = 0}) {
     if (flag % 2 == (inverse ? 0 : 1)) {
       // UInt16: Floors
       byteCounter += skipBytes;
       // UInt16: Step Count
-      strokeCountMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
+      strokeCountMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
       byteCounter += 2;
     }
 

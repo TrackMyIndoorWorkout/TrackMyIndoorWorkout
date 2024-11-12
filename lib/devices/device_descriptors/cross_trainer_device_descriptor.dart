@@ -36,14 +36,21 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
   @override
   void processFlag(int flag, int dataLength) {
     // LifePro FlexStride Pro
-    // 12 0000 1100 instant speed, total distance, cadence (step rate)
-    // 33 0010 0001 instant power, elapsed time
+    // 1. 12 0000 1100 instant speed, total distance, cadence + avg step rate
+    // 2. 33 0010 0001 instant power, elapsed time
+
+    // Life Fitness Elliptical
+    // 1. 190 1011 1110 instant speed, avg speed, total distance, cadence + avg step rate, stride count, pos. and neg. elevation gain, resistance level
+    // 2.  39 0010 0111 instant power, avg power, total energy (kCal) + (energy / hr + energy / min), elapsed time
+    // 2.  47 0010 1111 instant power, avg power, total energy (kCal) + (energy / hr + energy / min), heart rate, elapsed time
+    // 2. 103 0110 0111 instant power, avg power, total energy (kCal) + (energy / hr + energy / min), elapsed time, remaining time
+
     // negated first bit!
     flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
     flag = processStepMetricsFlag(flag);
-    flag = processStrideCountFlag(flag);
+    flag = processStrideCountFlag(flag, divider: 10.0);
     flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
     flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
     flag = processResistanceFlag(flag, divider: 10.0);

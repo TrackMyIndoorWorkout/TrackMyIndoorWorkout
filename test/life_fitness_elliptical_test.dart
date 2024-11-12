@@ -29,7 +29,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     sClimber.initFlag();
     sClimber.stopWorkout();
-    sClimber.processFlag(flag, 40);
+    sClimber.processFlag(flag, 33);
 
     expect(sClimber.speedMetric, isNotNull);
     expect(sClimber.cadenceMetric, isNotNull);
@@ -44,7 +44,7 @@ void main() {
     expect(sClimber.resistanceMetric, isNotNull);
   });
 
-  test('Elliptical Device interprets Life Fitness Elliptical flags with Heart Rate  properly',
+  test('Elliptical Device interprets Life Fitness Elliptical flags with Heart Rate properly',
       () async {
     final sClimber = LifeFitnessEllipticalDescriptor();
     const lsb = 0xbe; // 190
@@ -52,7 +52,7 @@ void main() {
     const flag = maxUint8 * msb + lsb;
     sClimber.initFlag();
     sClimber.stopWorkout();
-    sClimber.processFlag(flag, 41);
+    sClimber.processFlag(flag, 34);
 
     expect(sClimber.speedMetric, isNotNull);
     expect(sClimber.cadenceMetric, isNotNull);
@@ -63,6 +63,29 @@ void main() {
     expect(sClimber.caloriesPerHourMetric, isNotNull);
     expect(sClimber.caloriesPerMinuteMetric, isNotNull);
     expect(sClimber.heartRateByteIndex, 31);
+    expect(sClimber.strokeCountMetric, isNotNull);
+    expect(sClimber.resistanceMetric, isNotNull);
+  });
+
+  test('Elliptical Device interprets Life Fitness Elliptical flags with Heart Rate properly',
+      () async {
+    final sClimber = LifeFitnessEllipticalDescriptor();
+    const lsb = 0xbe; // 190
+    const msb = 0x67; // 103
+    const flag = maxUint8 * msb + lsb;
+    sClimber.initFlag();
+    sClimber.stopWorkout();
+    sClimber.processFlag(flag, 35);
+
+    expect(sClimber.speedMetric, isNotNull);
+    expect(sClimber.cadenceMetric, isNotNull);
+    expect(sClimber.distanceMetric, isNotNull);
+    expect(sClimber.powerMetric, isNotNull);
+    expect(sClimber.timeMetric, isNotNull);
+    expect(sClimber.caloriesMetric, isNotNull);
+    expect(sClimber.caloriesPerHourMetric, isNotNull);
+    expect(sClimber.caloriesPerMinuteMetric, isNotNull);
+    expect(sClimber.heartRateByteIndex, null);
     expect(sClimber.strokeCountMetric, isNotNull);
     expect(sClimber.resistanceMetric, isNotNull);
   });
@@ -118,7 +141,7 @@ void main() {
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
-          strokeCount: 664,
+          strokeCount: 66.4,
           resistance: 6,
         ),
       ),
@@ -171,7 +194,7 @@ void main() {
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
-          strokeCount: 834,
+          strokeCount: 83.4,
           resistance: 6,
         ),
       ),
@@ -223,8 +246,61 @@ void main() {
           sport: ActivityType.elliptical,
           caloriesPerHour: null,
           caloriesPerMinute: null,
-          strokeCount: 999,
+          strokeCount: 99.9,
           resistance: 6,
+        ),
+      ),
+      TestPair(
+        data: [
+          190,
+          103,
+          0,
+          35,
+          2,
+          47,
+          2,
+          140,
+          0,
+          0,
+          86,
+          0,
+          85,
+          0,
+          37,
+          5,
+          26,
+          0,
+          255,
+          255,
+          20,
+          0,
+          59,
+          0,
+          57,
+          0,
+          4,
+          0,
+          255,
+          255,
+          255,
+          93,
+          0,
+          57,
+          0
+        ],
+        record: RecordWithSport(
+          distance: 140.0,
+          elapsed: 93,
+          calories: 12,
+          power: 59,
+          speed: 5.47,
+          cadence: 86,
+          heartRate: null,
+          sport: ActivityType.elliptical,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+          strokeCount: 131.7,
+          resistance: 2,
         ),
       ),
     ]) {
