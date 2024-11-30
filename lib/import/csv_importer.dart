@@ -195,6 +195,7 @@ class CSVImporter with PowerSpeedMixin {
     var trainingPeaksUploaded = false;
     var trainingPeaksFileTrackingUuid = "";
     var trainingPeaksWorkoutId = 0;
+    var endTime = 0;
     var movingTime = 0;
 
     if (_migration) {
@@ -241,10 +242,16 @@ class CSVImporter with PowerSpeedMixin {
         return null;
       }
 
-      final endTime = int.tryParse(endTimeLine[1]) ?? 0;
+      endTime = int.tryParse(endTimeLine[1]) ?? 0;
       if (endTime == 0) {
-        message = "Couldn't parse $endTimeTag";
-        return null;
+        // Unfinished activity
+        if (totalElapsed > 0) {
+          // Temporary impute end time
+          endTime == startTime + 1000 * totalElapsed;
+        } else {
+          message = "Couldn't parse $endTimeTag";
+          return null;
+        }
       }
 
       end = DateTime.fromMillisecondsSinceEpoch(endTime);
@@ -580,6 +587,7 @@ class CSVImporter with PowerSpeedMixin {
       int progressSteps = numRow ~/ maxProgressSteps;
       int progressCounter = 0;
       int recordCounter = 0;
+      int lastTimeStamp = 0;
 
       while (_linePointer < _lines.length) {
         final values = _lines[_linePointer].split(",");
@@ -587,6 +595,7 @@ class CSVImporter with PowerSpeedMixin {
         final timeStampInt = int.tryParse(values[4]);
         if (timeStampInt != null) {
           timeStamp = DateTime.fromMillisecondsSinceEpoch(timeStampInt);
+          lastTimeStamp = timeStampInt;
         }
 
         final record = Record(
@@ -612,6 +621,11 @@ class CSVImporter with PowerSpeedMixin {
           progressCounter = 0;
           setProgress(recordCounter / numRow);
         }
+      }
+
+      // Adjust end time if this was an unfinished workout
+      if (lastTimeStamp > 0 && lastTimeStamp > endTime) {
+        activity.end = DateTime.fromMillisecondsSinceEpoch(lastTimeStamp);
       }
     } else {
       double secondsPerRow = totalElapsed / numRow;

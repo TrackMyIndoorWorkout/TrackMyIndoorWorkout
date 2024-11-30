@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
+
 import '../../export/activity_export.dart';
 import '../../persistence/isar/activity.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../utils/constants.dart';
-
 import 'constants.dart';
 import 'training_peaks_token.dart';
 
@@ -167,7 +166,7 @@ mixin Upload {
                     final workoutIds = workoutIdsString
                         .split(",")
                         .map((workoutIdString) => int.tryParse(workoutIdString))
-                        .whereNotNull()
+                        .nonNulls
                         .toList(growable: false);
                     if (workoutIds.isNotEmpty) {
                       activity.markTrainingPeaksUploaded(workoutIds.first);

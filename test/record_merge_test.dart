@@ -36,8 +36,8 @@ void main() {
           expect(merged.pace, closeTo(rndRecord.pace!, eps));
           expect(merged.cadence, rndRecord.cadence);
           expect(merged.heartRate, rndRecord.heartRate!);
-          expect(merged.caloriesPerMinute, null);
-          expect(merged.caloriesPerHour, null);
+          expect(merged.caloriesPerMinute, rndRecord.caloriesPerMinute);
+          expect(merged.caloriesPerHour, rndRecord.caloriesPerHour);
         });
       }
     }

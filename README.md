@@ -13,9 +13,10 @@ For more details please see [the application's website](https://trackmyindoorwor
 
 ## Contribution Rules
 
-* The project works on the Flutter beta channel. For details look at
+* The project works on the Flutter stable channel. (For a good while it was on the beta channel
+  because for example
   https://github.com/flutter/flutter/issues/114199#issuecomment-1294263848 and
-  https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399
+  https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399).
 * For a successful local build you need to augment a dummy `secret.dart` file,
   see the the CI build script for a hint:
   https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/develop/.github/workflows/flutter_test.yml#L24
@@ -43,8 +44,5 @@ With certain data persistence or testing Mock changes you may need code regenera
 
 ## License
 
-This work is licensed under GPL 3.0.
-
-In a nutshell if you borrow or modify any code that work must be mandatorily open source as well!
-
-`SPDX-License-Identifier: GPL-3.0`
+This work is licensed under Apache 2.0.
+`SPDX-License-Identifier: Apache-2.0`

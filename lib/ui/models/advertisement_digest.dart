@@ -34,4 +34,12 @@ class AdvertisementDigest {
     return companyIds.contains(CompanyRegistry.johnsonHealthTechKey) ||
         companyIds.contains(CompanyRegistry.matrixIncKey);
   }
+
+  bool isPrefixContained(String manufacturerNameLoweredPrefix) {
+    return manufacturerNameLoweredPrefix.isEmpty ||
+        loweredManufacturers.isEmpty ||
+        loweredManufacturers
+            .map((m) => m.contains(manufacturerNameLoweredPrefix))
+            .reduce((value, contains) => value || contains);
+  }
 }

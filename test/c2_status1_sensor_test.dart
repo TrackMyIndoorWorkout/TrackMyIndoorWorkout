@@ -79,6 +79,7 @@ void main() {
         sport: ActivityType.rowing,
         caloriesPerHour: null,
         caloriesPerMinute: null,
+        strokeCount: null,
       );
 
       final sum = testData.fold<int>(0, (a, b) => a + b);
@@ -108,10 +109,10 @@ void main() {
         } else {
           expect(record.pace, null);
         }
-        expect(record.strokeCount, expectedRecord.strokeCount);
         expect(record.sport, expectedRecord.sport);
         expect(record.caloriesPerHour, expectedRecord.caloriesPerHour);
         expect(record.caloriesPerMinute, expectedRecord.caloriesPerMinute);
+        expect(record.strokeCount, expectedRecord.strokeCount);
       });
     }
   });

@@ -5,9 +5,9 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:collection/collection.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar/isar.dart';
@@ -26,8 +26,8 @@ import '../devices/gadgets/complex_sensor.dart';
 import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../devices/gatt/appearance.dart';
-import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
+import '../devices/gatt/csc.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
@@ -37,7 +37,6 @@ import '../devices/gatt_maps.dart';
 import '../persistence/isar/db_utils.dart';
 import '../persistence/isar/device_usage.dart';
 import '../preferences/auto_connect.dart';
-import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
@@ -60,16 +59,15 @@ import '../utils/machine_type.dart';
 import '../utils/scan_result_ex.dart';
 import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
+import 'about.dart';
+import 'activities.dart';
+import 'donation.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
-import 'parts/database_migration.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
-import 'about.dart';
-import 'activities.dart';
-import 'donation.dart';
 import 'recording.dart';
 
 class FindDevicesScreen extends StatefulWidget {
@@ -166,26 +164,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "Scan already in progress");
 
       return;
-    }
-
-    final prefService = Get.find<BasePrefService>();
-    if (prefService.get<bool>(databaseMigrationNeededTag) ?? databaseMigrationNeededDefault) {
-      await Get.bottomSheet(
-        const SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: DatabaseMigrationBottomSheet(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        isScrollControlled: true,
-        ignoreSafeArea: false,
-        enableDrag: false,
-      );
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
@@ -424,22 +402,25 @@ class FindDevicesState extends State<FindDevicesScreen> {
     DeviceDescriptor? descriptor;
     if (!advertisementDigest.needsMatrixSpecialTreatment()) {
       final loweredPlatformName = device.platformName.toLowerCase();
+      final ftmsServiceSports =
+          advertisementDigest.machineTypes.map((m) => m.sport).toList(growable: false);
+      var found = false;
       for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
+        if (found) break;
         final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+        final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
           if (loweredPlatformName.startsWith(lowerPrefix) &&
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-              (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                  advertisementDigest.loweredManufacturers
-                      .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                      .reduce((value, contains) => value || contains))) {
+              !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+              (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
+              advertisementDigest.isPrefixContained(mapEntry.value.manufacturerNameLoweredPrefix)) {
             if (mapEntry.key == technogymRunFourCC &&
                 _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
               continue;
             }
 
-            if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
-                    .contains(mapEntry.key) &&
+            if (allConcept2FourCCs.contains(mapEntry.key) &&
                 advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
               // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
               // TODO: What does SkiErg implement (if any at all)?
@@ -454,6 +435,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             }
 
             descriptor = descriptorCandidate;
+            found = true;
             break;
           }
         }

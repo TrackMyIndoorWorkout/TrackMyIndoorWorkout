@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/activity_ui.dart';
 import '../../preferences/auto_connect.dart';
 import '../../preferences/distance_resolution.dart';
@@ -11,6 +12,8 @@ import '../../preferences/instant_upload.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
+import '../../preferences/show_resistance_level.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
@@ -187,6 +190,16 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
           );
         },
         child: const Text("Measurement Row Setup"),
+      ),
+      const PrefCheckbox(
+        title: Text(showResistanceLevel),
+        subtitle: Text(showResistanceLevelDescription),
+        pref: showResistanceLevelTag,
+      ),
+      const PrefCheckbox(
+        title: Text(showStrokesStridesRevs),
+        subtitle: Text(showStrokesStridesRevsDescription),
+        pref: showStrokesStridesRevsTag,
       ),
     ];
 
