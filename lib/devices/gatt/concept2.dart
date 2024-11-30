@@ -11,12 +11,13 @@ const c2PmReceiveCharacteristicUuid = '0021'; // Control command in form of CSAF
 const c2PmTransmitCharacteristicUuid = '0022'; // Response to command in form of CSAFE frame
 
 const c2ErgPrimaryServiceUuid = '0030'; // C2 Erg Service
-const c2ErgGeneralStatusUuid = '0031'; // 19 bytes (elapsed time, distance, ...)
+const c2ErgGeneralStatusUuid = '0031'; // 19 bytes (elapsed time, distance, ..., drag factor)
 const c2ErgAdditionalStatus1Uuid =
     '0032'; // 17 bytes (elapsed time, speed, stroke rate, HR, pace, erg type, ...)
 const c2ErgAdditionalStatus2Uuid = '0033'; // 20 bytes (elapsed time, total calories, ...)
 const c2ErgStatusSamplingRateUuid = '0034'; // 1 byte
-const c2ErgStrokeDataUuid = '0035'; // 20 bytes (avg drive force, stroke count, ...)
+const c2ErgStrokeDataUuid =
+    '0035'; // 20 bytes (drive length, drive time, stroke recovery time, stroke distance, avg drive force, stroke count, ...)
 const c2ErgAdditionalStrokeDataUuid =
     '0036'; // 15 bytes (elapsed time, stroke power, stroke calories, stroke count, ...)
 const c2ErgSplitIntervalDataUuid = '0037'; // 18 bytes

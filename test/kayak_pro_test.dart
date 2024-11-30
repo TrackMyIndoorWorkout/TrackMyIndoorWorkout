@@ -47,7 +47,6 @@ void main() {
     rower.processFlag(flag, 17);
 
     expect(rower.strokeRateMetric, isNotNull);
-    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.paceMetric, isNotNull);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
@@ -57,6 +56,7 @@ void main() {
     expect(rower.timeMetric, isNotNull);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
+    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.heartRateByteIndex, null);
   });
 
@@ -71,12 +71,12 @@ void main() {
           power: 0,
           speed: null,
           cadence: 0,
-          strokeCount: 0.0,
           heartRate: null,
           pace: 0.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
           caloriesPerMinute: null,
+          strokeCount: 0.0,
         ),
       ),
       TestPair(
@@ -88,12 +88,12 @@ void main() {
           power: 12,
           speed: null,
           cadence: 39,
-          strokeCount: 33.0,
           heartRate: null,
           pace: 342.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 345.0,
           caloriesPerMinute: null,
+          strokeCount: 33.0,
         ),
       ),
       TestPair(
@@ -125,12 +125,12 @@ void main() {
           power: 16,
           speed: null,
           cadence: 76,
-          strokeCount: 65.0,
           heartRate: null,
           pace: 316.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 353.0,
           caloriesPerMinute: null,
+          strokeCount: 65.0,
         ),
       ),
       TestPair(
@@ -162,12 +162,12 @@ void main() {
           power: 20,
           speed: null,
           cadence: 42,
-          strokeCount: 150.0,
           heartRate: null,
           pace: 295.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 363.0,
           caloriesPerMinute: null,
+          strokeCount: 150.0,
         ),
       ),
       TestPair(
@@ -179,12 +179,12 @@ void main() {
           power: 30,
           speed: null,
           cadence: 88,
-          strokeCount: 184.0,
           heartRate: null,
           pace: 256.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 389.0,
           caloriesPerMinute: null,
+          strokeCount: 184.0,
         ),
       ),
     ]) {
@@ -210,10 +210,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

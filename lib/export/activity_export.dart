@@ -225,6 +225,7 @@ abstract class ActivityExport {
     if (!compress) {
       return fileBytes;
     }
+
     return GZipCodec(gzip: true).encode(fileBytes);
   }
 

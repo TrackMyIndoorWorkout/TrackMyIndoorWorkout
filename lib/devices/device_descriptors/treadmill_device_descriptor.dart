@@ -23,6 +23,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     required super.manufacturerFitId,
     required super.model,
     super.heartRateByteIndex,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,
@@ -84,7 +85,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
-      resistance: getResistance(data),
+      resistance: getResistance(data)?.toInt(),
     );
   }
 

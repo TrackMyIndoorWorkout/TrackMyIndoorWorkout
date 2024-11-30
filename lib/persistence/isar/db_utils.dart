@@ -6,15 +6,14 @@ import 'package:tuple/tuple.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../utils/address_names.dart';
 import '../../utils/constants.dart';
+import '../../utils/power_speed_mixin.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
-import 'floor_migration.dart';
-import 'floor_record_migration.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
 
-class DbUtils {
+class DbUtils with PowerSpeedMixin {
   late final Isar database;
 
   DbUtils() {
@@ -45,10 +44,14 @@ class DbUtils {
     return records.lastOrNull;
   }
 
-  Future<bool> recalculateCumulative(Activity activity) async {
+  Future<bool> recalculateCumulative(Activity activity, bool recalculateMore) async {
     final records = await getRecords(activity.id);
     if (records.isEmpty) {
       return false;
+    }
+
+    if (recalculateMore) {
+      initPower2SpeedConstants();
     }
 
     var previousRecord = records.first;
@@ -71,6 +74,13 @@ class DbUtils {
 
         if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
           record.power = previousRecord.power;
+        }
+
+        if (record.power != null &&
+            record.power! > 0.0 &&
+            recalculateMore &&
+            activity.sport == ActivityType.ride) {
+          record.speed = velocityForPowerCardano(record.power!) * DeviceDescriptor.ms2kmh;
         }
 
         if ((record.speed ?? 0.0) <= eps && (previousRecord.speed ?? 0.0) > eps) {
@@ -115,6 +125,47 @@ class DbUtils {
     activity.movingTime = movingTime.toInt();
 
     updateActivity(activity);
+
+    return true;
+  }
+
+  Future<bool> bridgeDataGaps(Activity activity) async {
+    final records = await getRecords(activity.id);
+    if (records.isEmpty) {
+      return false;
+    }
+
+    var previousRecord = records.first;
+    for (final record in records.skip(1)) {
+      bool modified = false;
+      if ((record.cadence ?? 0) <= 0 && (previousRecord.cadence ?? 0) > 0) {
+        record.cadence = previousRecord.cadence;
+        modified = true;
+      }
+
+      if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
+        record.power = previousRecord.power;
+        modified = true;
+      }
+
+      if ((record.speed ?? 0.0) <= eps && (previousRecord.speed ?? 0.0) > eps) {
+        record.speed = previousRecord.speed;
+        modified = true;
+      }
+
+      if ((record.heartRate ?? 0) <= 0 && (previousRecord.heartRate ?? 0) > 0) {
+        record.heartRate = previousRecord.heartRate;
+        modified = true;
+      }
+
+      if (modified) {
+        database.writeTxnSync(() {
+          database.records.putSync(record);
+        });
+      }
+
+      previousRecord = record;
+    }
 
     return true;
   }
@@ -231,38 +282,6 @@ class DbUtils {
     return updated > 0;
   }
 
-  Future<int?> getIsarId(String entityName, int floorId) async {
-    if (floorId == Isar.autoIncrement) {
-      return null;
-    }
-
-    final isarIds = await database.floorMigrations
-        .filter()
-        .entityNameEqualTo(entityName)
-        .and()
-        .floorIdEqualTo(floorId)
-        .isarIdProperty()
-        .findAll();
-
-    return isarIds.isNotEmpty ? isarIds.first : null;
-  }
-
-  Future<int?> latestFloorRecordId(int activityId) async {
-    if (activityId == Isar.autoIncrement) {
-      return null;
-    }
-
-    final floorIds = await database.floorRecordMigrations
-        .where()
-        .filter()
-        .activityIdEqualTo(activityId)
-        .sortByFloorIdDesc()
-        .floorIdProperty()
-        .findAll();
-
-    return floorIds.isNotEmpty ? floorIds.first : null;
-  }
-
   Future<void> getAddressNameDictionary(AddressNames addressNames) async {
     for (var activity in await database.activitys
         .where()
@@ -307,7 +326,7 @@ class DbUtils {
       }
     });
 
-    recalculateCumulative(earlier);
+    recalculateCumulative(earlier, false);
 
     return true;
   }
@@ -316,5 +335,31 @@ class DbUtils {
     database.writeTxnSync(() {
       database.activitys.putSync(activity);
     });
+  }
+
+  Future<bool> offsetActivity(Activity activity, int minutes) async {
+    final offset = Duration(minutes: minutes);
+    activity.start = activity.start.add(offset);
+    if (activity.end != null) {
+      activity.end = activity.end!.add(offset);
+    }
+
+    updateActivity(activity);
+
+    final records = await getRecords(activity.id);
+    if (records.isEmpty) {
+      return false;
+    }
+
+    database.writeTxnSync(() {
+      for (final record in records) {
+        if (record.timeStamp != null) {
+          record.timeStamp = record.timeStamp!.add(offset);
+          database.records.putSync(record);
+        }
+      }
+    });
+
+    return true;
   }
 }

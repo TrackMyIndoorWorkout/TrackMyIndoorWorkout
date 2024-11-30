@@ -6,6 +6,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
+
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/gatt_maps.dart';
 import '../../preferences/app_debug_mode.dart';
@@ -14,15 +15,15 @@ import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
+import '../bluetooth_device_ex.dart';
 import '../gatt/battery.dart';
-import '../gatt/csc.dart';
 import '../gatt/concept2.dart';
+import '../gatt/csc.dart';
 import '../gatt/ftms.dart';
 import '../gatt/kayak_first.dart';
-import '../gatt/precor.dart';
 import '../gatt/power_meter.dart';
+import '../gatt/precor.dart';
 import '../gatt/schwinn_x70.dart';
-import '../bluetooth_device_ex.dart';
 
 typedef StringMetricProcessingFunction = Function(String measurement);
 
@@ -210,7 +211,7 @@ abstract class DeviceBase {
 
     discovering = true;
     try {
-      services = await device!.discoverServices();
+      services = await device!.discoverServices(subscribeToServicesChanged: false);
     } on Exception catch (e, stack) {
       Logging().logException(logLevel, tag, "discover", "device.discoverServices", e, stack);
 
@@ -219,7 +220,7 @@ abstract class DeviceBase {
       await Future.delayed(someDelay);
 
       try {
-        services = await device!.discoverServices();
+        services = await device!.discoverServices(subscribeToServicesChanged: false);
       } on Exception catch (e, stack) {
         Logging().logException(logLevel, tag, "discover", "device.discoverServices 2", e, stack);
 
@@ -243,9 +244,7 @@ abstract class DeviceBase {
     }
 
     List<String> sports = [];
-    if (characteristicId == treadmillUuid ||
-        characteristicId == stepClimberUuid ||
-        characteristicId == stairClimberUuid) {
+    if (characteristicId == treadmillUuid) {
       sports.add(ActivityType.run);
     } else if (characteristicId == c2ErgGeneralStatusUuid) {
       sports.add(ActivityType.rowing);
@@ -261,6 +260,10 @@ abstract class DeviceBase {
       sports.add(ActivityType.ride);
     } else if (characteristicId == crossTrainerUuid) {
       sports.add(ActivityType.elliptical);
+    } else if (characteristicId == stairClimberUuid) {
+      sports.add(ActivityType.rockClimbing);
+    } else if (characteristicId == stepClimberUuid) {
+      sports.add(ActivityType.stairStepper);
     } else if (characteristicId == kayakFirstAllAroundUuid) {
       sports.addAll([ActivityType.kayaking, ActivityType.canoeing]);
     }

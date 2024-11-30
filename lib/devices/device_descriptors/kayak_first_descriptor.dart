@@ -163,7 +163,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   @override
   void stopWorkout() {}
 
-  Future<void> _executeControlOperationCore(
+  Future<bool> _executeControlOperationCore(
       BluetoothCharacteristic controlPoint, String command, int logLevel) async {
     if (!command.endsWith(crLf)) {
       command += crLf;
@@ -173,27 +173,33 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
     final commandBytes = utf8.encode(command);
     int chunkBeginning = 0;
-    while (chunkBeginning < commandBytes.length) {
+    int retryCount = 0;
+    while (chunkBeginning < commandBytes.length && retryCount <= maxWaitIterations) {
       try {
         final chunk = commandBytes.skip(chunkBeginning).take(mtuSize).toList(growable: false);
         await controlPoint.write(chunk);
         // Response could be picked up in the subscription listener
         chunkBeginning += mtuSize;
+        retryCount = 0;
       } on Exception catch (e, stack) {
+        retryCount += 1;
         Logging().logException(
             logLevel, tag, "_executeControlOperationCore", "controlPoint.write", e, stack);
+        await Future.delayed(responseWatchDelay);
       }
     }
+
+    return retryCount <= maxWaitIterations;
   }
 
   @override
-  Future<void> executeControlOperation(
+  Future<bool> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
     Logging().log(logLevel, logLevelInfo, tag, "executeControlOperation", "$opCode");
 
     if (controlPoint == null || opCode == requestControl) {
-      return;
+      return false;
     }
 
     var command = "";
@@ -212,20 +218,20 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     }
 
     if (command.isEmpty) {
-      return;
+      return false;
     }
 
-    await _executeControlOperationCore(controlPoint, command, logLevel);
+    return await _executeControlOperationCore(controlPoint, command, logLevel);
   }
 
   @override
-  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
-    await _executeControlOperationCore(controlPoint, pollDataCommand, logLevel);
+  Future<bool> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
+    return await _executeControlOperationCore(controlPoint, pollDataCommand, logLevel);
   }
 
-  Future<void> handshake(BluetoothCharacteristic? controlPoint, bool isNew, int logLevel) async {
+  Future<bool> handshake(BluetoothCharacteristic? controlPoint, bool isNew, int logLevel) async {
     if (controlPoint == null) {
-      return;
+      return false;
     }
 
     final prefService = Get.find<BasePrefService>();
@@ -242,12 +248,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       fullCommand += boatWeightDefault.toString();
     }
 
-    await _executeControlOperationCore(controlPoint, fullCommand, logLevel);
+    return await _executeControlOperationCore(controlPoint, fullCommand, logLevel);
   }
 
-  Future<void> configureDisplay(BluetoothCharacteristic? controlPoint, int logLevel) async {
+  Future<bool> configureDisplay(BluetoothCharacteristic? controlPoint, int logLevel) async {
     if (controlPoint == null || initializedConsole) {
-      return;
+      return false;
     }
 
     String command = displayConfigurationCommand;
@@ -258,7 +264,7 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       command += ";$slotChoice";
     }
 
-    await _executeControlOperationCore(controlPoint, command, logLevel);
+    return await _executeControlOperationCore(controlPoint, command, logLevel);
   }
 
   @override

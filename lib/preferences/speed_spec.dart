@@ -13,6 +13,8 @@ class SpeedSpec {
     SportSpec.paddleSport: 0.2,
     ActivityType.swim: 0.1,
     ActivityType.elliptical: 0.2,
+    ActivityType.stairStepper: 0.1,
+    ActivityType.rockClimbing: 0.1,
   };
 
   static final slowSpeeds = {
@@ -21,6 +23,8 @@ class SpeedSpec {
     SportSpec.paddleSport: slowSpeedDefaults[SportSpec.paddleSport],
     ActivityType.swim: slowSpeedDefaults[ActivityType.swim],
     ActivityType.elliptical: slowSpeedDefaults[ActivityType.elliptical],
+    ActivityType.stairStepper: slowSpeedDefaults[ActivityType.swim],
+    ActivityType.rockClimbing: slowSpeedDefaults[ActivityType.swim],
   };
 
   static final pacerSpeedDefaults = {
@@ -29,6 +33,8 @@ class SpeedSpec {
     SportSpec.paddleSport: 10.65, // ~2:49 min / 500m
     ActivityType.swim: 3.43, // 1:45 min / 100m
     ActivityType.elliptical: 10.65, // ~5:38 min / km
+    ActivityType.stairStepper: 3.43, // 1:45 min / 100m
+    ActivityType.rockClimbing: 3.43, // 1:45 min / 100m
   };
 
   static final pacerSpeeds = {
@@ -37,6 +43,8 @@ class SpeedSpec {
     SportSpec.paddleSport: pacerSpeedDefaults[SportSpec.paddleSport],
     ActivityType.swim: pacerSpeedDefaults[ActivityType.swim],
     ActivityType.elliptical: pacerSpeedDefaults[ActivityType.elliptical],
+    ActivityType.stairStepper: pacerSpeedDefaults[ActivityType.swim],
+    ActivityType.rockClimbing: pacerSpeedDefaults[ActivityType.swim],
   };
 
   static String slowSpeedTag(String sport) {

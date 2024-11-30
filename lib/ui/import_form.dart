@@ -1,16 +1,19 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:get/get.dart';
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
+
 import '../import/csv_importer.dart';
 import '../persistence/isar/workout_summary.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
+import '../utils/logging.dart';
 
 typedef SetProgress = void Function(double progress);
 
@@ -116,22 +119,22 @@ class ImportFormState extends State<ImportForm> {
                     hintText: 'Pick date & time',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    return await showDatePicker(
+                    final pickedDate = await showDatePicker(
                       context: context,
                       firstDate: DateTime(1920),
                       initialDate: currentValue ?? DateTime.now(),
                       lastDate: DateTime(2030),
-                    ).then((DateTime? date) async {
-                      if (date != null) {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                        );
-                        return DateTimeField.combine(date, time);
-                      } else {
-                        return currentValue;
-                      }
-                    });
+                    );
+
+                    if (pickedDate == null || !context.mounted) {
+                      return currentValue;
+                    }
+
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    return DateTimeField.combine(pickedDate, time);
                   },
                   validator: (value) {
                     if (value == null && !widget.migration) {
@@ -191,12 +194,15 @@ class ImportFormState extends State<ImportForm> {
                               Get.snackbar(
                                   "Failure", "Problem while importing: ${importer.message}");
                             }
-                          } catch (e, callStack) {
+                          } on Exception catch (e, stack) {
                             setState(() {
                               _isLoading = false;
                             });
+                            final prefService = Get.find<BasePrefService>();
+                            final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+                            Logging().logException(logLevel, "IMPORT_FORM", "onPressed",
+                                "error during import", e, stack);
                             Get.snackbar("Error", "Import unsuccessful: $e");
-                            debugPrintStack(stackTrace: callStack);
                           }
                         } else {
                           Get.snackbar("Error", "Please correct form fields");

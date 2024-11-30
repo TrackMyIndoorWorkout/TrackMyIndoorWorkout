@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+
 import '../preferences/sport_spec.dart';
 import '../ui/models/row_configuration.dart';
 import '../utils/constants.dart';
@@ -152,13 +153,22 @@ class MetricSpec {
         SportSpec.sportPrefixes[4]: 153,
       },
       zonesTagPostfix: metrics[3] + zonesPostfix,
+      // This was based on Max HR not, Threshold HR
       oldZoneDefaultInts: [50, 60, 70, 80, 90, 100],
+      // 7 zones based on Lactate Threshold Heart Rate (according to Gemini):
+      // 1, <85%, Very easy, Recovery
+      // 2, 85-89%, Easy Aerobic
+      // 3, 90-94%, Moderate
+      // 4, 95-99%, Somewhat hard
+      // 5a, 100-102%, Hard
+      // 5b, 103-106%, Very hard
+      // 5c, >106%, Maximal
       zonesDefaultInts: {
-        SportSpec.sportPrefixes[0]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[1]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[2]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[3]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[4]: [80, 88, 92, 152, 156, 163],
+        SportSpec.sportPrefixes[0]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[1]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[2]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[3]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[4]: [85, 90, 95, 100, 103, 106],
       },
       icon: Icons.favorite,
       indexDisplayDefault: false,

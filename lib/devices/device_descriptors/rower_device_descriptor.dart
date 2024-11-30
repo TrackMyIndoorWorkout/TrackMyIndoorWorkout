@@ -14,12 +14,11 @@ import 'fitness_machine_descriptor.dart';
 
 class RowerDeviceDescriptor extends FitnessMachineDescriptor {
   MetricDescriptor? strokeRateMetric;
-  MetricDescriptor? strokeCountMetric;
   MetricDescriptor? paceMetric;
 
   int _strokeRateWindowSize = strokeRateSmoothingDefault;
-  final ListQueue<int> _strokeRates = ListQueue<int>();
-  int _strokeRateSum = 0;
+  final ListQueue<double> _strokeRates = ListQueue<double>();
+  double _strokeRateSum = 0;
 
   RowerDeviceDescriptor({
     required super.sport,
@@ -98,7 +97,7 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         _strokeRateSum -= _strokeRates.first;
         _strokeRates.removeFirst();
       }
-      strokeRate = _strokeRates.isNotEmpty ? (_strokeRateSum / _strokeRates.length).round() : 0;
+      strokeRate = _strokeRates.isNotEmpty ? (_strokeRateSum / _strokeRates.length) : 0.0;
     }
 
     return RecordWithSport(
@@ -107,14 +106,15 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: strokeRate,
+      cadence: strokeRate?.toInt(),
       heartRate: getHeartRate(data),
       pace: pace,
-      strokeCount: getStrokeCount(data),
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
-      resistance: getResistance(data),
+      resistance: getResistance(data)?.toInt(),
+      preciseCadence: strokeRate,
+      strokeCount: getStrokeCount(data),
     );
   }
 
@@ -150,12 +150,8 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     return advanceFlag(flag);
   }
 
-  int? getStrokeRate(List<int> data) {
-    return strokeRateMetric?.getMeasurementValue(data)?.toInt();
-  }
-
-  double? getStrokeCount(List<int> data) {
-    return strokeCountMetric?.getMeasurementValue(data);
+  double? getStrokeRate(List<int> data) {
+    return strokeRateMetric?.getMeasurementValue(data);
   }
 
   double? getPace(List<int> data) {

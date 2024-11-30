@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import '../ui/about.dart';
+
 import '../preferences/stage_mode.dart';
 import '../preferences/theme_selection.dart';
+import '../ui/about.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
   ThemeMode getThemeMode() {
     final prefService = Get.find<BasePrefService>();
     final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
-    if (themeSelection == "light") {
+    if (themeSelection == themeSelectionLight) {
       return ThemeMode.light;
-    } else if (themeSelection == "dark") {
+    } else if (themeSelection == themeSelectionDark) {
       return ThemeMode.dark;
     } else {
       return ThemeMode.system;
@@ -22,13 +23,12 @@ class ThemeManager {
   bool isDark() {
     final prefService = Get.find<BasePrefService>();
     final themeSelection = prefService.get<String>(themeSelectionTag) ?? themeSelectionDefault;
-    if (themeSelection == "light") {
+    if (themeSelection == themeSelectionLight) {
       return false;
-    } else if (themeSelection == "dark") {
+    } else if (themeSelection == themeSelectionDark) {
       return true;
     }
 
-    // ThemeMode.system;
     return Get.isPlatformDarkMode;
   }
 

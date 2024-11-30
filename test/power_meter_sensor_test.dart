@@ -24,11 +24,12 @@ class CadenceTestData {
   final int queueLength;
   final int cadence;
 
-  const CadenceTestData(
-      {required this.data,
-      required this.timeStamp,
-      required this.queueLength,
-      required this.cadence});
+  const CadenceTestData({
+    required this.data,
+    required this.timeStamp,
+    required this.queueLength,
+    required this.cadence,
+  });
 }
 
 class MockBluetoothDevice extends Mock implements BluetoothDevice {}
@@ -66,6 +67,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: 228.0,
         ),
       ),
     ]) {
@@ -92,10 +94,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, closeTo(testPair.record.strokeCount!, eps));
       });
     }
   });

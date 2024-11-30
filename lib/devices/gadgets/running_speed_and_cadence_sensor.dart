@@ -70,11 +70,13 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
       return RecordWithSport(sport: ActivityType.run);
     }
 
+    final cadence = getCadence(data);
     return RecordWithSport(
       timeStamp: DateTime.now(),
       distance: getDistance(data),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
+      cadence: cadence?.toInt(),
+      preciseCadence: cadence,
       sport: ActivityType.run,
     );
   }

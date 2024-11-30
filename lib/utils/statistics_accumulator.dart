@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import '../export/export_record.dart';
-import '../ui/models/display_record.dart';
 import '../persistence/isar/record.dart';
+import '../ui/models/display_record.dart';
 import 'constants.dart';
 import 'streaming_median_calculator.dart';
 
@@ -22,6 +22,9 @@ class StatisticsAccumulator {
   bool calculateAvgHeartRate;
   bool calculateMaxHeartRate;
   bool calculateMinHeartRate;
+  bool calculateAvgResistance;
+  bool calculateMaxResistance;
+  bool calculateMinResistance;
   bool calculateMedian;
 
   late int powerSum;
@@ -44,6 +47,10 @@ class StatisticsAccumulator {
   late int maxCadence;
   late int minCadence;
   late StreamingMedianCalculator<int> cadenceMedianCalc;
+  late int resistanceSum;
+  late int resistanceCount;
+  late int maxResistance;
+  late int minResistance;
 
   double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
   int get maxPowerDisplay => max(maxPower, 0);
@@ -61,6 +68,9 @@ class StatisticsAccumulator {
   int get maxHeartRateDisplay => max(maxHeartRate, 0);
   int get minHeartRateDisplay => min(minHeartRate, 0);
   int get medianHeartRate => heartRateMedianCalc.median ?? 0;
+  int get avgResistance => resistanceCount > 0 ? resistanceSum ~/ resistanceCount : 0;
+  int get maxResistanceDisplay => max(maxResistance, 0);
+  int get minResistanceDisplay => min(minResistance, 0);
 
   StatisticsAccumulator({
     required this.si,
@@ -77,6 +87,9 @@ class StatisticsAccumulator {
     this.calculateAvgHeartRate = false,
     this.calculateMaxHeartRate = false,
     this.calculateMinHeartRate = false,
+    this.calculateAvgResistance = false,
+    this.calculateMaxResistance = false,
+    this.calculateMinResistance = false,
     this.calculateMedian = false,
   }) {
     reset();
@@ -103,6 +116,10 @@ class StatisticsAccumulator {
     maxCadence = maxInit;
     minCadence = minInit;
     cadenceMedianCalc = StreamingMedianCalculator<int>();
+    resistanceSum = 0;
+    resistanceCount = 0;
+    maxResistance = maxInit;
+    minResistance = minInit;
   }
 
   void processExportRecord(ExportRecord exportRecord) {
@@ -179,6 +196,114 @@ class StatisticsAccumulator {
 
       if (calculateMedian) {
         cadenceMedianCalc.processElement(exportRecord.record.cadence!);
+      }
+    }
+
+    if ((exportRecord.record.resistance ?? 0) > 0) {
+      if (calculateAvgResistance) {
+        resistanceSum += exportRecord.record.resistance!;
+        resistanceCount++;
+      }
+
+      if (calculateMaxResistance) {
+        maxResistance = max(maxResistance, exportRecord.record.resistance!);
+      }
+
+      if (calculateMinResistance) {
+        minResistance = min(minResistance, exportRecord.record.resistance!);
+      }
+    }
+  }
+
+  void processDisplayRecord(DisplayRecord displayRecord) {
+    if ((displayRecord.power ?? 0) > 0) {
+      if (calculateAvgPower) {
+        powerSum += displayRecord.power!;
+        powerCount++;
+      }
+
+      if (calculateMaxPower) {
+        maxPower = max(maxPower, displayRecord.power!);
+      }
+
+      if (calculateMinPower) {
+        minPower = min(minPower, displayRecord.power!);
+      }
+
+      if (calculateMedian) {
+        powerMedianCalc.processElement(displayRecord.power!);
+      }
+    }
+
+    if ((displayRecord.speed ?? 0.0) > eps) {
+      if (calculateAvgSpeed) {
+        speedSum += displayRecord.speed!;
+        speedCount++;
+      }
+
+      if (calculateMaxSpeed) {
+        maxSpeed = max(maxSpeed, displayRecord.speed!);
+      }
+
+      if (calculateMinSpeed) {
+        minSpeed = min(minSpeed, displayRecord.speed!);
+      }
+
+      if (calculateMedian) {
+        speedMedianCalc.processElement(displayRecord.speed!);
+      }
+    }
+
+    if ((displayRecord.heartRate ?? 0) > 0) {
+      if (calculateAvgHeartRate) {
+        heartRateSum += displayRecord.heartRate!;
+        heartRateCount++;
+      }
+
+      if (calculateMaxHeartRate) {
+        maxHeartRate = max(maxHeartRate, displayRecord.heartRate!);
+      }
+
+      if (calculateMinHeartRate) {
+        minHeartRate = min(minHeartRate, displayRecord.heartRate!);
+      }
+
+      if (calculateMedian) {
+        heartRateMedianCalc.processElement(displayRecord.heartRate!);
+      }
+    }
+
+    if ((displayRecord.cadence ?? 0) > 0) {
+      if (calculateAvgCadence) {
+        cadenceSum += displayRecord.cadence!;
+        cadenceCount++;
+      }
+
+      if (calculateMaxCadence) {
+        maxCadence = max(maxCadence, displayRecord.cadence!);
+      }
+
+      if (calculateMinCadence) {
+        minCadence = min(minCadence, displayRecord.cadence!);
+      }
+
+      if (calculateMedian) {
+        cadenceMedianCalc.processElement(displayRecord.cadence!);
+      }
+    }
+
+    if ((displayRecord.resistance ?? 0) > 0) {
+      if (calculateAvgResistance) {
+        resistanceSum += displayRecord.resistance!;
+        resistanceCount++;
+      }
+
+      if (calculateMaxResistance) {
+        maxResistance = max(maxResistance, displayRecord.resistance!);
+      }
+
+      if (calculateMinResistance) {
+        minResistance = min(minResistance, displayRecord.resistance!);
       }
     }
   }
@@ -259,25 +384,44 @@ class StatisticsAccumulator {
         cadenceMedianCalc.processElement(record.cadence!);
       }
     }
+
+    if (record.resistance != null) {
+      if (calculateAvgResistance && record.resistance! > 0) {
+        resistanceSum += record.resistance!;
+        resistanceCount++;
+      }
+
+      if (calculateMaxResistance) {
+        maxResistance = max(maxResistance, record.resistance!);
+      }
+
+      if (calculateMinResistance) {
+        minResistance = min(minResistance, record.resistance!);
+      }
+    }
   }
 
   DisplayRecord averageDisplayRecord(DateTime? timestamp) {
     return DisplayRecord.forValues(
-        sport,
-        timestamp,
-        avgPower > eps ? avgPower.round() : null,
-        avgSpeed > 0 ? avgSpeed : null,
-        avgCadence > 0 ? avgCadence : null,
-        avgHeartRate > 0 ? avgHeartRate : null);
+      sport,
+      timestamp,
+      avgPower > eps ? avgPower.round() : null,
+      avgSpeed > 0 ? avgSpeed : null,
+      avgCadence > 0 ? avgCadence : null,
+      avgHeartRate > 0 ? avgHeartRate : null,
+      avgResistance > 0 ? avgResistance : null,
+    );
   }
 
   DisplayRecord maximumDisplayRecord(DateTime? timestamp) {
     return DisplayRecord.forValues(
-        sport,
-        timestamp,
-        maxPower > 0 ? maxPower : null,
-        maxSpeed > 0 ? maxSpeed : null,
-        maxCadence > 0 ? maxCadence : null,
-        maxHeartRate > 0 ? maxHeartRate : null);
+      sport,
+      timestamp,
+      maxPower > 0 ? maxPower : null,
+      maxSpeed > 0 ? maxSpeed : null,
+      maxCadence > 0 ? maxCadence : null,
+      maxHeartRate > 0 ? maxHeartRate : null,
+      maxResistance > 0 ? maxResistance : null,
+    );
   }
 }

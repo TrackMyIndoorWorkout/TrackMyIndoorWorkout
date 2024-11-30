@@ -7,8 +7,8 @@ import 'package:tuple/tuple.dart';
 
 import '../devices/company_registry.dart';
 import '../devices/device_fourcc.dart';
-import '../devices/gatt/csc.dart';
 import '../devices/gatt/concept2.dart';
+import '../devices/gatt/csc.dart';
 import '../devices/gatt/ftms.dart';
 import '../devices/gatt/hrm.dart';
 import '../devices/gatt/kayak_first.dart';
@@ -55,12 +55,12 @@ extension ScanResultEx on ScanResult {
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (final mapEntry in deviceNamePrefixes.values) {
+      final lowerPostfix = mapEntry.deviceNameLoweredPostfix;
       for (final loweredPrefix in mapEntry.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
-            (mapEntry.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.shouldBeIncludedByManufacturer(loweredManufacturers)) {
           return true;
         }
       }
@@ -101,8 +101,20 @@ extension ScanResultEx on ScanResult {
     for (MapEntry<Guid, List<int>> entry in advertisementData.serviceData.entries) {
       if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
-        if (serviceData.length > 2 && serviceData[0] >= 1 && serviceData[1] > 0) {
-          return serviceData[1];
+        if (serviceData.length > 2 &&
+            serviceData[0] >= 1 &&
+            (serviceData[1] > 0 || serviceData[2] > 0)) {
+          // Note: related documentation is Fitness Machine Service FTMS_v1.0 PDF
+          // 3 Service Advertising Data
+          // The real meat is 1 + 2 = 3 bytes
+          // 3.1.1 Flags Field UINT8 - just indicating FTMS present with 1
+          // 3.1.2 Fitness Machine Type Field - two bytes flag bytes
+          // currently only bits 0-5 are defined, 6-15 is unreserved
+          // So normally it'd be serviceData[1] > 0 && serviceData[2] == 0
+          // However some outliers such as YOSUDA rower #513 flip the two bytes
+          // (Erroneously big endian instead of little endian)
+          // So when serviceData[2] > 0 we assume it's an accidental flip
+          return serviceData[serviceData[1] > 0 ? 1 : 2];
         }
       }
     }
@@ -179,19 +191,25 @@ extension ScanResultEx on ScanResult {
     final loweredPlatformName = device.platformName.toLowerCase();
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
+    final ftmsServiceSports =
+        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       if (multiSportFourCCs.contains(mapEntry.key) && mapEntry.key != concept2ErgFourCC) {
         continue;
       }
 
       final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+      final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
           return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
@@ -258,15 +276,21 @@ extension ScanResultEx on ScanResult {
 
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
+    final ftmsServiceSports =
+        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+      final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
               Image.asset("assets/equipment/Schwinn_logo.png",
@@ -320,16 +344,15 @@ extension ScanResultEx on ScanResult {
         }
       }
 
-      if (multiSportFourCCs.contains(mapEntry.key)) {
+      if (multiSportFourCCs.contains(mapEntry.key) || mapEntry.value.sportsMatch) {
         continue;
       }
 
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers)) {
           return Tuple2(
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),

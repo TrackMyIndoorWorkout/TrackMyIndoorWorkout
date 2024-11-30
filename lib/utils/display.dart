@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import 'constants.dart';
@@ -114,7 +115,7 @@ IconData getSportIcon(String sport) {
     return Icons.waves;
   } else if (sport == ActivityType.elliptical || sport == ActivityType.nordicSki) {
     return Icons.downhill_skiing;
-  } else if (sport == ActivityType.stairStepper) {
+  } else if (sport == ActivityType.stairStepper || sport == ActivityType.rockClimbing) {
     return Icons.stairs;
   }
 

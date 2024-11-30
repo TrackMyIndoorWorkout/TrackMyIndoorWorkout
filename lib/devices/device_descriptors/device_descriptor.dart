@@ -1,5 +1,6 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
+import '../../persistence/athlete.dart';
 import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
@@ -37,6 +38,7 @@ abstract class DeviceDescriptor extends DataHandler {
   String statusCharacteristicId;
 
   bool canMeasureCalories;
+  bool doNotReadManufacturerName;
 
   double? slowPace;
 
@@ -58,6 +60,7 @@ abstract class DeviceDescriptor extends DataHandler {
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
     this.canMeasureCalories = true,
+    this.doNotReadManufacturerName = false,
     tag = "DEVICE_DESCRIPTOR",
     super.hasFeatureFlags = true,
     super.flagByteSize = 2,
@@ -69,6 +72,7 @@ abstract class DeviceDescriptor extends DataHandler {
     super.cadenceMetric,
     super.distanceMetric,
     super.resistanceMetric,
+    super.strokeCountMetric,
   });
 
   String get fullName => '$vendorName $modelName';
@@ -96,12 +100,20 @@ abstract class DeviceDescriptor extends DataHandler {
   /// Sends command to induce / signal a measurement polling operation to a
   /// device which operates that way. The command will be sent to the
   /// Bluetooth characteristic [controlPoint].
-  Future<void> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
+  Future<bool> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
     Logging().log(logLevel, logLevelError, tag, "pollMeasurement", "Not implemented!");
+    return false;
   }
 
   /// Perform extra operations after a successful connect,
-  /// service + characteristics discovery, attach, setNotifyValue(true)
+  /// service + characteristics discovery, attach but before setNotifyValue(true)
+  Future<void> prePumpConfiguration(
+      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    Logging().log(logLvl, logLevelInfo, tag, "prePumpConfiguration", "Not implemented!");
+  }
+
+  /// Perform extra operations after a successful connect,
+  /// service + characteristics discovery, attach, and after setNotifyValue(true)
   Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
     Logging().log(logLevel, logLevelError, tag, "postPumpStart", "Not implemented!");
   }

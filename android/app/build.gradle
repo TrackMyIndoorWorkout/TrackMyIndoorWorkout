@@ -1,3 +1,9 @@
+buildscript {
+    ext {
+        minSdkVersion = 21
+    }
+}
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
