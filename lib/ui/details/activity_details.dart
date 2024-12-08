@@ -9,9 +9,9 @@ import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/activity.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
 import '../../preferences/activity_ui.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';

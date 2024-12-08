@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
+
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../persistence/isar/activity.dart';
-import '../persistence/isar/db_utils.dart';
-import '../persistence/isar/record.dart';
+import '../persistence/activity.dart';
+import '../persistence/db_utils.dart';
+import '../persistence/record.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';

@@ -8,10 +8,10 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 
+import '../../persistence/activity.dart';
 import '../../persistence/athlete.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';

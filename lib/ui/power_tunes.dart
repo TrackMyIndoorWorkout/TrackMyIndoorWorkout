@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 
-import '../persistence/isar/power_tune.dart';
+import '../persistence/power_tune.dart';
 import '../utils/string_ex.dart';
 import '../utils/theme_manager.dart';
 import 'parts/power_factor_tune.dart';

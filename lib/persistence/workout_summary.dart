@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:isar/isar.dart';
 
-import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../utils/constants.dart';
-import '../../utils/display.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../utils/constants.dart';
+import '../utils/display.dart';
 
 part 'workout_summary.g.dart';
 

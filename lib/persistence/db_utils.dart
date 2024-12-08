@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../utils/address_names.dart';
-import '../../utils/constants.dart';
-import '../../utils/power_speed_mixin.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../utils/address_names.dart';
+import '../utils/constants.dart';
+import '../utils/power_speed_mixin.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
 import 'power_tune.dart';

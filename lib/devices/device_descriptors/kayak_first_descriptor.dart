@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -7,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
@@ -16,11 +17,11 @@ import '../../ui/models/progress_state.dart';
 import '../../ui/parts/pre_measurement_progress.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
+import '../device_fourcc.dart';
 import '../gatt/ftms.dart';
 import '../gatt/kayak_first.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
-import '../device_fourcc.dart';
 import 'device_descriptor.dart';
 
 class KayakFirstDescriptor extends DeviceDescriptor {
