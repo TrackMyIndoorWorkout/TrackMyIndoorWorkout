@@ -1236,6 +1236,7 @@ class RecordingState extends State<RecordingScreen> {
       last?.distance,
       last?.elapsed,
       last?.calories,
+      last?.strokeCount?.toInt() ?? 0,
       last?.movingTime ?? 0,
     );
 

@@ -18,6 +18,7 @@ import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/recalculate_more.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
@@ -58,6 +59,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _calculateMedian = activityDetailsMedianDisplayDefault;
+  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   List<MetricSpec> _preferencesSpecs = [];
   PaletteSpec? _paletteSpec;
 
@@ -341,6 +343,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
         activityDetailsMedianDisplayDefault;
+    _showStrokesStridesRevs =
+        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
@@ -595,6 +599,20 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         unitStyle: _unitStyle,
       ),
     ]);
+
+    if (widget.activity.strides > 0 || _showStrokesStridesRevs) {
+      header.add(
+        ActivityDetailRowWithUnit(
+          themeManager: _themeManager,
+          icon: Icons.numbers,
+          iconSize: _sizeDefault,
+          text: widget.activity.strides.toString(),
+          textStyle: _measurementStyle,
+          unitText: "#",
+          unitStyle: _unitStyle,
+        ),
+      );
+    }
 
     final dateString = DateFormat.Md().format(widget.activity.start);
     final timeString = DateFormat.Hm().format(widget.activity.start);

@@ -31,6 +31,7 @@ class Activity {
   int elapsed; // s
   int movingTime; // ms
   int calories; // kCal
+  int strides;
   bool uploaded;
   int stravaId;
   final String fourCC;
@@ -66,6 +67,7 @@ class Activity {
     this.elapsed = 0,
     this.movingTime = 0,
     this.calories = 0,
+    this.strides = 0,
     this.uploaded = false,
     this.stravaId = 0,
     this.stravaActivityId = 0,
@@ -88,11 +90,12 @@ class Activity {
     required this.timeZone,
   });
 
-  void finish(double? distance, int? elapsed, int? calories, int movingTime) {
+  void finish(double? distance, int? elapsed, int? calories, int? strides, int movingTime) {
     end = DateTime.now();
     this.distance = distance ?? 0.0;
     this.elapsed = elapsed ?? 0;
     this.calories = calories ?? 0;
+    this.strides = strides ?? 0;
     this.movingTime = movingTime;
   }
 

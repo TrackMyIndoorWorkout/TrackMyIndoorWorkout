@@ -29,6 +29,15 @@ class FitLap extends FitDefinitionMessage {
       FitField(7, FitBaseTypes.uint32Type), // TotalElapsedTime (1/1000s)
       FitField(8, FitBaseTypes.uint32Type), // TotalTimerTime (1/1000s)
       FitField(9, FitBaseTypes.uint32Type), // TotalDistance (1/100 m)
+    ];
+
+    if (exportTarget == ExportTarget.regular) {
+      fields.add(
+        FitField(10, FitBaseTypes.uint32Type), // Total Cycles / Total Strides (run / walk)
+      );
+    }
+
+    fields.addAll([
       FitField(11, FitBaseTypes.uint16Type), // TotalCalories (kcal)
       FitField(13, FitBaseTypes.uint16Type), // AvgSpeed (1/1000 m/s)
       FitField(14, FitBaseTypes.uint16Type), // MaxSpeed (1/1000 m/s)
@@ -40,7 +49,7 @@ class FitLap extends FitDefinitionMessage {
       FitField(20, FitBaseTypes.uint16Type), // MaxPower (Watts)
       FitField(24, FitBaseTypes.enumType), // LapTrigger
       FitField(25, FitBaseTypes.enumType), // Sport
-    ];
+    ]);
 
     if (exportTarget == ExportTarget.regular) {
       fields.add(
@@ -70,6 +79,11 @@ class FitLap extends FitDefinitionMessage {
     data.addLong(model.activity.elapsed * 1000);
     data.addLong(model.activity.movingTime);
     data.addLong((model.activity.distance * 100).ceil());
+
+    if (exportTarget == ExportTarget.regular) {
+      data.addLong(model.activity.strides);
+    }
+
     data.addShort(max(model.activity.calories, 0));
     data.addShort(model.averageSpeed > eps ? (model.averageSpeed * 1000).round() : 0);
     data.addShort(model.maximumSpeed > eps ? (model.maximumSpeed * 1000).round() : 0);
