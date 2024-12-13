@@ -67,6 +67,7 @@ import '../track/constants.dart';
 import '../track/track_descriptor.dart';
 import '../track/track_painter.dart';
 import '../utils/bluetooth.dart';
+import '../utils/color_ex.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/logging.dart';
@@ -2433,7 +2434,7 @@ class RecordingState extends State<RecordingScreen> {
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getSpeedColor(_selfRank, background: true).value;
+          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toInt32;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),
