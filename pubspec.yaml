@@ -11,6 +11,7 @@ environment:
 
 dependency_overrides:
   collection: ^1.19.1 # Flutter SDK
+  path: ^1.9.1 # Flutter SDK
 
 dependencies:
   app_links: ^6.3.3
