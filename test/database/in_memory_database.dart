@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 
 import 'activity_collection.dart';
 import 'record_collection.dart';

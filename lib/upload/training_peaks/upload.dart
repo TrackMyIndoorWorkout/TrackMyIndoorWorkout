@@ -9,7 +9,7 @@ import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
 
 import '../../export/activity_export.dart';
-import '../../persistence/isar/activity.dart';
+import '../../persistence/activity.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../utils/constants.dart';
 import 'constants.dart';

@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
+
 import '../devices/device_descriptors/device_descriptor.dart';
-import '../persistence/isar/activity.dart';
-import '../persistence/isar/db_utils.dart';
-import '../persistence/isar/record.dart';
+import '../persistence/activity.dart';
+import '../persistence/db_utils.dart';
+import '../persistence/record.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';

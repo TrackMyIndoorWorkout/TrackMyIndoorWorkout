@@ -1,4 +1,4 @@
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import 'device_descriptor.dart';
 
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {

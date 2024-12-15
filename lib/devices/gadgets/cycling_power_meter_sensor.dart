@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/power_meter.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';

@@ -8,10 +8,10 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 
+import '../../persistence/activity.dart';
 import '../../persistence/athlete.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
@@ -22,7 +22,6 @@ import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
-import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -106,7 +105,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
   bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _heartRateMonitorPriority = heartRateMonitorPriorityDefault;
-  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   Activity? _activity;
   bool measuring = false;
   WorkoutState workoutState = WorkoutState.waitingForFirstMove;
@@ -802,7 +800,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       _enableAsserts,
       forDistance: !_firstDistance,
       forCalories: !_firstCalories,
-      forStrokeCount: _showStrokesStridesRevs && !_firstStrokeCount,
+      forStrokeCount: !_firstStrokeCount,
       force: true,
     );
 
@@ -1155,7 +1153,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     // #303
-    if (_showStrokesStridesRevs && (stub.strokeCount == null || stub.strokeCount! <= eps)) {
+    if (stub.strokeCount == null || stub.strokeCount! <= eps) {
       if (stub.preciseCadence != null && stub.preciseCadence! >= eps) {
         _strokeCount += stub.preciseCadence! * dT / 60.0;
       } else if (stub.cadence != null && stub.cadence! > 0) {
@@ -1204,7 +1202,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         _enableAsserts,
         forDistance: !_firstDistance,
         forCalories: !_firstCalories,
-        forStrokeCount: _showStrokesStridesRevs && !_firstStrokeCount,
+        forStrokeCount: !_firstStrokeCount,
       );
     }
 
@@ -1289,8 +1287,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         useHeartRateBasedCalorieCountingDefault;
     _heartRateMonitorPriority =
         prefService.get<bool>(heartRateMonitorPriorityTag) ?? heartRateMonitorPriorityDefault;
-    _showStrokesStridesRevs =
-        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     athlete = Athlete.fromPreferences(prefService);
     useHrBasedCalorieCounting &=
         (athlete.weight > athleteBodyWeightMin && athlete.age > athleteAgeMin);
