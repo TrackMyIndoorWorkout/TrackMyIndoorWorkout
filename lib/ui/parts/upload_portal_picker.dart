@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import '../../persistence/isar/activity.dart';
+
+import '../../persistence/activity.dart';
 import '../../preferences/calculate_gps.dart';
 import '../../upload/constants.dart';
 import '../../upload/strava/strava_status_code.dart';

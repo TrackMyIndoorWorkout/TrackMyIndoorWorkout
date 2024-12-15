@@ -8,7 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:isar/isar.dart';
 
 import '../../export/activity_export.dart';
-import '../../persistence/isar/activity.dart';
+import '../../persistence/activity.dart';
 import 'constants.dart';
 import 'fault.dart';
 import 'strava_status_code.dart';

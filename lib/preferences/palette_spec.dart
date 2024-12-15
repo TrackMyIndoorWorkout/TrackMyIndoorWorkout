@@ -3,11 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
+import '../utils/color_ex.dart';
 import 'metric_spec.dart';
 
 extension ColorEx on Color {
   String toRawString() {
-    return value.toRadixString(16).padLeft(8, '0');
+    return toInt32.toRadixString(16).padLeft(8, '0');
   }
 }
 

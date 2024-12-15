@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
@@ -17,8 +17,8 @@ import '../gadgets/schwinn_x70_hr_sensor.dart';
 import '../gatt/ftms.dart';
 import '../gatt/schwinn_x70.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
-import '../metric_descriptors/six_byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
+import '../metric_descriptors/six_byte_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';

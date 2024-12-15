@@ -1,12 +1,12 @@
 import '../../export/export_target.dart';
 import '../../export/fit/fit_export.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
+import '../../persistence/activity.dart';
+import '../../persistence/db_utils.dart';
 import '../../secret.dart';
 import '../upload_service.dart';
-import 'strava_status_code.dart';
 import 'fault.dart';
 import 'strava.dart';
+import 'strava_status_code.dart';
 
 class StravaService implements UploadService {
   final Strava _strava = Strava(stravaClientId, stravaSecret);

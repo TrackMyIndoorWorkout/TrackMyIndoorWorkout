@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
-import '../persistence/isar/log_entry.dart';
+
+import '../persistence/log_entry.dart';
 import '../preferences/log_level.dart';
 import '../utils/constants.dart';
 
