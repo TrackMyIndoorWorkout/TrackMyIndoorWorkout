@@ -2434,7 +2434,7 @@ class RecordingState extends State<RecordingScreen> {
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toInt32;
+          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toARGB32;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),

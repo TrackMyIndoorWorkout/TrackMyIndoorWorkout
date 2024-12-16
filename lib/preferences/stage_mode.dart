@@ -42,10 +42,10 @@ const onStageStatisticsAlternationPeriodDescription =
 
 const averageChartColor = "Avg. Stat. Color";
 const averageChartColorTag = "average_stat_color";
-final averageChartColorDefault = Colors.deepOrangeAccent.toInt32;
+final averageChartColorDefault = Colors.deepOrangeAccent.toARGB32;
 const averageChartColorDescription = "Color of the average line on the charts.";
 
 const maximumChartColor = "Max. Stat. Color";
 const maximumChartColorTag = "maximum_stat_color";
-final maximumChartColorDefault = Colors.red.toInt32;
+final maximumChartColorDefault = Colors.red.toARGB32;
 const maximumChartColorDescription = "Color of the maximum line on the charts.";
