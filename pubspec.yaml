@@ -24,10 +24,7 @@ dependencies:
   email_validator: ^3.0.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.2
-  file_picker:
-    git:
-      url: https://github.com/abdelaziz-mahdy/flutter_file_picker
-      ref: fix-flutter-3.27-compile-error
+  file_picker: ^8.1.6
   flex_color_scheme: ^8.0.2
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.34.5
