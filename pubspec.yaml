@@ -10,6 +10,7 @@ environment:
   flutter: ">=3.27.0"
 
 dependency_overrides:
+  analyzer: ^7.1.0 # isar community
   collection: ^1.19.1 # Flutter SDK
   path: ^1.9.1 # Flutter SDK
 
@@ -72,7 +73,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^6.11.0
+  analyzer: ^7.1.0
   build_runner: ^2.4.13
   flutter_driver:
     sdk: flutter
