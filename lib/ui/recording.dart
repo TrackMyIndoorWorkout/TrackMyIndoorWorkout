@@ -1138,7 +1138,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
-      Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopSoundEffect();
     }
 
     WakelockPlus.disable();
@@ -1216,7 +1216,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
-      Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopSoundEffect();
     }
 
     setState(() {
@@ -2131,7 +2131,7 @@ class RecordingState extends State<RecordingScreen> {
       } else {
         if (_targetHrAlerting) {
           _hrBeepPeriodTimer?.cancel();
-          Get.find<SoundService>().stopAllSoundEffects();
+          Get.find<SoundService>().stopSoundEffect();
         }
         _targetHrAlerting = false;
       }
