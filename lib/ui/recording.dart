@@ -478,7 +478,7 @@ class RecordingState extends State<RecordingScreen> {
             _statistics[_hr0Index] = _workoutStats.maxHeartRateDisplay.toString();
 
             if (_showResistanceLevel) {
-              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistance.toString();
+              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
             }
           }
         }
