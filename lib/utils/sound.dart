@@ -19,8 +19,7 @@ final Map<SoundEffect, String> _soundAssetPaths = {
 class SoundService {
   late AudioPlayer _audioPlayer;
 
-  final Map<SoundEffect, AssetSource> _soundCache = {
-  };
+  final Map<SoundEffect, AssetSource> _soundCache = {};
   final Map<String, SoundEffect> _soundPreferences = {
     soundEffectBleep: SoundEffect.bleep,
     soundEffectOneTone: SoundEffect.flatBeep,
