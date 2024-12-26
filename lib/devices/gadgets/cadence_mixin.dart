@@ -55,7 +55,7 @@ mixin CadenceMixin {
     final nonNullTime = time ?? 0.0;
     final nonNullRevolutions = revolutions ?? 0;
     if (cadenceData.isNotEmpty) {
-      // Prevent queuing of duplicate or bogus cadence data
+      // Prevent queueing of duplicate or bogus cadence data
       final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
       final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
       if (timeDiff < eps && revDiff < eps) {
