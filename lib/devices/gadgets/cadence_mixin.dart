@@ -58,25 +58,18 @@ mixin CadenceMixin {
       // Prevent queueing of duplicate or bogus cadence data
       final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
       final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
-      if (timeDiff < eps && revDiff < eps) {
-        // The revolution count and time are the same as the recorded
-        // values, so there is no reason to record it.
-        // Update last's timestamp.
+      if (revDiff < eps) {
+        // The revolution count is the same as the recorded
+        // values, so there is no reason to record it:
+        // Just update last's timestamp with the current time.
+        // (Assuming: processing didn't add much time to the recorded time)
         cadenceData.last.timeStamp = DateTime.now();
         if (logLevel >= logLevelInfo) {
+          final timeChangeQualifier = timeDiff < eps ? "same" : "new";
           Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
-              "Skipping duplicate rev count with same time: revDiff = $revDiff ; timeDiff = $timeDiff");
+              "Skipping duplicate rev count with $timeChangeQualifier time: revDiff = $revDiff ; timeDiff = $timeDiff");
         }
-        return;
-      } else if (timeDiff > eps && revDiff < eps) {
-        // 0.0 <= revDiff < eps
-        // The packet time changed but the revolution count is the same,
-        // so there is no reason to record it.  Update last's timestamp.
-        cadenceData.last.timeStamp = DateTime.now();
-        if (logLevel >= logLevelInfo) {
-          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
-              "Skipping duplicate rev count with new time: revDiff = $revDiff ; timeDiff = $timeDiff");
-        }
+
         return;
       } else {
         if (nonNullRevolutions < cadenceData.last.revolutions) {
