@@ -9,7 +9,7 @@ import 'metric_spec.dart';
 
 extension ColorEx on Color {
   String toRawString() {
-    return toInt32.toRadixString(16).padLeft(8, '0');
+    return toARGB32.toRadixString(16).padLeft(8, '0');
   }
 }
 

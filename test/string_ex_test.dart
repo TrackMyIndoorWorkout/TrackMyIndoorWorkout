@@ -27,7 +27,7 @@ void main() {
       const Tuple2("0x12345", "012345"),
       const Tuple2("0x0012345", "012345"),
       const Tuple2("0x000012345", "012345"),
-      Tuple2(Colors.indigo.toInt32.toRadixString(16), "3F51B5"),
+      Tuple2(Colors.indigo.toARGB32.toRadixString(16), "3F51B5"),
     ]) {
       final expected = testPair.item1.rgbString();
       test("${testPair.item1} -> $expected -> ${testPair.item2}", () async {

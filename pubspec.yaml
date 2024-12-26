@@ -7,15 +7,18 @@ isar_version: &isar_version ^3.1.8
 
 environment:
   sdk: ">=3.6.0"
-  flutter: ">=3.27.0"
+  flutter: ">=3.27.1"
 
 dependency_overrides:
+  analyzer: ^7.1.0 # isar community
   collection: ^1.19.1 # Flutter SDK
+  http: ^1.2.2
   path: ^1.9.1 # Flutter SDK
 
 dependencies:
   app_links: ^6.3.3
   assorted_layout_widgets: ^10.0.4
+  audioplayers: ^6.1.0
   collection: ^1.19.1
   datetime_picker_formfield_new: ^2.1.0
   device_info_plus: ^11.2.0
@@ -23,10 +26,7 @@ dependencies:
   email_validator: ^3.0.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.2
-  file_picker:
-    git:
-      url: https://github.com/abdelaziz-mahdy/flutter_file_picker
-      ref: fix-flutter-3.27-compile-error
+  file_picker: ^8.1.6
   flex_color_scheme: ^8.0.2
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.34.5
@@ -39,7 +39,7 @@ dependencies:
   group_button: ^5.3.4
   http: ^1.2.2
   http_parser: ^4.1.1
-  internet_connection_checker_plus: ^2.5.2
+  internet_connection_checker_plus: ^2.6.0
   intl: ^0.19.0
   is_first_run: ^1.0.0
   isar:
@@ -60,20 +60,19 @@ dependencies:
   rxdart: ^0.28.0
   share_files_and_screenshot_widgets: ^1.0.6
   share_plus: ^10.1.3
-  soundpool: ^2.4.1
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^28.1.33
+  syncfusion_flutter_charts: ^28.1.35
   timezone: ^0.10.0
   tuple: ^2.0.2
   url_launcher: ^6.3.1
   vector_math: ^2.1.4
-  wakelock_plus: ^1.2.8
+  wakelock_plus: ^1.2.10
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^6.11.0
-  build_runner: ^2.4.13
+  analyzer: ^7.1.0
+  build_runner: ^2.4.14
   flutter_driver:
     sdk: flutter
   flutter_lints: ^5.0.0
@@ -86,7 +85,7 @@ dev_dependencies:
     hosted: https://pub.isar-community.dev/
   mocktail: ^1.0.4
   mock_data: ^2.0.1
-  yaml: ^3.1.2
+  yaml: ^3.1.3
 
 flutter:
   uses-material-design: true

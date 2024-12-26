@@ -29,8 +29,8 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
   void initState() {
     super.initState();
     _controller = CircleColorPickerController(initialColor: widget.color);
-    _color = Color(widget.color.toInt32);
-    _initialColor = Color(widget.color.toInt32);
+    _color = Color(widget.color.toARGB32);
+    _initialColor = Color(widget.color.toARGB32);
     _textStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),

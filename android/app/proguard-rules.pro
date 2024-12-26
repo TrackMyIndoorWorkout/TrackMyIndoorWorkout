@@ -26,6 +26,8 @@
 # This is from iterating over GeneratedPLuginRegistrant.java [
 -keep class com.llfbandit.app_links.** { *; }
 -keepclassmembernames class com.llfbandit.app_links.** { *; }
+-keep class xyz.luan.audioplayers.** { *; }
+-keepclassmembernames class xyz.luan.audioplayers.** { *; }
 -keep class dev.fluttercommunity.plus.connectivity.** { *; }
 -keepclassmembernames class dev.fluttercommunity.plus.connectivity.** { *; }
 -keep class dev.fluttercommunity.plus.device_info.** { *; }
@@ -52,8 +54,6 @@
 -keepclassmembernames class dev.fluttercommunity.plus.share.** { *; }
 -keep class io.flutter.plugins.sharedpreferences.** { *; }
 -keepclassmembernames class io.flutter.plugins.sharedpreferences.** { *; }
--keep class pl.ukaszapps.soundpool.** { *; }
--keepclassmembernames class pl.ukaszapps.soundpool.** { *; }
 -keep class io.flutter.plugins.urllauncher.** { *; }
 -keepclassmembernames class io.flutter.plugins.urllauncher.** { *; }
 -keep class dev.fluttercommunity.plus.wakelock.** { *; }
