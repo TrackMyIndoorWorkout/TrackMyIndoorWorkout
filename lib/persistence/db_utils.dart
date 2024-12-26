@@ -385,4 +385,47 @@ class DbUtils with PowerSpeedMixin {
 
     return true;
   }
+
+  Future<bool> splitActivity(Activity activity, int minutesSplitPoint, int targetId) async {
+    // Assumes empty target activity
+    final targetRecords = await getRecords(targetId);
+    if (targetRecords.isNotEmpty) {
+      return false;
+    }
+
+    final target = database.activitys.getSync(targetId);
+    if (target == null) {
+      return false;
+      // Establish new Activity instead of exiting
+    }
+
+    final splitPoint = Duration(minutes: minutesSplitPoint);
+
+    final records = await getRecords(activity.id);
+    if (records.isEmpty) {
+      return false;
+    }
+
+    final watermark = activity.start.add(splitPoint);
+    database.writeTxnSync(() {
+      for (final record in records) {
+        if (record.timeStamp != null && record.timeStamp!.compareTo(watermark) > 0) {
+          record.activityId = target.id;
+          database.records.putSync(record);
+        }
+      }
+    });
+
+    if (activity.end != null) {
+      activity.end = activity.end!.add(-splitPoint);
+    }
+
+    updateActivity(activity);
+
+    recalculateCumulative(activity, true);
+
+    recalculateCumulative(target, true);
+
+    return true;
+  }
 }

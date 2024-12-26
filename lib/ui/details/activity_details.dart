@@ -643,6 +643,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
             // await DbUtils().offsetActivity(widget.activity, 1440);
 
+            // await DbUtils().splitActivity(widget.activity, 29, 87);
+
             // widget.activity.clearSuuntoUpload();
             // DbUtils().updateActivity(widget.activity);
 
