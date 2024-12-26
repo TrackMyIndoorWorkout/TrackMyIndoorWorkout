@@ -1,32 +1,35 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+
+import '../../persistence/activity.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
 import '../../preferences/activity_ui.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
+import '../../preferences/recalculate_more.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/statistics_accumulator.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
+import '../about.dart';
 import '../models/display_record.dart';
 import '../models/histogram_data.dart';
 import '../models/measurement_counter.dart';
 import '../models/tile_configuration.dart';
-import '../about.dart';
 import 'activity_detail_graphs.dart';
 import 'activity_detail_row_fit_horizontal.dart';
 import 'activity_detail_row_w_unit.dart';
@@ -56,6 +59,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _calculateMedian = activityDetailsMedianDisplayDefault;
+  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   List<MetricSpec> _preferencesSpecs = [];
   PaletteSpec? _paletteSpec;
 
@@ -339,6 +343,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
         activityDetailsMedianDisplayDefault;
+    _showStrokesStridesRevs =
+        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
@@ -594,6 +600,20 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       ),
     ]);
 
+    if (widget.activity.strides > 0 || _showStrokesStridesRevs) {
+      header.add(
+        ActivityDetailRowWithUnit(
+          themeManager: _themeManager,
+          icon: Icons.numbers,
+          iconSize: _sizeDefault,
+          text: widget.activity.strides.toString(),
+          textStyle: _measurementStyle,
+          unitText: "#",
+          unitStyle: _unitStyle,
+        ),
+      );
+    }
+
     final dateString = DateFormat.Md().format(widget.activity.start);
     final timeString = DateFormat.Hm().format(widget.activity.start);
     final title = "$dateString $timeString";
@@ -615,12 +635,28 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
             // await DbUtils().finalizeActivity(widget.activity);
 
-            // await DbUtils().recalculateCumulative(widget.activity);
+            await DbUtils().bridgeDataGaps(widget.activity);
+            final prefService = Get.find<BasePrefService>();
+            final recalculateMore =
+                prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
+            await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
 
-            widget.activity.clearSuuntoUpload();
-            DbUtils().updateActivity(widget.activity);
+            // await DbUtils().offsetActivity(widget.activity, 1440);
 
-            // await DbUtils().appendActivities(438, 440);
+            // widget.activity.clearSuuntoUpload();
+            // DbUtils().updateActivity(widget.activity);
+
+            // // KPro
+            // await DbUtils().appendActivities(30, 31);
+            // await DbUtils().appendActivities(30, 32);
+            // await DbUtils().appendActivities(30, 33);
+            // // PSCP
+            // await DbUtils().appendActivities(34, 35);
+            // await DbUtils().appendActivities(34, 36);
+            // await DbUtils().appendActivities(34, 37);
+            // await DbUtils().appendActivities(34, 38);
+            // await DbUtils().appendActivities(34, 39);
+            // await DbUtils().appendActivities(34, 40);
           },
         ),
       );

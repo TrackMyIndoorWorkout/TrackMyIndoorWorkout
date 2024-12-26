@@ -5,7 +5,7 @@ import 'package:isar/isar.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cycling_power_meter_sensor.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -24,11 +24,12 @@ class CadenceTestData {
   final int queueLength;
   final int cadence;
 
-  const CadenceTestData(
-      {required this.data,
-      required this.timeStamp,
-      required this.queueLength,
-      required this.cadence});
+  const CadenceTestData({
+    required this.data,
+    required this.timeStamp,
+    required this.queueLength,
+    required this.cadence,
+  });
 }
 
 class MockBluetoothDevice extends Mock implements BluetoothDevice {}
@@ -66,6 +67,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: 228.0,
         ),
       ),
     ]) {
@@ -92,10 +94,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, closeTo(testPair.record.strokeCount!, eps));
       });
     }
   });

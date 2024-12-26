@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 import 'utils.dart';
@@ -36,8 +36,8 @@ void main() {
           expect(merged.pace, closeTo(rndRecord.pace!, eps));
           expect(merged.cadence, rndRecord.cadence);
           expect(merged.heartRate, rndRecord.heartRate!);
-          expect(merged.caloriesPerMinute, null);
-          expect(merged.caloriesPerHour, null);
+          expect(merged.caloriesPerMinute, rndRecord.caloriesPerMinute);
+          expect(merged.caloriesPerHour, rndRecord.caloriesPerHour);
         });
       }
     }

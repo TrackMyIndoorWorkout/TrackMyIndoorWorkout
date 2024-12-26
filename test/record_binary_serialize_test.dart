@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -35,6 +35,7 @@ void main() {
     expect(bike.timeMetric, isNotNull);
     expect(bike.caloriesPerHourMetric, isNotNull);
     expect(bike.caloriesPerMinuteMetric, isNotNull);
+    expect(bike.strokeCountMetric, null);
     expect(bike.heartRateByteIndex, 16);
   });
 
@@ -54,6 +55,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: 0.0,
           caloriesPerMinute: 0.0,
+          strokeCount: null,
         ),
       ),
     ]) {
@@ -80,10 +82,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
 
         // Test 2: idempotent
         expect(listEquals(testPair.data, testPair.record.binarySerialize()), true);
@@ -101,7 +103,6 @@ void main() {
     ergometer.processFlag(flag, 20);
 
     expect(ergometer.strokeRateMetric, isNotNull);
-    expect(ergometer.strokeCountMetric, isNotNull);
     expect(ergometer.speedMetric, null);
     expect(ergometer.paceMetric, isNotNull);
     expect(ergometer.cadenceMetric, null);
@@ -111,6 +112,7 @@ void main() {
     expect(ergometer.timeMetric, isNotNull);
     expect(ergometer.caloriesPerHourMetric, isNotNull);
     expect(ergometer.caloriesPerMinuteMetric, isNotNull);
+    expect(ergometer.strokeCountMetric, isNotNull);
     expect(ergometer.heartRateByteIndex, 17);
   });
 
@@ -125,12 +127,12 @@ void main() {
           power: 805,
           speed: null,
           cadence: 108,
-          strokeCount: 6000.0,
           heartRate: 155,
           pace: 630.0,
           sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
           caloriesPerMinute: 0.0,
+          strokeCount: 6000.0,
         ),
       ),
     ]) {
@@ -157,10 +159,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
 
         // Test 2: idempotent
         expect(listEquals(testPair.data, testPair.record.binarySerialize()), true);

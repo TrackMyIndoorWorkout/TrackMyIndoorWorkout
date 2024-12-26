@@ -1,3 +1,33 @@
+## 1.1.158
+* Crucial Flutter Blue Plus plugin updates, most importantly permission related
+* Migrate Under Armour API to MapMyFitness (Outside bought UA), Nov. 15 deadline!
+* Upgrade numerous plugins
+
+## 1.1.157
+* Life Fitness machines support beta version (athlete needs to let the app initialize the machine before moving)
+* YOSUDA rower support (not standard advertisement data)
+* Correcting default heart rate zones (the three top heart rate boundary, only new installs)
+* Workaround for Strava URL removal (see https://road.cc/content/news/strava-no-longer-allows-you-add-links-310685)
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
+## 1.1.156
+* Life Fitness machines support alpha version
+* FTMS Stair Climber and Step Climber support alpha version (no GPS)
+* Optionally display steps / revolutions / strokes
+* Don't display avg and max on the graphs if they are too far from the time window min/max
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
+## 1.1.155
+* Optionally displaying resistance level (no persistence)
+* Full data export / import or debug log export won't cause OOM (out of memory exception, causing the app to crash)
+* Poll style fitness machines won't cause ANR (application non responding) when the machine disconnects abruptly
+* Upgrade Flutter to channel beta 3.22.0-0.3.pre, Dart 3.4.0-282.3.beta
+* Upgrade numerous plugins many times
+* Phase out uni_links in favor of app_links
+* Start transitioning to new packages (share_files_and_screenshot_widgets -> share_plus)
+
 ## 1.1.154
 * Using Bluetooth appearance data to tell apart cycling speed and cadence sensors,
   power meters, heart rate monitors. Made possible by contributing to Flutter Blue Plus

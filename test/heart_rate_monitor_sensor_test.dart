@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -62,6 +62,7 @@ void main() {
           sport: ActivityType.workout,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
     ]) {
@@ -88,10 +89,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });
@@ -126,6 +127,7 @@ void main() {
         sport: ActivityType.workout,
         caloriesPerHour: null,
         caloriesPerMinute: null,
+        strokeCount: null,
       );
 
       final sum = moreTestData.fold<int>(0, (a, b) => a + b);
@@ -151,10 +153,10 @@ void main() {
         expect(record.heartRate, expectedRecord.heartRate);
         expect(record.elapsedMillis, expectedRecord.elapsedMillis);
         expect(record.pace, expectedRecord.pace);
-        expect(record.strokeCount, expectedRecord.strokeCount);
         expect(record.sport, expectedRecord.sport);
         expect(record.caloriesPerHour, expectedRecord.caloriesPerHour);
         expect(record.caloriesPerMinute, expectedRecord.caloriesPerMinute);
+        expect(record.strokeCount, expectedRecord.strokeCount);
       });
     }
   });
@@ -219,10 +221,10 @@ void main() {
         expect(record.heartRate, expectedRecord.heartRate);
         expect(record.elapsedMillis, expectedRecord.elapsedMillis);
         expect(record.pace, expectedRecord.pace);
-        expect(record.strokeCount, expectedRecord.strokeCount);
         expect(record.sport, expectedRecord.sport);
         expect(record.caloriesPerHour, expectedRecord.caloriesPerHour);
         expect(record.caloriesPerMinute, expectedRecord.caloriesPerMinute);
+        expect(record.strokeCount, expectedRecord.strokeCount);
       });
     }
   });

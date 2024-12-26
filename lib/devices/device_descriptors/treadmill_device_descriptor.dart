@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/guid_ex.dart';
 import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
@@ -23,6 +23,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     required super.manufacturerFitId,
     required super.model,
     super.heartRateByteIndex,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,
@@ -84,7 +85,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
-      resistance: getResistance(data),
+      resistance: getResistance(data)?.toInt(),
     );
   }
 

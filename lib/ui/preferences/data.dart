@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
+import '../../persistence/db_utils.dart';
 import '../../preferences/activity_upload_description.dart';
 import '../../preferences/activity_upload_title.dart';
 import '../../preferences/audio_volume.dart';
@@ -14,7 +16,6 @@ import '../../preferences/sound_effects.dart';
 import '../../preferences/stationary_workout.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../preferences/use_long_track.dart';
-import '../../persistence/isar/db_utils.dart';
 import '../../utils/sound.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
@@ -90,10 +90,10 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
       speed = min(wheelCadence.computeCadence(), 1024.0) * 60.0 * circumference / 1000.0;
     }
 
-    int? crankCadence;
+    double? crankCadence;
     if (crankRevolutionMetric != null) {
       addCadenceData(getCrankRevolutionTime(data), getCrankRevolutions(data));
-      crankCadence = min(computeCadence().toInt(), maxByte);
+      crankCadence = min(computeCadence(), maxByte * 2.0);
     }
 
     return RecordWithSport(
@@ -101,6 +101,8 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
       distance: distance,
       speed: speed,
       cadence: crankCadence?.toInt(),
+      preciseCadence: crankCadence,
+      strokeCount: getCrankRevolutions(data),
       sport: sport,
     );
   }

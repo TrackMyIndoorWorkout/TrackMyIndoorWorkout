@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 void main() {
@@ -20,9 +20,9 @@ void main() {
         expect(blank.elapsedMillis, null);
         expect(blank.sport, sport);
         expect(blank.pace, null);
-        expect(blank.strokeCount, null);
         expect(blank.caloriesPerHour, null);
         expect(blank.caloriesPerMinute, null);
+        expect(blank.strokeCount, null);
       });
     }
   });
@@ -42,9 +42,9 @@ void main() {
         expect(blank.elapsedMillis, 0);
         expect(blank.sport, sport);
         expect(blank.pace, sport == ActivityType.ride ? null : closeTo(0.0, eps));
-        expect(blank.strokeCount, null);
-        expect(blank.caloriesPerHour, null);
-        expect(blank.caloriesPerMinute, null);
+        expect(blank.caloriesPerHour, closeTo(0.0, eps));
+        expect(blank.caloriesPerMinute, closeTo(0.0, eps));
+        expect(blank.strokeCount, closeTo(0.0, eps));
       });
     }
   });
@@ -69,9 +69,9 @@ void main() {
         expect(random.elapsedMillis, null);
         expect(random.sport, sport);
         expect(random.pace, null);
-        expect(random.strokeCount, null);
         expect(random.caloriesPerHour, null);
         expect(random.caloriesPerMinute, null);
+        expect(random.strokeCount, null);
       });
     }
   });

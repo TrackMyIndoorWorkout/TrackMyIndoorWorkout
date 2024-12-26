@@ -2,18 +2,18 @@ import 'package:collection/collection.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../export/fit/fit_manufacturer.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../preferences/log_level.dart';
 // import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
+import '../device_fourcc.dart';
 import '../gadgets/c2_additional_status1.dart';
 import '../gadgets/c2_additional_status2.dart';
 import '../gadgets/c2_additional_stroke_data.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/concept2.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
-import '../device_fourcc.dart';
 import 'fixed_layout_device_descriptor.dart';
 
 class Concept2Erg extends FixedLayoutDeviceDescriptor {

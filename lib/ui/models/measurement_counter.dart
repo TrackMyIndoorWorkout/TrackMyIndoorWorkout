@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../preferences/speed_spec.dart';
 import '../../preferences/sport_spec.dart';
 import '../../utils/constants.dart';

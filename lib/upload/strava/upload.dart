@@ -6,12 +6,12 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:isar/isar.dart';
-import '../../export/activity_export.dart';
-import '../../persistence/isar/activity.dart';
 
+import '../../export/activity_export.dart';
+import '../../persistence/activity.dart';
 import 'constants.dart';
-import 'strava_status_code.dart';
 import 'fault.dart';
+import 'strava_status_code.dart';
 import 'strava_status_text.dart';
 import 'strava_token.dart';
 import 'upload_activity.dart';
@@ -38,9 +38,9 @@ mixin Upload {
     request.fields['data_type'] = exporter.fileExtension(true);
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
-    request.fields['name'] = activity.getTitle(false);
+    request.fields['name'] = activity.getTitle(true);
     request.fields['external_id'] = 'strava_flutter';
-    request.fields['description'] = activity.getDescription(false);
+    request.fields['description'] = activity.getDescription(true);
 
     if (!Get.isRegistered<StravaToken>()) {
       debugPrint('Token not yet known');

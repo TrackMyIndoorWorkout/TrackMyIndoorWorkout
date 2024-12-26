@@ -1,4 +1,4 @@
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../metric_descriptors/metric_descriptor.dart';
 
@@ -18,12 +18,13 @@ abstract class DataHandler {
   MetricDescriptor? speedMetric;
   MetricDescriptor? cadenceMetric;
   MetricDescriptor? distanceMetric;
-  MetricDescriptor? resistanceMetric;
   MetricDescriptor? powerMetric;
   MetricDescriptor? caloriesMetric;
   MetricDescriptor? timeMetric;
   MetricDescriptor? caloriesPerHourMetric;
   MetricDescriptor? caloriesPerMinuteMetric;
+  MetricDescriptor? resistanceMetric;
+  MetricDescriptor? strokeCountMetric;
 
   DataHandler({
     this.tag = "DATA_HANDLER",
@@ -37,6 +38,7 @@ abstract class DataHandler {
     this.cadenceMetric,
     this.distanceMetric,
     this.resistanceMetric,
+    this.strokeCountMetric,
   });
 
   DataHandler clone();
@@ -113,10 +115,6 @@ abstract class DataHandler {
     return distanceMetric?.getMeasurementValue(data);
   }
 
-  double? getResistance(List<int> data) {
-    return resistanceMetric?.getMeasurementValue(data);
-  }
-
   double? getPower(List<int> data) {
     return powerMetric?.getMeasurementValue(data);
   }
@@ -131,6 +129,14 @@ abstract class DataHandler {
 
   double? getCaloriesPerMinute(List<int> data) {
     return caloriesPerMinuteMetric?.getMeasurementValue(data);
+  }
+
+  double? getResistance(List<int> data) {
+    return resistanceMetric?.getMeasurementValue(data);
+  }
+
+  double? getStrokeCount(List<int> data) {
+    return strokeCountMetric?.getMeasurementValue(data);
   }
 
   int? getHeartRate(List<int> data) {
@@ -153,5 +159,6 @@ abstract class DataHandler {
     caloriesPerHourMetric = null;
     caloriesPerMinuteMetric = null;
     resistanceMetric = null;
+    strokeCountMetric = null;
   }
 }

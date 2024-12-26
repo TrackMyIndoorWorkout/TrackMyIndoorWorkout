@@ -4,8 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:isar/isar.dart';
+
 import '../../export/activity_export.dart';
-import '../../persistence/isar/activity.dart';
+import '../../persistence/activity.dart';
 import '../../secret.dart';
 import 'constants.dart';
 import 'suunto_token.dart';

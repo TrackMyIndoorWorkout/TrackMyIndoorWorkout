@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/c2_additional_status2.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -71,6 +71,7 @@ void main() {
         sport: ActivityType.rowing,
         caloriesPerHour: null,
         caloriesPerMinute: null,
+        strokeCount: null,
       );
 
       final sum = testData.fold<int>(0, (a, b) => a + b);
@@ -92,10 +93,10 @@ void main() {
         expect(record.heartRate, expectedRecord.heartRate);
         expect(record.elapsedMillis, expectedRecord.elapsedMillis);
         expect(record.pace, null);
-        expect(record.strokeCount, expectedRecord.strokeCount);
         expect(record.sport, expectedRecord.sport);
         expect(record.caloriesPerHour, expectedRecord.caloriesPerHour);
         expect(record.caloriesPerMinute, expectedRecord.caloriesPerMinute);
+        expect(record.strokeCount, expectedRecord.strokeCount);
       });
     }
   });

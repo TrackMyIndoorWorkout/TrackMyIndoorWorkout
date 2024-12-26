@@ -1,22 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_archive/flutter_archive.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
-import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:share_plus/share_plus.dart';
 
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/calorie_tune.dart';
-import '../../persistence/isar/device_usage.dart';
-import '../../persistence/isar/log_entry.dart';
-import '../../persistence/isar/power_tune.dart';
-import '../../persistence/isar/record.dart';
-import '../../persistence/isar/workout_summary.dart';
+import '../../persistence/activity.dart';
+import '../../persistence/calorie_tune.dart';
+import '../../persistence/device_usage.dart';
+import '../../persistence/log_entry.dart';
+import '../../persistence/power_tune.dart';
+import '../../persistence/record.dart';
+import '../../persistence/workout_summary.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
@@ -24,7 +26,9 @@ import '../../preferences/database_location.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/log_level.dart';
-import '../../utils/export.dart';
+import '../../preferences/recalculate_more.dart';
+import '../../preferences/show_performance_overlay.dart';
+import '../../utils/date_time_ex.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import '../parts/pick_directory.dart';
@@ -151,17 +155,37 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return;
           }
 
-          final fileBytes = await Logging().exportLogs();
-          final isoDateTime = DateTime.now().toUtc().toIso8601String();
-          final title = "Debug Logs $isoDateTime";
-          final fileName = "DebugLogs${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.txt.gz";
-          ShareFilesAndScreenshotWidgets().shareFile(
-            title,
-            fileName,
-            Uint8List.fromList(fileBytes),
-            'application/x-gzip',
-            text: title,
-          );
+          final Directory tempDir = await getTemporaryDirectory();
+          final fileNameStub = "DebugLogs_${DateTimeEx.namePart}";
+          final fileName = "$fileNameStub.csv";
+          final logFilePath = "${tempDir.path}/$fileName";
+          final logFile = await File(logFilePath).create();
+          await Logging().exportLogs(logFile);
+
+          final prefService = Get.find<BasePrefService>();
+          final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+          const logTag = "LOG_EXPORT";
+          final zipFilePath = "${tempDir.path}/$fileNameStub.zip";
+          debugPrint("zip file: $zipFilePath");
+          final zipFile = await File(zipFilePath).create();
+          bool zipped = false;
+          try {
+            await ZipFile.createFromFiles(sourceDir: tempDir, files: [logFile], zipFile: zipFile);
+            zipped = true;
+          } on Exception catch (e, stack) {
+            Logging().logException(
+                logLevel, logTag, "ZipFile.createFromFiles", "error during creation", e, stack);
+          }
+
+          await logFile.delete();
+          if (!zipped) {
+            Get.snackbar("Log export failed", "Unsuccessful zipping");
+            return;
+          }
+
+          final title = "Debug Logs ${DateTimeEx.isoDateTime}";
+          final result = await Share.shareXFiles([XFile(zipFile.path)], text: title);
+          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
         },
         child: const Text("Export Logs..."),
       ),
@@ -211,73 +235,38 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           Get.snackbar("Export started", "In progress...");
 
           final database = Get.find<Isar>();
-          final allBytes = BytesBuilder(copy: false);
-
-          await database.txn(() async {
-            await database.records.where().exportJsonRaw((recordBytes) {
-              allBytes.add(lengthToBytes(recordBytes.length));
-              allBytes.add(recordBytes);
-            });
-          });
-
-          await database.txn(() async {
-            await database.activitys.where().exportJsonRaw((activityBytes) {
-              allBytes.add(lengthToBytes(activityBytes.length));
-              allBytes.add(activityBytes);
-            });
-          });
-
-          await database.txn(() async {
-            await database.logEntrys.where().exportJsonRaw((logBytes) {
-              allBytes.add(lengthToBytes(logBytes.length));
-              allBytes.add(logBytes);
-            });
-          });
-
-          await database.txn(() async {
-            await database.workoutSummarys.where().exportJsonRaw((workoutBytes) {
-              allBytes.add(lengthToBytes(workoutBytes.length));
-              allBytes.add(workoutBytes);
-            });
-          });
-
-          await database.txn(() async {
-            await database.powerTunes.where().exportJsonRaw((powerBytes) {
-              allBytes.add(lengthToBytes(powerBytes.length));
-              allBytes.add(powerBytes);
-            });
-          });
-
-          await database.txn(() async {
-            await database.deviceUsages.where().exportJsonRaw((deviceBytes) {
-              allBytes.add(lengthToBytes(deviceBytes.length));
-              allBytes.add(deviceBytes);
-            });
-          });
-
-          await database.txn(() async {
-            await database.calorieTunes.where().exportJsonRaw((calorieBytes) {
-              allBytes.add(lengthToBytes(calorieBytes.length));
-              allBytes.add(calorieBytes);
-            });
-          });
-
+          final Directory tempDir = await getTemporaryDirectory();
+          final databaseFilePath = "${tempDir.path}/${Isar.defaultName}.isar";
+          await database.copyToFile(databaseFilePath);
+          final databaseFile = await File(databaseFilePath).create();
+          final List<File> files = [databaseFile];
           final prefService = Get.find<BasePrefService>();
           final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
-          allBytes.add(lengthToBytes(settingsBytes.length));
-          allBytes.add(settingsBytes);
+          final settingsFile = await File("${tempDir.path}/preferences.json").create();
+          files.add(await settingsFile.writeAsBytes(settingsBytes, flush: true));
+          final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+          const logTag = "DATA_EXPORT";
+          final zipFilePath = "${tempDir.path}/DataExport_${DateTimeEx.namePart}.zip";
+          debugPrint("zip file: $zipFilePath");
+          final zipFile = await File(zipFilePath).create();
+          bool zipped = false;
+          try {
+            await ZipFile.createFromFiles(sourceDir: tempDir, files: files, zipFile: zipFile);
+            zipped = true;
+          } on Exception catch (e, stack) {
+            Logging().logException(
+                logLevel, logTag, "ZipFile.createFromFiles", "error during creation", e, stack);
+          }
 
-          final compressedBytes = GZipCodec(gzip: true).encode(allBytes.toBytes());
-          final isoDateTime = DateTime.now().toUtc().toIso8601String();
-          final title = "Data Export $isoDateTime";
-          final fileName = "DataExport${isoDateTime.replaceAll(RegExp(r'[^\w\s]+'), '')}.bin.gz";
-          ShareFilesAndScreenshotWidgets().shareFile(
-            title,
-            fileName,
-            Uint8List.fromList(compressedBytes),
-            'application/x-gzip',
-            text: title,
-          );
+          await settingsFile.delete();
+          await databaseFile.delete();
+          if (!zipped) {
+            Get.snackbar("Export failed", "Unsuccessful zipping");
+            return;
+          }
+
+          final result = await Share.shareXFiles([XFile(zipFilePath)], text: "Exported DB");
+          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
         },
         child: const Text(dataExport),
       ),
@@ -287,101 +276,71 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           if (result != null && result.files.single.path != null) {
             Get.snackbar("Import started", "In progress...");
 
-            final file = File(result.files.single.path!);
-            final compressedContents = await file.readAsBytes();
-            final contents = GZipCodec(gzip: true).decode(compressedContents);
+            final zipFilePath = result.files.single.path;
+            if (zipFilePath == null) {
+              Get.snackbar("Import failed", "No file selected?");
+              return;
+            }
+
+            if (zipFilePath.endsWith(".bin.gz")) {
+              Get.snackbar("Old export format",
+                  "Please upgrade the app on the source device and export again");
+              return;
+            }
+
             final database = Get.find<Isar>();
-
-            var skip = 0;
-            final recordLength = lengthBytesToInt(contents.take(4).toList(growable: false));
-            skip += 4;
-            if (recordLength > 2) {
-              final recordBytes = Uint8List.fromList(
-                  contents.skip(skip).take(recordLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.records.importJsonRaw(recordBytes);
-              });
+            final databasePath = database.path;
+            final databaseDirectory = database.directory;
+            if (databasePath == null || databaseDirectory == null) {
+              Get.snackbar("Import failed", "Cannot locate target database file");
+              return;
             }
 
-            skip += recordLength;
-            final activityLength =
-                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            if (activityLength > 2) {
-              final activityBytes = Uint8List.fromList(
-                  contents.skip(skip).take(activityLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.activitys.importJsonRaw(activityBytes);
-              });
-            }
-
-            skip += activityLength;
-            final logLength = lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            if (logLength > 2) {
-              final logBytes =
-                  Uint8List.fromList(contents.skip(skip).take(logLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.logEntrys.importJsonRaw(logBytes);
-              });
-            }
-
-            skip += logLength;
-            final workoutLength =
-                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            if (workoutLength > 2) {
-              final workoutBytes = Uint8List.fromList(
-                  contents.skip(skip).take(workoutLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.workoutSummarys.importJsonRaw(workoutBytes);
-              });
-            }
-
-            skip += workoutLength;
-            final powerLength =
-                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            if (powerLength > 2) {
-              final powerBytes =
-                  Uint8List.fromList(contents.skip(skip).take(powerLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.powerTunes.importJsonRaw(powerBytes);
-              });
-            }
-
-            skip += powerLength;
-            final deviceLength =
-                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            if (deviceLength > 2) {
-              final deviceBytes = Uint8List.fromList(
-                  contents.skip(skip).take(deviceLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.deviceUsages.importJsonRaw(deviceBytes);
-              });
-            }
-
-            skip += deviceLength;
-            final calorieLength =
-                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            if (calorieLength > 2) {
-              final calorieBytes = Uint8List.fromList(
-                  contents.skip(skip).take(calorieLength).toList(growable: false));
-              await database.writeTxn(() async {
-                await database.calorieTunes.importJsonRaw(calorieBytes);
-              });
-            }
-
-            skip += calorieLength;
-            final settingsLength =
-                lengthBytesToInt(contents.skip(skip).take(4).toList(growable: false));
-            skip += 4;
-            final settingsBytes = Uint8List.fromList(
-                contents.skip(skip).take(settingsLength).toList(growable: false));
-            final settingsJson = jsonDecode(utf8.decode(settingsBytes));
             final prefService = Get.find<BasePrefService>();
+            final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+            const logTag = "DATA_IMPORT";
+            final zipFile = File(zipFilePath);
+            final Directory tempDir = await getTemporaryDirectory();
+            try {
+              ZipFile.extractToDirectory(zipFile: zipFile, destinationDir: tempDir);
+            } on Exception catch (e, stack) {
+              Logging().logException(logLevel, logTag, "ZipFile.extractToDirectory",
+                  "error during extraction", e, stack);
+            }
+
+            final sourceDatabaseFilePath = "${tempDir.path}/${Isar.defaultName}.isar";
+            database.close(deleteFromDisk: true);
+            final sourceDatabaseFile = File(sourceDatabaseFilePath);
+            File? newDatabaseFile;
+            // https://stackoverflow.com/questions/54692763/flutter-how-to-move-file
+            try {
+              // prefer using rename as it is probably faster
+              newDatabaseFile = await sourceDatabaseFile.rename(databasePath);
+            } on FileSystemException catch (e) {
+              // if rename fails, (probably because they are on different file systems)
+              // copy the source file and then delete it
+              debugPrint(e.toString());
+              newDatabaseFile = await sourceDatabaseFile.copy(databasePath);
+              await sourceDatabaseFile.delete();
+            }
+
+            debugPrint(newDatabaseFile.path);
+            final databaseFileName = databasePath.split("/").last;
+            await Get.delete<Isar>(force: true);
+            final isar = await Isar.open([
+              ActivitySchema,
+              CalorieTuneSchema,
+              DeviceUsageSchema,
+              LogEntrySchema,
+              PowerTuneSchema,
+              RecordSchema,
+              WorkoutSummarySchema,
+            ], directory: databaseDirectory, name: databaseFileName);
+            Get.put<Isar>(isar, permanent: true);
+
+            final settingsFile = File("${tempDir.path}/preferences.json");
+            final settingsString = await settingsFile.readAsString();
+            final settingsJson = jsonDecode(settingsString);
             prefService.fromMap(settingsJson);
 
             Get.snackbar("Import finished", "Success!!");
@@ -390,6 +349,12 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         child: const Text(dataImport),
       ),
     ];
+
+    expertPreferences.add(const PrefCheckbox(
+      title: Text(showPerformanceOverlay),
+      subtitle: Text(showPerformanceOverlayDescription),
+      pref: showPerformanceOverlayTag,
+    ));
 
     if (kDebugMode) {
       expertPreferences.add(const PrefCheckbox(
@@ -401,6 +366,11 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(enableAsserts),
         subtitle: Text(enableAssertsDescription),
         pref: enableAssertsTag,
+      ));
+      expertPreferences.add(const PrefCheckbox(
+        title: Text(recalculateMore),
+        subtitle: Text(recalculateMoreDescription),
+        pref: recalculateMoreTag,
       ));
     }
 

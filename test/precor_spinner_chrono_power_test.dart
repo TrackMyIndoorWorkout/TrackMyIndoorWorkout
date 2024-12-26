@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -33,6 +33,7 @@ void main() {
     expect(bike.timeMetric, isNotNull);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.strokeCountMetric, null);
   });
 
   // 0th flag: 83 = 0101 0011 (so Flag 1 and Flag 2 present)
@@ -54,6 +55,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -70,6 +72,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -86,6 +89,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -102,6 +106,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -118,6 +123,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -134,6 +140,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -150,6 +157,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -166,6 +174,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -182,6 +191,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -198,6 +208,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
     ]) {
@@ -221,10 +232,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

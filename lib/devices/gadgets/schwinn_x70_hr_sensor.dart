@@ -1,4 +1,4 @@
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/schwinn_x70.dart';
 import 'complex_sensor.dart';

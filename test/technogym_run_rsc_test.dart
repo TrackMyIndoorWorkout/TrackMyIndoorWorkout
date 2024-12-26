@@ -6,7 +6,7 @@ import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descr
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -57,6 +57,7 @@ void main() {
         sport: ActivityType.run,
         caloriesPerHour: null,
         caloriesPerMinute: null,
+        strokeCount: null,
       );
 
       final sum = sample.fold<int>(0, (a, b) => a + b);
@@ -82,10 +83,10 @@ void main() {
         expect(record.heartRate, expected.heartRate);
         expect(record.elapsedMillis, expected.elapsedMillis);
         expect(record.pace, expected.pace);
-        expect(record.strokeCount, expected.strokeCount);
         expect(record.sport, expected.sport);
         expect(record.caloriesPerHour, expected.caloriesPerHour);
         expect(record.caloriesPerMinute, expected.caloriesPerMinute);
+        expect(record.strokeCount, expected.strokeCount);
       });
     }
   });

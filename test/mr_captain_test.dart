@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/mr_captain_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -49,7 +49,6 @@ void main() {
     rower.processFlag(flag, 20);
 
     expect(rower.strokeRateMetric, isNotNull);
-    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.paceMetric, isNotNull);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
@@ -59,6 +58,7 @@ void main() {
     expect(rower.timeMetric, null);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
+    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.heartRateByteIndex, 19);
   });
 
@@ -84,7 +84,6 @@ void main() {
     rower.processFlag(flag, 17);
 
     expect(rower.strokeRateMetric, isNotNull);
-    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.paceMetric, isNotNull);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
@@ -94,6 +93,7 @@ void main() {
     expect(rower.timeMetric, isNotNull);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull);
+    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.heartRateByteIndex, null);
   });
 
@@ -108,12 +108,12 @@ void main() {
           power: 0,
           speed: null,
           cadence: 0,
-          strokeCount: 0.0,
           heartRate: 0,
           pace: 0.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 0.0,
           caloriesPerMinute: 0.0,
+          strokeCount: 0.0,
         ),
       ),
       TestPair(
@@ -125,12 +125,12 @@ void main() {
           power: 5,
           speed: null,
           cadence: 1,
-          strokeCount: 1.0,
           heartRate: 0,
           pace: 6000.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 0.0,
           caloriesPerMinute: 18.0,
+          strokeCount: 1.0,
         ),
       ),
       TestPair(
@@ -142,12 +142,12 @@ void main() {
           power: 350,
           speed: null,
           cadence: 24,
-          strokeCount: 2.0,
           heartRate: 0,
           pace: 209.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 514.0,
           caloriesPerMinute: 22.0,
+          strokeCount: 2.0,
         ),
       ),
       TestPair(
@@ -159,12 +159,12 @@ void main() {
           power: 600,
           speed: null,
           cadence: 17,
-          strokeCount: 3.0,
           heartRate: 0,
           pace: 295.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 300.0,
           caloriesPerMinute: 15.0,
+          strokeCount: 3.0,
         ),
       ),
       TestPair(
@@ -176,12 +176,12 @@ void main() {
           power: 375,
           speed: null,
           cadence: 22,
-          strokeCount: 4.0,
           heartRate: 0,
           pace: 227.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 480.0,
           caloriesPerMinute: 20.0,
+          strokeCount: 4.0,
         ),
       ),
       TestPair(
@@ -193,12 +193,12 @@ void main() {
           power: 350,
           speed: null,
           cadence: 18,
-          strokeCount: 5.0,
           heartRate: 0,
           pace: 281.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 342.0,
           caloriesPerMinute: 16.0,
+          strokeCount: 5.0,
         ),
       ),
       TestPair(
@@ -210,12 +210,12 @@ void main() {
           power: 366,
           speed: null,
           cadence: 66,
-          strokeCount: 0.0,
           heartRate: 0,
           pace: 0.0,
           sport: ActivityType.rowing,
           caloriesPerHour: 327.0,
           caloriesPerMinute: 0.0,
+          strokeCount: 0.0,
         ),
       ),
     ]) {
@@ -241,10 +241,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

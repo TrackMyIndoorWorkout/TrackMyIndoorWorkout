@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -6,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
-import '../persistence/isar/log_entry.dart';
+
+import '../persistence/log_entry.dart';
 import '../preferences/log_level.dart';
 import '../utils/constants.dart';
 
@@ -17,6 +17,9 @@ class Logging {
     logLevelWarning: logLevelWarningDescription,
     logLevelInfo: logLevelInfoDescription,
   };
+
+  static LogEntry? lastEntry;
+  static int lastEntryId = -1;
 
   late final Isar database;
 
@@ -74,16 +77,33 @@ class Logging {
     String subTag,
     String message,
   ) {
+    final level = levelToDescription[logLevel] ?? "UNK";
+    // Check last entry if it's identical to prevent flooding
+    if (lastEntry != null &&
+        lastEntryId > 0 &&
+        lastEntry?.level == level &&
+        lastEntry?.tag == tag &&
+        lastEntry?.subTag == subTag &&
+        lastEntry?.message == message) {
+      lastEntry = database.logEntrys.getSync(lastEntryId);
+      if (lastEntry != null) {
+        lastEntry?.incrementCounter();
+        database.writeTxnSync(() {
+          lastEntryId = database.logEntrys.putSync(lastEntry!);
+        });
+        return;
+      }
+    }
+
+    lastEntry = LogEntry(
+      timeStamp: DateTime.now(),
+      level: level,
+      tag: tag,
+      subTag: subTag,
+      message: message,
+    );
     database.writeTxnSync(() {
-      database.logEntrys.putSync(
-        LogEntry(
-          timeStamp: DateTime.now(),
-          level: levelToDescription[logLevel] ?? "UNK",
-          tag: tag,
-          subTag: subTag,
-          message: message,
-        ),
-      );
+      lastEntryId = database.logEntrys.putSync(lastEntry!);
     });
   }
 
@@ -107,15 +127,15 @@ class Logging {
     });
   }
 
-  Future<List<int>> exportLogs() async {
-    final sb = StringBuffer();
-
-    sb.writeln("timeStamp,level,tag,subTag,message");
+  Future<void> exportLogs(File logFile) async {
+    await logFile.writeAsString("timeStamp,level,tag,subTag,message\n", mode: FileMode.write);
     for (final logEntry in await database.logEntrys.where().sortByTimeStamp().findAll()) {
-      sb.writeln(
-          "${logEntry.timeStamp},${logEntry.level},${logEntry.tag},${logEntry.subTag},${logEntry.message}");
+      await logFile.writeAsString(
+        "${logEntry.timeStamp},${logEntry.level},${logEntry.tag},${logEntry.subTag},${logEntry.message}\n",
+        mode: FileMode.append,
+      );
     }
 
-    return GZipCodec(gzip: true).encode(utf8.encode(sb.toString()));
+    await logFile.writeAsString("\n", mode: FileMode.append, flush: true);
   }
 }

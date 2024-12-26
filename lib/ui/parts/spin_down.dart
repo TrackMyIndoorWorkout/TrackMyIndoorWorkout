@@ -5,10 +5,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuple/tuple.dart';
 
-import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/bluetooth_device_ex.dart';
+import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gatt/ftms.dart';
 import '../../devices/gatt/generic.dart';
 import '../../preferences/athlete_body_weight.dart';
@@ -19,6 +18,7 @@ import '../../utils/delays.dart';
 import '../../utils/display.dart';
 import '../../utils/logging.dart';
 import '../../utils/theme_manager.dart';
+import '../../utils/user_data.dart';
 import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends StatefulWidget {
@@ -87,23 +87,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
 
-  static Tuple2<int, int> getWeightBytes(int weight, bool si) {
-    final weightTransport = (weight * (si ? 1.0 : lbToKg) * 200).round();
-    return Tuple2<int, int>(weightTransport % maxUint8, weightTransport ~/ maxUint8);
-  }
-
-  static int getWeightFromBytes(int weightLsb, int weightMsb, bool si) {
-    return (weightLsb + weightMsb * maxUint8) * (si ? 1.0 : kgToLb) ~/ 200;
-  }
-
   @override
   void initState() {
     _logLevel = _prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
     _si = _prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _preferencesWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
-    _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
-    final weightBytes = getWeightBytes(_weight, _si);
+    // There was double imperial to SI conversion here???
+    final weightBytes = getWeightBytes(_preferencesWeight, _si);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
@@ -153,8 +144,8 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
     final userData =
         BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], userDataServiceUuid);
-    _weightData =
-        BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, weightCharacteristicUuid);
+    _weightData = BluetoothDeviceEx.filterCharacteristic(
+        userData?.characteristics, userWeightCharacteristicUuid);
     if (_weightData == null) return false;
 
     if (_fitnessEquipment?.controlPoint == null || _fitnessEquipment?.status == null) return false;
@@ -175,7 +166,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
     )
         .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
-        if (response[0] != weightSuccessOpcode) {
+        if (response[0] != userDataSetSuccessOpcode) {
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });

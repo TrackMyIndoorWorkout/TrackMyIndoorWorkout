@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:pref/pref.dart';
+
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import '../devices/device_factory.dart';
 import '../devices/device_fourcc.dart';
-import '../persistence/isar/activity.dart';
-import '../persistence/isar/db_utils.dart';
-import '../persistence/isar/record.dart';
+import '../persistence/activity.dart';
+import '../persistence/db_utils.dart';
+import '../persistence/record.dart';
 import '../preferences/athlete_age.dart';
 import '../preferences/athlete_body_weight.dart';
 import '../preferences/athlete_gender.dart';
@@ -176,6 +177,7 @@ class CSVImporter with PowerSpeedMixin {
     var deviceId = mPowerImportDeviceId;
     var hrmId = "";
     var calories = 0;
+    var strides = 0;
     var uploaded = false;
     var stravaId = 0;
     var fourCC = schwinnACPerfPlusFourCC;
@@ -195,6 +197,7 @@ class CSVImporter with PowerSpeedMixin {
     var trainingPeaksUploaded = false;
     var trainingPeaksFileTrackingUuid = "";
     var trainingPeaksWorkoutId = 0;
+    var endTime = 0;
     var movingTime = 0;
 
     if (_migration) {
@@ -241,10 +244,16 @@ class CSVImporter with PowerSpeedMixin {
         return null;
       }
 
-      final endTime = int.tryParse(endTimeLine[1]) ?? 0;
+      endTime = int.tryParse(endTimeLine[1]) ?? 0;
       if (endTime == 0) {
-        message = "Couldn't parse $endTimeTag";
-        return null;
+        // Unfinished activity
+        if (totalElapsed > 0) {
+          // Temporary impute end time
+          endTime == startTime + 1000 * totalElapsed;
+        } else {
+          message = "Couldn't parse $endTimeTag";
+          return null;
+        }
       }
 
       end = DateTime.fromMillisecondsSinceEpoch(endTime);
@@ -260,6 +269,18 @@ class CSVImporter with PowerSpeedMixin {
       calories = int.tryParse(calorieLine[1]) ?? 0;
 
       _linePointer++;
+
+      if (_version >= 5) {
+        final stridesLine = _lines[_linePointer].split(",");
+        if (stridesLine[0].trim() != stridesTag) {
+          message = "Couldn't parse $stridesTag";
+          return null;
+        }
+
+        strides = int.tryParse(stridesLine[1]) ?? 0;
+
+        _linePointer++;
+      }
 
       final uploadedLine = _lines[_linePointer].split(",");
       if (uploadedLine[0].trim() != uploadedTag) {
@@ -547,6 +568,7 @@ class CSVImporter with PowerSpeedMixin {
       elapsed: totalElapsed,
       movingTime: movingTime,
       calories: calories,
+      strides: strides,
       uploaded: uploaded,
       stravaId: stravaId,
       fourCC: fourCC,
@@ -580,6 +602,7 @@ class CSVImporter with PowerSpeedMixin {
       int progressSteps = numRow ~/ maxProgressSteps;
       int progressCounter = 0;
       int recordCounter = 0;
+      int lastTimeStamp = 0;
 
       while (_linePointer < _lines.length) {
         final values = _lines[_linePointer].split(",");
@@ -587,6 +610,7 @@ class CSVImporter with PowerSpeedMixin {
         final timeStampInt = int.tryParse(values[4]);
         if (timeStampInt != null) {
           timeStamp = DateTime.fromMillisecondsSinceEpoch(timeStampInt);
+          lastTimeStamp = timeStampInt;
         }
 
         final record = Record(
@@ -613,6 +637,11 @@ class CSVImporter with PowerSpeedMixin {
           setProgress(recordCounter / numRow);
         }
       }
+
+      // Adjust end time if this was an unfinished workout
+      if (lastTimeStamp > 0 && lastTimeStamp > endTime) {
+        activity.end = DateTime.fromMillisecondsSinceEpoch(lastTimeStamp);
+      }
     } else {
       double secondsPerRow = totalElapsed / numRow;
       int milliSecondsPerRow = (secondsPerRow * 1000).round();
@@ -627,6 +656,7 @@ class CSVImporter with PowerSpeedMixin {
       int recordCounter = 0;
       int movingTimeMillis = 0;
       double energy = 0;
+      double strides = 0;
       double distance = 0;
       double elapsed = 0;
       WorkoutRow? nextRow;
@@ -725,6 +755,7 @@ class CSVImporter with PowerSpeedMixin {
                 SchwinnACPerformancePlus.extraCalorieFactor;
           }
           energy += dEnergy;
+          strides += cadence * milliSecondsPerRecord / (1000 * 60);
           database.writeTxnSync(() {
             database.records.putSync(record);
           });
@@ -753,6 +784,7 @@ class CSVImporter with PowerSpeedMixin {
       activity.movingTime = movingTimeMillis;
       activity.distance = distance;
       activity.calories = energy.round();
+      activity.strides = strides.round();
     }
 
     database.writeTxnSync(() {

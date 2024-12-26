@@ -32,8 +32,10 @@ void main() {
       const MachineSportTestPair(machineType: MachineType.rower, sport: ActivityType.rowing),
       const MachineSportTestPair(
           machineType: MachineType.crossTrainer, sport: ActivityType.elliptical),
-      const MachineSportTestPair(machineType: MachineType.stepClimber, sport: ActivityType.run),
-      const MachineSportTestPair(machineType: MachineType.stairClimber, sport: ActivityType.run),
+      const MachineSportTestPair(
+          machineType: MachineType.stepClimber, sport: ActivityType.stairStepper),
+      const MachineSportTestPair(
+          machineType: MachineType.stairClimber, sport: ActivityType.rockClimbing),
       const MachineSportTestPair(machineType: MachineType.heartRateMonitor, sport: ""),
       const MachineSportTestPair(machineType: MachineType.multiFtms, sport: ""),
     ]) {

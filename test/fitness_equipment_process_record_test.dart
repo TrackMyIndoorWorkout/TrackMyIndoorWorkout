@@ -7,11 +7,12 @@ import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descr
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/hr_based_calories.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
+
 import 'utils.dart';
 
 class MockBluetoothDevice extends Mock implements BluetoothDevice {}
@@ -410,7 +411,12 @@ void main() {
         ));
 
         final expectedCaloriesPerMinute = hrBasedCaloriesPerMinute(
-                heartRate, equipment.weight, equipment.age, equipment.isMale, equipment.vo2Max) *
+              heartRate,
+              equipment.athlete.weight,
+              equipment.athlete.age,
+              equipment.athlete.isMale,
+              equipment.athlete.vo2Max,
+            ) *
             hrCalorieFactor;
         expect(record.caloriesPerMinute, closeTo(expectedCaloriesPerMinute, eps));
 
@@ -467,7 +473,12 @@ void main() {
         ));
 
         final expectedCaloriesPerMinute = hrBasedCaloriesPerMinute(
-                heartRate, equipment.weight, equipment.age, equipment.isMale, equipment.vo2Max) *
+              heartRate,
+              equipment.athlete.weight,
+              equipment.athlete.age,
+              equipment.athlete.isMale,
+              equipment.athlete.vo2Max,
+            ) *
             hrCalorieFactor;
         expect(record.caloriesPerMinute, closeTo(expectedCaloriesPerMinute, eps));
         expect(record.power, null);

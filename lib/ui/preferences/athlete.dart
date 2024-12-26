@@ -1,9 +1,15 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/athlete_age.dart';
+import '../../preferences/athlete_body_height.dart';
 import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/athlete_email.dart';
 import '../../preferences/athlete_gender.dart';
+import '../../preferences/athlete_name.dart';
 import '../../preferences/athlete_vo2max.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import 'pref_integer.dart';
@@ -32,6 +38,21 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: athleteBodyWeightIntTag,
         min: athleteBodyWeightMin,
         max: athleteBodyWeightMax,
+      ),
+      PrefSlider<int>(
+        title: const Text(athleteBodyHeight),
+        subtitle: const Text(athleteBodyHeightDescription),
+        pref: athleteBodyHeightTag,
+        trailing: (num value) => Text("$value cm"),
+        min: athleteBodyHeightMin,
+        max: athleteBodyHeightMax,
+        divisions: athleteBodyHeightDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: athleteBodyHeightTag,
+        min: athleteBodyHeightMin,
+        max: athleteBodyHeightMax,
       ),
       const PrefCheckbox(
         title: Text(useHeartRateBasedCalorieCounting),
@@ -82,6 +103,37 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         pref: athleteVO2MaxTag,
         min: athleteVO2MaxMin,
         max: athleteVO2MaxMax,
+      ),
+      const PrefLabel(title: Divider(height: 1)),
+      PrefLabel(
+        title: Text(athleteLifeFitness, style: Get.textTheme.headlineSmall!, maxLines: 3),
+        subtitle: const Text(athleteLifeFitnessDescription),
+      ),
+      PrefText(
+        label: athleteFirstName,
+        pref: athleteFirstNameTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\,.']"))],
+      ),
+      PrefText(
+        label: athleteLastName,
+        pref: athleteLastNameTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\s\,.']"))],
+      ),
+      PrefText(
+        label: athleteEmail,
+        pref: athleteEmailTag,
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[\w\d\_.@]"))],
+        validator: (str) {
+          if (str == null || str.isEmpty) {
+            return null;
+          }
+
+          if (!EmailValidator.validate(str)) {
+            return "Doesn't look like a valid email address";
+          }
+
+          return null;
+        },
       ),
     ];
 

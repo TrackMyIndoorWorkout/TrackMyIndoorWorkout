@@ -1,4 +1,4 @@
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
 import '../gatt/rsc.dart';
@@ -70,11 +70,13 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
       return RecordWithSport(sport: ActivityType.run);
     }
 
+    final cadence = getCadence(data);
     return RecordWithSport(
       timeStamp: DateTime.now(),
       distance: getDistance(data),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
+      cadence: cadence?.toInt(),
+      preciseCadence: cadence,
       sport: ActivityType.run,
     );
   }

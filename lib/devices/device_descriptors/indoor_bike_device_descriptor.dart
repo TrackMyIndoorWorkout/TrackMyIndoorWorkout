@@ -1,5 +1,5 @@
 import '../../devices/device_fourcc.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
 
@@ -13,6 +13,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     required super.model,
     super.heartRateByteIndex,
     super.canMeasureCalories,
+    super.doNotReadManufacturerName,
   }) : super(
           sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
           isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,
@@ -59,18 +60,20 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
+    final cadence = getCadence(data);
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
+      cadence: cadence?.toInt(),
       heartRate: getHeartRate(data),
       sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
-      resistance: getResistance(data),
+      resistance: getResistance(data)?.toInt(),
+      preciseCadence: cadence,
     );
   }
 

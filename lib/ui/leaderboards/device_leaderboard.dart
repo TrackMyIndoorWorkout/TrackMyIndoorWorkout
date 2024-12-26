@@ -7,7 +7,8 @@ import 'package:isar/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
-import '../../persistence/isar/workout_summary.dart';
+
+import '../../persistence/workout_summary.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/speed_spec.dart';
 import '../../preferences/sport_spec.dart';

@@ -132,3 +132,25 @@ const spinDownStatusRequested = 0x01;
 const spinDownStatusSuccess = 0x02;
 const spinDownStatusError = 0x03;
 const spinDownStatusStopPedaling = 0x04;
+
+// https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.training_status.xml
+const fitnessMachineTrainingStatusUuid = '2ad3';
+// Table 4.13
+const trainingStatusOther = 0x00;
+const trainingStatusIdle = 0x01;
+const trainingStatusWarmingUp = 0x02;
+const trainingStatusLowIntensityInterval = 0x03;
+const trainingStatusHighIntensityInterval = 0x04;
+const trainingStatusRecoveryInterval = 0x05;
+const trainingStatusIsometric = 0x06;
+const trainingStatusHeartRateControl = 0x07;
+const trainingStatusFitnessTest = 0x08;
+const trainingStatusSpeedOutsideOfControlRegionLow =
+    0x09; // increase speed to return to controllable region
+const trainingStatusSpeedOutsideOfControlRegionHigh =
+    0x0a; // decrease speed to return to controllable region
+const trainingStatusCoolDown = 0x0b;
+const trainingStatusWattControl = 0x0c;
+const trainingStatusManualMode = 0x0d; // Quick Start
+const trainingStatusPreWorkout = 0x0e;
+const trainingStatusPostWorkout = 0x0f;

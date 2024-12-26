@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import '../utils/theme_manager.dart';
 
 const stravaChoice = "Strava";
@@ -53,8 +54,8 @@ List<PortalChoiceDescriptor> getPortalChoices(bool justAuth, ThemeManager themeM
     ),
     PortalChoiceDescriptor(
       portalNames[2],
-      "assets/integration/under-armour-logo.svg",
-      "assets/integration/under-armour-2line.svg",
+      "assets/integration/map_my_fitness_logo.svg",
+      "assets/integration/map_my_fitness.svg",
       themeManager.getSuuntoRedColor(),
       1.7,
     ),
