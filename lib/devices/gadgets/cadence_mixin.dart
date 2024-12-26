@@ -68,8 +68,7 @@ mixin CadenceMixin {
               "Skipping duplicate rev count with same time: revDiff = $revDiff ; timeDiff = $timeDiff");
         }
         return;
-      }
-      else if (timeDiff > eps && revDiff < eps) {
+      } else if (timeDiff > eps && revDiff < eps) {
         // 0.0 <= revDiff < eps
         // The packet time changed but the revolution count is the same,
         // so there is no reason to record it.  Update last's timestamp.
@@ -79,8 +78,7 @@ mixin CadenceMixin {
               "Skipping duplicate rev count with new time: revDiff = $revDiff ; timeDiff = $timeDiff");
         }
         return;
-      }
-      else {
+      } else {
         if (nonNullRevolutions < cadenceData.last.revolutions) {
           overflowCounter++;
         }
