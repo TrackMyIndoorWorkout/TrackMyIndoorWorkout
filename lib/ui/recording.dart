@@ -478,7 +478,7 @@ class RecordingState extends State<RecordingScreen> {
             _statistics[_hr0Index] = _workoutStats.maxHeartRateDisplay.toString();
 
             if (_showResistanceLevel) {
-              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistance.toString();
+              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
             }
           }
         }
@@ -1138,7 +1138,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
-      Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopSoundEffect();
     }
 
     WakelockPlus.disable();
@@ -1216,7 +1216,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
-      Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopSoundEffect();
     }
 
     setState(() {
@@ -2131,7 +2131,7 @@ class RecordingState extends State<RecordingScreen> {
       } else {
         if (_targetHrAlerting) {
           _hrBeepPeriodTimer?.cancel();
-          Get.find<SoundService>().stopAllSoundEffects();
+          Get.find<SoundService>().stopSoundEffect();
         }
         _targetHrAlerting = false;
       }
@@ -2434,7 +2434,7 @@ class RecordingState extends State<RecordingScreen> {
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toInt32;
+          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toARGB32;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),

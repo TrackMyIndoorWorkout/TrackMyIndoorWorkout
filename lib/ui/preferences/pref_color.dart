@@ -63,6 +63,6 @@ class PrefColor extends StatelessWidget {
       enableDrag: false,
     );
 
-    return pickedColor?.toInt32 ?? starterValue;
+    return pickedColor?.toARGB32 ?? starterValue;
   }
 }
