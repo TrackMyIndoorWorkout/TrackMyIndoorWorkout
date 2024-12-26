@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/preferences/sensor_data_threshold.dart';
 
 import '../preferences/activity_ui.dart';
 import '../preferences/activity_upload_description.dart';
@@ -30,6 +31,7 @@ import '../preferences/drive_train_loss.dart';
 import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
+import '../preferences/ftms_data_threshold.dart';
 import '../preferences/generic.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
@@ -185,6 +187,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     athleteFirstNameTag: athleteFirstNameDefault,
     athleteLastNameTag: athleteLastNameDefault,
     athleteEmailTag: athleteEmailDefault,
+    ftmsDataThresholdTag: ftmsDataThresholdDefault,
+    sensorDataThresholdTag: sensorDataThresholdDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

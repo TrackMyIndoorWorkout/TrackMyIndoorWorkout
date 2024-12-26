@@ -1,21 +1,29 @@
 import 'dart:async';
 
+import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
-import '../../utils/delays.dart';
+
+import '../../preferences/sensor_data_threshold.dart';
 import 'sensor_base.dart';
 
 typedef IntegerMetricProcessingFunction = Function(int measurement);
 
 abstract class IntegerSensor extends SensorBase {
   int metric = 0;
+  late final int sensorDataThreshold;
 
-  IntegerSensor(super.serviceId, super.characteristicId, super.device);
+  IntegerSensor(super.serviceId, super.characteristicId, super.device) {
+    final prefService = Get.find<BasePrefService>();
+    sensorDataThreshold =
+        prefService.get<int>(sensorDataThresholdTag) ?? sensorDataThresholdDefault;
+  }
 
   Stream<int> get _listenToData async* {
     if (!attached || characteristic == null) return;
 
     await for (var byteList in characteristic!.lastValueStream.throttleTime(
-      const Duration(milliseconds: sensorDataThreshold),
+      Duration(milliseconds: sensorDataThreshold),
       leading: false,
       trailing: true,
     )) {
