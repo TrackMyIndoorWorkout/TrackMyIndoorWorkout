@@ -27,35 +27,34 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   static const magicNumbers = [17, 32, 0];
   static const magicFlag = 32 * 256 + 17;
 
-  // Adapted from 
+  // Adapted from
   // https://github.com/ursoft/ANT_Libraries/blob/e122c007f5e1935a9b11c05e601a71f2992bad45/ANT_DLL/WROOM_esp32/WROOM_esp32.ino#L525
-  static const List<List<double>> resistancePowerCoeffs =
-  [
-    [-0.0014, 0.7920, -13.985 ],
-    [-0.0004, 0.9991, -19.051 ],
-    [ 0.0015, 0.9179, -13.745 ],
-    [ 0.0040, 0.9857, -13.095 ],
-    [ 0.0027, 1.3958, -22.741 ],
-    [ 0.0057, 1.1586, -15.126 ],
-    [-0.0013, 2.4666, -49.052 ],
-    [ 0.0002, 2.6349, -52.390 ],
-    [ 0.0034, 2.6240, -48.072 ],
-    [ 0.0147, 1.6372, -19.653 ],
-    [ 0.0062, 2.5851, -43.254 ],
-    [ 0.0064, 3.2864, -59.336 ],
-    [ 0.0048, 3.6734, -69.245 ],
-    [ 0.0184, 2.1842, -28.936 ],
-    [ 0.0052, 4.3939, -78.603 ],
-    [ 0.0094, 3.8871, -65.982 ],
-    [ 0.0165, 3.3074, -49.906 ],
-    [ 0.0251, 3.2956, -44.436 ],
-    [ 0.0281, 2.9107, -38.767 ],
-    [ 0.0311, 2.9435, -35.851 ],
-    [ 0.0141, 5.5646, -88.686 ],
-    [ 0.0517, 1.8361, -13.777 ],
-    [ 0.0467, 2.9273, -35.908 ],
-    [ 0.0429, 4.1821, -50.141 ],
-    [ 0.0652, 3.6670, -46.863 ]
+  static const List<List<double>> resistancePowerCoeffs = [
+    [-0.0014, 0.7920, -13.985],
+    [-0.0004, 0.9991, -19.051],
+    [0.0015, 0.9179, -13.745],
+    [0.0040, 0.9857, -13.095],
+    [0.0027, 1.3958, -22.741],
+    [0.0057, 1.1586, -15.126],
+    [-0.0013, 2.4666, -49.052],
+    [0.0002, 2.6349, -52.390],
+    [0.0034, 2.6240, -48.072],
+    [0.0147, 1.6372, -19.653],
+    [0.0062, 2.5851, -43.254],
+    [0.0064, 3.2864, -59.336],
+    [0.0048, 3.6734, -69.245],
+    [0.0184, 2.1842, -28.936],
+    [0.0052, 4.3939, -78.603],
+    [0.0094, 3.8871, -65.982],
+    [0.0165, 3.3074, -49.906],
+    [0.0251, 3.2956, -44.436],
+    [0.0281, 2.9107, -38.767],
+    [0.0311, 2.9435, -35.851],
+    [0.0141, 5.5646, -88.686],
+    [0.0517, 1.8361, -13.777],
+    [0.0467, 2.9273, -35.908],
+    [0.0429, 4.1821, -50.141],
+    [0.0652, 3.6670, -46.863]
   ];
   late double lastTime;
   late double lastCalories;
@@ -116,12 +115,14 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     clearCadenceData();
   }
 
-  // Adapted from 
+  // Adapted from
   // https://github.com/ursoft/ANT_Libraries/blob/e122c007f5e1935a9b11c05e601a71f2992bad45/ANT_DLL/WROOM_esp32/WROOM_esp32.ino#L525
   double powerFromCadenceResistance(int cadence, int resistance) {
     final int idx = (resistance - 1) % 25;
-    final double power = resistancePowerCoeffs[idx][0] * cadence * cadence + resistancePowerCoeffs[idx][1] * cadence + resistancePowerCoeffs[idx][2];
-    return max(power,0.0);
+    final double power = resistancePowerCoeffs[idx][0] * cadence * cadence +
+        resistancePowerCoeffs[idx][1] * cadence +
+        resistancePowerCoeffs[idx][2];
+    return max(power, 0.0);
   }
 
   @override
