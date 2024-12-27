@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import '../../preferences/log_level.dart';
+import '../../preferences/sensor_data_threshold.dart';
 import '../../utils/constants.dart';
-import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import 'cadence_data.dart';
 
@@ -21,6 +21,7 @@ mixin CadenceMixin {
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
   int logLevel = logLevelDefault;
+  int sensorDataThreshold = sensorDataThresholdDefault;
 
   initCadence([revolutionSlidingWindow, eventTimeOverflow, revolutionOverflow]) {
     this.revolutionSlidingWindow = revolutionSlidingWindow;
@@ -30,6 +31,8 @@ mixin CadenceMixin {
     if (!testing) {
       final prefService = Get.find<BasePrefService>();
       logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+      sensorDataThreshold =
+          prefService.get<int>(sensorDataThresholdTag) ?? sensorDataThresholdDefault;
     }
   }
 
