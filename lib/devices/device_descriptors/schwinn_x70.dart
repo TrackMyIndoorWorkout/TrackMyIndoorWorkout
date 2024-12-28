@@ -81,7 +81,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           cadenceMetric: ShortMetricDescriptor(lsb: 4, msb: 5, divider: 1.0),
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
-    initCadence(5, 64, maxUint16);
+    initCadence(64, maxUint16);
     initPower2SpeedConstants();
     lastTime = -1.0;
     lastCalories = -1.0;

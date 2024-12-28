@@ -2,7 +2,9 @@ import 'dart:collection';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/log_level.dart';
+import '../../preferences/revolution_sliding_window.dart';
 import '../../preferences/sensor_data_threshold.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
@@ -10,11 +12,10 @@ import 'cadence_data.dart';
 
 mixin CadenceMixin {
   static const String mixinTag = "CADENCE_MIXIN";
-  static int defaultRevolutionSlidingWindow = 10; // Seconds
   static int defaultEventTimeOverflow = 64; // Overflows every 64 seconds
   static int defaultRevolutionOverflow = maxUint16;
 
-  int revolutionSlidingWindow = defaultRevolutionSlidingWindow;
+  int revolutionSlidingWindow = revolutionSlidingWindowDefault;
   int eventTimeOverflow = defaultEventTimeOverflow;
   int revolutionOverflow = defaultRevolutionOverflow;
   int overflowCounter = 0;
@@ -23,13 +24,14 @@ mixin CadenceMixin {
   int logLevel = logLevelDefault;
   int sensorDataThreshold = sensorDataThresholdDefault;
 
-  initCadence([revolutionSlidingWindow, eventTimeOverflow, revolutionOverflow]) {
-    this.revolutionSlidingWindow = revolutionSlidingWindow;
+  initCadence([eventTimeOverflow, revolutionOverflow]) {
     this.eventTimeOverflow = eventTimeOverflow;
     this.revolutionOverflow = revolutionOverflow;
 
     if (!testing) {
       final prefService = Get.find<BasePrefService>();
+      revolutionSlidingWindow =
+          prefService.get<int>(revolutionSlidingWindowTag) ?? revolutionSlidingWindowDefault;
       logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
       sensorDataThreshold =
           prefService.get<int>(sensorDataThresholdTag) ?? sensorDataThresholdDefault;

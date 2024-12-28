@@ -26,9 +26,9 @@ class CyclingPowerMeterSensor extends FlywheelSensorBase with CadenceMixin {
   MetricDescriptor? caloriesMetric;
 
   CyclingPowerMeterSensor(device) : super(serviceUuid, characteristicUuid, device) {
-    initCadence(4, 64, maxUint16);
+    initCadence(64, maxUint16);
     wheelCadence = CadenceMixinImpl();
-    wheelCadence.initCadence(4, 32, maxUint32);
+    wheelCadence.initCadence(32, maxUint32);
     readCircumference();
   }
 

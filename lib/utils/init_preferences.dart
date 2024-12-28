@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:track_my_indoor_exercise/preferences/sensor_data_threshold.dart';
 
 import '../preferences/activity_ui.dart';
 import '../preferences/activity_upload_description.dart';
@@ -53,7 +52,9 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/recalculate_more.dart';
+import '../preferences/revolution_sliding_window.dart';
 import '../preferences/scan_duration.dart';
+import '../preferences/sensor_data_threshold.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
@@ -189,6 +190,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     athleteEmailTag: athleteEmailDefault,
     ftmsDataThresholdTag: ftmsDataThresholdDefault,
     sensorDataThresholdTag: sensorDataThresholdDefault,
+    revolutionSlidingWindowTag: revolutionSlidingWindowDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {

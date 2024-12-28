@@ -28,6 +28,7 @@ import '../../preferences/enable_asserts.dart';
 import '../../preferences/ftms_data_threshold.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/recalculate_more.dart';
+import '../../preferences/revolution_sliding_window.dart';
 import '../../preferences/sensor_data_threshold.dart';
 import '../../preferences/show_performance_overlay.dart';
 import '../../utils/date_time_ex.dart';
@@ -407,6 +408,21 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         pref: sensorDataThresholdTag,
         min: sensorDataThresholdMin,
         max: sensorDataThresholdMax,
+      ),
+      PrefSlider<int>(
+        title: const Text(revolutionSlidingWindow),
+        subtitle: const Text(revolutionSlidingWindowDescription),
+        pref: revolutionSlidingWindowTag,
+        trailing: (num value) => Text("$value s"),
+        min: revolutionSlidingWindowMin,
+        max: revolutionSlidingWindowMax,
+        divisions: revolutionSlidingWindowDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: revolutionSlidingWindowTag,
+        min: revolutionSlidingWindowMin,
+        max: revolutionSlidingWindowMax,
       ),
     ]);
 
