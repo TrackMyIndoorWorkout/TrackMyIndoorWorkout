@@ -19,7 +19,6 @@ import '../gatt/schwinn_x70.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/six_byte_metric_descriptor.dart';
-import '../metric_descriptors/three_byte_metric_descriptor.dart';
 import 'device_descriptor.dart';
 import 'fixed_layout_device_descriptor.dart';
 
@@ -79,10 +78,10 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
           listenOnControl: false,
           timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
           caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
-          cadenceMetric: ThreeByteMetricDescriptor(lsb: 4, msb: 6, divider: 1.0),
+          cadenceMetric: ShortMetricDescriptor(lsb: 4, msb: 5, divider: 1.0),
         ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
-    initCadence(5, 64, maxUint24);
+    initCadence(5, 64, maxUint16);
     initPower2SpeedConstants();
     lastTime = -1.0;
     lastCalories = -1.0;
