@@ -117,58 +117,63 @@ const ActivitySchema = CollectionSchema(
       name: r'stravaId',
       type: IsarType.long,
     ),
-    r'suuntoBlobUrl': PropertySchema(
+    r'strides': PropertySchema(
       id: 20,
+      name: r'strides',
+      type: IsarType.long,
+    ),
+    r'suuntoBlobUrl': PropertySchema(
+      id: 21,
       name: r'suuntoBlobUrl',
       type: IsarType.string,
     ),
     r'suuntoUploadIdentifier': PropertySchema(
-      id: 21,
+      id: 22,
       name: r'suuntoUploadIdentifier',
       type: IsarType.string,
     ),
     r'suuntoUploaded': PropertySchema(
-      id: 22,
+      id: 23,
       name: r'suuntoUploaded',
       type: IsarType.bool,
     ),
     r'suuntoWorkoutUrl': PropertySchema(
-      id: 23,
+      id: 24,
       name: r'suuntoWorkoutUrl',
       type: IsarType.string,
     ),
     r'timeZone': PropertySchema(
-      id: 24,
+      id: 25,
       name: r'timeZone',
       type: IsarType.string,
     ),
     r'trainingPeaksFileTrackingUuid': PropertySchema(
-      id: 25,
+      id: 26,
       name: r'trainingPeaksFileTrackingUuid',
       type: IsarType.string,
     ),
     r'trainingPeaksUploaded': PropertySchema(
-      id: 26,
+      id: 27,
       name: r'trainingPeaksUploaded',
       type: IsarType.bool,
     ),
     r'trainingPeaksWorkoutId': PropertySchema(
-      id: 27,
+      id: 28,
       name: r'trainingPeaksWorkoutId',
       type: IsarType.long,
     ),
     r'uaWorkoutId': PropertySchema(
-      id: 28,
+      id: 29,
       name: r'uaWorkoutId',
       type: IsarType.long,
     ),
     r'underArmourUploaded': PropertySchema(
-      id: 29,
+      id: 30,
       name: r'underArmourUploaded',
       type: IsarType.bool,
     ),
     r'uploaded': PropertySchema(
-      id: 30,
+      id: 31,
       name: r'uploaded',
       type: IsarType.bool,
     )
@@ -248,17 +253,18 @@ void _activitySerialize(
   writer.writeDateTime(offsets[17], object.start);
   writer.writeLong(offsets[18], object.stravaActivityId);
   writer.writeLong(offsets[19], object.stravaId);
-  writer.writeString(offsets[20], object.suuntoBlobUrl);
-  writer.writeString(offsets[21], object.suuntoUploadIdentifier);
-  writer.writeBool(offsets[22], object.suuntoUploaded);
-  writer.writeString(offsets[23], object.suuntoWorkoutUrl);
-  writer.writeString(offsets[24], object.timeZone);
-  writer.writeString(offsets[25], object.trainingPeaksFileTrackingUuid);
-  writer.writeBool(offsets[26], object.trainingPeaksUploaded);
-  writer.writeLong(offsets[27], object.trainingPeaksWorkoutId);
-  writer.writeLong(offsets[28], object.uaWorkoutId);
-  writer.writeBool(offsets[29], object.underArmourUploaded);
-  writer.writeBool(offsets[30], object.uploaded);
+  writer.writeLong(offsets[20], object.strides);
+  writer.writeString(offsets[21], object.suuntoBlobUrl);
+  writer.writeString(offsets[22], object.suuntoUploadIdentifier);
+  writer.writeBool(offsets[23], object.suuntoUploaded);
+  writer.writeString(offsets[24], object.suuntoWorkoutUrl);
+  writer.writeString(offsets[25], object.timeZone);
+  writer.writeString(offsets[26], object.trainingPeaksFileTrackingUuid);
+  writer.writeBool(offsets[27], object.trainingPeaksUploaded);
+  writer.writeLong(offsets[28], object.trainingPeaksWorkoutId);
+  writer.writeLong(offsets[29], object.uaWorkoutId);
+  writer.writeBool(offsets[30], object.underArmourUploaded);
+  writer.writeBool(offsets[31], object.uploaded);
 }
 
 Activity _activityDeserialize(
@@ -287,17 +293,18 @@ Activity _activityDeserialize(
     start: reader.readDateTime(offsets[17]),
     stravaActivityId: reader.readLongOrNull(offsets[18]) ?? 0,
     stravaId: reader.readLongOrNull(offsets[19]) ?? 0,
-    suuntoBlobUrl: reader.readStringOrNull(offsets[20]) ?? "",
-    suuntoUploadIdentifier: reader.readStringOrNull(offsets[21]) ?? "",
-    suuntoUploaded: reader.readBoolOrNull(offsets[22]) ?? false,
-    suuntoWorkoutUrl: reader.readStringOrNull(offsets[23]) ?? "",
-    timeZone: reader.readString(offsets[24]),
-    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[25]) ?? "",
-    trainingPeaksUploaded: reader.readBoolOrNull(offsets[26]) ?? false,
-    trainingPeaksWorkoutId: reader.readLongOrNull(offsets[27]) ?? 0,
-    uaWorkoutId: reader.readLongOrNull(offsets[28]) ?? 0,
-    underArmourUploaded: reader.readBoolOrNull(offsets[29]) ?? false,
-    uploaded: reader.readBoolOrNull(offsets[30]) ?? false,
+    strides: reader.readLongOrNull(offsets[20]) ?? 0,
+    suuntoBlobUrl: reader.readStringOrNull(offsets[21]) ?? "",
+    suuntoUploadIdentifier: reader.readStringOrNull(offsets[22]) ?? "",
+    suuntoUploaded: reader.readBoolOrNull(offsets[23]) ?? false,
+    suuntoWorkoutUrl: reader.readStringOrNull(offsets[24]) ?? "",
+    timeZone: reader.readString(offsets[25]),
+    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[26]) ?? "",
+    trainingPeaksUploaded: reader.readBoolOrNull(offsets[27]) ?? false,
+    trainingPeaksWorkoutId: reader.readLongOrNull(offsets[28]) ?? 0,
+    uaWorkoutId: reader.readLongOrNull(offsets[29]) ?? 0,
+    underArmourUploaded: reader.readBoolOrNull(offsets[30]) ?? false,
+    uploaded: reader.readBoolOrNull(offsets[31]) ?? false,
   );
   return object;
 }
@@ -350,26 +357,28 @@ P _activityDeserializeProp<P>(
     case 19:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 20:
-      return (reader.readStringOrNull(offset) ?? "") as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 21:
       return (reader.readStringOrNull(offset) ?? "") as P;
     case 22:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 23:
-      return (reader.readStringOrNull(offset) ?? "") as P;
-    case 24:
-      return (reader.readString(offset)) as P;
-    case 25:
-      return (reader.readStringOrNull(offset) ?? "") as P;
-    case 26:
       return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 24:
+      return (reader.readStringOrNull(offset) ?? "") as P;
+    case 25:
+      return (reader.readString(offset)) as P;
+    case 26:
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 27:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 28:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 29:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 30:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 31:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2205,6 +2214,58 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stridesEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'strides',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stridesGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'strides',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stridesLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'strides',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stridesBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'strides',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoBlobUrlEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -3236,6 +3297,18 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByStrides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'strides', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByStridesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'strides', Sort.desc);
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterSortBy> sortBySuuntoBlobUrl() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'suuntoBlobUrl', Sort.asc);
@@ -3622,6 +3695,18 @@ extension ActivityQuerySortThenBy on QueryBuilder<Activity, Activity, QSortThenB
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByStrides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'strides', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByStridesDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'strides', Sort.desc);
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterSortBy> thenBySuuntoBlobUrl() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'suuntoBlobUrl', Sort.asc);
@@ -3877,6 +3962,12 @@ extension ActivityQueryWhereDistinct on QueryBuilder<Activity, Activity, QDistin
     });
   }
 
+  QueryBuilder<Activity, Activity, QDistinct> distinctByStrides() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'strides');
+    });
+  }
+
   QueryBuilder<Activity, Activity, QDistinct> distinctBySuuntoBlobUrl({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'suuntoBlobUrl', caseSensitive: caseSensitive);
@@ -4071,6 +4162,12 @@ extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProper
   QueryBuilder<Activity, int, QQueryOperations> stravaIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'stravaId');
+    });
+  }
+
+  QueryBuilder<Activity, int, QQueryOperations> stridesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'strides');
     });
   }
 
