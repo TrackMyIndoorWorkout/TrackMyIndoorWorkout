@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cadence_mixin.dart';
 import 'package:track_my_indoor_exercise/persistence/record.dart';
-import 'package:track_my_indoor_exercise/utils/delays.dart';
+import 'package:track_my_indoor_exercise/preferences/sensor_data_threshold.dart';
 
 import 'utils.dart';
 
@@ -119,7 +119,7 @@ void main() {
         for (final cadenceData in cadenceMixin.cadenceData) {
           final timeStampAdjust = Duration(
               milliseconds:
-                  CadenceMixin.defaultRevolutionSlidingWindow * 2000 + sensorDataThreshold);
+                  CadenceMixin.defaultRevolutionSlidingWindow * 2000 + sensorDataThresholdDefault);
           cadenceData.timeStamp = DateTime.now().subtract(timeStampAdjust);
         }
         cadenceMixin.addCadenceData(
