@@ -1,3 +1,13 @@
+## 2.0.159
+* BREAKING: removed support for migrating old Floor/SQLite database to Isar
+* v3 version for Schwinn 170 / 270 / 570 proprietary support (thanks @tkordenbrock)
+* Life Fitness machines support beta version, numerous enhancements
+* FTMS Cross Trainer, Stair Climber, Stair Stepper modifications
+* Stride calculation and upload for running, a cycling type activities
+* Upgrade from deprecated soundpool to audioplayers
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
 ## 1.1.158
 * Crucial Flutter Blue Plus plugin updates, most importantly permission related
 * Migrate Under Armour API to MapMyFitness (Outside bought UA), Nov. 15 deadline!
