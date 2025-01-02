@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/life_fitness_stair_climber_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -97,6 +97,22 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: 54,
+        ),
+      ),
+      TestPair(
+        data: [122, 1, 2, 0, 28, 0, 8, 0, 40, 0, 4, 0, 0, 0, 0, 0, 89, 0],
+        record: RecordWithSport(
+          distance: 8.0,
+          elapsed: 89,
+          calories: 12,
+          power: null,
+          speed: null,
+          cadence: 28,
+          heartRate: 0,
+          sport: ActivityType.rockClimbing,
+          caloriesPerHour: 0.0,
+          caloriesPerMinute: 0.0,
+          strokeCount: 40.0,
         ),
       ),
     ]) {

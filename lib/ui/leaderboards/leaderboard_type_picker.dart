@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:tuple/tuple.dart';
+
+import '../../persistence/workout_summary.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
-import '../../persistence/isar/workout_summary.dart';
 import 'device_leaderboard.dart';
 import 'leaderboard_device_hub.dart';
 import 'leaderboard_sport_hub.dart';

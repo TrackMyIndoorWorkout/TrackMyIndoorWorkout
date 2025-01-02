@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../utils/constants.dart';
 import '../gatt/ftms.dart';

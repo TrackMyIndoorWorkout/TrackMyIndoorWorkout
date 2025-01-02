@@ -8,21 +8,21 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 
+import '../../persistence/activity.dart';
 import '../../persistence/athlete.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/enable_asserts.dart';
 import '../../preferences/extend_tuning.dart';
+import '../../preferences/ftms_data_threshold.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
 import '../../preferences/log_level.dart';
-import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import '../../utils/constants.dart';
@@ -106,7 +106,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
   bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _heartRateMonitorPriority = heartRateMonitorPriorityDefault;
-  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
+  int _ftmsDataThreshold = ftmsDataThresholdDefault;
   Activity? _activity;
   bool measuring = false;
   WorkoutState workoutState = WorkoutState.waitingForFirstMove;
@@ -129,7 +129,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   bool _enableAsserts = enableAssertsDefault;
 
   // For Throttling + deduplication #234
-  final Duration _throttleDuration = const Duration(milliseconds: ftmsDataThreshold);
+  late final Duration _throttleDuration; // Now configurable
   final Duration _pollDuration = const Duration(milliseconds: pollThreshold);
   final Map<int, DataEntry> _listDeduplicationMap = {};
   Timer? _throttleTimer;
@@ -145,6 +145,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           statusCharacteristicId: descriptor?.statusCharacteristicId ?? "",
         ) {
     readConfiguration();
+    _throttleDuration = Duration(milliseconds: _ftmsDataThreshold);
     lastRecord = RecordWithSport(sport: sport);
   }
 
@@ -200,7 +201,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     merged.timeStamp = DateTime.now();
-    return merged;
+    final clone = RecordWithSport.clone(merged);
+    return clone;
   }
 
   void _throttlingTimerCallback() {
@@ -497,8 +499,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
-      final lastRecord = await DbUtils().getLastRecord(activity.id);
-      continuationRecord = lastRecord ?? RecordWithSport.getZero(sport);
+      final lastDbRecord = await DbUtils().getLastRecord(activity.id);
+      continuationRecord = lastDbRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
         Logging().log(logLevel, logLevelInfo, tag, "setActivity",
@@ -801,7 +803,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       _enableAsserts,
       forDistance: !_firstDistance,
       forCalories: !_firstCalories,
-      forStrokeCount: _showStrokesStridesRevs && !_firstStrokeCount,
+      forStrokeCount: !_firstStrokeCount,
       force: true,
     );
 
@@ -1154,7 +1156,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     // #303
-    if (_showStrokesStridesRevs && (stub.strokeCount == null || stub.strokeCount! <= eps)) {
+    if (stub.strokeCount == null || stub.strokeCount! <= eps) {
       if (stub.preciseCadence != null && stub.preciseCadence! >= eps) {
         _strokeCount += stub.preciseCadence! * dT / 60.0;
       } else if (stub.cadence != null && stub.cadence! > 0) {
@@ -1203,7 +1205,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         _enableAsserts,
         forDistance: !_firstDistance,
         forCalories: !_firstCalories,
-        forStrokeCount: _showStrokesStridesRevs && !_firstStrokeCount,
+        forStrokeCount: !_firstStrokeCount,
       );
     }
 
@@ -1288,8 +1290,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         useHeartRateBasedCalorieCountingDefault;
     _heartRateMonitorPriority =
         prefService.get<bool>(heartRateMonitorPriorityTag) ?? heartRateMonitorPriorityDefault;
-    _showStrokesStridesRevs =
-        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     athlete = Athlete.fromPreferences(prefService);
     useHrBasedCalorieCounting &=
         (athlete.weight > athleteBodyWeightMin && athlete.age > athleteAgeMin);
@@ -1297,6 +1297,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     _enableAsserts = prefService.get<bool>(enableAssertsTag) ?? enableAssertsDefault;
+    _ftmsDataThreshold = prefService.get<int>(ftmsDataThresholdTag) ?? ftmsDataThresholdDefault;
 
     if (logLevel >= logLevelInfo) {
       Logging().log(

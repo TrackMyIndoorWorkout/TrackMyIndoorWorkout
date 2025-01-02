@@ -14,13 +14,14 @@ import 'package:track_my_indoor_exercise/export/csv/csv_export.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/import/csv_importer.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/activity.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/db_utils.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
+import 'package:track_my_indoor_exercise/persistence/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/db_utils.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'utils.dart';
+
 import 'database/in_memory_database.dart';
+import 'utils.dart';
 
 class MockPackageInfo extends Mock implements PackageInfo {}
 

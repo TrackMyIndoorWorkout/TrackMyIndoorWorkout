@@ -12,28 +12,30 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/calorie_tune.dart';
-import '../../persistence/isar/device_usage.dart';
-import '../../persistence/isar/floor_migration.dart';
-import '../../persistence/isar/floor_record_migration.dart';
-import '../../persistence/isar/log_entry.dart';
-import '../../persistence/isar/power_tune.dart';
-import '../../persistence/isar/record.dart';
-import '../../persistence/isar/workout_summary.dart';
+import '../../persistence/activity.dart';
+import '../../persistence/calorie_tune.dart';
+import '../../persistence/device_usage.dart';
+import '../../persistence/log_entry.dart';
+import '../../persistence/power_tune.dart';
+import '../../persistence/record.dart';
+import '../../persistence/workout_summary.dart';
 import '../../preferences/app_debug_mode.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/database_location.dart';
 import '../../preferences/device_filtering.dart';
 import '../../preferences/enable_asserts.dart';
+import '../../preferences/ftms_data_threshold.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/recalculate_more.dart';
+import '../../preferences/revolution_sliding_window.dart';
+import '../../preferences/sensor_data_threshold.dart';
 import '../../preferences/show_performance_overlay.dart';
 import '../../utils/date_time_ex.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
 import '../parts/pick_directory.dart';
+import '../preferences/pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
 class ExpertPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
@@ -333,8 +335,6 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
               ActivitySchema,
               CalorieTuneSchema,
               DeviceUsageSchema,
-              FloorMigrationSchema,
-              FloorRecordMigrationSchema,
               LogEntrySchema,
               PowerTuneSchema,
               RecordSchema,
@@ -377,6 +377,54 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         pref: recalculateMoreTag,
       ));
     }
+
+    expertPreferences.addAll([
+      PrefSlider<int>(
+        title: const Text(ftmsDataThreshold),
+        subtitle: const Text(ftmsDataThresholdDescription),
+        pref: ftmsDataThresholdTag,
+        trailing: (num value) => Text("$value ms"),
+        min: ftmsDataThresholdMin,
+        max: ftmsDataThresholdMax,
+        divisions: ftmsDataThresholdDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: ftmsDataThresholdTag,
+        min: ftmsDataThresholdMin,
+        max: ftmsDataThresholdMax,
+      ),
+      PrefSlider<int>(
+        title: const Text(sensorDataThreshold),
+        subtitle: const Text(sensorDataThresholdDescription),
+        pref: sensorDataThresholdTag,
+        trailing: (num value) => Text("$value ms"),
+        min: sensorDataThresholdMin,
+        max: sensorDataThresholdMax,
+        divisions: sensorDataThresholdDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: sensorDataThresholdTag,
+        min: sensorDataThresholdMin,
+        max: sensorDataThresholdMax,
+      ),
+      PrefSlider<int>(
+        title: const Text(revolutionSlidingWindow),
+        subtitle: const Text(revolutionSlidingWindowDescription),
+        pref: revolutionSlidingWindowTag,
+        trailing: (num value) => Text("$value s"),
+        min: revolutionSlidingWindowMin,
+        max: revolutionSlidingWindowMax,
+        divisions: revolutionSlidingWindowDivisions,
+        direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: revolutionSlidingWindowTag,
+        min: revolutionSlidingWindowMin,
+        max: revolutionSlidingWindowMax,
+      ),
+    ]);
 
     return Scaffold(
       appBar: AppBar(title: Text(ExpertPreferencesScreen.title)),

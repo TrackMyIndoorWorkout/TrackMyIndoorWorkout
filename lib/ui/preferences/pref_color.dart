@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
+import '../../utils/color_ex.dart';
 import '../parts/color_picker.dart';
 
 class PrefColor extends StatelessWidget {
@@ -61,6 +63,6 @@ class PrefColor extends StatelessWidget {
       enableDrag: false,
     );
 
-    return pickedColor?.value ?? starterValue;
+    return pickedColor?.toARGB32 ?? starterValue;
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../persistence/isar/record.dart';
+import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';
 import '../metric_descriptors/long_metric_descriptor.dart';
@@ -24,9 +24,9 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
   MetricDescriptor? crankRevolutionTime;
 
   CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
-    initCadence(4, 64, maxUint16);
+    initCadence(64, maxUint16);
     wheelCadence = CadenceMixinImpl();
-    wheelCadence.initCadence(4, 64, maxUint32);
+    wheelCadence.initCadence(64, maxUint32);
     readCircumference();
   }
 

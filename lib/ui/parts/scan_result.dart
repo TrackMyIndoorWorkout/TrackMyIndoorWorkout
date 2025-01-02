@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 
 import '../../devices/company_registry.dart';
 import '../../utils/constants.dart';
-import '../../utils/scan_result_ex.dart';
 import '../../utils/guid_ex.dart';
+import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
@@ -63,7 +63,7 @@ class ScanResultTile extends StatelessWidget {
 
   String getNiceManufacturerData(List<int> companyIds) {
     if (companyIds.isEmpty) {
-      return 'N/A';
+      return notAvailable;
     }
 
     final companyRegistry = Get.find<CompanyRegistry>();
@@ -77,7 +77,7 @@ class ScanResultTile extends StatelessWidget {
 
   String getNiceServiceData(Map<Guid, List<int>> data) {
     if (data.isEmpty) {
-      return 'N/A';
+      return notAvailable;
     }
 
     List<String> res = [];
@@ -130,7 +130,7 @@ class ScanResultTile extends StatelessWidget {
           'Service UUIDs',
           result.advertisementData.serviceUuids.isNotEmpty
               ? result.serviceUuids.join(', ').toUpperCase()
-              : 'N/A',
+              : notAvailable,
           detailStyle,
           secondaryStyle,
         ),

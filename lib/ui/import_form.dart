@@ -10,7 +10,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
 
 import '../import/csv_importer.dart';
-import '../persistence/isar/workout_summary.dart';
+import '../persistence/workout_summary.dart';
 import '../preferences/leaderboard_and_rank.dart';
 import '../preferences/log_level.dart';
 import '../utils/logging.dart';

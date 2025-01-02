@@ -27,10 +27,10 @@ import '../devices/gadgets/fitness_equipment.dart';
 import '../devices/gadgets/heart_rate_monitor.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
-import '../persistence/isar/activity.dart';
-import '../persistence/isar/db_utils.dart';
-import '../persistence/isar/record.dart';
-import '../persistence/isar/workout_summary.dart';
+import '../persistence/activity.dart';
+import '../persistence/db_utils.dart';
+import '../persistence/record.dart';
+import '../persistence/workout_summary.dart';
 import '../preferences/app_debug_mode.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
@@ -67,6 +67,7 @@ import '../track/constants.dart';
 import '../track/track_descriptor.dart';
 import '../track/track_painter.dart';
 import '../utils/bluetooth.dart';
+import '../utils/color_ex.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/logging.dart';
@@ -477,7 +478,7 @@ class RecordingState extends State<RecordingScreen> {
             _statistics[_hr0Index] = _workoutStats.maxHeartRateDisplay.toString();
 
             if (_showResistanceLevel) {
-              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistance.toString();
+              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
             }
           }
         }
@@ -1137,7 +1138,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
-      Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopSoundEffect();
     }
 
     WakelockPlus.disable();
@@ -1215,7 +1216,7 @@ class RecordingState extends State<RecordingScreen> {
     _hrBeepPeriodTimer?.cancel();
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio ||
         _dataGapSoundEffect != soundEffectNone) {
-      Get.find<SoundService>().stopAllSoundEffects();
+      Get.find<SoundService>().stopSoundEffect();
     }
 
     setState(() {
@@ -1236,6 +1237,7 @@ class RecordingState extends State<RecordingScreen> {
       last?.distance,
       last?.elapsed,
       last?.calories,
+      last?.strokeCount?.toInt() ?? 0,
       last?.movingTime ?? 0,
     );
 
@@ -2129,7 +2131,7 @@ class RecordingState extends State<RecordingScreen> {
       } else {
         if (_targetHrAlerting) {
           _hrBeepPeriodTimer?.cancel();
-          Get.find<SoundService>().stopAllSoundEffects();
+          Get.find<SoundService>().stopSoundEffect();
         }
         _targetHrAlerting = false;
       }
@@ -2432,7 +2434,7 @@ class RecordingState extends State<RecordingScreen> {
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getSpeedColor(_selfRank, background: true).value;
+          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toARGB32;
         } else if (_displayLapCounter) {
           markers.add(Center(
             child: Text("Lap $_lapCount", style: _measurementStyle),

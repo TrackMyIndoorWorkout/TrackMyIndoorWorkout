@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/calorie_tune.dart';
+
+import '../../persistence/activity.dart';
+import '../../persistence/calorie_tune.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 

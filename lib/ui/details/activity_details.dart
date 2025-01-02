@@ -9,15 +9,16 @@ import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 
-import '../../persistence/isar/activity.dart';
-import '../../persistence/isar/db_utils.dart';
-import '../../persistence/isar/record.dart';
+import '../../persistence/activity.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
 import '../../preferences/activity_ui.dart';
 import '../../preferences/distance_resolution.dart';
 import '../../preferences/measurement_font_size_adjust.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/recalculate_more.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
@@ -58,6 +59,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
   bool _calculateMedian = activityDetailsMedianDisplayDefault;
+  bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   List<MetricSpec> _preferencesSpecs = [];
   PaletteSpec? _paletteSpec;
 
@@ -341,6 +343,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
     _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
         activityDetailsMedianDisplayDefault;
+    _showStrokesStridesRevs =
+        prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     _preferencesSpecs = MetricSpec.getPreferencesSpecs(_si, widget.activity.sport);
     _isLight = !_themeManager.isDark();
     _chartTextColor = _themeManager.getProtagonistColor();
@@ -596,6 +600,20 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       ),
     ]);
 
+    if (widget.activity.strides > 0 || _showStrokesStridesRevs) {
+      header.add(
+        ActivityDetailRowWithUnit(
+          themeManager: _themeManager,
+          icon: Icons.numbers,
+          iconSize: _sizeDefault,
+          text: widget.activity.strides.toString(),
+          textStyle: _measurementStyle,
+          unitText: "#",
+          unitStyle: _unitStyle,
+        ),
+      );
+    }
+
     final dateString = DateFormat.Md().format(widget.activity.start);
     final timeString = DateFormat.Hm().format(widget.activity.start);
     final title = "$dateString $timeString";
@@ -624,6 +642,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
 
             // await DbUtils().offsetActivity(widget.activity, 1440);
+
+            // await DbUtils().splitActivity(widget.activity, 29, 87);
 
             // widget.activity.clearSuuntoUpload();
             // DbUtils().updateActivity(widget.activity);

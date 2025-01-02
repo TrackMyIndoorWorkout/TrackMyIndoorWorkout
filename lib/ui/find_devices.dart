@@ -34,10 +34,9 @@ import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';
 import '../devices/gatt/schwinn_x70.dart';
 import '../devices/gatt_maps.dart';
-import '../persistence/isar/db_utils.dart';
-import '../persistence/isar/device_usage.dart';
+import '../persistence/db_utils.dart';
+import '../persistence/device_usage.dart';
 import '../preferences/auto_connect.dart';
-import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
@@ -65,7 +64,6 @@ import 'activities.dart';
 import 'donation.dart';
 import 'models/advertisement_cache.dart';
 import 'parts/boolean_question.dart';
-import 'parts/database_migration.dart';
 import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
@@ -166,26 +164,6 @@ class FindDevicesState extends State<FindDevicesScreen> {
       Logging().log(_logLevel, logLevelInfo, tag, "_startScan", "Scan already in progress");
 
       return;
-    }
-
-    final prefService = Get.find<BasePrefService>();
-    if (prefService.get<bool>(databaseMigrationNeededTag) ?? databaseMigrationNeededDefault) {
-      await Get.bottomSheet(
-        const SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: DatabaseMigrationBottomSheet(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        isScrollControlled: true,
-        ignoreSafeArea: false,
-        enableDrag: false,
-      );
     }
 
     if (!await bluetoothCheck(silent, _logLevel)) {
@@ -434,19 +412,15 @@ class FindDevicesState extends State<FindDevicesScreen> {
         for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
           if (loweredPlatformName.startsWith(lowerPrefix) &&
               (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+              !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
               (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
-              (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                  advertisementDigest.loweredManufacturers.isEmpty ||
-                  advertisementDigest.loweredManufacturers
-                      .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                      .reduce((value, contains) => value || contains))) {
+              advertisementDigest.isPrefixContained(mapEntry.value.manufacturerNameLoweredPrefix)) {
             if (mapEntry.key == technogymRunFourCC &&
                 _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
               continue;
             }
 
-            if ([concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC, concept2ErgFourCC]
-                    .contains(mapEntry.key) &&
+            if (allConcept2FourCCs.contains(mapEntry.key) &&
                 advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
               // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
               // TODO: What does SkiErg implement (if any at all)?

@@ -2,34 +2,39 @@ import 'dart:collection';
 
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/log_level.dart';
+import '../../preferences/revolution_sliding_window.dart';
+import '../../preferences/sensor_data_threshold.dart';
 import '../../utils/constants.dart';
-import '../../utils/delays.dart';
 import '../../utils/logging.dart';
 import 'cadence_data.dart';
 
 mixin CadenceMixin {
   static const String mixinTag = "CADENCE_MIXIN";
-  static int defaultRevolutionSlidingWindow = 10; // Seconds
   static int defaultEventTimeOverflow = 64; // Overflows every 64 seconds
   static int defaultRevolutionOverflow = maxUint16;
 
-  int revolutionSlidingWindow = defaultRevolutionSlidingWindow;
+  int revolutionSlidingWindow = revolutionSlidingWindowDefault;
   int eventTimeOverflow = defaultEventTimeOverflow;
   int revolutionOverflow = defaultRevolutionOverflow;
   int overflowCounter = 0;
 
   ListQueue<CadenceData> cadenceData = ListQueue<CadenceData>();
   int logLevel = logLevelDefault;
+  int sensorDataThreshold = sensorDataThresholdDefault;
 
-  initCadence([revolutionSlidingWindow, eventTimeOverflow, revolutionOverflow]) {
-    this.revolutionSlidingWindow = revolutionSlidingWindow;
+  initCadence([eventTimeOverflow, revolutionOverflow]) {
     this.eventTimeOverflow = eventTimeOverflow;
     this.revolutionOverflow = revolutionOverflow;
 
     if (!testing) {
       final prefService = Get.find<BasePrefService>();
+      revolutionSlidingWindow =
+          prefService.get<int>(revolutionSlidingWindowTag) ?? revolutionSlidingWindowDefault;
       logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+      sensorDataThreshold =
+          prefService.get<int>(sensorDataThresholdTag) ?? sensorDataThresholdDefault;
     }
   }
 
@@ -55,12 +60,21 @@ mixin CadenceMixin {
     final nonNullTime = time ?? 0.0;
     final nonNullRevolutions = revolutions ?? 0;
     if (cadenceData.isNotEmpty) {
-      // Prevent duplicate recording
+      // Prevent queueing of duplicate or bogus cadence data
       final timeDiff = _getTimeDiff(nonNullTime, cadenceData.last.time);
       final revDiff = _getRevDiff(nonNullRevolutions, cadenceData.last.revolutions);
-      if (timeDiff < eps && revDiff < eps) {
-        // Update the duplicate's timestamp
+      if (revDiff < eps) {
+        // The revolution count is the same as the recorded
+        // values, so there is no reason to record it:
+        // Just update last's timestamp with the current time.
+        // (Assuming: processing didn't add much time to the recorded time)
         cadenceData.last.timeStamp = DateTime.now();
+        if (logLevel >= logLevelInfo) {
+          final timeChangeQualifier = timeDiff < eps ? "same" : "new";
+          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
+              "Skipping duplicate rev count with $timeChangeQualifier time: revDiff = $revDiff ; timeDiff = $timeDiff");
+        }
+
         return;
       } else {
         if (nonNullRevolutions < cadenceData.last.revolutions) {

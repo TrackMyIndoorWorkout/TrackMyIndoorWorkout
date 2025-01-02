@@ -1,7 +1,7 @@
 const uploadDisplayMode = "Upload Status Display Mode";
 const uploadDisplayModeTag = "upload_status_display_mode";
 const uploadDisplayModeDescription = "Select Upload Display Mode.";
-const uploadDisplayModeDefault = uploadDisplayModeNone;
+const uploadDisplayModeDefault = uploadDisplayModeAggregate;
 const uploadDisplayModeNone = "none";
 const uploadDisplayModeNoneTitle = "None";
 const uploadDisplayModeNoneDescription =

@@ -55,12 +55,12 @@ extension ScanResultEx on ScanResult {
     final loweredManufacturers =
         manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
     for (final mapEntry in deviceNamePrefixes.values) {
+      final lowerPostfix = mapEntry.deviceNameLoweredPostfix;
       for (final loweredPrefix in mapEntry.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
-            (mapEntry.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.shouldBeIncludedByManufacturer(loweredManufacturers)) {
           return true;
         }
       }
@@ -207,12 +207,9 @@ extension ScanResultEx on ScanResult {
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
           return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
@@ -291,12 +288,9 @@ extension ScanResultEx on ScanResult {
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
             (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
               Image.asset("assets/equipment/Schwinn_logo.png",
@@ -356,11 +350,9 @@ extension ScanResultEx on ScanResult {
 
       for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
         if (loweredPlatformName.startsWith(loweredPrefix) &&
-            (mapEntry.value.manufacturerNamePrefix.isEmpty ||
-                loweredManufacturers.isEmpty ||
-                loweredManufacturers
-                    .map((m) => m.contains(mapEntry.value.manufacturerNameLoweredPrefix))
-                    .reduce((value, contains) => value || contains))) {
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers)) {
           return Tuple2(
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),

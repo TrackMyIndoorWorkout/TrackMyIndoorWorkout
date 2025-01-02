@@ -3,8 +3,9 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cadence_mixin.dart';
-import 'package:track_my_indoor_exercise/persistence/isar/record.dart';
-import 'package:track_my_indoor_exercise/utils/delays.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
+import 'package:track_my_indoor_exercise/preferences/revolution_sliding_window.dart';
+import 'package:track_my_indoor_exercise/preferences/sensor_data_threshold.dart';
 
 import 'utils.dart';
 
@@ -44,7 +45,7 @@ void main() {
 
   group('Cadence Mixin computeCadence computes cadence data properly', () {
     final rnd = Random();
-    for (var lenMinusOne in getRandomInts(smallRepetition, 10, rnd)) {
+    for (var lenMinusOne in List<int>.generate(revolutionSlidingWindowDefault, (index) => index)) {
       final len = lenMinusOne + 1;
       final deltaTimes = getRandomDoubles(len, 1.5, rnd);
       final deltaRevolutions = getRandomDoubles(len, 2.0, rnd);
@@ -76,8 +77,8 @@ void main() {
 
   group('Cadence Mixin trimQueue empties queue when entries are old by time ticks', () {
     final rnd = Random();
-    for (var numRevolutions in getRandomInts(
-        smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
+    for (var numRevolutions
+        in getRandomInts(smallRepetition, revolutionSlidingWindowDefault * 5 + 1, rnd)) {
       numRevolutions++;
       test('# revolutions $numRevolutions', () async {
         final cadenceMixin = CadenceMixinImpl();
@@ -92,7 +93,7 @@ void main() {
 
         expect(cadenceMixin.cadenceData.length, numRevolutions);
         cadenceMixin.addCadenceData(
-            timeTick + CadenceMixin.defaultRevolutionSlidingWindow * 2, revolutions * 100.0);
+            timeTick + revolutionSlidingWindowDefault * 2, revolutions * 100.0);
 
         expect(cadenceMixin.cadenceData.length, 1);
       });
@@ -101,8 +102,8 @@ void main() {
 
   group('Cadence Mixin trimQueue empties queue when entries are old by time stamps', () {
     final rnd = Random();
-    for (var numRevolutions in getRandomInts(
-        smallRepetition, CadenceMixin.defaultRevolutionSlidingWindow * 2 + 1, rnd)) {
+    for (var numRevolutions
+        in getRandomInts(smallRepetition, revolutionSlidingWindowDefault * 5 + 1, rnd)) {
       numRevolutions++;
       test('# revolutions $numRevolutions', () async {
         final cadenceMixin = CadenceMixinImpl();
@@ -118,12 +119,11 @@ void main() {
         expect(cadenceMixin.cadenceData.length, numRevolutions);
         for (final cadenceData in cadenceMixin.cadenceData) {
           final timeStampAdjust = Duration(
-              milliseconds:
-                  CadenceMixin.defaultRevolutionSlidingWindow * 2000 + sensorDataThreshold);
+              milliseconds: revolutionSlidingWindowDefault * 2000 + sensorDataThresholdDefault);
           cadenceData.timeStamp = DateTime.now().subtract(timeStampAdjust);
         }
         cadenceMixin.addCadenceData(
-            timeTick + CadenceMixin.defaultRevolutionSlidingWindow * 2, revolutions * 100.0);
+            timeTick + revolutionSlidingWindowDefault * 2, revolutions * 100.0);
 
         expect(cadenceMixin.cadenceData.length, 1);
       });

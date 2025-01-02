@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:is_first_run/is_first_run.dart';
 import 'package:pref/pref.dart';
 
 import '../preferences/activity_ui.dart';
@@ -24,7 +23,6 @@ import '../preferences/data_connection_addresses.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/data_stream_gap_watchdog_time.dart';
 import '../preferences/database_location.dart';
-import '../preferences/database_migration_needed.dart';
 import '../preferences/device_filtering.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/drag_force_tune.dart';
@@ -32,6 +30,7 @@ import '../preferences/drive_train_loss.dart';
 import '../preferences/enable_asserts.dart';
 import '../preferences/enforced_time_zone.dart';
 import '../preferences/extend_tuning.dart';
+import '../preferences/ftms_data_threshold.dart';
 import '../preferences/generic.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
@@ -53,7 +52,9 @@ import '../preferences/multi_sport_device_support.dart';
 import '../preferences/paddling_with_cycling_sensors.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/recalculate_more.dart';
+import '../preferences/revolution_sliding_window.dart';
 import '../preferences/scan_duration.dart';
+import '../preferences/sensor_data_threshold.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
@@ -169,7 +170,6 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     onStageStatisticsAlternationPeriodTag: onStageStatisticsAlternationPeriodDefault,
     averageChartColorTag: averageChartColorDefault,
     maximumChartColorTag: maximumChartColorDefault,
-    databaseMigrationNeededTag: databaseMigrationNeededDefault,
     activityListMachineNameInHeaderTag: activityListMachineNameInHeaderDefault,
     activityListBluetoothAddressInHeaderTag: activityListBluetoothAddressInHeaderDefault,
     activityDetailsMedianDisplayTag: activityDetailsMedianDisplayDefault,
@@ -188,6 +188,9 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     athleteFirstNameTag: athleteFirstNameDefault,
     athleteLastNameTag: athleteLastNameDefault,
     athleteEmailTag: athleteEmailDefault,
+    ftmsDataThresholdTag: ftmsDataThresholdDefault,
+    sensorDataThresholdTag: sensorDataThresholdDefault,
+    revolutionSlidingWindowTag: revolutionSlidingWindowDefault,
   };
 
   for (var sport in SportSpec.sportPrefixes) {
@@ -427,12 +430,6 @@ Future<BasePrefService> initPreferences() async {
 
     // Activities have stored timeZone, but we would need to convert those
     // only if TrackManager.getTrack would get the timeZone besides the sport
-  }
-
-  if (prefVersion > preferencesVersionIsarMigration) {
-    if (await IsFirstRun.isFirstRun()) {
-      prefService.set<bool>(databaseMigrationNeededTag, false);
-    }
   }
 
   await prefService.set<int>(preferencesVersionTag, preferencesVersionNext);

@@ -3,14 +3,12 @@ import 'package:get/get.dart';
 import 'package:isar/isar.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../devices/device_descriptors/device_descriptor.dart';
-import '../../utils/address_names.dart';
-import '../../utils/constants.dart';
-import '../../utils/power_speed_mixin.dart';
+import '../devices/device_descriptors/device_descriptor.dart';
+import '../utils/address_names.dart';
+import '../utils/constants.dart';
+import '../utils/power_speed_mixin.dart';
 import 'activity.dart';
 import 'calorie_tune.dart';
-import 'floor_migration.dart';
-import 'floor_record_migration.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
@@ -58,6 +56,7 @@ class DbUtils with PowerSpeedMixin {
 
     var previousRecord = records.first;
     double calories = 0.0;
+    double strides = 0.0;
     double distance = 0.0;
     double movingTime = 0.0;
     for (final record in records.skip(1)) {
@@ -67,11 +66,16 @@ class DbUtils with PowerSpeedMixin {
       double speed = record.speed ?? 0.0;
       int power = record.power ?? 0;
       int cadence = record.cadence ?? 0;
+
       bool moving = (speed > 0.0 || power > 0 || cadence > 0);
       if (moving) {
         movingTime += dTMillis;
         if ((record.cadence ?? 0) <= 0 && (previousRecord.cadence ?? 0) > 0) {
           record.cadence = previousRecord.cadence;
+        }
+
+        if ((record.cadence ?? 0) > 0) {
+          strides += (record.cadence ?? 0) * dTMillis / (60 * 1000);
         }
 
         if ((record.power ?? 0) <= 0 && (previousRecord.power ?? 0) > 0) {
@@ -119,6 +123,10 @@ class DbUtils with PowerSpeedMixin {
 
     activity.distance = previousRecord.distance!;
     activity.calories = previousRecord.calories!;
+    if (strides.toInt() > activity.strides) {
+      activity.strides = strides.toInt();
+    }
+
     if (activity.end == null || activity.end!.compareTo(previousRecord.timeStamp!) <= 0) {
       activity.end = previousRecord.timeStamp;
     }
@@ -254,25 +262,38 @@ class DbUtils with PowerSpeedMixin {
       }
     }
 
-    if (activity.movingTime == 0) {
+    if (activity.movingTime == 0 || activity.strides == 0) {
       final records = await getRecords(activity.id);
       if (records.isEmpty) {
         return false;
       }
 
       double movingMillis = 0;
+      double strides = 0;
       var previousRecord = records.first;
       for (final record in records.skip(1)) {
+        final dTMillis = record.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
         if (!record.isNotMoving()) {
-          final dTMillis = record.timeStamp!.difference(previousRecord.timeStamp!).inMilliseconds;
           movingMillis += dTMillis;
+        }
+
+        double strokeCount = record.strokeCount ?? 0.0;
+        if (strokeCount > eps) {
+          strides += strokeCount * dTMillis / (1000 * 60);
         }
 
         previousRecord = record;
       }
 
-      if (movingMillis > 0) {
-        activity.movingTime = movingMillis.toInt();
+      if (movingMillis > eps || strides > eps) {
+        if (movingMillis > eps) {
+          activity.movingTime = movingMillis.toInt();
+        }
+
+        if (strides > eps) {
+          activity.strides = strides.toInt();
+        }
+
         updated++;
       }
     }
@@ -282,38 +303,6 @@ class DbUtils with PowerSpeedMixin {
     }
 
     return updated > 0;
-  }
-
-  Future<int?> getIsarId(String entityName, int floorId) async {
-    if (floorId == Isar.autoIncrement) {
-      return null;
-    }
-
-    final isarIds = await database.floorMigrations
-        .filter()
-        .entityNameEqualTo(entityName)
-        .and()
-        .floorIdEqualTo(floorId)
-        .isarIdProperty()
-        .findAll();
-
-    return isarIds.isNotEmpty ? isarIds.first : null;
-  }
-
-  Future<int?> latestFloorRecordId(int activityId) async {
-    if (activityId == Isar.autoIncrement) {
-      return null;
-    }
-
-    final floorIds = await database.floorRecordMigrations
-        .where()
-        .filter()
-        .activityIdEqualTo(activityId)
-        .sortByFloorIdDesc()
-        .floorIdProperty()
-        .findAll();
-
-    return floorIds.isNotEmpty ? floorIds.first : null;
   }
 
   Future<void> getAddressNameDictionary(AddressNames addressNames) async {
@@ -393,6 +382,49 @@ class DbUtils with PowerSpeedMixin {
         }
       }
     });
+
+    return true;
+  }
+
+  Future<bool> splitActivity(Activity activity, int minutesSplitPoint, int targetId) async {
+    // Assumes empty target activity
+    final targetRecords = await getRecords(targetId);
+    if (targetRecords.isNotEmpty) {
+      return false;
+    }
+
+    final target = database.activitys.getSync(targetId);
+    if (target == null) {
+      return false;
+      // Establish new Activity instead of exiting
+    }
+
+    final splitPoint = Duration(minutes: minutesSplitPoint);
+
+    final records = await getRecords(activity.id);
+    if (records.isEmpty) {
+      return false;
+    }
+
+    final watermark = activity.start.add(splitPoint);
+    database.writeTxnSync(() {
+      for (final record in records) {
+        if (record.timeStamp != null && record.timeStamp!.compareTo(watermark) > 0) {
+          record.activityId = target.id;
+          database.records.putSync(record);
+        }
+      }
+    });
+
+    if (activity.end != null) {
+      activity.end = activity.end!.add(-splitPoint);
+    }
+
+    updateActivity(activity);
+
+    recalculateCumulative(activity, true);
+
+    recalculateCumulative(target, true);
 
     return true;
   }
