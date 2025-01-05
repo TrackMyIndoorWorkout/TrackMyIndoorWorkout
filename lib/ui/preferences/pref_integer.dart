@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:pref/pref.dart';
+
+import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
-class PrefInteger extends StatefulWidget {
+class PrefInteger extends ConsumerStatefulWidget {
   const PrefInteger({
     super.key,
     this.title,
@@ -28,23 +31,17 @@ class PrefInteger extends StatefulWidget {
   PrefIntegerState createState() => PrefIntegerState();
 }
 
-class PrefIntegerState extends State<PrefInteger> {
-  Color borderColor = Colors.black26;
-  Color backgroundColor = Colors.white;
-  Color iconColor = Colors.black54;
-
-  @override
-  void initState() {
-    super.initState();
-
-    final themeManager = Get.find<ThemeManager>();
-    borderColor = themeManager.getGreyColor();
-    backgroundColor = themeManager.isDark() ? Colors.grey.shade800 : Colors.grey.shade200;
-    iconColor = themeManager.getProtagonistColor();
-  }
+class PrefIntegerState extends ConsumerState<PrefInteger> {
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final borderColor = _themeManager.getGreyColor(themeMode);
+    final backgroundColor =
+        _themeManager.isDark(themeMode) ? Colors.grey.shade800 : Colors.grey.shade200;
+    final iconColor = _themeManager.getProtagonistColor(themeMode);
+
     return PrefCustom<int>.widget(
       pref: widget.pref,
       title: widget.title,

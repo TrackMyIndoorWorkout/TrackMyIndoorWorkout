@@ -57,7 +57,7 @@ import 'parts/sport_picker.dart';
 import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
 
-class ActivitiesScreen extends StatefulWidget {
+class ActivitiesScreen extends ConsumerStatefulWidget {
   const ActivitiesScreen({super.key});
 
   @override
@@ -555,7 +555,7 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
 
           if (_uploadDisplayMode == uploadDisplayModeDetailed && activity.isUploaded(anyChoice)) {
             List<Widget> uploadIcons = [];
-            for (var portal in getPortalChoices(false, _themeManager)) {
+            for (var portal in getPortalChoices(false, _themeManager, themeMode)) {
               if (activity.isUploaded(portal.name)) {
                 uploadIcons.add(portal.getSvg(true, _sizeDefault / 2));
               }
@@ -624,7 +624,7 @@ class ActivitiesScreenState extends ConsumerState<ActivitiesScreen> with Widgets
               unitText: 'cal',
               unitStyle: _unitStyle,
             ),
-            _actionButtonRow(activity, _sizeDefault2),
+            _actionButtonRow(activity, _sizeDefault2, themeMode),
           ]);
 
           return Card(

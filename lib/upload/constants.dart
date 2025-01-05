@@ -36,7 +36,8 @@ class PortalChoiceDescriptor {
   }
 }
 
-List<PortalChoiceDescriptor> getPortalChoices(bool justAuth, ThemeManager themeManager, ThemeMode themeMode) {
+List<PortalChoiceDescriptor> getPortalChoices(
+    bool justAuth, ThemeManager themeManager, ThemeMode themeMode) {
   return [
     PortalChoiceDescriptor(
       portalNames[0],

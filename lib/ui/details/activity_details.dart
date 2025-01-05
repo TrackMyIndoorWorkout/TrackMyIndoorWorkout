@@ -47,7 +47,8 @@ class ActivityDetailsScreen extends ConsumerStatefulWidget {
   ActivityDetailsScreenState createState() => ActivityDetailsScreenState();
 }
 
-class ActivityDetailsScreenState extends ConsumerState<ActivityDetailsScreen> with WidgetsBindingObserver {
+class ActivityDetailsScreenState extends ConsumerState<ActivityDetailsScreen>
+    with WidgetsBindingObserver {
   int _editCount = 0;
   int _pointCount = 0;
   List<Record> _allRecords = [];
@@ -538,6 +539,7 @@ class ActivityDetailsScreenState extends ConsumerState<ActivityDetailsScreen> wi
     final expandableThemeData = ExpandableThemeData(
       iconColor: _themeManager.getProtagonistColor(themeMode),
     );
+    _chartAvgColor = _themeManager.getAverageChartColor();
 
     final List<Widget> header = [
       ActivityDetailRowWithUnit(

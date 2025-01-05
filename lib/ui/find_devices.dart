@@ -842,7 +842,7 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
           _isScanning
               ? JumpingDotsProgressIndicator(
                   fontSize: 30.0,
-                  color: _themeManager.getProtagonistColor(),
+                  color: _themeManager.getProtagonistColor(themeMode),
                 )
               : (_goingToRecording || _pairingHrm)
                   ? HeartbeatProgressIndicator(
@@ -1119,8 +1119,7 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
                 const Tuple2<IconData, String>(Icons.coffee, "Donation"),
                 const Tuple2<IconData, String>(Icons.help, "About"),
                 const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
-              ],
-              context);
+              ], context);
             },
           ),
           _themeManager.getAboutFab(),
@@ -1137,7 +1136,8 @@ class FindDevicesState extends ConsumerState<FindDevicesScreen> {
                     await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
                   }
                 })
-              : _themeManager.getGreenFab(Icons.search, themeMode, () async => await _startScan(false)),
+              : _themeManager.getGreenFab(
+                  Icons.search, themeMode, () async => await _startScan(false)),
           _themeManager.getBlueFab(
             Icons.settings,
             themeMode,

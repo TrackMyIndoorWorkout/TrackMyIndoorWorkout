@@ -1,10 +1,12 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class ActivityDetailRowBase extends StatelessWidget {
+class ActivityDetailRowBase extends ConsumerWidget {
   const ActivityDetailRowBase({
     super.key,
     required this.themeManager,
@@ -31,9 +33,10 @@ class ActivityDetailRowBase extends StatelessWidget {
   final bool fitHorizontally;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
     List<Widget> row = [
-      themeManager.getBlueIcon(icon, iconSize),
+      themeManager.getBlueIcon(icon, iconSize, themeMode),
     ];
 
     if (spacer) {

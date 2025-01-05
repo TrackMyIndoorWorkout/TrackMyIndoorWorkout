@@ -218,8 +218,13 @@ extension ScanResultEx on ScanResult {
     return getMachineType(ftmsServiceDataMachineTypes, deviceSport).icon;
   }
 
-  Tuple2<Widget, Widget> getLogoAndBanner(List<MachineType> ftmsServiceDataMachineTypes,
-      String deviceSport, double logoSize, double mediaWidth, ThemeManager themeManager) {
+  Tuple2<Widget, Widget> getLogoAndBanner(
+      List<MachineType> ftmsServiceDataMachineTypes,
+      String deviceSport,
+      double logoSize,
+      double mediaWidth,
+      ThemeManager themeManager,
+      ThemeMode themeMode) {
     final loweredPlatformName = device.platformName.toLowerCase();
     if (advertisementData.serviceUuids.isNotEmpty) {
       final serviceUuids = advertisementData.uuids;
@@ -337,7 +342,7 @@ extension ScanResultEx on ScanResult {
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),
               size: logoSize,
-              color: themeManager.getProtagonistColor(),
+              color: themeManager.getProtagonistColor(themeMode),
             ),
             Container(),
           );
@@ -357,7 +362,7 @@ extension ScanResultEx on ScanResult {
             Icon(
               getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),
               size: logoSize,
-              color: themeManager.getProtagonistColor(),
+              color: themeManager.getProtagonistColor(themeMode),
             ),
             Container(),
           );
@@ -369,7 +374,7 @@ extension ScanResultEx on ScanResult {
       Icon(
         getMachineType(ftmsServiceDataMachineTypes, deviceSport).icon,
         size: logoSize,
-        color: themeManager.getProtagonistColor(),
+        color: themeManager.getProtagonistColor(themeMode),
       ),
       Container(),
     );

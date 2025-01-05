@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
 
+import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
-class SpinnerInput extends StatefulWidget {
+class SpinnerInput extends ConsumerStatefulWidget {
   static const defaultSize = Size(35.0, 35.0);
 
   final bool disabledPopup;
@@ -68,22 +70,13 @@ class SpinnerInput extends StatefulWidget {
   SpinnerInputState createState() => SpinnerInputState();
 }
 
-class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixin {
+class SpinnerInputState extends ConsumerState<SpinnerInput> with TickerProviderStateMixin {
   TextEditingController? textEditingController;
   AnimationController? popupAnimationController;
   final _focusNode = FocusNode();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
 
   Timer? timer;
-
-  ButtonStyle? _plusSpinnerStyle;
-  Size? _plusSpinnerSize;
-  Widget? _plusSpinnerChild;
-  ButtonStyle? _minusSpinnerStyle;
-  Size? _minusSpinnerSize;
-  Widget? _minusSpinnerChild;
-  ButtonStyle? _popupButtonStyle;
-  Size? _popupButtonSize;
-  Widget? _popupButtonChild;
 
   @override
   void initState() {
@@ -105,43 +98,6 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
       }
     });
 
-    final themeManager = Get.find<ThemeManager>();
-    // initialize buttons
-    _plusSpinnerSize = widget.plusButtonSize ?? SpinnerInput.defaultSize;
-    _plusSpinnerChild = widget.plusButtonChild ?? const Icon(Icons.add);
-    _plusSpinnerStyle = widget.plusButtonStyle ??
-        ElevatedButton.styleFrom(
-          minimumSize: _plusSpinnerSize,
-          shape: const CircleBorder(),
-          foregroundColor: themeManager.getProtagonistColor(),
-          backgroundColor: themeManager.getBlueColorInverse(),
-          padding: const EdgeInsets.all(0),
-        );
-
-    _minusSpinnerSize = widget.minusButtonSize ?? SpinnerInput.defaultSize;
-    _minusSpinnerChild = widget.minusButtonChild ?? const Icon(Icons.remove);
-    _minusSpinnerStyle = widget.minusButtonStyle ??
-        ElevatedButton.styleFrom(
-          minimumSize: _minusSpinnerSize,
-          shape: const CircleBorder(),
-          foregroundColor: themeManager.getProtagonistColor(),
-          backgroundColor: themeManager.getBlueColorInverse(),
-          padding: const EdgeInsets.all(0),
-        );
-
-    _popupButtonSize = widget.popupButtonSize ?? SpinnerInput.defaultSize;
-    _popupButtonChild = widget.popupButtonChild ?? const Icon(Icons.check);
-    _popupButtonStyle = widget.popupButtonStyle ??
-        ElevatedButton.styleFrom(
-          minimumSize: _popupButtonSize,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-          ),
-          foregroundColor: themeManager.getProtagonistColor(),
-          backgroundColor: themeManager.getGreenColor(),
-          padding: const EdgeInsets.all(1),
-        );
-
     super.initState();
   }
 
@@ -154,6 +110,43 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    // initialize buttons
+    final plusSpinnerSize = widget.plusButtonSize ?? SpinnerInput.defaultSize;
+    final plusSpinnerChild = widget.plusButtonChild ?? const Icon(Icons.add);
+    final plusSpinnerStyle = widget.plusButtonStyle ??
+        ElevatedButton.styleFrom(
+          minimumSize: plusSpinnerSize,
+          shape: const CircleBorder(),
+          foregroundColor: _themeManager.getProtagonistColor(themeMode),
+          backgroundColor: _themeManager.getBlueColorInverse(themeMode),
+          padding: const EdgeInsets.all(0),
+        );
+
+    final minusSpinnerSize = widget.minusButtonSize ?? SpinnerInput.defaultSize;
+    final minusSpinnerChild = widget.minusButtonChild ?? const Icon(Icons.remove);
+    final minusSpinnerStyle = widget.minusButtonStyle ??
+        ElevatedButton.styleFrom(
+          minimumSize: minusSpinnerSize,
+          shape: const CircleBorder(),
+          foregroundColor: _themeManager.getProtagonistColor(themeMode),
+          backgroundColor: _themeManager.getBlueColorInverse(themeMode),
+          padding: const EdgeInsets.all(0),
+        );
+
+    final popupButtonSize = widget.popupButtonSize ?? SpinnerInput.defaultSize;
+    final popupButtonChild = widget.popupButtonChild ?? const Icon(Icons.check);
+    final popupButtonStyle = widget.popupButtonStyle ??
+        ElevatedButton.styleFrom(
+          minimumSize: popupButtonSize,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ),
+          foregroundColor: _themeManager.getProtagonistColor(themeMode),
+          backgroundColor: _themeManager.getGreenColor(themeMode),
+          padding: const EdgeInsets.all(1),
+        );
+
     return Directionality(
       textDirection: widget.direction,
       child: Stack(
@@ -162,15 +155,15 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(
-                width: _minusSpinnerSize!.width,
-                height: _minusSpinnerSize!.height,
+                width: minusSpinnerSize.width,
+                height: minusSpinnerSize.height,
                 child: GestureDetector(
                   child: ElevatedButton(
-                    style: _minusSpinnerStyle,
+                    style: minusSpinnerStyle,
                     onPressed: () {
                       decrease();
                     },
-                    child: _minusSpinnerChild,
+                    child: minusSpinnerChild,
                   ),
                   onLongPress: () {
                     if (widget.disabledLongPress == false) {
@@ -207,15 +200,15 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
                 ),
               ),
               SizedBox(
-                width: _plusSpinnerSize!.width,
-                height: _plusSpinnerSize!.height,
+                width: plusSpinnerSize.width,
+                height: plusSpinnerSize.height,
                 child: GestureDetector(
                   child: ElevatedButton(
-                    style: _plusSpinnerStyle,
+                    style: plusSpinnerStyle,
                     onPressed: () {
                       increase();
                     },
-                    child: _plusSpinnerChild,
+                    child: plusSpinnerChild,
                   ),
                   onLongPress: () {
                     if (widget.disabledLongPress == false) {
@@ -237,7 +230,7 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
               top: 0,
               right: 0,
               bottom: 0,
-              child: textFieldPopUp(),
+              child: textFieldPopUp(popupButtonSize, popupButtonChild, popupButtonStyle),
             ),
         ],
       ),
@@ -270,7 +263,8 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
     }
   }
 
-  Widget textFieldPopUp() {
+  Widget textFieldPopUp(
+      Size popupButtonSize, Widget popupButtonChild, ButtonStyle popupButtonStyle) {
     int maxLength = widget.maxValue.toStringAsFixed(widget.fractionDigits).length;
     if (widget.fractionDigits > 0) maxLength += widget.fractionDigits;
 
@@ -319,10 +313,10 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
               ),
               Expanded(
                 child: SizedBox(
-                  width: _popupButtonSize!.width,
-                  height: _popupButtonSize!.height,
+                  width: popupButtonSize.width,
+                  height: popupButtonSize.height,
                   child: ElevatedButton(
-                    style: _popupButtonStyle,
+                    style: popupButtonStyle,
                     onPressed: () {
                       FocusScope.of(context).requestFocus(FocusNode());
                       try {
@@ -345,7 +339,7 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
                       }
                       popupAnimationController?.reset();
                     },
-                    child: _popupButtonChild,
+                    child: popupButtonChild,
                   ),
                 ),
               )

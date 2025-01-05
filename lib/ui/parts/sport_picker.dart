@@ -4,6 +4,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+
 import '../../providers/theme_mode.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
@@ -69,7 +70,7 @@ class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> 
                       });
                     },
                     icon: themeManager.getBlueIcon(
-                        getSportIcon(e.value), largerTextStyle.fontSize!),
+                        getSportIcon(e.value), largerTextStyle.fontSize!, themeMode),
                     label: TextOneLine(
                       e.value,
                       style: _sportIndex == e.key ? selectedTextStyle : largerTextStyle,

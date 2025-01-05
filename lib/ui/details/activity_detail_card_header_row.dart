@@ -1,10 +1,12 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
-class ActivityDetailCardHeaderRow extends StatelessWidget {
+class ActivityDetailCardHeaderRow extends ConsumerWidget {
   const ActivityDetailCardHeaderRow({
     super.key,
     required this.themeManager,
@@ -27,14 +29,15 @@ class ActivityDetailCardHeaderRow extends StatelessWidget {
   final TextStyle unitStyle;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
     return FitHorizontally(
       shrinkLimit: shrinkLimit,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          themeManager.getBlueIcon(icon, iconSize),
+          themeManager.getBlueIcon(icon, iconSize, themeMode),
           Text(statName, style: unitStyle),
           const Spacer(),
           TextOneLine(

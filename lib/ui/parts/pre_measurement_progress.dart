@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
+import '../../providers/theme_mode.dart';
+import '../../utils/constants.dart';
+import '../../utils/theme_manager.dart';
 import '../models/progress_state.dart';
 
-class PreMeasurementProgress extends StatefulWidget {
+class PreMeasurementProgress extends ConsumerStatefulWidget {
   final String phase;
   final int hundredTime;
   late final int progressTimerGap;
@@ -27,12 +31,10 @@ class PreMeasurementProgress extends StatefulWidget {
   PreMeasurementProgressState createState() => PreMeasurementProgressState();
 }
 
-class PreMeasurementProgressState extends State<PreMeasurementProgress> {
+class PreMeasurementProgressState extends ConsumerState<PreMeasurementProgress> {
   double _progressValue = 0.0;
-  double _sizeDefault = 10.0;
   Timer? _timer;
-
-  TextStyle _textStyle = const TextStyle();
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
 
   void increaseProgress(double progress) {
     setState(() {
@@ -46,8 +48,6 @@ class PreMeasurementProgressState extends State<PreMeasurementProgress> {
   @override
   void initState() {
     super.initState();
-    _sizeDefault = Get.textTheme.displayMedium!.fontSize!;
-    _textStyle = Get.textTheme.headlineMedium!;
     final progressState = Get.find<ProgressState>();
     progressState.progressCount += 1;
     Get.put<ProgressState>(progressState);
@@ -70,18 +70,25 @@ class PreMeasurementProgressState extends State<PreMeasurementProgress> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final sizeDefault = Theme.of(context).textTheme.displayMedium!.fontSize!;
+    final textStyle = Theme.of(context).textTheme.headlineMedium!.apply(
+          fontFamily: fontFamily,
+          color: _themeManager.getProtagonistColor(themeMode),
+        );
+
     return Scaffold(
       body: LoadingOverlay(
         isLoading: true,
         progressIndicator: SizedBox(
-          height: _sizeDefault * 2,
-          width: _sizeDefault * 2,
+          height: sizeDefault * 2,
+          width: sizeDefault * 2,
           child: CircularProgressIndicator(
-            strokeWidth: _sizeDefault,
+            strokeWidth: sizeDefault,
             value: _progressValue,
           ),
         ),
-        child: Text(widget.phase, style: _textStyle),
+        child: Text(widget.phase, style: textStyle),
       ),
     );
   }

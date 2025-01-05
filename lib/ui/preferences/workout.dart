@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/stage_mode.dart';
 import '../../preferences/time_display_mode.dart';
@@ -61,7 +62,8 @@ class WorkoutPreferencesScreenState extends State<WorkoutPreferencesScreen> {
         pref: workoutModeTag,
       ),
       PrefLabel(
-        title: Text(timeDisplayMode, style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
+        title:
+            Text(timeDisplayMode, style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(timeDisplayModeElapsedTitle),
@@ -88,7 +90,8 @@ class WorkoutPreferencesScreenState extends State<WorkoutPreferencesScreen> {
         pref: instantOnStageTag,
       ),
       PrefLabel(
-        title: Text(onStageStatisticsType, style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
+        title: Text(onStageStatisticsType,
+            style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
       ),
       const PrefRadio<String>(
         title: Text(onStageStatisticsTypeNoneTitle),

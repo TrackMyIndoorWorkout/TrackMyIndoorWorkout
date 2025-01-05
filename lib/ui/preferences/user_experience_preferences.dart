@@ -145,7 +145,8 @@ class UserExperiencePreferencesScreenState extends ConsumerState<UserExperienceP
         child: const Text(instantExportLocationPickCommand),
       ),
       PrefLabel(
-        title: Text(activityListAndDetails, style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
+        title: Text(activityListAndDetails,
+            style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
       ),
       const PrefCheckbox(
         title: Text(activityListMachineNameInHeader),

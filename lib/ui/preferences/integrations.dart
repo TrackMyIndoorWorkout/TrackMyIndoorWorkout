@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/instant_upload.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../preferences/upload_display_mode.dart';
@@ -119,7 +120,7 @@ class IntegrationPreferencesScreenState extends ConsumerState<IntegrationPrefere
     final themeMode = ref.watch(themeModeProvider);
     final largerTextStyle = Theme.of(context).textTheme.headlineMedium!;
     integrationPreferences.addAll(
-      getPortalChoices(true, themeManager, themeMode).asMap().entries.map(
+      getPortalChoices(true, _themeManager, themeMode).asMap().entries.map(
             (e) => PrefButton(
               child: GestureDetector(
                 onTap: () async {

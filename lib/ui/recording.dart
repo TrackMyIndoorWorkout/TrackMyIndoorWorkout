@@ -1087,9 +1087,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
       _rankInfoColumnCount++;
     }
 
-    _zoneIndexColoring =
-        prefService.get<bool>(zoneIndexDisplayColoringTag) ?? zoneIndexDisplayColoringDefault;
-
     _initializeHeartRateMonitor(false);
     _connectOnDemand();
     _isLocked = false;
@@ -1626,7 +1623,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
   Color _getSpeedColor(int selfRank, ThemeMode themeMode, {required bool background}) {
     if (!_leaderboardFeature || selfRank == 0) {
       if (_zoneIndexes[_speedNIndex] != null) {
-        return _getZoneColor(metricIndex: _speedNIndex, background: background);
+        return _getZoneColor(themeMode, metricIndex: _speedNIndex, background: background);
       } else {
         return background ? Colors.transparent : _themeManager.getBlueColor(themeMode);
       }
@@ -2072,8 +2069,8 @@ class RecordingState extends ConsumerState<RecordingScreen> {
       fontSize: 11 * _sizeAdjust,
       color: _chartTextColor,
     );
-    _chartAvgColor = _themeManager.getAverageChartColor(themeMode);
-    _chartMaxColor = _themeManager.getMaximumChartColor(themeMode);
+    _chartAvgColor = _themeManager.getAverageChartColor();
+    _chartMaxColor = _themeManager.getMaximumChartColor();
     final expandableThemeData = ExpandableThemeData(
       hasIcon: !_simplerUi,
       iconColor: _themeManager.getProtagonistColor(themeMode),
@@ -2085,8 +2082,6 @@ class RecordingState extends ConsumerState<RecordingScreen> {
     _lightRed = isDark ? Colors.red.shade900 : Colors.redAccent.shade100;
     _lightGreen = isDark ? Colors.green.shade900 : Colors.lightGreenAccent.shade100;
     _lightBlue = isDark ? Colors.indigo.shade900 : Colors.lightBlueAccent.shade100;
-
-    const separatorHeight = 1.0;
 
     final measuredSize = Get.mediaQuery.size;
     if (measuredSize.width != _mediaWidth || measuredSize.height != _mediaHeight) {
@@ -2262,7 +2257,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
           ),
           Column(
             children: [
-              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
+              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2, themeMode),
               SizedBox(
                 width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
                 child: Center(
@@ -2480,7 +2475,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
     if (_showResistanceLevel) {
       final List<Widget> rowChildren = _onStageStatisticsType == onStageStatisticsTypeNone
           ? [
-              _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault),
+              _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault, themeMode),
               const Spacer(),
               Text(_optionalValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
               SizedBox(
@@ -2503,7 +2498,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
               ),
               Column(
                 children: [
-                  _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault / 2),
+                  _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault / 2, themeMode),
                   SizedBox(
                     width: _sizeDefault * (_simplerUi ? 1 : 0.65),
                     child: Center(
@@ -2576,7 +2571,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
         ),
       ),
       ColoredBox(
-        color: _getTargetHrColor(targetHrState, true),
+        color: _getTargetHrColor(targetHrState, true, themeMode),
         child: ExpandablePanel(
           theme: expandableThemeData,
           header: rows[_hr1Index],
@@ -2593,7 +2588,7 @@ class RecordingState extends ConsumerState<RecordingScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueIcon(Icons.numbers, _sizeDefault),
+            _themeManager.getBlueIcon(Icons.numbers, _sizeDefault, themeMode),
             const Spacer(),
             Text(_optionalValues[_strokeCountIndex], style: _fullMeasurementStyle.apply()),
             SizedBox(
@@ -2786,8 +2781,8 @@ class RecordingState extends ConsumerState<RecordingScreen> {
           }
         }),
         _themeManager.getBlueFab(
-            _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow), themeMode,
-            () async {
+            _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
+            themeMode, () async {
           if (!_busy) {
             await startStopAction();
           }

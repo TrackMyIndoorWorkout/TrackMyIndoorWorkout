@@ -60,7 +60,8 @@ class HeartRateMonitorScanResultTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var heartRateMonitor =
         Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
-    final captionStyle = Theme.of(context).textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
+    final captionStyle =
+        Theme.of(context).textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
     final themeMode = ref.watch(themeModeProvider);

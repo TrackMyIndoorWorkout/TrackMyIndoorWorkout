@@ -34,7 +34,7 @@ class TrackMyIndoorExerciseAppState extends ConsumerState<TrackMyIndoorExerciseA
         debugShowCheckedModeBanner: false,
         showPerformanceOverlay: widget.prefService.get<bool>(showPerformanceOverlayTag) ??
             showPerformanceOverlayDefault,
-        color: themeManager.getHeaderColor(themeMode),
+        color: _themeManager.getHeaderColor(themeMode),
         theme: FlexThemeData.light(
           scheme: FlexScheme.indigoM3,
           useMaterial3: true,

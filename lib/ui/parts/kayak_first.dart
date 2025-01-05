@@ -3,10 +3,12 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:pref/pref.dart';
+
 import '../../devices/device_descriptors/kayak_first_descriptor.dart';
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
@@ -14,32 +16,28 @@ import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/athlete_body_weight.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/log_level.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import '../preferences/kayak_first_display_slot.dart';
 
-class KayakFirstBottomSheet extends StatefulWidget {
+class KayakFirstBottomSheet extends ConsumerStatefulWidget {
   const KayakFirstBottomSheet({super.key});
 
   @override
   KayakFirstBottomSheetState createState() => KayakFirstBottomSheetState();
 }
 
-class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
+class KayakFirstBottomSheetState extends ConsumerState<KayakFirstBottomSheet> {
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
   String _hrmBatteryLevel = notAvailable;
   int _logLevel = logLevelDefault;
-  final ThemeManager _themeManager = Get.find<ThemeManager>();
-  double _sizeDefault = 10.0;
-  Color _borderColor = Colors.black;
-  Color _backgroundColor = Colors.white;
-  Color _iconColor = Colors.black;
-  TextStyle _textStyle = const TextStyle();
   final BasePrefService _prefService = Get.find<BasePrefService>();
   int _athleteWeight = athleteBodyWeightDefault;
   final List<int> _slotChoices = kayakFirstDisplaySlots.map((s) => s.item4).toList(growable: false);
   double? _mediaWidth;
+  final ThemeManager _themeManager = Get.find<ThemeManager>();
 
   Future<String> _readBatteryLevel(DeviceBase? device) async {
     int batteryLevel = await device?.readBatteryLevel() ?? -1;
@@ -60,14 +58,6 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _textStyle = Get.textTheme.displaySmall!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
-    );
-    _sizeDefault = _textStyle.fontSize!;
-    _borderColor = _themeManager.getGreyColor();
-    _backgroundColor = _themeManager.isDark() ? Colors.grey.shade800 : Colors.grey.shade200;
-    _iconColor = _themeManager.getProtagonistColor();
     _athleteWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
     kayakFirstDisplaySlots.forEachIndexed((index, element) {
       _slotChoices[index] = _prefService.get<int>(element.item2) ?? element.item4;
@@ -86,14 +76,25 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
       _mediaWidth = mediaWidth;
     }
 
+    final themeMode = ref.watch(themeModeProvider);
+    final textStyle = Get.textTheme.displaySmall!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(themeMode),
+    );
+    final sizeDefault = textStyle.fontSize!;
+    final borderColor = _themeManager.getGreyColor(themeMode);
+    final backgroundColor =
+        _themeManager.isDark(themeMode) ? Colors.grey.shade800 : Colors.grey.shade200;
+    final iconColor = _themeManager.getProtagonistColor(themeMode);
+
     final List<Widget> listItems = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _themeManager.getBlueIcon(Icons.favorite, _sizeDefault),
-          _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
-          Text(_hrmBatteryLevel, style: _textStyle),
+          _themeManager.getBlueIcon(Icons.favorite, sizeDefault, themeMode),
+          _themeManager.getBlueIcon(Icons.battery_full, sizeDefault, themeMode),
+          Text(_hrmBatteryLevel, style: textStyle),
         ],
       ),
       const Divider(),
@@ -110,11 +111,11 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
         showMinMax: true,
         showSuffix: false,
         hasBorder: true,
-        borderColor: _borderColor,
+        borderColor: borderColor,
         hasDividers: true,
-        dividerColor: _borderColor,
-        backgroundColor: _backgroundColor,
-        iconColor: _iconColor,
+        dividerColor: borderColor,
+        backgroundColor: backgroundColor,
+        iconColor: iconColor,
         onUpdate: (int value) {
           _athleteWeight = value;
           _prefService.set<int>(athleteBodyWeightIntTag, value);
@@ -176,7 +177,7 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     return Scaffold(
       body: ListView(children: listItems),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.close(1)),
+      floatingActionButton: _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.close(1)),
     );
   }
 }

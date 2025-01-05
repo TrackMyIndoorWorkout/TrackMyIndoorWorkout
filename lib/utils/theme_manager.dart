@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
+import '../preferences/stage_mode.dart';
 import '../ui/about.dart';
-import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
@@ -212,7 +213,7 @@ class ThemeManager {
   Color getMaximumChartColor() {
     final prefService = Get.find<BasePrefService>();
     final maximumChartColorValue =
-        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+        prefService.get<int>(maximumChartColorTag) ?? maximumChartColorDefault;
     return Color(maximumChartColorValue);
   }
 }

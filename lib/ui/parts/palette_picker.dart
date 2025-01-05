@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:group_button/group_button.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../preferences/palette_spec.dart';
 import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
@@ -179,7 +180,7 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 30, height: 10),
             _themeManager.getBlueFab(
                 Icons.refresh,

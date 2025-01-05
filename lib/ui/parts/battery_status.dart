@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/gatt/ftms.dart';
+import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
@@ -95,7 +97,7 @@ class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomShe
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final textStyle = Theme.of(context).textTheme.headline3!.apply(
+    final textStyle = Theme.of(context).textTheme.displaySmall!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );

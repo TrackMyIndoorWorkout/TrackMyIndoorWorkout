@@ -101,7 +101,7 @@ class ScanResultTile extends ConsumerWidget {
     final logoSize = captionStyle.fontSize! * 2.5;
     final deviceIcon = result.getIcon([], deviceSport);
     final logoAndBanner =
-        result.getLogoAndBanner([], deviceSport, logoSize, mediaWidth, themeManager);
+        result.getLogoAndBanner([], deviceSport, logoSize, mediaWidth, themeManager, themeMode);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: logoAndBanner.item1,

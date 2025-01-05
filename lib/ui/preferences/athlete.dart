@@ -105,7 +105,8 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefLabel(
-        title: Text(athleteLifeFitness, style: Get.textTheme.headlineSmall!, maxLines: 3),
+        title: Text(athleteLifeFitness,
+            style: Theme.of(context).textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(athleteLifeFitnessDescription),
       ),
       PrefText(

@@ -10,8 +10,8 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../devices/bluetooth_device_ex.dart';
+import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
 import '../../providers/theme_mode.dart';
@@ -110,7 +110,8 @@ class HeartRateMonitorPairingBottomSheetState
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final captionStyle = Theme.of(context).textTheme.caption!.apply(fontSizeFactor: fontSizeFactor);
+    final captionStyle =
+        Theme.of(context).textTheme.bodySmall!.apply(fontSizeFactor: fontSizeFactor);
     final subtitleStyle = captionStyle.apply(fontFamily: fontFamily);
 
     return Scaffold(

@@ -24,7 +24,7 @@ import '../../utils/user_data.dart';
 import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends ConsumerStatefulWidget {
-  const SpinDownBottomSheet({Key? key}) : super(key: key);
+  const SpinDownBottomSheet({super.key});
 
   @override
   SpinDownBottomSheetState createState() => SpinDownBottomSheetState();
