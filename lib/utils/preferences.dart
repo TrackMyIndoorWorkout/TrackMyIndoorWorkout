@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:pref/pref.dart';
+import 'package:string_validator/string_validator.dart';
 import 'package:tuple/tuple.dart';
 
 import '../preferences/data_connection_addresses.dart';
@@ -21,74 +22,108 @@ bool isPortNumber(String portString) {
   return isBoundedInteger(portString, 1, maxUint16 - 1);
 }
 
-bool isIpPart(String ipAddressPart, bool allowZero) {
-  return isBoundedInteger(ipAddressPart, allowZero ? 0 : 1, maxByte);
-}
-
-bool isIpAddress(String ipAddress) {
-  if (ipAddress.trim().isEmpty) return false;
-
-  final ipParts = ipAddress.trim().split(".");
-  final trimCheck =
-      ipParts.fold<bool>(true, (prev, ipPart) => prev && ipPart.length == ipPart.trim().length);
-  return ipParts.length == 4 &&
-      trimCheck &&
-      isIpPart(ipParts[0], false) &&
-      isIpPart(ipParts[1], true) &&
-      isIpPart(ipParts[2], true) &&
-      isIpPart(ipParts[3], true);
-}
-
 const dummyAddressTuple = Tuple2<String, int>("", 0);
 
-Tuple2<String, int> parseIpAddress(String ipAddress) {
-  if (ipAddress.trim().isEmpty) return dummyAddressTuple;
-
-  final addressParts = ipAddress.trim().split(":");
-  if (addressParts[0].isEmpty) return dummyAddressTuple;
-
-  int portNumber = httpsPort;
-  if (addressParts.length > 1 && addressParts[1].trim().isNotEmpty) {
-    final portNumberString = addressParts[1].trim();
-    if (!isPortNumber(portNumberString)) return dummyAddressTuple;
-
-    final parsedPort = int.tryParse(portNumberString);
-    if (parsedPort != null && parsedPort > 0) {
-      portNumber = parsedPort;
-    }
+Tuple2<String, int> parseNetworkAddress(String networkAddress, [bool ipOnly = true]) {
+  if (networkAddress.isEmpty) {
+    return dummyAddressTuple;
   }
-  if (!isIpAddress(addressParts[0])) return dummyAddressTuple;
 
-  return Tuple2<String, int>(addressParts[0], portNumber);
+  final portPosition = networkAddress.lastIndexOf(":");
+  if (portPosition < 0) {
+    // Port is mandatory
+    return dummyAddressTuple;
+  }
+
+  final portNumberString = networkAddress.substring(portPosition + 1);
+  if (portNumberString.isEmpty) {
+    return dummyAddressTuple;
+  }
+
+  if (!isPortNumber(portNumberString)) {
+    return dummyAddressTuple;
+  }
+
+  final parsedPort = int.tryParse(portNumberString);
+  if (parsedPort == null || parsedPort <= 0) {
+    return dummyAddressTuple;
+  }
+
+  String name = networkAddress.substring(0, portPosition);
+  if (name.startsWith("[") || name.endsWith("]")) {
+    if (!name.startsWith("[") || !name.endsWith("]")) {
+      // square bracketing the IPv6 IP is not complete
+      return dummyAddressTuple;
+    }
+
+    name = name.substring(1, name.length - 1);
+  }
+
+  if (!isIP(name) && !name.isIPv6 && (ipOnly || !isFQDN(name))) {
+    return dummyAddressTuple;
+  }
+
+  return Tuple2<String, int>(name, parsedPort);
 }
 
-List<Tuple2<String, int>> parseIpAddresses(String ipAddresses) {
+List<Tuple2<String, int>> parseNetworkAddresses(String networkAddresses, [bool ipOnly = true]) {
   List<Tuple2<String, int>> addresses = [];
-  if (ipAddresses.trim().isNotEmpty) {
-    addresses = ipAddresses.split(",").map((ipAddress) => parseIpAddress(ipAddress)).toList();
+  if (networkAddresses.trim().isNotEmpty) {
+    addresses =
+        networkAddresses.split(",").map((address) => parseNetworkAddress(address, ipOnly)).toList();
 
     // .whereType<Tuple2<String, int>>() I think reflection could be slower
     addresses.removeWhere((value) => value.item2 == 0);
   }
+
   return addresses;
 }
 
+String addDefaultPortIfMissing(String address) {
+  if (address.isEmpty) {
+    return "";
+  }
+
+  if (address.contains(":")) {
+    return address;
+  }
+
+  return "$address:443";
+}
+
+bool isDummyAddress(Tuple2<String, int> addressTuple) {
+  return addressTuple.item1 == dummyAddressTuple.item1 &&
+      addressTuple.item2 == dummyAddressTuple.item2;
+}
+
 Future<bool> hasInternetConnection() async {
-  final connectionChecker = InternetConnectionChecker();
   final prefService = Get.find<BasePrefService>();
   String addressesString =
       prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
+  final List<InternetCheckOption> checkOptions = [];
   if (addressesString.isNotEmpty) {
-    final addressTuples = parseIpAddresses(addressesString);
-    connectionChecker.addresses = addressTuples
-        .map((addressTuple) => AddressCheckOptions(
-              InternetAddress(addressTuple.item1),
-              port: addressTuple.item2,
-            ))
-        .toList(growable: false);
+    final addressTuples = parseNetworkAddresses(addressesString);
+    for (final addressTuple in addressTuples) {
+      checkOptions.add(
+        InternetCheckOption(
+          uri: Uri(
+            scheme: "http",
+            host: addressTuple.item1,
+            port: addressTuple.item2,
+          ),
+        ),
+      );
+    }
   }
 
-  return await connectionChecker.hasConnection;
+  var connectionChecker = checkOptions.isEmpty
+      ? InternetConnection()
+      : InternetConnection.createInstance(
+          customCheckOptions: checkOptions,
+          useDefaultOptions: false,
+        );
+
+  return await connectionChecker.hasInternetAccess;
 }
 
 ThemeMode initialPreferredThemeMode() {

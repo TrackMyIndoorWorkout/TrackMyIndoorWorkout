@@ -10,7 +10,7 @@ import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class PalettePickerBottomSheet extends ConsumerStatefulWidget {
-  const PalettePickerBottomSheet({Key? key}) : super(key: key);
+  const PalettePickerBottomSheet({super.key});
 
   @override
   PalettePickerBottomSheetState createState() => PalettePickerBottomSheetState();
@@ -38,15 +38,15 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
     }
 
     final themeMode = ref.watch(themeModeProvider);
-    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final largerTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
-    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineSmall!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
-    final groupStyle = Theme.of(context).textTheme.headline5!.apply(
+    final groupStyle = Theme.of(context).textTheme.headlineSmall!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getAntagonistColor(themeMode),
         );
@@ -179,43 +179,40 @@ class PalettePickerBottomSheetState extends ConsumerState<PalettePickerBottomShe
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            const SizedBox(width: 30, height: 10),
             _themeManager.getBlueFab(
                 Icons.refresh,
                 themeMode,
-                () => {
-                      Get.defaultDialog(
-                        title: 'Reset all colors to default!',
-                        middleText: 'Are you sure?',
-                        confirm: TextButton(
-                          child: const Text("Yes"),
-                          onPressed: () async {
-                            final prefService = Get.find<BasePrefService>();
-                            for (final lightOrDark in [false, true]) {
-                              for (final fgOrBg in [false, true]) {
-                                for (final paletteSize in [5, 6, 7]) {
-                                  final tag =
-                                      PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
-                                  final str = PaletteSpec.getDefaultPaletteString(
-                                      lightOrDark, fgOrBg, paletteSize);
-                                  await prefService.set<String>(tag, str);
-                                }
+                () => Get.defaultDialog(
+                      title: 'Reset all colors to default!',
+                      middleText: 'Are you sure?',
+                      confirm: TextButton(
+                        child: const Text("Yes"),
+                        onPressed: () async {
+                          final prefService = Get.find<BasePrefService>();
+                          for (final lightOrDark in [false, true]) {
+                            for (final fgOrBg in [false, true]) {
+                              for (final paletteSize in [5, 6, 7]) {
+                                final tag =
+                                    PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
+                                final str = PaletteSpec.getDefaultPaletteString(
+                                    lightOrDark, fgOrBg, paletteSize);
+                                await prefService.set<String>(tag, str);
                               }
                             }
-                            Get.close(1);
-                          },
-                        ),
-                        cancel: TextButton(
-                          child: const Text("No"),
-                          onPressed: () => Get.close(1),
-                        ),
-                      )
-                    }),
-            const SizedBox(width: 10, height: 10),
-            _themeManager.getGreenFab(
-              Icons.arrow_forward,
-              themeMode,
-              () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size)),
-            ),
+                          }
+                          Get.close(1);
+                        },
+                      ),
+                      cancel: TextButton(
+                        child: const Text("No"),
+                        onPressed: () => Get.close(1),
+                      ),
+                    )),
+            const SizedBox(width: 30, height: 10),
+            _themeManager.getGreenFab(Icons.arrow_forward, themeMode,
+                () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
           ],
         ),
       ),

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 import '../../utils/constants.dart';
+import '../../utils/string_ex.dart';
 import 'device_leaderboard.dart';
 
 class LeaderboardDeviceHubScreen extends StatefulWidget {
   final List<Tuple3<String, String, String>> devices;
 
-  const LeaderboardDeviceHubScreen({Key? key, required this.devices}) : super(key: key);
+  const LeaderboardDeviceHubScreen({super.key, required this.devices});
 
   @override
   LeaderboardDeviceHubScreenState createState() => LeaderboardDeviceHubScreenState();
@@ -17,46 +18,36 @@ class LeaderboardDeviceHubScreen extends StatefulWidget {
 class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> {
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+    final textStyle = Theme.of(context).textTheme.titleLarge!.apply(
           fontFamily: fontFamily,
           color: Colors.white,
         );
     final sizeDefault = textStyle.fontSize! * 3;
-    final subTextStyle = Theme.of(context).textTheme.headline6!.apply(
+    final subTextStyle = Theme.of(context).textTheme.titleLarge!.apply(
           fontFamily: fontFamily,
           color: Colors.white,
         );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Devices')),
-      body: ListView(
-        children: widget.devices
-            .map(
-              (device) => Container(
-                padding: const EdgeInsets.all(5.0),
-                margin: const EdgeInsets.all(5.0),
-                child: ElevatedButton(
-                  onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: device)),
+      body: ListView.separated(
+          padding: const EdgeInsets.all(5.0),
+          itemBuilder: (context, index) => ElevatedButton(
+                onPressed: () =>
+                    Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
+                child: FitHorizontally(
+                  shrinkLimit: shrinkLimit,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextOneLine(
-                            device.item2,
-                            style: textStyle,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          TextOneLine(
-                            "(${device.item1})",
-                            style: subTextStyle,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          Text(widget.devices[index].item1, style: textStyle),
+                          Text(widget.devices[index].item2.shortAddressString(),
+                              style: subTextStyle),
                         ],
                       ),
                       Icon(Icons.chevron_right, size: sizeDefault),
@@ -64,9 +55,8 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
                   ),
                 ),
               ),
-            )
-            .toList(growable: false),
-      ),
+          separatorBuilder: (context, index) => const SizedBox(width: 10, height: 10),
+          itemCount: widget.devices.length),
     );
   }
 }

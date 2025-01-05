@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:isar/isar.dart';
+
 import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import '../../persistence/activity.dart';
 import '../../secret.dart';
 import 'constants.dart';
 import 'suunto_token.dart';
 
-abstract class Upload {
+mixin Upload {
   /// Tested with gpx and tcx
   /// For the moment the parameters
   ///
@@ -31,8 +32,8 @@ abstract class Upload {
       debugPrint('Token not yet known');
       return 0;
     }
-    var suuntoToken = Get.find<SuuntoToken>();
 
+    var suuntoToken = Get.find<SuuntoToken>();
     if (suuntoToken.accessToken == null) {
       // Token has not been yet stored in memory
       return 0;
@@ -50,16 +51,15 @@ abstract class Upload {
     });
 
     if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
-      return await checkStatus(headers, activity, Get.find<AppDatabase>());
+      return await checkStatus(headers, activity);
     }
 
-    Map<String, dynamic> persistenceValues = exporter.getPersistenceValues(activity, false);
     final postUri = Uri.parse(uploadsEndpoint);
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
-      body: '{"description": "${persistenceValues["description"]}", '
-          '"comment": "${persistenceValues["name"]}"}',
+      body: '{"description": "${activity.getDescription(true)}", '
+          '"comment": "${activity.getTitle(true)}"}',
     );
 
     // https://apizone.suunto.com/how-to-workout-upload
@@ -100,9 +100,11 @@ abstract class Upload {
       }
     }
 
-    final database = Get.find<AppDatabase>();
     activity.suuntoUploadInitiated(uploadId, blobUrl);
-    await database.activityDao.updateActivity(activity);
+    final database = Get.find<Isar>();
+    database.writeTxnSync(() {
+      database.activitys.putSync(activity);
+    });
 
     final putUri = Uri.parse(blobUrl);
 
@@ -120,7 +122,7 @@ abstract class Upload {
     } else {
       debugPrint('$uploadBlobResponse');
 
-      return await checkStatus(headers, activity, database);
+      return await checkStatus(headers, activity);
     }
 
     return uploadBlobResponse.statusCode;
@@ -129,7 +131,6 @@ abstract class Upload {
   Future<int> checkStatus(
     Map<String, String> headers,
     Activity activity,
-    AppDatabase database,
   ) async {
     if (activity.suuntoWorkoutUrl.isNotEmpty) {
       return 200;
@@ -142,11 +143,11 @@ abstract class Upload {
       headers: headers,
     );
 
-    final statusBody = uploadStatusResponse.body;
     if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
       debugPrint('Error while getting upload status');
     } else {
       const workoutUrl = '"webUrl":"';
+      final statusBody = uploadStatusResponse.body;
       int matchBeginningIndex = statusBody.indexOf(workoutUrl);
       if (matchBeginningIndex > 0) {
         final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
@@ -154,7 +155,10 @@ abstract class Upload {
         if (urlEndIndex > 0) {
           final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
           activity.markSuuntoUploaded(webUrl);
-          await database.activityDao.updateActivity(activity);
+          final database = Get.find<Isar>();
+          database.writeTxnSync(() {
+            database.activitys.putSync(activity);
+          });
         }
       }
     }

@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -15,7 +16,7 @@ void main() {
   test('Schwinn IC4 constructor tests', () async {
     final bike = DeviceFactory.getSchwinnIcBike();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, schwinnICBikeFourCC);
     expect(bike.isMultiSport, false);
   });
@@ -25,9 +26,9 @@ void main() {
     const lsb = 68;
     const msb = 2;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
-    bike.processFlag(flag);
+    bike.processFlag(flag, 9);
 
     expect(bike.speedMetric, isNotNull);
     expect(bike.cadenceMetric, isNotNull);
@@ -37,7 +38,8 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
-    expect(bike.heartRateByteIndex, isNotNull);
+    expect(bike.strokeCountMetric, null);
+    expect(bike.heartRateByteIndex, 8);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
@@ -56,6 +58,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -72,6 +75,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -88,6 +92,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -104,6 +109,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -120,6 +126,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -136,6 +143,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -152,10 +160,11 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final bike = DeviceFactory.getSchwinnIcBike();
         bike.initFlag();
@@ -164,9 +173,9 @@ void main() {
 
         final record = bike.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -177,10 +186,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

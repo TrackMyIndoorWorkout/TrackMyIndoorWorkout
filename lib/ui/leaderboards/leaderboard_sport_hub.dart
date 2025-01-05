@@ -7,7 +7,7 @@ import 'sport_leaderboard.dart';
 class LeaderboardSportHubScreen extends StatefulWidget {
   final List<String> sports;
 
-  const LeaderboardSportHubScreen({Key? key, required this.sports}) : super(key: key);
+  const LeaderboardSportHubScreen({super.key, required this.sports});
 
   @override
   LeaderboardSportHubScreenState createState() => LeaderboardSportHubScreenState();
@@ -16,7 +16,7 @@ class LeaderboardSportHubScreen extends StatefulWidget {
 class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.headline4!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: Colors.white,
         );

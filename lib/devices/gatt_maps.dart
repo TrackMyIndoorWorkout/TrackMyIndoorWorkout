@@ -1,21 +1,24 @@
 import '../utils/constants.dart';
-import 'gatt_constants.dart';
+import 'gatt/ftms.dart';
 
 const Map<String, String> uuidToSport = {
-  treadmillUuid: ActivityType.run,
+  crossTrainerUuid: ActivityType.elliptical,
   indoorBikeUuid: ActivityType.ride,
   rowerDeviceUuid: ActivityType.rowing,
-  crossTrainerUuid: ActivityType.elliptical,
-  stepClimberUuid: ActivityType.run,
-  stairClimberUuid: ActivityType.run,
+  stairClimberUuid: ActivityType.rockClimbing,
+  stepClimberUuid: ActivityType.stairStepper,
+  treadmillUuid: ActivityType.run,
 };
 
 const Map<String, String> sportToUuid = {
-  ActivityType.run: treadmillUuid,
-  ActivityType.ride: indoorBikeUuid,
-  ActivityType.kayaking: rowerDeviceUuid,
-  ActivityType.rowing: rowerDeviceUuid,
   ActivityType.canoeing: rowerDeviceUuid,
-  ActivityType.swim: rowerDeviceUuid,
   ActivityType.elliptical: crossTrainerUuid,
+  ActivityType.kayaking: rowerDeviceUuid,
+  ActivityType.nordicSki: rowerDeviceUuid,
+  ActivityType.ride: indoorBikeUuid,
+  ActivityType.rockClimbing: stairClimberUuid,
+  ActivityType.run: treadmillUuid,
+  ActivityType.rowing: rowerDeviceUuid,
+  ActivityType.stairStepper: stepClimberUuid,
+  ActivityType.swim: rowerDeviceUuid,
 };

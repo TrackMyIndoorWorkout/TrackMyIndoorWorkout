@@ -1,24 +1,27 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:spinner_input/spinner_input.dart';
-import 'package:tuple/tuple.dart';
-import '../../devices/gadgets/fitness_equipment.dart';
+
 import '../../devices/bluetooth_device_ex.dart';
-import '../../devices/gatt_constants.dart';
+import '../../devices/gadgets/fitness_equipment.dart';
+import '../../devices/gatt/ftms.dart';
+import '../../devices/gatt/generic.dart';
 import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/log_level.dart';
 import '../../preferences/unit_system.dart';
 import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/delays.dart';
 import '../../utils/display.dart';
+import '../../utils/logging.dart';
 import '../../utils/theme_manager.dart';
+import '../../utils/user_data.dart';
+import 'spinner_input.dart';
 
 class SpinDownBottomSheet extends ConsumerStatefulWidget {
   const SpinDownBottomSheet({Key? key}) : super(key: key);
@@ -48,6 +51,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
   static const stepCalibrating = 1;
   static const stepDone = 2;
   static const stepNotSupported = 3;
+  static const String tag = "SPIN_DOWN";
 
   FitnessEquipment? _fitnessEquipment;
   StreamSubscription? _controlPointSubscription;
@@ -68,9 +72,11 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
   String _targetSpeedLowString = "...";
   String _currentSpeedString = "...";
   final ThemeManager _themeManager = Get.find<ThemeManager>();
+  final BasePrefService _prefService = Get.find<BasePrefService>();
+
   bool _isLight = true;
   int _preferencesWeight = athleteBodyWeightDefault;
-  bool _rememberLastWeight = rememberAthleteBodyWeightDefault;
+  int _logLevel = logLevelDefault;
 
   bool get _spinDownPossible =>
       (_fitnessEquipment?.supportsSpinDown ?? false) &&
@@ -80,25 +86,14 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
   bool get _canSubmitWeight =>
       _spinDownPossible && _calibrationState == CalibrationState.readyToWeighIn;
 
-  Tuple2<int, int> getWeightBytes(int weight) {
-    final weightTransport = (weight * (_si ? 1.0 : lbToKg) * 200).round();
-    return Tuple2<int, int>(weightTransport % maxUint8, weightTransport ~/ maxUint8);
-  }
-
-  int getWeightFromBytes(int weightLsb, int weightMsb) {
-    return (weightLsb + weightMsb * maxUint8) / (_si ? 1.0 : lbToKg) ~/ 200;
-  }
-
   @override
   void initState() {
+    _logLevel = _prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
-    final prefService = Get.find<BasePrefService>();
-    _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
-    _rememberLastWeight =
-        prefService.get<bool>(rememberAthleteBodyWeightTag) ?? rememberAthleteBodyWeightDefault;
-    _preferencesWeight = prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
-    _weight = (_preferencesWeight * (_si ? 1.0 : kgToLb)).round();
-    final weightBytes = getWeightBytes(_weight);
+    _si = _prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
+    _preferencesWeight = _prefService.get<int>(athleteBodyWeightIntTag) ?? athleteBodyWeightDefault;
+    // There was double imperial to SI conversion here???
+    final weightBytes = getWeightBytes(_preferencesWeight, _si);
     _oldWeightLsb = weightBytes.item1;
     _oldWeightMsb = weightBytes.item2;
     _newWeightLsb = weightBytes.item1;
@@ -138,8 +133,8 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
 
     final userData =
         BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], userDataServiceUuid);
-    _weightData =
-        BluetoothDeviceEx.filterCharacteristic(userData?.characteristics, weightCharacteristicUuid);
+    _weightData = BluetoothDeviceEx.filterCharacteristic(
+        userData?.characteristics, userWeightCharacteristicUuid);
     if (_weightData == null) return false;
 
     if (_fitnessEquipment?.controlPoint == null || _fitnessEquipment?.status == null) return false;
@@ -147,12 +142,12 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     // #117 Attach the handler way ahead of the actual weight write
     try {
       await _weightData?.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(
+          _logLevel, tag, "_prepareSpinDownCore", "_weightData.setNotifyValue", e, stack);
     }
 
-    _weightDataSubscription = _weightData?.value
+    _weightDataSubscription = _weightData?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -160,7 +155,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     )
         .listen((response) async {
       if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
-        if (response[0] != weightSuccessOpcode) {
+        if (response[0] != userDataSetSuccessOpcode) {
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -171,7 +166,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
             _calibrationState = CalibrationState.weighInProblem;
             _oldWeightLsb = response[0];
             _oldWeightMsb = response[1];
-            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb);
+            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb, _si);
           });
         } else {
           if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
@@ -188,9 +183,9 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
       } else if (_calibrationState == CalibrationState.weightSubmitting) {
         try {
           await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-        } on PlatformException catch (e, stack) {
-          debugPrint("$e");
-          debugPrintStack(stackTrace: stack, label: "trace:");
+        } on Exception catch (e, stack) {
+          Logging()
+              .logException(_logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
           setState(() {
             _calibrationState = CalibrationState.weighInProblem;
           });
@@ -198,7 +193,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
       }
     });
 
-    _controlPointSubscription = _fitnessEquipment?.controlPoint?.value
+    _controlPointSubscription = _fitnessEquipment?.controlPoint?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: spinDownThreshold),
       leading: false,
@@ -262,7 +257,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
       backColor = _isLight ? Colors.lightGreen.shade100 : Colors.green.shade900;
     }
 
-    return ElevatedButton.styleFrom(primary: backColor);
+    return ElevatedButton.styleFrom(backgroundColor: backColor);
   }
 
   String _weightInputButtonText() {
@@ -282,7 +277,7 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
-      primary: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+      backgroundColor: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
           ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
           : (_isLight ? Colors.black12 : Colors.black87),
     );
@@ -306,20 +301,16 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     setState(() {
       _calibrationState = CalibrationState.weightSubmitting;
     });
-    final newWeightBytes = getWeightBytes(_weight);
+    final newWeightBytes = getWeightBytes(_weight, _si);
     _newWeightLsb = newWeightBytes.item1;
     _newWeightMsb = newWeightBytes.item2;
     try {
-      if (_rememberLastWeight) {
-        final weightKg = _weight * (_si ? 1.0 : lbToKg);
-        final prefService = Get.find<BasePrefService>();
-        await prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
-      }
-
+      final weightKg = _weight * (_si ? 1.0 : lbToKg);
+      await _prefService.set<int>(athleteBodyWeightIntTag, weightKg.round());
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(
+          _logLevel, tag, "_onWeightInputButtonPressed", "_weightData.write", e, stack);
       setState(() {
         _calibrationState = CalibrationState.weighInProblem;
       });
@@ -382,12 +373,12 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
     try {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(_logLevel, tag, "onCalibrationButtonPressed",
+          "controlPoint.write or status.setNotifyValue(true)", e, stack);
     }
 
-    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.value
+    _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.lastValueStream
         .throttleTime(
       const Duration(milliseconds: ftmsStatusThreshold),
       leading: false,
@@ -442,12 +433,12 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final smallerTextStyle = Theme.of(context).textTheme.headline5!.apply(
+    final smallerTextStyle = Theme.of(context).textTheme.headlineSmall!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
     final sizeDefault = smallerTextStyle.fontSize!;
-    final largerTextStyle = Theme.of(context).textTheme.headline2!.apply(
+    final largerTextStyle = Theme.of(context).textTheme.displayMedium!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
@@ -470,16 +461,10 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                     minValue: 1,
                     maxValue: 800,
                     middleNumberStyle: largerTextStyle,
-                    plusButton: SpinnerButtonStyle(
-                      height: sizeDefault * 2,
-                      width: sizeDefault * 2,
-                      child: Icon(Icons.add, size: sizeDefault * 2 - 10),
-                    ),
-                    minusButton: SpinnerButtonStyle(
-                      height: sizeDefault * 2,
-                      width: sizeDefault * 2,
-                      child: Icon(Icons.remove, size: sizeDefault * 2 - 10),
-                    ),
+                    plusButtonSize: Size(sizeDefault * 2, sizeDefault * 2),
+                    plusButtonChild: Icon(Icons.add, size: sizeDefault * 2 - 10),
+                    minusButtonSize: Size(sizeDefault * 2, sizeDefault * 2),
+                    minusButtonChild: Icon(Icons.remove, size: sizeDefault * 2 - 10),
                     onChange: (newValue) {
                       setState(() {
                         _weight = newValue.toInt();
@@ -566,7 +551,8 @@ class SpinDownBottomSheetState extends ConsumerState<SpinDownBottomSheet> {
                 textAlign: TextAlign.center,
                 softWrap: true,
                 text: TextSpan(
-                  text: "${_fitnessEquipment?.device?.name} doesn't seem to support calibration",
+                  text:
+                      "${_fitnessEquipment?.device?.nonEmptyName ?? emptyMeasurement} doesn't seem to support calibration",
                   style: smallerTextStyle,
                 ),
               ),

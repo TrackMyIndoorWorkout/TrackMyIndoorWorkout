@@ -9,7 +9,7 @@ class LeaderboardPreferencesScreen extends StatefulWidget with PreferencesScreen
   static String shortTitle = "Leaderboard";
   static String title = "$shortTitle Preferences";
 
-  const LeaderboardPreferencesScreen({Key? key}) : super(key: key);
+  const LeaderboardPreferencesScreen({super.key});
 
   @override
   LeaderboardPreferencesScreenState createState() => LeaderboardPreferencesScreenState();

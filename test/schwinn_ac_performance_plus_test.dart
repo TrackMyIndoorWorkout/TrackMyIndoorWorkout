@@ -11,7 +11,7 @@ void main() {
   test('Schwinn AC Performance Plus constructor tests', () async {
     final bike = SchwinnACPerformancePlus();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, schwinnACPerfPlusFourCC);
   });
 
@@ -19,7 +19,7 @@ void main() {
     final rnd = Random();
     for (var len in getRandomInts(smallRepetition, 30, rnd)) {
       final data = getRandomInts(len, maxUint8, rnd);
-      final sum = data.fold<double>(0.0, (a, b) => a + b);
+      final sum = data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final bike = SchwinnACPerformancePlus();
         bike.initFlag();

@@ -2,11 +2,8 @@ import '../../utils/constants.dart';
 import 'metric_descriptor.dart';
 
 class ByteMetricDescriptor extends MetricDescriptor {
-  ByteMetricDescriptor({
-    required lsb,
-    divider = 1.0,
-    optional = false,
-  }) : super(lsb: lsb, msb: 0, divider: divider, optional: optional);
+  ByteMetricDescriptor({required super.lsb, super.divider = 1.0, super.optional = false})
+      : super(msb: 0);
 
   @override
   double? getMeasurementValue(List<int> data) {

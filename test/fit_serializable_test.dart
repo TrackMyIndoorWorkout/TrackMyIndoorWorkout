@@ -17,8 +17,11 @@ void main() {
   group('addByte test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint8, rnd).forEach((byte) {
-      final expected = [byte];
-      test('$byte -> $expected', () async {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expectedByte = byte < maxUint8 - 1 ? byte : maxUint8 - 2;
+      final expected = [expectedByte];
+      test('$byte -> $expectedByte', () async {
         final subject = TestSubject();
 
         subject.addByte(byte);
@@ -28,10 +31,26 @@ void main() {
     });
   });
 
+  group('addByte overflow test', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, maxUint8, rnd).forEach((byte) {
+      final overflown = byte + maxUint8;
+      test('$overflown -> $maxUint8', () async {
+        final subject = TestSubject();
+
+        subject.addByte(overflown);
+
+        expect(listEquals(subject.output, [maxUint8 - 2]), true);
+      });
+    });
+  });
+
   group('addByte negative numbers (2 complement) test', () {
     final rnd = Random();
-    getRandomInts(smallRepetition, maxUint8 ~/ 2, rnd).forEach((byte) {
-      final expected = byte != 0 ? [maxUint8 - byte] : [0];
+    getRandomInts(repetition, maxUint8 ~/ 2, rnd).forEach((byte) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expected = byte != 0 ? (byte != 1 ? [maxUint8 - byte] : [maxUint8 - 2]) : [0];
       test('-$byte -> $expected', () async {
         final subject = TestSubject();
 
@@ -61,11 +80,32 @@ void main() {
   group('addShort test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
-      final expected = [short % maxUint8, short ~/ maxUint8];
-      test('$short -> $expected', () async {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expectedShort = short < maxUint16 - 1 ? short : maxUint16 - 2;
+      final expected = [expectedShort % maxUint8, expectedShort ~/ maxUint8];
+      test('$short /$expectedShort/ -> $expected', () async {
         final subject = TestSubject();
 
         subject.addShort(short);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addShort overflow test', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, maxUint16, rnd).forEach((short) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      const limited = maxUint16 - 2;
+      final expected = [limited % maxUint8, limited ~/ maxUint8];
+      final overflown = short + maxUint16;
+      test('$overflown -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addShort(overflown);
 
         expect(listEquals(subject.output, expected), true);
       });
@@ -76,7 +116,11 @@ void main() {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint16 ~/ 2, rnd).forEach((short) {
       final complemented = maxUint16 - short;
-      final expected = short != 0 ? [complemented % maxUint8, complemented ~/ maxUint8] : [0, 0];
+      final expected = short != 0
+          ? (short != 1
+              ? [complemented % maxUint8, complemented ~/ maxUint8]
+              : [maxByte - 1, maxByte])
+          : [0, 0];
       test('-$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -106,16 +150,42 @@ void main() {
   group('addLong test', () {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint32, rnd).forEach((long) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      final expectedLong = long < maxUint32 - 1 ? long : maxUint32 - 2;
       final expected = [
-        long % maxUint8,
-        long ~/ maxUint8 % maxUint8,
-        long ~/ maxUint16 % maxUint8,
-        long ~/ maxUint24
+        expectedLong % maxUint8,
+        expectedLong ~/ maxUint8 % maxUint8,
+        expectedLong ~/ maxUint16 % maxUint8,
+        expectedLong ~/ maxUint24
       ];
-      test('$long -> $expected', () async {
+      test('$long /$expectedLong/ -> $expected', () async {
         final subject = TestSubject();
 
         subject.addLong(long);
+
+        expect(listEquals(subject.output, expected), true);
+      });
+    });
+  });
+
+  group('addLong overflow test', () {
+    final rnd = Random();
+    getRandomInts(smallRepetition, maxUint32, rnd).forEach((long) {
+      // Because maxUint8 would be the invalid value magic number
+      // Our serializer decreases it by one #363
+      const limited = maxUint32 - 2;
+      final expected = [
+        limited % maxUint8,
+        limited ~/ maxUint8 % maxUint8,
+        limited ~/ maxUint16 % maxUint8,
+        limited ~/ maxUint24
+      ];
+      final overflown = long + maxUint32;
+      test('$overflown -> $expected', () async {
+        final subject = TestSubject();
+
+        subject.addLong(overflown);
 
         expect(listEquals(subject.output, expected), true);
       });
@@ -127,12 +197,14 @@ void main() {
     getRandomInts(smallRepetition, maxUint32 ~/ 2, rnd).forEach((long) {
       final comp = maxUint32 - long;
       final expected = long != 0
-          ? [
-              comp % maxUint8,
-              comp ~/ maxUint8 % maxUint8,
-              comp ~/ maxUint16 % maxUint8,
-              comp ~/ maxUint24
-            ]
+          ? (long != 1
+              ? [
+                  comp % maxUint8,
+                  comp ~/ maxUint8 % maxUint8,
+                  comp ~/ maxUint16 % maxUint8,
+                  comp ~/ maxUint24
+                ]
+              : [maxByte - 1, maxByte, maxByte, maxByte])
           : [0, 0, 0, 0];
       test('-$long -> $expected', () async {
         final subject = TestSubject();
@@ -200,20 +272,7 @@ void main() {
       final expected =
           (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
       test('$i. $testDateTime -> $expected', () async {
-        final timeStamp = FitSerializable.fitTimeStamp(testDateTime.millisecondsSinceEpoch);
-
-        expect(timeStamp, expected);
-      });
-    }
-  });
-
-  group('fitDateTime test', () {
-    for (var i in List<int>.generate(smallRepetition, (index) => index)) {
-      final testDateTime = mockDate(fitEpochDateTime);
-      final expected =
-          (testDateTime.millisecondsSinceEpoch - fitEpochDateTime.millisecondsSinceEpoch) ~/ 1000;
-      test('$i. $testDateTime -> $expected', () async {
-        final timeStamp = FitSerializable.fitDateTime(testDateTime);
+        final timeStamp = FitSerializable.fitTimeStamp(testDateTime);
 
         expect(timeStamp, expected);
       });

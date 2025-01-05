@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/mr_captain_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -20,12 +21,12 @@ void main() {
   test('Mr Captain Rower Device constructor tests', () async {
     final rower = MrCaptainDescriptor();
 
-    expect(rower.defaultSport, ActivityType.rowing);
+    expect(rower.sport, ActivityType.rowing);
     expect(rower.fourCC, mrCaptainRowerFourCC);
     expect(rower.isMultiSport, false);
   });
 
-  test('Rower Device interprets Mr Captain flags properly', () async {
+  test('Rower Device interprets Mr Captain faulty flags properly', () async {
     final rower = MrCaptainDescriptor();
     const lsb = 60;
     const msb = 11;
@@ -43,12 +44,11 @@ void main() {
     // C12 elapsed time uint16 (s) 1
     // total length (1 + 2 + 3 + 2 + 2 + 2) + (2 + 2 + 1 + 1 + 2) = 12 + 8 = 20
     const flag = maxUint8 * msb + lsb;
+    rower.initFlag();
     rower.stopWorkout();
-
-    rower.processFlag(flag);
+    rower.processFlag(flag, 20);
 
     expect(rower.strokeRateMetric, isNotNull);
-    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.paceMetric, isNotNull);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
@@ -58,7 +58,43 @@ void main() {
     expect(rower.timeMetric, null);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
+    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.heartRateByteIndex, 19);
+  });
+
+  test('Rower Device interprets Mr Captain conforming flags properly', () async {
+    // Data from KayakPro
+    final rower = MrCaptainDescriptor();
+    const lsb = 44;
+    const msb = 9;
+    // C1 stroke rate uint8 (spm) 0.5
+    // C1 stroke count uint16
+    // C3 distance uint24 (m) 1
+    // C4 pace uint16 seconds 1
+    // C6 power sint16 (watts) 1
+    // -
+    // C9 total energy uint16 (kcal) 1
+    // C9 energy/h uint16 1
+    // C9 energy/min uint8 1
+    // C12 elapsed time uint16 (s) 1
+    // total length (1 + 2 + 3 + 2 + 2) + (2 + 2 + 1 + 2) = 10 + 7 = 17
+    const flag = maxUint8 * msb + lsb;
+    rower.initFlag();
+    rower.stopWorkout();
+    rower.processFlag(flag, 17);
+
+    expect(rower.strokeRateMetric, isNotNull);
+    expect(rower.paceMetric, isNotNull);
+    expect(rower.speedMetric, null);
+    expect(rower.cadenceMetric, null);
+    expect(rower.distanceMetric, isNotNull);
+    expect(rower.powerMetric, isNotNull);
+    expect(rower.caloriesMetric, isNotNull);
+    expect(rower.timeMetric, isNotNull);
+    expect(rower.caloriesPerHourMetric, isNotNull);
+    expect(rower.caloriesPerMinuteMetric, isNotNull);
+    expect(rower.strokeCountMetric, isNotNull);
+    expect(rower.heartRateByteIndex, null);
   });
 
   group('Rower Device interprets Mr Captain data properly', () {
@@ -77,6 +113,7 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 0.0,
           caloriesPerMinute: 0.0,
+          strokeCount: 0.0,
         ),
       ),
       TestPair(
@@ -93,6 +130,7 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 0.0,
           caloriesPerMinute: 18.0,
+          strokeCount: 1.0,
         ),
       ),
       TestPair(
@@ -109,6 +147,7 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 514.0,
           caloriesPerMinute: 22.0,
+          strokeCount: 2.0,
         ),
       ),
       TestPair(
@@ -125,6 +164,7 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 300.0,
           caloriesPerMinute: 15.0,
+          strokeCount: 3.0,
         ),
       ),
       TestPair(
@@ -141,6 +181,7 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 480.0,
           caloriesPerMinute: 20.0,
+          strokeCount: 4.0,
         ),
       ),
       TestPair(
@@ -157,6 +198,7 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 342.0,
           caloriesPerMinute: 16.0,
+          strokeCount: 5.0,
         ),
       ),
       TestPair(
@@ -173,10 +215,11 @@ void main() {
           sport: ActivityType.rowing,
           caloriesPerHour: 327.0,
           caloriesPerMinute: 0.0,
+          strokeCount: 0.0,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final rower = MrCaptainDescriptor();
         rower.initFlag();
@@ -185,9 +228,9 @@ void main() {
 
         final record = rower.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -198,10 +241,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

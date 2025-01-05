@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
-import '../../persistence/models/activity.dart';
-import '../../persistence/models/record.dart';
+import '../persistence/activity.dart';
+import 'constants.dart';
 import 'strava/constants.dart';
 import 'strava/strava_service.dart';
 import 'suunto/constants.dart';
@@ -11,7 +11,6 @@ import 'training_peaks/constants.dart';
 import 'training_peaks/training_peaks_service.dart';
 import 'under_armour/constants.dart';
 import 'under_armour/under_armour_service.dart';
-import 'constants.dart';
 
 abstract class UploadService {
   Future<bool> login();
@@ -20,7 +19,7 @@ abstract class UploadService {
 
   Future<int> logout();
 
-  Future<int> upload(Activity activity, List<Record> records, bool calculateGps);
+  Future<int> upload(Activity activity, bool calculateGps);
 
   static UploadService getInstance(String portalType) {
     switch (portalType) {

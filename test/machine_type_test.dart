@@ -32,8 +32,10 @@ void main() {
       const MachineSportTestPair(machineType: MachineType.rower, sport: ActivityType.rowing),
       const MachineSportTestPair(
           machineType: MachineType.crossTrainer, sport: ActivityType.elliptical),
-      const MachineSportTestPair(machineType: MachineType.stepClimber, sport: ActivityType.run),
-      const MachineSportTestPair(machineType: MachineType.stairClimber, sport: ActivityType.run),
+      const MachineSportTestPair(
+          machineType: MachineType.stepClimber, sport: ActivityType.stairStepper),
+      const MachineSportTestPair(
+          machineType: MachineType.stairClimber, sport: ActivityType.rockClimbing),
       const MachineSportTestPair(machineType: MachineType.heartRateMonitor, sport: ""),
       const MachineSportTestPair(machineType: MachineType.multiFtms, sport: ""),
     ]) {
@@ -61,7 +63,7 @@ void main() {
     }
   });
 
-  group('machineType isFtms classifies as expected', () {
+  group('machineType isSpecificFtms classifies as expected', () {
     for (final testPair in [
       const MachineFtmsTestPair(machineType: MachineType.notFitnessMachine, expected: false),
       const MachineFtmsTestPair(machineType: MachineType.indoorBike, expected: true),
@@ -74,7 +76,7 @@ void main() {
       const MachineFtmsTestPair(machineType: MachineType.multiFtms, expected: false),
     ]) {
       test("${testPair.machineType} -> ${testPair.expected}", () async {
-        expect(testPair.machineType.isFtms, testPair.expected);
+        expect(testPair.machineType.isSpecificFtms, testPair.expected);
       });
     }
   });

@@ -16,6 +16,7 @@ class TileConfiguration {
   List<HistogramData> histogram = [];
   final String maxString;
   final String avgString;
+  final String medianString;
 
   TileConfiguration({
     required this.title,
@@ -24,6 +25,7 @@ class TileConfiguration {
     this.zoneBounds,
     required this.maxString,
     required this.avgString,
+    required this.medianString,
   });
 
   bool get hasMeasurement => count > 0;

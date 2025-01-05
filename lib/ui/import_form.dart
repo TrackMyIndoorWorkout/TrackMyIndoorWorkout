@@ -1,22 +1,26 @@
 import 'dart:io';
 
+import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:get/get.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
+
 import '../import/csv_importer.dart';
-import '../persistence/database.dart';
+import '../persistence/workout_summary.dart';
 import '../preferences/leaderboard_and_rank.dart';
+import '../preferences/log_level.dart';
+import '../utils/logging.dart';
 
 typedef SetProgress = void Function(double progress);
 
 class ImportForm extends StatefulWidget {
   final bool migration;
 
-  const ImportForm({Key? key, required this.migration}) : super(key: key);
+  const ImportForm({super.key, required this.migration});
 
   @override
   ImportFormState createState() => ImportFormState();
@@ -47,10 +51,12 @@ class ImportFormState extends State<ImportForm> {
 
   @override
   Widget build(BuildContext context) {
-    final sizeDefault = Theme.of(context).textTheme.headline2!.fontSize!;
+    final sizeDefault = Theme.of(context).textTheme.displayMedium!.fontSize!;
+    final uploadType = widget.migration ? 'Workout Migration' : 'MPower Workout';
+    final csvType = widget.migration ? "Migration" : "MPower";
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MPower Workout Import'),
+        title: Text('$uploadType Import'),
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
@@ -70,7 +76,7 @@ class ImportFormState extends State<ImportForm> {
               TextFormField(
                 decoration: InputDecoration(
                   filled: true,
-                  labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
+                  labelText: '$csvType CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
                     child: const Text(
@@ -114,21 +120,22 @@ class ImportFormState extends State<ImportForm> {
                     hintText: 'Pick date & time',
                   ),
                   onShowPicker: (context, currentValue) async {
-                    final date = await showDatePicker(
+                    final pickedDate = await showDatePicker(
                       context: context,
                       firstDate: DateTime(1920),
                       initialDate: currentValue ?? DateTime.now(),
                       lastDate: DateTime(2030),
                     );
-                    if (date != null) {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.combine(date, time);
-                    } else {
+
+                    if (pickedDate == null || !context.mounted) {
                       return currentValue;
                     }
+
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    return DateTimeField.combine(pickedDate, time);
                   },
                   validator: (value) {
                     if (value == null && !widget.migration) {
@@ -177,22 +184,26 @@ class ImportFormState extends State<ImportForm> {
                               Get.snackbar("Success", "Workout imported!");
                               if (_leaderboardFeature) {
                                 final deviceDescriptor = activity.deviceDescriptor();
-                                final workoutSummary =
-                                    activity.getWorkoutSummary(deviceDescriptor.manufacturerPrefix);
-                                final database = Get.find<AppDatabase>();
-                                await database.workoutSummaryDao
-                                    .insertWorkoutSummary(workoutSummary);
+                                final workoutSummary = activity
+                                    .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
+                                final database = Get.find<Isar>();
+                                database.writeTxnSync(() {
+                                  database.workoutSummarys.putSync(workoutSummary);
+                                });
                               }
                             } else {
                               Get.snackbar(
                                   "Failure", "Problem while importing: ${importer.message}");
                             }
-                          } catch (e, callStack) {
+                          } on Exception catch (e, stack) {
                             setState(() {
                               _isLoading = false;
                             });
+                            final prefService = Get.find<BasePrefService>();
+                            final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
+                            Logging().logException(logLevel, "IMPORT_FORM", "onPressed",
+                                "error during import", e, stack);
                             Get.snackbar("Error", "Import unsuccessful: $e");
-                            debugPrintStack(stackTrace: callStack);
                           }
                         } else {
                           Get.snackbar("Error", "Please correct form fields");

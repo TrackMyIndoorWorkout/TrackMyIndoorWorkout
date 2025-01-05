@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:pref/pref.dart';
+import 'package:tuple/tuple.dart';
 
 import '../devices/company_registry.dart';
-import '../devices/device_map.dart';
-import '../devices/gatt_constants.dart';
+import '../devices/device_fourcc.dart';
+import '../devices/gatt/concept2.dart';
+import '../devices/gatt/csc.dart';
+import '../devices/gatt/ftms.dart';
+import '../devices/gatt/hrm.dart';
+import '../devices/gatt/kayak_first.dart';
+import '../devices/gatt/power_meter.dart';
+import '../devices/gatt/precor.dart';
+import '../devices/gatt/schwinn_x70.dart';
+import '../preferences/paddling_with_cycling_sensors.dart';
+import '../utils/address_names.dart';
 import 'advertisement_data_ex.dart';
-import 'constants.dart';
 import 'display.dart';
+import 'guid_ex.dart';
 import 'machine_type.dart';
-import 'string_ex.dart';
+import 'theme_manager.dart';
 
 extension ScanResultEx on ScanResult {
   bool isWorthy(bool filterDevices) {
@@ -17,11 +29,7 @@ extension ScanResultEx on ScanResult {
       return false;
     }
 
-    if (device.name.isEmpty) {
-      return false;
-    }
-
-    if (device.id.id.isEmpty) {
+    if (device.remoteId.str.isEmpty) {
       return false;
     }
 
@@ -29,19 +37,30 @@ extension ScanResultEx on ScanResult {
       return true;
     }
 
-    for (var dev in deviceMap.values) {
-      for (var prefix in dev.namePrefixes) {
-        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          return true;
-        }
+    if (advertisementData.serviceUuids.isNotEmpty) {
+      final serviceUuids = advertisementData.uuids;
+      if (serviceUuids.contains(fitnessMachineUuid) ||
+          serviceUuids.contains(precorServiceUuid) ||
+          serviceUuids.contains(schwinnX70ServiceUuid) ||
+          serviceUuids.contains(cyclingPowerServiceUuid) ||
+          serviceUuids.contains(cyclingCadenceServiceUuid) ||
+          serviceUuids.contains(c2ErgPrimaryServiceUuid) ||
+          serviceUuids.contains(kayakFirstServiceUuid) ||
+          serviceUuids.contains(heartRateServiceUuid)) {
+        return true;
       }
+    }
 
-      if (advertisementData.serviceUuids.isNotEmpty) {
-        final serviceUuids = advertisementData.uuids;
-        if (serviceUuids.contains(fitnessMachineUuid) ||
-            serviceUuids.contains(precorServiceUuid) ||
-            serviceUuids.contains(schwinnX70ServiceUuid) ||
-            serviceUuids.contains(heartRateServiceUuid)) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    final loweredManufacturers =
+        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    for (final mapEntry in deviceNamePrefixes.values) {
+      final lowerPostfix = mapEntry.deviceNameLoweredPostfix;
+      for (final loweredPrefix in mapEntry.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.shouldBeIncludedByManufacturer(loweredManufacturers)) {
           return true;
         }
       }
@@ -52,18 +71,22 @@ extension ScanResultEx on ScanResult {
 
   List<String> get serviceUuids => advertisementData.uuids;
 
+  String get nonEmptyName => device.platformName.isNotEmpty
+      ? device.platformName
+      : (advertisementData.advName.isNotEmpty
+          ? advertisementData.advName
+          : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
+
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);
   }
 
-  bool get isHeartRateMonitor => hasService(heartRateServiceUuid);
-
-  String manufacturerName() {
+  List<String> manufacturerNames() {
     final companyRegistry = Get.find<CompanyRegistry>();
 
     final companyIds = advertisementData.manufacturerData.keys;
     if (companyIds.isEmpty) {
-      return notAvailable;
+      return [];
     }
 
     List<String> nameStrings = [];
@@ -71,17 +94,33 @@ extension ScanResultEx on ScanResult {
       nameStrings.add(companyRegistry.nameForId(companyId));
     }
 
-    return nameStrings.join(', ');
+    return nameStrings;
   }
 
-  int getFtmsServiceDataMachineByte() {
-    for (MapEntry<String, List<int>> entry in advertisementData.serviceData.entries) {
+  int getFtmsServiceDataMachineByte(String deviceSport) {
+    for (MapEntry<Guid, List<int>> entry in advertisementData.serviceData.entries) {
       if (entry.key.uuidString() == fitnessMachineUuid) {
         final serviceData = entry.value;
-        if (serviceData.length > 2 && serviceData[0] >= 1) {
-          return serviceData[1];
+        if (serviceData.length > 2 &&
+            serviceData[0] >= 1 &&
+            (serviceData[1] > 0 || serviceData[2] > 0)) {
+          // Note: related documentation is Fitness Machine Service FTMS_v1.0 PDF
+          // 3 Service Advertising Data
+          // The real meat is 1 + 2 = 3 bytes
+          // 3.1.1 Flags Field UINT8 - just indicating FTMS present with 1
+          // 3.1.2 Fitness Machine Type Field - two bytes flag bytes
+          // currently only bits 0-5 are defined, 6-15 is unreserved
+          // So normally it'd be serviceData[1] > 0 && serviceData[2] == 0
+          // However some outliers such as YOSUDA rower #513 flip the two bytes
+          // (Erroneously big endian instead of little endian)
+          // So when serviceData[2] > 0 we assume it's an accidental flip
+          return serviceData[serviceData[1] > 0 ? 1 : 2];
         }
       }
+    }
+
+    if (deviceSport.isNotEmpty) {
+      return MachineTypeEx.getMachineByteFlag(deviceSport);
     }
 
     return 0;
@@ -98,43 +137,241 @@ extension ScanResultEx on ScanResult {
     return machineTypes;
   }
 
-  MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes) {
-    if (serviceUuids.contains(precorServiceUuid) || serviceUuids.contains(schwinnX70ServiceUuid)) {
+  MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
+    if (serviceUuids.contains(fitnessMachineUuid)) {
+      if (ftmsServiceDataMachineTypes.isEmpty) {
+        ftmsServiceDataMachineTypes =
+            getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+      }
+
+      if (ftmsServiceDataMachineTypes.length == 1) {
+        return ftmsServiceDataMachineTypes.first;
+      }
+
+      if (ftmsServiceDataMachineTypes.isNotEmpty) {
+        return MachineType.multiFtms;
+      }
+    }
+
+    if (serviceUuids.contains(precorServiceUuid) ||
+        serviceUuids.contains(schwinnX70ServiceUuid) ||
+        serviceUuids.contains(cyclingPowerServiceUuid)) {
       return MachineType.indoorBike;
+    }
+
+    if (serviceUuids.contains(cyclingCadenceServiceUuid) ||
+        serviceUuids.contains(cyclingPowerServiceUuid)) {
+      final prefService = Get.find<BasePrefService>();
+      final kayakingWithCyclingSensors =
+          prefService.get<bool>(paddlingWithCyclingSensorsTag) ?? paddlingWithCyclingSensorsDefault;
+
+      if (kayakingWithCyclingSensors) {
+        return MachineType.rower;
+      } else {
+        return MachineType.indoorBike;
+      }
+    }
+
+    if (serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
+      return MachineType.rower;
+    }
+
+    if (serviceUuids.contains(kayakFirstServiceUuid)) {
+      return MachineType.rower;
     }
 
     if (serviceUuids.contains(heartRateServiceUuid)) {
       return MachineType.heartRateMonitor;
     }
 
-    if (!serviceUuids.contains(fitnessMachineUuid)) {
-      return MachineType.notFitnessMachine;
-    }
-
-    if (ftmsServiceDataMachineTypes.isEmpty) {
-      ftmsServiceDataMachineTypes = getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte());
-    }
-
-    if (ftmsServiceDataMachineTypes.isEmpty) {
-      return MachineType.notFitnessMachine;
-    }
-
-    if (ftmsServiceDataMachineTypes.length == 1) {
-      return ftmsServiceDataMachineTypes.first;
-    }
-
-    return MachineType.multiFtms;
+    return MachineType.notFitnessMachine;
   }
 
-  IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes) {
-    for (var dev in deviceMap.values.where((d) => !d.isMultiSport)) {
-      for (var prefix in dev.namePrefixes) {
-        if (device.name.toLowerCase().startsWith(prefix.toLowerCase())) {
-          return getSportIcon(dev.defaultSport);
+  IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    final loweredManufacturers =
+        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
+    final ftmsServiceSports =
+        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
+    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+      if (multiSportFourCCs.contains(mapEntry.key) && mapEntry.key != concept2ErgFourCC) {
+        continue;
+      }
+
+      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+      final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
+      for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
+          return getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport);
         }
       }
     }
 
-    return getMachineType(ftmsServiceDataMachineTypes).icon;
+    return getMachineType(ftmsServiceDataMachineTypes, deviceSport).icon;
+  }
+
+  Tuple2<Widget, Widget> getLogoAndBanner(List<MachineType> ftmsServiceDataMachineTypes,
+      String deviceSport, double logoSize, double mediaWidth, ThemeManager themeManager) {
+    final loweredPlatformName = device.platformName.toLowerCase();
+    if (advertisementData.serviceUuids.isNotEmpty) {
+      final serviceUuids = advertisementData.uuids;
+      if (serviceUuids.contains(schwinnX70ServiceUuid)) {
+        return Tuple2(
+          Image.asset("assets/equipment/Schwinn_logo.png",
+              width: logoSize, semanticLabel: "Schwinn Logo"),
+          Image.asset("assets/equipment/Schwinn_banner.png",
+              width: mediaWidth, semanticLabel: "Schwinn Banner"),
+        );
+      }
+
+      if (serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
+        return Tuple2(
+          Image.asset("assets/equipment/Concept2_logo.png",
+              width: logoSize, semanticLabel: "Concept2 Logo"),
+          Image.asset("assets/equipment/Concept2_banner.png",
+              width: mediaWidth, semanticLabel: "Concept2 Banner"),
+        );
+      }
+
+      if (serviceUuids.contains(kayakFirstServiceUuid)) {
+        return Tuple2(
+          SvgPicture.asset(
+            "assets/equipment/KayakFirst_logo.svg",
+            width: logoSize,
+            semanticsLabel: "Kayak First Logo",
+          ),
+          SvgPicture.asset(
+            "assets/equipment/KayakFirst_banner.svg",
+            width: mediaWidth,
+            semanticsLabel: "Kayak First Banner",
+          ),
+        );
+      }
+
+      if (loweredPlatformName.startsWith("stages") &&
+          (serviceUuids.contains(fitnessMachineUuid) ||
+              serviceUuids.contains(cyclingPowerServiceUuid))) {
+        return Tuple2(
+          SvgPicture.asset(
+            "assets/equipment/Stages_logo.svg",
+            width: logoSize,
+            semanticsLabel: "Stages Logo",
+          ),
+          SvgPicture.asset(
+            "assets/equipment/Stages_banner.svg",
+            height: logoSize,
+            semanticsLabel: "Stages Banner",
+          ),
+        );
+      }
+    }
+
+    final loweredManufacturers =
+        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    if (ftmsServiceDataMachineTypes.isEmpty) {
+      ftmsServiceDataMachineTypes =
+          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+    }
+    final ftmsServiceSports =
+        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
+    for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
+      final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+      final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
+      for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers) &&
+            (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
+          if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
+            return Tuple2(
+              Image.asset("assets/equipment/Schwinn_logo.png",
+                  width: logoSize, semanticLabel: "Schwinn Logo"),
+              Image.asset("assets/equipment/Schwinn_banner.png",
+                  width: mediaWidth, semanticLabel: "Schwinn Banner"),
+            );
+          } else if (mapEntry.key == kayakProGenesisPortFourCC) {
+            return Tuple2(
+              Image.asset("assets/equipment/KayakPro_logo.jpg",
+                  width: logoSize, semanticLabel: "KayakPro Logo"),
+              Image.asset("assets/equipment/KayakPro_banner.png",
+                  width: mediaWidth, semanticLabel: "KayakPro Banner"),
+            );
+          } else if (mapEntry.key == bowflexC7BikeFourCC) {
+            return Tuple2(
+              SvgPicture.asset(
+                "assets/equipment/Bowflex_logo.svg",
+                width: logoSize,
+                semanticsLabel: "Bowflex Logo",
+              ),
+              SvgPicture.asset(
+                "assets/equipment/Bowflex_banner.svg",
+                width: mediaWidth,
+                semanticsLabel: "Bowflex Banner",
+              ),
+            );
+          } else if (mapEntry.key == stagesSB20FourCC) {
+            return Tuple2(
+              SvgPicture.asset(
+                "assets/equipment/Stages_logo.svg",
+                width: logoSize,
+                semanticsLabel: "Stages Logo",
+              ),
+              SvgPicture.asset(
+                "assets/equipment/Stages_banner.svg",
+                height: logoSize,
+                semanticsLabel: "Stages Banner",
+              ),
+            );
+          }
+
+          return Tuple2(
+            Icon(
+              getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),
+              size: logoSize,
+              color: themeManager.getProtagonistColor(),
+            ),
+            Container(),
+          );
+        }
+      }
+
+      if (multiSportFourCCs.contains(mapEntry.key) || mapEntry.value.sportsMatch) {
+        continue;
+      }
+
+      for (final loweredPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+        if (loweredPlatformName.startsWith(loweredPrefix) &&
+            (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+            !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+            mapEntry.value.shouldBeIncludedByManufacturer(loweredManufacturers)) {
+          return Tuple2(
+            Icon(
+              getSportIcon(deviceSportDescriptors[mapEntry.key]!.defaultSport),
+              size: logoSize,
+              color: themeManager.getProtagonistColor(),
+            ),
+            Container(),
+          );
+        }
+      }
+    }
+
+    return Tuple2(
+      Icon(
+        getMachineType(ftmsServiceDataMachineTypes, deviceSport).icon,
+        size: logoSize,
+        color: themeManager.getProtagonistColor(),
+      ),
+      Container(),
+    );
   }
 }

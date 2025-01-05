@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -15,7 +16,7 @@ void main() {
   test('LifePro FlexStride Pro Device constructor tests', () async {
     final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
 
-    expect(xTrainer.defaultSport, ActivityType.elliptical);
+    expect(xTrainer.sport, ActivityType.elliptical);
     expect(xTrainer.fourCC, genericFTMSCrossTrainerFourCC);
     expect(xTrainer.isMultiSport, false);
   });
@@ -25,9 +26,9 @@ void main() {
     const lsb = 12;
     const msb = 33;
     const flag = maxUint8 * msb + lsb;
+    xTrainer.initFlag();
     xTrainer.stopWorkout();
-
-    xTrainer.processFlag(flag);
+    xTrainer.processFlag(flag, 16);
 
     expect(xTrainer.speedMetric, isNotNull);
     expect(xTrainer.cadenceMetric, isNotNull);
@@ -103,7 +104,7 @@ void main() {
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final xTrainer = DeviceFactory.getGenericFTMSCrossTrainer();
         xTrainer.initFlag();
@@ -112,9 +113,9 @@ void main() {
 
         final record = xTrainer.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);

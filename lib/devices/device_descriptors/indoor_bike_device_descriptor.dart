@@ -1,35 +1,24 @@
-import '../../persistence/models/record.dart';
-import '../../utils/constants.dart';
-import '../gatt_constants.dart';
+import '../../devices/device_fourcc.dart';
+import '../../persistence/record.dart';
+import '../gatt/ftms.dart';
 import 'fitness_machine_descriptor.dart';
 
 class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
   IndoorBikeDeviceDescriptor({
-    required fourCC,
-    required vendorName,
-    required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
-    manufacturerFitId,
-    model,
-    dataServiceId = fitnessMachineUuid,
-    dataCharacteristicId = indoorBikeUuid,
-    heartRateByteIndex,
-    canMeasureCalories = true,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    super.heartRateByteIndex,
+    super.canMeasureCalories,
+    super.doNotReadManufacturerName,
   }) : super(
-          defaultSport: ActivityType.ride,
-          isMultiSport: false,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
-          heartRateByteIndex: heartRateByteIndex,
-          canMeasureCalories: canMeasureCalories,
+          sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
+          isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,
+          dataServiceId: fitnessMachineUuid,
+          dataCharacteristicId: indoorBikeUuid,
         );
 
   @override
@@ -37,20 +26,16 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
         fourCC: fourCC,
         vendorName: vendorName,
         modelName: modelName,
-        namePrefixes: namePrefixes,
-        manufacturerPrefix: manufacturerPrefix,
+        manufacturerNamePart: manufacturerNamePart,
         manufacturerFitId: manufacturerFitId,
         model: model,
-        dataServiceId: dataServiceId,
-        dataCharacteristicId: dataCharacteristicId,
         heartRateByteIndex: heartRateByteIndex,
         canMeasureCalories: canMeasureCalories,
       );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
   @override
-  void processFlag(int flag) {
-    super.processFlag(flag);
+  void processFlag(int flag, int dataLength) {
     // Schwinn IC4
     // 68 0100 0100 instant cadence, instant power
     //  2 0000 0010 heart rate
@@ -60,7 +45,7 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processCadenceFlag(flag);
     flag = skipFlag(flag); // Average Cadence
     flag = processTotalDistanceFlag(flag);
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
     flag = processExpandedEnergyFlag(flag);
@@ -75,17 +60,20 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
+    final cadence = getCadence(data);
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
-      sport: defaultSport,
+      cadence: cadence?.toInt(),
+      heartRate: getHeartRate(data),
+      sport: sport,
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
+      resistance: getResistance(data)?.toInt(),
+      preciseCadence: cadence,
     );
   }
 

@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import 'package:isar/isar.dart';
 
+import '../../export/activity_export.dart';
+import '../../persistence/activity.dart';
 import 'constants.dart';
 import 'under_armour_token.dart';
 
-abstract class Upload {
+mixin Upload {
   /// statusCode:
   /// 201 activity created
   /// 400 problem could be that activity already uploaded
@@ -67,9 +67,11 @@ abstract class Upload {
           final workoutId = int.tryParse(idString) ?? 0;
           if (workoutId > 0) {
             debugPrint('workoutId: $workoutId');
-            final database = Get.find<AppDatabase>();
             activity.markUnderArmourUploaded(workoutId);
-            await database.activityDao.updateActivity(activity);
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() {
+              database.activitys.putSync(activity);
+            });
           }
         }
       }

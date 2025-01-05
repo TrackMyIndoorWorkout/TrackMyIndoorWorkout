@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import 'constants.dart';
+
+extension DurationDisplay on Duration {
+  String toDisplay() {
+    return toString().split('.').first.padLeft(8, "0");
+  }
+}
 
 double speedByUnitCore(double speed, bool si) {
   return si ? speed : speed * km2mi;
@@ -23,7 +30,8 @@ double speedOrPace(double speed, bool si, String sport) {
       return pace / km2mi; // mph is lower than kmh but pace is reciprocal
     } else if (sport == ActivityType.kayaking ||
         sport == ActivityType.canoeing ||
-        sport == ActivityType.rowing) {
+        sport == ActivityType.rowing ||
+        sport == ActivityType.nordicSki) {
       return 30.0 / speed;
     } else if (sport == ActivityType.swim) {
       return 6.0 / speed;
@@ -41,7 +49,8 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
       sport == ActivityType.canoeing ||
       sport == ActivityType.rowing ||
       sport == ActivityType.swim ||
-      sport == ActivityType.elliptical) {
+      sport == ActivityType.elliptical ||
+      sport == ActivityType.nordicSki) {
     if (speed.abs() < displayEps) return "0:00";
 
     if (limitSlowSpeed) {
@@ -54,7 +63,8 @@ String speedOrPaceString(double speed, bool si, String sport, {limitSlowSpeed = 
     var pace = 60.0 / speed;
     if (sport == ActivityType.kayaking ||
         sport == ActivityType.canoeing ||
-        sport == ActivityType.rowing) {
+        sport == ActivityType.rowing ||
+        sport == ActivityType.nordicSki) {
       pace /= 2.0;
     } else if (sport == ActivityType.swim) {
       pace /= 10.0;
@@ -79,7 +89,8 @@ String getSpeedUnit(bool si, String sport) {
     return si ? 'min /km' : 'min /mi';
   } else if (sport == ActivityType.kayaking ||
       sport == ActivityType.canoeing ||
-      sport == ActivityType.rowing) {
+      sport == ActivityType.rowing ||
+      sport == ActivityType.nordicSki) {
     return 'min /500';
   } else if (sport == ActivityType.swim) {
     return 'min /100';
@@ -102,9 +113,9 @@ IconData getSportIcon(String sport) {
     return Icons.rowing;
   } else if (sport == ActivityType.swim) {
     return Icons.waves;
-  } else if (sport == ActivityType.elliptical) {
+  } else if (sport == ActivityType.elliptical || sport == ActivityType.nordicSki) {
     return Icons.downhill_skiing;
-  } else if (sport == ActivityType.stairStepper) {
+  } else if (sport == ActivityType.stairStepper || sport == ActivityType.rockClimbing) {
     return Icons.stairs;
   }
 
@@ -116,7 +127,8 @@ String getCadenceUnit(String sport) {
       sport == ActivityType.canoeing ||
       sport == ActivityType.rowing ||
       sport == ActivityType.swim ||
-      sport == ActivityType.elliptical) {
+      sport == ActivityType.elliptical ||
+      sport == ActivityType.nordicSki) {
     return "spm";
   }
   return "rpm";

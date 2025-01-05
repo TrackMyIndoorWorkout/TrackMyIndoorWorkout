@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import '../../preferences/log_level.dart';
+import '../../utils/bluetooth.dart';
 import '../../utils/logging.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
 import '../metric_descriptors/short_metric_descriptor.dart';
 import '../metric_descriptors/three_byte_metric_descriptor.dart';
@@ -12,37 +10,25 @@ import 'device_descriptor.dart';
 
 abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   FitnessMachineDescriptor({
-    required defaultSport,
-    required isMultiSport,
-    required fourCC,
-    required vendorName,
-    required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
-    manufacturerFitId,
-    model,
-    dataServiceId,
-    dataCharacteristicId,
-    flagByteSize = 2,
-    heartRateByteIndex,
-    canMeasureCalories = true,
+    required super.sport,
+    required super.isMultiSport,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    super.dataServiceId,
+    super.dataCharacteristicId,
+    super.flagByteSize,
+    super.heartRateByteIndex,
+    super.canMeasureCalories = true,
+    super.doNotReadManufacturerName = false,
   }) : super(
-          defaultSport: defaultSport,
-          isMultiSport: isMultiSport,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
+          deviceCategory: DeviceCategory.smartDevice,
+          tag: "FTMS",
           controlCharacteristicId: fitnessMachineControlPointUuid,
           statusCharacteristicId: fitnessMachineStatusUuid,
-          flagByteSize: flagByteSize,
-          heartRateByteIndex: heartRateByteIndex,
-          canMeasureCalories: canMeasureCalories,
         );
 
   @override
@@ -52,9 +38,15 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     }
 
     final dataLength = data.length;
-    return byteCounter >= flagByteSize &&
-        (!hasFutureReservedBytes && dataLength == byteCounter ||
-            hasFutureReservedBytes && dataLength >= byteCounter);
+    // #525
+    // relaxing criteria, not dependent on hasFutureReservedBytes any more:
+    // if the packet has at least as many bytes as needed then it's a go
+    return byteCounter >= flagByteSize && dataLength >= byteCounter;
+  }
+
+  @override
+  bool isFlagValid(int flag) {
+    return flag >= 0;
   }
 
   int advanceFlag(int flag) {
@@ -62,8 +54,8 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return flag;
   }
 
-  int skipFlag(int flag, {int size = 2}) {
-    if (flag % 2 == 1) {
+  int skipFlag(int flag, {int size = 2, inverse = false}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
       byteCounter += size;
     }
 
@@ -81,21 +73,33 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return advanceFlag(flag);
   }
 
-  int processCadenceFlag(int flag) {
-    if (flag % 2 == 1) {
+  int processCadenceFlag(int flag, {divider = 2.0, inverse = false}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
       // UInt16, revolutions / minute with 0.5 resolution
-      cadenceMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 2.0);
+      cadenceMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
       byteCounter += 2;
     }
 
     return advanceFlag(flag);
   }
 
-  int processTotalDistanceFlag(int flag) {
+  int processTotalDistanceFlag(int flag, {int numBytes = 3}) {
     if (flag % 2 == 1) {
       // UInt24, meters
-      distanceMetric = ThreeByteMetricDescriptor(lsb: byteCounter, msb: byteCounter + 2);
-      byteCounter += 3;
+      distanceMetric = ThreeByteMetricDescriptor(lsb: byteCounter, msb: byteCounter + numBytes - 1);
+      byteCounter += numBytes;
+    }
+
+    return advanceFlag(flag);
+  }
+
+  int processResistanceFlag(int flag, {divider = 1.0}) {
+    if (flag % 2 == 1) {
+      // SInt16
+      resistanceMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
+      byteCounter += 2;
     }
 
     return advanceFlag(flag);
@@ -171,11 +175,24 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     return advanceFlag(flag);
   }
 
+  int processStrideCountFlag(int flag, {divider = 1.0, inverse = false, int skipBytes = 0}) {
+    if (flag % 2 == (inverse ? 0 : 1)) {
+      // UInt16: Floors
+      byteCounter += skipBytes;
+      // UInt16: Step Count
+      strokeCountMetric =
+          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
+      byteCounter += 2;
+    }
+
+    return advanceFlag(flag);
+  }
+
   @override
   Future<void> executeControlOperation(
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo}) async {
-    if (!await FlutterBluePlus.instance.isOn) {
+    if (!(await isBluetoothOn())) {
       return;
     }
 
@@ -191,16 +208,9 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     try {
       await controlPoint.write(requestInfo);
       // Response could be picked up in the subscription listener
-    } on PlatformException catch (e, stack) {
-      Logging.log(
-        logLevel,
-        logLevelError,
-        "FTMS",
-        "executeControlOperation",
-        "${e.message}",
-      );
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    } on Exception catch (e, stack) {
+      Logging().logException(
+          logLevel, "FTMS", "executeControlOperation", "controlPoint.write", e, stack);
     }
   }
 }

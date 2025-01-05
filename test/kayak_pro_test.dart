@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -20,7 +21,7 @@ void main() {
   test('KayakPro Rower Device constructor tests', () async {
     final rower = DeviceFactory.getKayaPro();
 
-    expect(rower.defaultSport, ActivityType.kayaking);
+    expect(rower.sport, ActivityType.kayaking);
     expect(rower.fourCC, kayakProGenesisPortFourCC);
     expect(rower.isMultiSport, true);
   });
@@ -41,12 +42,11 @@ void main() {
     // C12 elapsed time uint16 (s) 1
     // total length (1 + 2 + 3 + 2 + 2) + (2 + 2 + 1 + 2) = 10 + 7 = 17
     const flag = maxUint8 * msb + lsb;
+    rower.initFlag();
     rower.stopWorkout();
-
-    rower.processFlag(flag);
+    rower.processFlag(flag, 17);
 
     expect(rower.strokeRateMetric, isNotNull);
-    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.paceMetric, isNotNull);
     expect(rower.speedMetric, null);
     expect(rower.cadenceMetric, null);
@@ -56,6 +56,7 @@ void main() {
     expect(rower.timeMetric, isNotNull);
     expect(rower.caloriesPerHourMetric, isNotNull);
     expect(rower.caloriesPerMinuteMetric, isNotNull); // It's there but mute
+    expect(rower.strokeCountMetric, isNotNull);
     expect(rower.heartRateByteIndex, null);
   });
 
@@ -75,6 +76,7 @@ void main() {
           sport: ActivityType.kayaking,
           caloriesPerHour: 0.0,
           caloriesPerMinute: null,
+          strokeCount: 0.0,
         ),
       ),
       TestPair(
@@ -91,6 +93,7 @@ void main() {
           sport: ActivityType.kayaking,
           caloriesPerHour: 345.0,
           caloriesPerMinute: null,
+          strokeCount: 33.0,
         ),
       ),
       TestPair(
@@ -127,6 +130,7 @@ void main() {
           sport: ActivityType.kayaking,
           caloriesPerHour: 353.0,
           caloriesPerMinute: null,
+          strokeCount: 65.0,
         ),
       ),
       TestPair(
@@ -163,6 +167,7 @@ void main() {
           sport: ActivityType.kayaking,
           caloriesPerHour: 363.0,
           caloriesPerMinute: null,
+          strokeCount: 150.0,
         ),
       ),
       TestPair(
@@ -179,10 +184,11 @@ void main() {
           sport: ActivityType.kayaking,
           caloriesPerHour: 389.0,
           caloriesPerMinute: null,
+          strokeCount: 184.0,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final rower = DeviceFactory.getKayaPro();
         rower.initFlag();
@@ -191,9 +197,9 @@ void main() {
 
         final record = rower.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -204,10 +210,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

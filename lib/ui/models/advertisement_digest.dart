@@ -1,13 +1,14 @@
 import '../../devices/company_registry.dart';
-import '../../devices/gatt_constants.dart';
 import '../../utils/machine_type.dart';
 
 class AdvertisementDigest {
   final String id;
   final List<String> serviceUuids;
   final List<int> companyIds;
-  final String manufacturer;
+  final List<String> manufacturers;
+  late final List<String> loweredManufacturers;
   final int txPower;
+  final int appearance;
   final int machineTypesByte;
   final MachineType machineType;
   final List<MachineType> machineTypes;
@@ -16,22 +17,29 @@ class AdvertisementDigest {
     required this.id,
     required this.serviceUuids,
     required this.companyIds,
-    required this.manufacturer,
+    required this.manufacturers,
     required this.txPower,
+    required this.appearance,
     required this.machineTypesByte,
     required this.machineType,
     required this.machineTypes,
-  });
-
-  bool isHeartRateMonitor() {
-    return serviceUuids.contains(heartRateServiceUuid);
+  }) {
+    loweredManufacturers = manufacturers.map((m) => m.toLowerCase()).toList(growable: false);
   }
 
   // #239 SOLE E25 elliptical: Treadmill, Indoor Bike, Cross Trainer
-  bool isMultiFtms() => machineTypes.where((element) => element.isFtms).length > 1;
+  bool isMultiFtms() => machineTypes.where((element) => element.isSpecificFtms).length > 1;
 
   bool needsMatrixSpecialTreatment() {
-    return companyIds.contains(CompanyRegistry.johnsonHealthTechKey);
-    // companyIds.contains(CompanyRegistry.matrixIncKey) is hopefully not needed
+    return companyIds.contains(CompanyRegistry.johnsonHealthTechKey) ||
+        companyIds.contains(CompanyRegistry.matrixIncKey);
+  }
+
+  bool isPrefixContained(String manufacturerNameLoweredPrefix) {
+    return manufacturerNameLoweredPrefix.isEmpty ||
+        loweredManufacturers.isEmpty ||
+        loweredManufacturers
+            .map((m) => m.contains(manufacturerNameLoweredPrefix))
+            .reduce((value, contains) => value || contains);
   }
 }

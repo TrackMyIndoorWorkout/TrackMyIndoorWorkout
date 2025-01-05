@@ -8,8 +8,7 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
           fourCC: matrixBikeFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Bike",
-          namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "CTM",
+          manufacturerNamePart: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Bike",
         );
@@ -17,10 +16,14 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
   @override
   MatrixBikeDescriptor clone() => MatrixBikeDescriptor();
 
-  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
+  // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
   @override
-  void processFlag(int flag) {
-    initFlag();
+  void processFlag(int flag, int dataLength) {
+    if (![29 * 256 + 254, 21 * 256 + 254].contains(flag) || dataLength != 20) {
+      super.processFlag(flag, dataLength);
+      return;
+    }
+
     // Matrix violates the FTMS Indoor Bike protocol and promises every feature
     // except the Heart Rate (C10)
     // Flag bytes:
@@ -47,7 +50,7 @@ class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
     flag = processCadenceFlag(flag);
     flag = skipFlag(flag); // Average Cadence
     flag = processTotalDistanceFlag(flag);
-    flag = skipFlag(flag); // Resistance Level
+    flag = processResistanceFlag(flag);
     flag = processPowerFlag(flag);
     flag = skipFlag(flag); // Average Power
     flag = advanceFlag(flag); // Expanded Energy

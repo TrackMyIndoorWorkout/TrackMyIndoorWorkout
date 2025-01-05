@@ -9,8 +9,7 @@ class BooleanQuestionBottomSheet extends ConsumerStatefulWidget {
   final String title;
   final String content;
 
-  const BooleanQuestionBottomSheet({Key? key, required this.title, required this.content})
-      : super(key: key);
+  const BooleanQuestionBottomSheet({super.key, required this.title, required this.content});
 
   @override
   BooleanQuestionBottomSheetState createState() => BooleanQuestionBottomSheetState();
@@ -21,11 +20,11 @@ class BooleanQuestionBottomSheetState extends ConsumerState<BooleanQuestionBotto
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final themeManager = Get.find<ThemeManager>();
-    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final largerTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: themeManager.getProtagonistColor(themeMode),
         );
-    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineSmall!.apply(
           fontFamily: fontFamily,
           color: themeManager.getProtagonistColor(themeMode),
         );
@@ -51,12 +50,20 @@ class BooleanQuestionBottomSheetState extends ConsumerState<BooleanQuestionBotto
           children: [
             ElevatedButton(
               onPressed: () => Get.back(result: false),
-              child: const Text("No", textScaleFactor: 2.0, textAlign: TextAlign.center),
+              child: const Text(
+                "No",
+                textScaler: TextScaler.linear(2.0),
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(width: 10, height: 10),
             ElevatedButton(
               onPressed: () => Get.back(result: true),
-              child: const Text("Yes", textScaleFactor: 2.0, textAlign: TextAlign.center),
+              child: const Text(
+                "Yes",
+                textScaler: TextScaler.linear(2.0),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),

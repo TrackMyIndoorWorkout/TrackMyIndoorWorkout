@@ -5,12 +5,15 @@ import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import '../../providers/theme_mode.dart';
+
+import '../../utils/color_ex.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
 class ColorPickerBottomSheet extends ConsumerStatefulWidget {
   final Color color;
-  const ColorPickerBottomSheet({Key? key, required this.color}) : super(key: key);
+  final ValueChanged<Color>? onChanged;
+  const ColorPickerBottomSheet({super.key, required this.color, this.onChanged});
 
   @override
   ColorPickerBottomSheetState createState() => ColorPickerBottomSheetState();
@@ -27,14 +30,14 @@ class ColorPickerBottomSheetState extends ConsumerState<ColorPickerBottomSheet> 
   void initState() {
     super.initState();
     _controller = CircleColorPickerController(initialColor: widget.color);
-    _color = Color(widget.color.value);
-    _initialColor = Color(widget.color.value);
+    _color = Color(widget.color.toARGB32);
+    _initialColor = Color(widget.color.toARGB32);
   }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineSmall!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
@@ -49,6 +52,7 @@ class ColorPickerBottomSheetState extends ConsumerState<ColorPickerBottomSheet> 
         child: CircleColorPicker(
           controller: _controller,
           onChanged: (color) {
+            widget.onChanged?.call(_color);
             setState(() {
               _color = color;
             });

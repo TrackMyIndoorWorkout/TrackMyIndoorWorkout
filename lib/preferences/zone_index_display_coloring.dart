@@ -1,3 +1,4 @@
+// Deprecated in favor of per metric setting
 const zoneIndexDisplayColoring = "Color the measurement based on zones";
 const zoneIndexDisplayColoringTag = "zone_index_display_coloring";
 const zoneIndexDisplayColoringDefault = true;

@@ -1,20 +1,28 @@
-import 'package:bluetooth_enable_fork/bluetooth_enable_fork.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
-import '../preferences/log_level.dart';
+import 'delays.dart';
 import 'logging.dart';
+
+Future<bool> isBluetoothOn() async {
+  var blueState = FlutterBluePlus.adapterStateNow;
+  if (blueState == BluetoothAdapterState.unknown) {
+    blueState = await FlutterBluePlus.adapterState.first.timeout(
+        const Duration(milliseconds: dataMapExpiry),
+        onTimeout: () => BluetoothAdapterState.off);
+  }
+
+  return blueState == BluetoothAdapterState.on;
+}
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   try {
-    var blueOn = await FlutterBluePlus.instance.isOn;
-    if (blueOn) {
+    if (await isBluetoothOn()) {
       return true;
     }
 
-    if (!await FlutterBluePlus.instance.isAvailable) {
+    if (!await FlutterBluePlus.isSupported) {
       if (!silent) {
         await Get.defaultDialog(
           title: "Bluetooth Error",
@@ -47,23 +55,15 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
         return false;
       }
 
-      await BluetoothEnable.enableBluetooth;
-      if (!await FlutterBluePlus.instance.isOn) {
-        await FlutterBluePlus.instance.turnOn();
+      if (!(await isBluetoothOn())) {
+        await FlutterBluePlus.turnOn();
       }
     }
 
-    return await FlutterBluePlus.instance.isOn;
-  } on PlatformException catch (e, stack) {
-    debugPrint("$e");
-    debugPrintStack(stackTrace: stack, label: "trace:");
-    Logging.log(
-      logLevel,
-      logLevelError,
-      "bluetoothCheck",
-      "bluetoothCheck",
-      "${e.message}",
-    );
+    return await isBluetoothOn();
+  } on Exception catch (e, stack) {
+    Logging()
+        .logException(logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
     return false;
   }
 }

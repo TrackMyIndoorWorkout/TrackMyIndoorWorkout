@@ -4,7 +4,8 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/track/calculator.dart';
 import 'package:track_my_indoor_exercise/track/constants.dart';
-import 'package:track_my_indoor_exercise/track/tracks.dart';
+import 'package:track_my_indoor_exercise/track/track_descriptor.dart';
+import 'package:track_my_indoor_exercise/track/track_kind.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
@@ -17,9 +18,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -42,9 +44,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -55,7 +58,7 @@ void main() {
       final laps = rnd.nextInt(100);
 
       test("${track.radiusBoost} $lengthFactor $laps", () async {
-        final marker = calculator.trackMarker(laps * trackLength * lengthFactor)!;
+        final marker = calculator.trackMarker(laps * track.length)!;
 
         expect(
             marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, eps));
@@ -69,9 +72,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -81,9 +85,8 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLen = trackLength * lengthFactor;
-      final distance = laps * trackLen + positionRatio * track.laneLength;
-      final d = distance % trackLen;
+      final distance = laps * track.length + positionRatio * track.laneLength;
+      final d = distance % track.length;
       final r = calculator.trackRadius!;
       final displacement = d * r / track.radius;
 
@@ -101,9 +104,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -113,9 +117,8 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLen = trackLength * lengthFactor;
-      final distance = laps * trackLen + track.laneLength + positionRatio * track.halfCircle;
-      final d = distance % trackLen;
+      final distance = laps * track.length + track.laneLength + positionRatio * track.halfCircle;
+      final d = distance % track.length;
       final rad = (d - track.laneLength) / track.halfCircle * pi;
       final r = calculator.trackRadius!;
 
@@ -134,9 +137,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -146,11 +150,10 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLen = trackLength * lengthFactor;
-      final distance = (laps + 0.5) * trackLen + positionRatio * track.laneLength;
-      final d = distance % trackLen;
+      final distance = (laps + 0.5) * track.length + positionRatio * track.laneLength;
+      final d = distance % track.length;
       final r = calculator.trackRadius!;
-      final displacement = (d - trackLen / 2) * r / track.radius;
+      final displacement = (d - track.length / 2) * r / track.radius;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
@@ -167,9 +170,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -179,12 +183,11 @@ void main() {
 
       final laps = rnd.nextInt(100);
       final positionRatio = rnd.nextDouble();
-      final trackLen = trackLength * lengthFactor;
       final distance =
-          (laps + 0.5) * trackLen + track.laneLength + positionRatio * track.halfCircle;
-      final d = distance % trackLen;
+          (laps + 0.5) * track.length + track.laneLength + positionRatio * track.halfCircle;
+      final d = distance % track.length;
       final r = calculator.trackRadius!;
-      final rad = (trackLen - d) / track.halfCircle * pi;
+      final rad = (track.length - d) / track.halfCircle * pi;
 
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
@@ -200,12 +203,13 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       test("${track.radiusBoost} $lengthFactor", () async {
-        for (var distance in List<int>.generate((trackLength * 2).round(), (index) => index)) {
+        for (var distance in List<int>.generate((track.length * 2).round(), (index) => index)) {
           final size = Size(
             minPixel + rnd.nextDouble() * maxPixel,
             minPixel + rnd.nextDouble() * maxPixel,
@@ -228,9 +232,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -239,8 +244,7 @@ void main() {
       calculator.calculateConstantsOnDemand(size);
 
       final laps = rnd.nextInt(100);
-      final trackLen = trackLength * lengthFactor;
-      final distance = laps * trackLen + track.laneLength;
+      final distance = laps * track.length + track.laneLength;
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -249,7 +253,7 @@ void main() {
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        expect(dx * dx + dy * dy, closeTo(uDSquare, trackLen * displayEps));
+        expect(dx * dx + dy * dy, closeTo(uDSquare, track.length * displayEps));
       });
     }
   });
@@ -259,9 +263,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -270,8 +275,7 @@ void main() {
       calculator.calculateConstantsOnDemand(size);
 
       final laps = rnd.nextInt(100);
-      final trackLen = trackLength * lengthFactor;
-      final distance = (laps + 0.5) * trackLen + track.laneLength;
+      final distance = (laps + 0.5) * track.length + track.laneLength;
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
@@ -280,7 +284,7 @@ void main() {
         final dx = markerA.dx - markerB.dx;
         final dy = markerA.dy - markerB.dy;
 
-        expect(dx * dx + dy * dy, closeTo(uDSquare, trackLen * displayEps));
+        expect(dx * dx + dy * dy, closeTo(uDSquare, track.length * displayEps));
       });
     }
   });
@@ -290,9 +294,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -325,9 +330,10 @@ void main() {
     for (var lengthFactor in getRandomDoubles(repetition, 1.5, rnd)) {
       lengthFactor += 0.7;
       final track = TrackDescriptor(
+        name: "ForCalculations",
+        kind: TrackKind.forLand,
         radiusBoost: 0.65 + rnd.nextDouble(),
-        lengthFactor: lengthFactor,
-      );
+      )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
       final size = Size(
         minPixel + rnd.nextDouble() * maxPixel,
@@ -338,13 +344,13 @@ void main() {
       final unitDistance = calculator.trackRadius! / track.radius;
       final uDSquare = unitDistance * unitDistance;
       test("$size ${track.radiusBoost} $lengthFactor ${calculator.trackRadius}", () async {
-        for (var distance in List<int>.generate((trackLength * 2).round(), (index) => index)) {
+        for (var distance in List<int>.generate((track.length * 2).round(), (index) => index)) {
           final markerA = calculator.trackMarker(distance.toDouble())!;
           final markerB = calculator.trackMarker((distance + 1).toDouble())!;
           final dx = markerA.dx - markerB.dx;
           final dy = markerA.dy - markerB.dy;
 
-          expect(dx * dx + dy * dy, closeTo(uDSquare, trackLength * displayEps));
+          expect(dx * dx + dy * dy, closeTo(uDSquare, track.length * displayEps));
         }
       });
     }

@@ -1,22 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
-import '../../devices/bluetooth_device_ex.dart';
-import '../../devices/gatt_constants.dart';
-import '../../providers/theme_mode.dart';
+import '../../devices/gatt/ftms.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
 class BatteryStatusBottomSheet extends ConsumerStatefulWidget {
-  const BatteryStatusBottomSheet({Key? key}) : super(key: key);
+  const BatteryStatusBottomSheet({super.key});
 
   @override
   BatteryStatusBottomSheetState createState() => BatteryStatusBottomSheetState();
@@ -31,44 +27,13 @@ class BatteryStatusBottomSheetState extends ConsumerState<BatteryStatusBottomShe
   String _writeFeatures = "Write Features: $notAvailable";
   final ThemeManager _themeManager = Get.find<ThemeManager>();
 
-  Future<String> _readBatteryLevelCore(List<BluetoothService> services) async {
-    final batteryService = BluetoothDeviceEx.filterService(services, batteryServiceUuid);
-    if (batteryService == null) {
-      return notAvailable;
-    }
-
-    final batteryLevel =
-        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, batteryLevelUuid);
-    if (batteryLevel == null) {
-      return notAvailable;
-    }
-
-    final batteryLevelData = await batteryLevel.read();
-    return "${batteryLevelData[0]}%";
-  }
-
   Future<String> _readBatteryLevel(DeviceBase? device) async {
-    if (device == null || device.device == null) return notAvailable;
-
-    if (!device.connected) {
-      await device.connect();
-    }
-
-    if (!device.connected) return notAvailable;
-
-    if (!device.discovered) {
-      await device.discover();
-    }
-
-    if (!device.discovered) return notAvailable;
-
-    try {
-      return await _readBatteryLevelCore(device.services);
-    } on PlatformException catch (e, stack) {
-      debugPrint("$e");
-      debugPrintStack(stackTrace: stack, label: "trace:");
+    int batteryLevel = await device?.readBatteryLevel() ?? -1;
+    if (batteryLevel < 0) {
       return notAvailable;
     }
+
+    return "$batteryLevel%";
   }
 
   Future<void> _readBatteryLevels() async {

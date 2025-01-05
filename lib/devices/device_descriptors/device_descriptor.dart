@@ -1,9 +1,18 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import '../../track/tracks.dart';
+import '../../persistence/athlete.dart';
+import '../../preferences/log_level.dart';
+import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
-import '../gatt_constants.dart';
+import '../gatt/ftms.dart';
 import 'data_handler.dart';
+
+enum DeviceCategory {
+  smartDevice,
+  antPlusDevice,
+  primarySensor,
+  secondarySensor,
+}
 
 abstract class DeviceDescriptor extends DataHandler {
   static const double ms2kmh = 3.6;
@@ -11,66 +20,62 @@ abstract class DeviceDescriptor extends DataHandler {
   static const double oldPowerCalorieFactorDefault = 3.6;
   static const double powerCalorieFactorDefault = 4.0;
 
-  String defaultSport;
+  String sport;
   final bool isMultiSport;
   final String fourCC;
   final String vendorName;
   final String modelName;
-  final List<String> namePrefixes;
-  final String manufacturerPrefix;
+  final String manufacturerNamePart;
   final int manufacturerFitId;
   final String model;
+  DeviceCategory deviceCategory;
+  final bool isPolling;
+  final bool fragmentedPackets;
   String dataServiceId;
   String dataCharacteristicId;
   String controlCharacteristicId;
   bool listenOnControl;
   String statusCharacteristicId;
-  final bool antPlus;
 
   bool canMeasureCalories;
+  bool doNotReadManufacturerName;
 
   double? slowPace;
 
   DeviceDescriptor({
-    required this.defaultSport,
+    required this.sport,
     required this.isMultiSport,
     required this.fourCC,
     required this.vendorName,
     required this.modelName,
-    required this.namePrefixes,
-    required this.manufacturerPrefix,
+    required this.manufacturerNamePart,
     required this.manufacturerFitId,
     required this.model, // Maybe eradicate?
+    required this.deviceCategory,
+    this.isPolling = false,
+    this.fragmentedPackets = false,
     this.dataServiceId = "",
     this.dataCharacteristicId = "",
     this.controlCharacteristicId = "",
     this.listenOnControl = true,
     this.statusCharacteristicId = "",
-    this.antPlus = false,
     this.canMeasureCalories = true,
-    hasFeatureFlags = true,
-    flagByteSize = 2,
-    heartRateByteIndex,
-    timeMetric,
-    caloriesMetric,
-    speedMetric,
-    powerMetric,
-    cadenceMetric,
-    distanceMetric,
-  }) : super(
-          hasFeatureFlags: hasFeatureFlags,
-          flagByteSize: flagByteSize,
-          heartRateByteIndex: heartRateByteIndex,
-          timeMetric: timeMetric,
-          caloriesMetric: caloriesMetric,
-          speedMetric: speedMetric,
-          powerMetric: powerMetric,
-          cadenceMetric: cadenceMetric,
-          distanceMetric: distanceMetric,
-        );
+    this.doNotReadManufacturerName = false,
+    tag = "DEVICE_DESCRIPTOR",
+    super.hasFeatureFlags = true,
+    super.flagByteSize = 2,
+    super.heartRateByteIndex,
+    super.timeMetric,
+    super.caloriesMetric,
+    super.speedMetric,
+    super.powerMetric,
+    super.cadenceMetric,
+    super.distanceMetric,
+    super.resistanceMetric,
+    super.strokeCountMetric,
+  });
 
   String get fullName => '$vendorName $modelName';
-  double get lengthFactor => getDefaultTrack(defaultSport).lengthFactor;
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
 
   void stopWorkout();
@@ -79,7 +84,44 @@ abstract class DeviceDescriptor extends DataHandler {
       BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
       {int? controlInfo});
 
-  ComplexSensor? getExtraSensor(BluetoothDevice device) {
+  ComplexSensor? getSensor(BluetoothDevice device) {
     return null;
+  }
+
+  List<ComplexSensor> getAdditionalSensors(
+      BluetoothDevice device, List<BluetoothService> services) {
+    return [];
+  }
+
+  void setDevice(BluetoothDevice device, List<BluetoothService> services) {}
+
+  void trimQueues() {}
+
+  /// Sends command to induce / signal a measurement polling operation to a
+  /// device which operates that way. The command will be sent to the
+  /// Bluetooth characteristic [controlPoint].
+  Future<bool> pollMeasurement(BluetoothCharacteristic controlPoint, int logLevel) async {
+    Logging().log(logLevel, logLevelError, tag, "pollMeasurement", "Not implemented!");
+    return false;
+  }
+
+  /// Perform extra operations after a successful connect,
+  /// service + characteristics discovery, attach but before setNotifyValue(true)
+  Future<void> prePumpConfiguration(
+      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    Logging().log(logLvl, logLevelInfo, tag, "prePumpConfiguration", "Not implemented!");
+  }
+
+  /// Perform extra operations after a successful connect,
+  /// service + characteristics discovery, attach, and after setNotifyValue(true)
+  Future<void> postPumpStart(BluetoothCharacteristic? controlPoint, int logLevel) async {
+    Logging().log(logLevel, logLevelError, tag, "postPumpStart", "Not implemented!");
+  }
+
+  /// Register response keys / command bytes.
+  /// Gets significance for polling style devices where the listening
+  /// logic is decoupled from the polling and commands.
+  void registerResponse(int key, int logLevel) {
+    Logging().log(logLevel, logLevelError, tag, "registerResponse", "Not implemented!");
   }
 }

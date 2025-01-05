@@ -44,8 +44,9 @@ void main() {
           id: "",
           serviceUuids: [],
           companyIds: [],
-          manufacturer: "",
+          manufacturers: [],
           txPower: 0,
+          appearance: 0,
           machineTypesByte: testPair.machineTypes.first.bit,
           machineType: testPair.machineTypes.first,
           machineTypes: testPair.machineTypes,
@@ -58,7 +59,7 @@ void main() {
 
   group('needsMatrixSpecialTreatment works as expected', () {
     for (final testPair in [
-      const CompanyTestPair(companyId: CompanyRegistry.matrixIncKey, expected: false),
+      const CompanyTestPair(companyId: CompanyRegistry.matrixIncKey, expected: true),
       const CompanyTestPair(companyId: CompanyRegistry.johnsonHealthTechKey, expected: true),
       const CompanyTestPair(companyId: 0, expected: false),
     ]) {
@@ -67,8 +68,9 @@ void main() {
           id: "",
           serviceUuids: [],
           companyIds: [testPair.companyId],
-          manufacturer: "",
+          manufacturers: [],
           txPower: 0,
+          appearance: 0,
           machineTypesByte: MachineType.treadmill.bit,
           machineType: MachineType.treadmill,
           machineTypes: [MachineType.treadmill],
@@ -77,5 +79,45 @@ void main() {
         expect(advertisementDigest.needsMatrixSpecialTreatment(), testPair.expected);
       });
     }
+  });
+
+  test('Non matching manufacturer name will not cause inclusion', () async {
+    final advertisementDigest = AdvertisementDigest(
+      id: "",
+      serviceUuids: [],
+      companyIds: [],
+      manufacturers: ["LifeFitness"],
+      txPower: 0,
+      appearance: 0,
+      machineTypesByte: MachineType.treadmill.bit,
+      machineType: MachineType.treadmill,
+      machineTypes: [MachineType.treadmill],
+    );
+
+    expect(advertisementDigest.isPrefixContained("johnson"), false);
+    expect(advertisementDigest.isPrefixContained("health"), false);
+    expect(advertisementDigest.isPrefixContained("Life"), false);
+    expect(advertisementDigest.isPrefixContained("Fitness"), false);
+    expect(advertisementDigest.isPrefixContained("life"), true);
+    expect(advertisementDigest.isPrefixContained("fitness"), true);
+  });
+
+  test('Manufacturer name matching will cause inclusion', () async {
+    final advertisementDigest = AdvertisementDigest(
+      id: "",
+      serviceUuids: [],
+      companyIds: [],
+      manufacturers: ["Johnson Health Tech"],
+      txPower: 0,
+      appearance: 0,
+      machineTypesByte: MachineType.treadmill.bit,
+      machineType: MachineType.treadmill,
+      machineTypes: [MachineType.treadmill],
+    );
+
+    expect(advertisementDigest.isPrefixContained("Johnson"), false);
+    expect(advertisementDigest.isPrefixContained("johnson"), true);
+    expect(advertisementDigest.isPrefixContained("Health"), false);
+    expect(advertisementDigest.isPrefixContained("health"), true);
   });
 }

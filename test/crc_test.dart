@@ -195,7 +195,7 @@ void main() {
         0x03
       ], pad: false, crc: 0x9ed3),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum -> ${testPair.crc}", () async {
         expect(crcData(testPair.data), testPair.crc);
       });

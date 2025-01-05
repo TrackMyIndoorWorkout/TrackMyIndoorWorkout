@@ -1,5 +1,5 @@
-import '../persistence/models/activity.dart';
-import '../persistence/models/record.dart';
+import '../persistence/activity.dart';
+import '../persistence/record.dart';
 
 class ExportRecord {
   Record record;
@@ -13,6 +13,6 @@ class ExportRecord {
   });
 
   double elapsed(Activity activity) {
-    return ((record.timeStamp ?? 0) - activity.start) / 1000;
+    return (record.timeStamp ?? DateTime.now()).difference(activity.start).inMilliseconds / 1000;
   }
 }

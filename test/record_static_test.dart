@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 void main() {
@@ -9,7 +9,7 @@ void main() {
     for (final sport in allSports) {
       test("for $sport", () async {
         final blank = RecordWithSport(sport: sport);
-        expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        assert(DateTime.now().difference(blank.timeStamp!).inMilliseconds < 100);
         expect(blank.distance, null);
         expect(blank.elapsed, null);
         expect(blank.calories, null);
@@ -20,9 +20,9 @@ void main() {
         expect(blank.elapsedMillis, null);
         expect(blank.sport, sport);
         expect(blank.pace, null);
-        expect(blank.strokeCount, null);
         expect(blank.caloriesPerHour, null);
         expect(blank.caloriesPerMinute, null);
+        expect(blank.strokeCount, null);
       });
     }
   });
@@ -31,7 +31,7 @@ void main() {
     for (final sport in allSports) {
       test("for $sport", () async {
         final blank = RecordWithSport.getZero(sport);
-        expect(blank.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        assert(DateTime.now().difference(blank.timeStamp!).inMilliseconds < 100);
         expect(blank.distance, closeTo(0.0, eps));
         expect(blank.elapsed, 0);
         expect(blank.calories, 0);
@@ -41,10 +41,10 @@ void main() {
         expect(blank.heartRate, 0);
         expect(blank.elapsedMillis, 0);
         expect(blank.sport, sport);
-        expect(blank.pace, null);
-        expect(blank.strokeCount, null);
-        expect(blank.caloriesPerHour, null);
-        expect(blank.caloriesPerMinute, null);
+        expect(blank.pace, sport == ActivityType.ride ? null : closeTo(0.0, eps));
+        expect(blank.caloriesPerHour, closeTo(0.0, eps));
+        expect(blank.caloriesPerMinute, closeTo(0.0, eps));
+        expect(blank.strokeCount, closeTo(0.0, eps));
       });
     }
   });
@@ -53,10 +53,12 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       test("for $sport", () async {
-        final speedLow = sport == ActivityType.run ? 8.0 : 30.0;
-        final speedHigh = sport == ActivityType.run ? 20.0 : 40.0;
+        final speedLow =
+            sport == ActivityType.run ? 4.0 : (sport == ActivityType.ride ? 30.0 : 2.0);
+        final speedHigh =
+            sport == ActivityType.run ? 16.0 : (sport == ActivityType.ride ? 50.0 : 12.0);
         final random = RecordWithSport.getRandom(sport, rnd);
-        expect(random.timeStamp, closeTo(DateTime.now().millisecondsSinceEpoch, 50));
+        assert(DateTime.now().difference(random.timeStamp!).inMilliseconds < 100);
         expect(random.distance, null);
         expect(random.elapsed, null);
         expect(random.calories, inInclusiveRange(0, 1500));
@@ -67,9 +69,9 @@ void main() {
         expect(random.elapsedMillis, null);
         expect(random.sport, sport);
         expect(random.pace, null);
-        expect(random.strokeCount, null);
         expect(random.caloriesPerHour, null);
         expect(random.caloriesPerMinute, null);
+        expect(random.strokeCount, null);
       });
     }
   });

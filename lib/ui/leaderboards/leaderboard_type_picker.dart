@@ -2,7 +2,10 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
+import 'package:isar/isar.dart';
+import 'package:tuple/tuple.dart';
+
+import '../../persistence/workout_summary.dart';
 import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
@@ -12,7 +15,7 @@ import 'leaderboard_sport_hub.dart';
 import 'sport_leaderboard.dart';
 
 class LeaderBoardTypeBottomSheet extends ConsumerStatefulWidget {
-  const LeaderBoardTypeBottomSheet({Key? key}) : super(key: key);
+  const LeaderBoardTypeBottomSheet({super.key});
 
   @override
   LeaderBoardTypeBottomSheetState createState() => LeaderBoardTypeBottomSheetState();
@@ -20,16 +23,16 @@ class LeaderBoardTypeBottomSheet extends ConsumerStatefulWidget {
 
 class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBottomSheet> {
   final ThemeManager _themeManager = Get.find<ThemeManager>();
-  final AppDatabase _database = Get.find<AppDatabase>();
+  final _database = Get.find<Isar>();
 
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final textStyle = Theme.of(context).textTheme.headline4!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: Colors.white,
         );
-    final inverseTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final inverseTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
@@ -44,7 +47,9 @@ class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBotto
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final sports = await _database.findDistinctWorkoutSummarySports();
+                final distinctBySportWorkoutSummaries =
+                    await _database.workoutSummarys.where().distinctBySport().findAll();
+                final sports = distinctBySportWorkoutSummaries.map((w) => w.sport).toList();
                 if (sports.isEmpty) {
                   Get.snackbar("Warning", "No sports found");
                 } else if (sports.length > 1) {
@@ -73,7 +78,14 @@ class LeaderBoardTypeBottomSheetState extends ConsumerState<LeaderBoardTypeBotto
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final devices = await _database.findDistinctWorkoutSummaryDevices();
+                final distinctByDeviceWorkoutSummaries = await _database.workoutSummarys
+                    .where()
+                    .sortByStartDesc()
+                    .distinctByDeviceId()
+                    .findAll();
+                final devices = distinctByDeviceWorkoutSummaries
+                    .map((w) => Tuple3(w.deviceName, w.deviceId, w.sport))
+                    .toList();
                 if (devices.isEmpty) {
                   Get.snackbar("Warning", "No devices found");
                 } else if (devices.length > 1) {

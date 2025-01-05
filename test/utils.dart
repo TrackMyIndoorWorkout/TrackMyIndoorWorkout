@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
-import 'package:track_my_indoor_exercise/persistence/models/activity.dart';
+import 'package:track_my_indoor_exercise/persistence/activity.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 const smallRepetition = 10;
@@ -42,7 +42,7 @@ class ExportModelForTests extends ExportModel {
                 deviceName: "Test Dummy",
                 deviceId: "CAFEBAEBE",
                 hrmId: "",
-                start: 0,
+                start: DateTime.now(),
                 fourCC: schwinnACPerfPlusFourCC,
                 sport: ActivityType.ride,
                 powerFactor: 1.0,

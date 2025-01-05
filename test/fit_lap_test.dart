@@ -2,16 +2,22 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/export/export_record.dart';
+import 'package:track_my_indoor_exercise/export/export_target.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_lap.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
+import 'package:tuple/tuple.dart';
+
 import 'utils.dart';
 
 void main() {
   group('FitLap has the expected global message number', () {
-    for (var withGps in [true, false]) {
-      test('With GPS $withGps', () async {
-        final lap = FitLap(0, withGps);
+    for (var exportTarget in [
+      const Tuple2<int, String>(ExportTarget.regular, "regular"),
+      const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
+    ]) {
+      test('for ${exportTarget.item2}', () async {
+        final lap = FitLap(0, 100.0, exportTarget.item1);
 
         expect(lap.globalMessageNumber, FitMessage.lap);
       });
@@ -19,16 +25,18 @@ void main() {
   });
 
   group('FitLap data has the expected length', () {
-    for (var withGps in [true, false]) {
-      test('FitLap data has the expected length', () async {
+    for (var exportTarget in [
+      const Tuple2<int, String>(ExportTarget.regular, "regular"),
+      const Tuple2<int, String>(ExportTarget.suunto, "SUUNTO"),
+    ]) {
+      test('for ${exportTarget.item2}', () async {
         final rng = Random();
-        final lap = FitLap(0, withGps);
-        final now = DateTime.now();
+        final lap = FitLap(0, 100.0, exportTarget.item1);
         final exportRecord = ExportRecord(
           latitude: rng.nextDouble(),
           longitude: rng.nextDouble(),
           record: Record(
-            timeStamp: now.millisecondsSinceEpoch,
+            timeStamp: DateTime.now(),
           ),
         );
 

@@ -5,18 +5,18 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import '../../export/activity_export.dart';
-import '../../persistence/models/activity.dart';
-import '../../persistence/database.dart';
+import 'package:isar/isar.dart';
 
+import '../../export/activity_export.dart';
+import '../../persistence/activity.dart';
 import 'constants.dart';
-import 'strava_status_code.dart';
 import 'fault.dart';
+import 'strava_status_code.dart';
 import 'strava_status_text.dart';
 import 'strava_token.dart';
 import 'upload_activity.dart';
 
-abstract class Upload {
+mixin Upload {
   /// Tested with gpx and tcx
   /// For the moment the parameters
   ///
@@ -34,14 +34,13 @@ abstract class Upload {
     debugPrint('Starting to upload activity');
 
     final postUri = Uri.parse(uploadsEndpoint);
-    final persistenceValues = exporter.getPersistenceValues(activity, true);
     var request = http.MultipartRequest("POST", postUri);
     request.fields['data_type'] = exporter.fileExtension(true);
     request.fields['trainer'] = 'false';
     request.fields['commute'] = 'false';
-    request.fields['name'] = persistenceValues["name"];
+    request.fields['name'] = activity.getTitle(true);
     request.fields['external_id'] = 'strava_flutter';
-    request.fields['description'] = persistenceValues["description"];
+    request.fields['description'] = activity.getDescription(true);
 
     if (!Get.isRegistered<StravaToken>()) {
       debugPrint('Token not yet known');
@@ -58,8 +57,9 @@ abstract class Upload {
 
     request.headers.addAll(header);
 
+    final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
     request.files.add(http.MultipartFile.fromBytes('file', fileContent,
-        filename: persistenceValues["fileName"], contentType: MediaType("application", "x-gzip")));
+        filename: fileName, contentType: MediaType("application", "x-gzip")));
     debugPrint(request.toString());
 
     final streamedResponse = await request.send();
@@ -84,16 +84,22 @@ abstract class Upload {
       final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
       if (decodedResponse.id > 0) {
-        final database = Get.find<AppDatabase>();
-        activity.markUploaded(decodedResponse.id);
-        await database.activityDao.updateActivity(activity);
+        activity.markStravaUploadInitiated(decodedResponse.id);
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+
         debugPrint('id ${decodedResponse.id}');
 
+        await Future<void>.delayed(const Duration(milliseconds: 500));
         final reqCheckUpgrade = '$uploadsEndpoint/${decodedResponse.id}';
         final uri = Uri.parse(reqCheckUpgrade);
         String? reasonPhrase = StravaStatusText.processed;
+        http.Response? resp;
+        ResponseUploadActivity decodedStatus = ResponseUploadActivity(0, "", "", "", 0);
         while (reasonPhrase == StravaStatusText.processed) {
-          final resp = await http.get(uri, headers: header);
+          resp = await http.get(uri, headers: header);
           reasonPhrase = resp.reasonPhrase;
           debugPrint('Check Status $reasonPhrase ${resp.statusCode}');
 
@@ -101,6 +107,8 @@ abstract class Upload {
           if (resp.statusCode >= 200 && resp.statusCode < 300) {
             // resp.statusCode == 200
             debugPrint('Check Body: ${resp.body}');
+            final Map<String, dynamic> bodyMap = json.decode(resp.body);
+            decodedStatus = ResponseUploadActivity.fromJson(bodyMap);
           }
 
           // 404 the temp id does not exist anymore
@@ -125,9 +133,32 @@ abstract class Upload {
 
             if (reasonPhrase.compareTo(StravaStatusText.processed) == 0) {
               debugPrint('---> try another time');
+              await Future<void>.delayed(const Duration(milliseconds: 200));
             }
           } else {
             debugPrint('---> Unknown error');
+          }
+        }
+
+        int stravaActivityId = decodedStatus.activityId;
+        while (resp != null &&
+            resp.statusCode >= 200 &&
+            resp.statusCode < 300 &&
+            reasonPhrase == StravaStatusText.ok &&
+            decodedStatus.status == StravaStatusText.processed &&
+            stravaActivityId == 0) {
+          if (stravaActivityId > 0) {
+            activity.markStravaUploaded(stravaActivityId);
+          } else {
+            await Future<void>.delayed(const Duration(seconds: 1));
+            resp = await http.get(uri, headers: header);
+            final Map<String, dynamic> bodyMap = json.decode(resp.body);
+            decodedStatus = ResponseUploadActivity.fromJson(bodyMap);
+            reasonPhrase = resp.reasonPhrase;
+            stravaActivityId = decodedStatus.activityId;
+            if (stravaActivityId > 0) {
+              activity.markStravaUploaded(stravaActivityId);
+            }
           }
         }
       }

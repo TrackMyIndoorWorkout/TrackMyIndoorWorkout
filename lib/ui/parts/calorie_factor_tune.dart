@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/calorie_tune.dart';
+import 'package:isar/isar.dart';
+
+import '../../persistence/calorie_tune.dart';
 import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
@@ -13,7 +14,7 @@ class CalorieFactorTuneBottomSheet extends ConsumerStatefulWidget {
   late final double oldCalorieFactor;
   late final bool hrBased;
 
-  CalorieFactorTuneBottomSheet({Key? key, required CalorieTune calorieTune}) : super(key: key) {
+  CalorieFactorTuneBottomSheet({super.key, required CalorieTune calorieTune}) {
     deviceId = calorieTune.mac;
     oldCalorieFactor = calorieTune.calorieFactor;
     hrBased = calorieTune.hrBased;
@@ -36,7 +37,7 @@ class CalorieFactorTuneBottomSheetState extends ConsumerState<CalorieFactorTuneB
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final themeManager = Get.find<ThemeManager>();
-    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final largerTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: themeManager.getProtagonistColor(themeMode),
         );
@@ -63,25 +64,33 @@ class CalorieFactorTuneBottomSheetState extends ConsumerState<CalorieFactorTuneB
             themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             themeManager.getGreenFab(Icons.check, themeMode, () async {
-              final database = Get.find<AppDatabase>();
+              final database = Get.find<Isar>();
               final calorieFactor = _calorieFactorPercent / 100.0;
-              CalorieTune? calorieTune;
-              if (await database.hasCalorieTune(widget.deviceId, widget.hrBased)) {
-                calorieTune = await database.findCalorieTuneByMac(widget.deviceId, widget.hrBased);
-              }
-
+              final calorieTune = await database.calorieTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .and()
+                  .hrBasedEqualTo(widget.hrBased)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
-                await database.calorieTuneDao.updateCalorieTune(calorieTune);
+                database.writeTxnSync(() {
+                  database.calorieTunes.putSync(calorieTune);
+                });
               } else {
-                calorieTune = CalorieTune(
+                final calorieTune = CalorieTune(
                   mac: widget.deviceId,
                   calorieFactor: calorieFactor,
                   hrBased: widget.hrBased,
-                  time: DateTime.now().millisecondsSinceEpoch,
+                  time: DateTime.now(),
                 );
-                await database.calorieTuneDao.insertCalorieTune(calorieTune);
+                database.writeTxnSync(() {
+                  database.calorieTunes.putSync(calorieTune);
+                });
               }
+
               Get.back(result: calorieFactor);
             }),
           ],

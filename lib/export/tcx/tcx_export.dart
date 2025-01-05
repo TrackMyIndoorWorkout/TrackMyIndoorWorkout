@@ -106,7 +106,7 @@ class TCXExport extends ActivityExport {
   ///
   void addTrackPoint(ExportRecord record, ExportModel exportModel) {
     _sb.writeln("<Trackpoint>");
-    addElement('Time', timeStampString(record.record.timeStamp));
+    addElement('Time', timeStampString(record.record.timeStamp ?? DateTime.now()));
     if (!exportModel.rawData && exportModel.calculateGps) {
       addPosition(record.latitude.toStringAsFixed(7), record.longitude.toStringAsFixed(7));
     }
@@ -166,12 +166,14 @@ class TCXExport extends ActivityExport {
 
   /// Add extension of speed and watts
   ///
+  ///  ```
   ///  <Extensions>
-  ///              <ns3:TPX>
-  ///                <ns3:Speed>1.996999979019165</ns3:Speed>
-  ///                <ns3:Watts>87.0</ns3:Watts>
-  ///              </ns3:TPX>
-  ///            </Extensions>
+  ///    <ns3:TPX>
+  ///      <ns3:Speed>1.996999979019165</ns3:Speed>
+  ///      <ns3:Watts>87.0</ns3:Watts>
+  ///    </ns3:TPX>
+  ///  </Extensions>
+  ///  ```
   ///
   /// Does not handle multiple values like
   /// Speed AND Watts in the same extension
@@ -187,22 +189,26 @@ class TCXExport extends ActivityExport {
 
   /// Add heartRate in TCX file to look like
   ///
+  /// ```
   ///       <HeartRateBpm>
   ///         <Value>61</Value>
   ///       </HeartRateBpm>
+  /// ```
   ///
   void addHeartRate(int? heartRate) {
     int nonNullHeartRate = heartRate ?? 0;
-    _sb.writeln("""                 <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
+    _sb.writeln("""              <HeartRateBpm xsi:type="HeartRateInBeatsPerMinute_t">
                 <Value>${nonNullHeartRate.toString()}</Value>
               </HeartRateBpm>""");
   }
 
   /// create a position something like
+  /// ```
   /// <Position>
   ///   <LatitudeDegrees>43.14029800705612</LatitudeDegrees>
   ///   <LongitudeDegrees>5.771340150386095</LongitudeDegrees>
   /// </Position>
+  /// ```
   void addPosition(String latitude, String longitude) {
     _sb.writeln("""<Position>
      <LatitudeDegrees>$latitude</LatitudeDegrees>
@@ -227,8 +233,7 @@ class TCXExport extends ActivityExport {
   /// To get 2019-03-03T11:43:46.000Z
   /// utc time
   /// Need to add T in the middle
-  String timeStampString(int? epochTime) {
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(epochTime ?? 0);
+  String timeStampString(DateTime dateTime) {
     return dateTime.toUtc().toString().replaceFirst(' ', 'T');
   }
 }

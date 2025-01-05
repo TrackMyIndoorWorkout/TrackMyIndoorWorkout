@@ -8,6 +8,7 @@ import '../../preferences/sport_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import '../parts/palette_picker.dart';
+import 'coloring_by_zone.dart';
 import 'measurement_zones.dart';
 import 'zone_index_display.dart';
 import 'zone_palette.dart';
@@ -15,7 +16,7 @@ import 'zone_palette.dart';
 class ZonesHubScreen extends StatefulWidget {
   static String shortTitle = "Zones";
 
-  const ZonesHubScreen({Key? key}) : super(key: key);
+  const ZonesHubScreen({super.key});
 
   @override
   ZonesHubScreenState createState() => ZonesHubScreenState();
@@ -33,7 +34,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.headline5!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineSmall!.apply(
           fontFamily: fontFamily,
           color: Colors.white,
         );
@@ -69,9 +70,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
         child: ElevatedButton(
           onPressed: () async {
             final Tuple3<bool, bool, int>? paletteSelection = await Get.bottomSheet(
-              SafeArea(
+              const SafeArea(
                 child: Column(
-                  children: const [
+                  children: [
                     Expanded(
                       child: Center(
                         child: PalettePickerBottomSheet(),
@@ -101,6 +102,26 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             children: [
               TextOneLine(
                 ZonePalettePreferencesScreen.shortTitle,
+                style: textStyle,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Icon(Icons.chevron_right, size: sizeDefault),
+            ],
+          ),
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.all(5.0),
+        margin: const EdgeInsets.all(5.0),
+        child: ElevatedButton(
+          onPressed: () => Get.to(() => const ColoringByZonePreferencesScreen()),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextOneLine(
+                ColoringByZonePreferencesScreen.shortTitle,
                 style: textStyle,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

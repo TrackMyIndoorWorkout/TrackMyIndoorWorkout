@@ -1,4 +1,3 @@
-// import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
@@ -32,13 +31,12 @@ void main() {
     ]) {
       test("for ${testData.watts} -> ${testData.speed}", () async {
         await initPrefServiceForTest();
-        final speed2Power = PowerSpeedMixin();
+        final speed2Power = PowerSpeedMixinImpl();
         await speed2Power.initPower2SpeedConstants();
 
         final velocity =
             speed2Power.velocityForPowerCardano(testData.watts.toInt()) * DeviceDescriptor.ms2kmh;
         expect(velocity, closeTo(testData.speed, testData.speed * workaroundEpsRatio));
-        // debugPrint("${testData.watts} -> $velocity");
       });
     }
   });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../utils/constants.dart';
 
 enum MachineType {
@@ -42,9 +43,9 @@ extension MachineTypeEx on MachineType {
       case MachineType.crossTrainer:
         return ActivityType.elliptical;
       case MachineType.stepClimber:
-        return ActivityType.run;
+        return ActivityType.stairStepper;
       case MachineType.stairClimber:
-        return ActivityType.run;
+        return ActivityType.rockClimbing;
       case MachineType.rower:
         return ActivityType.rowing;
       default:
@@ -73,7 +74,7 @@ extension MachineTypeEx on MachineType {
     }
   }
 
-  bool get isFtms {
+  bool get isSpecificFtms {
     return [
       MachineType.indoorBike,
       MachineType.treadmill,
@@ -82,5 +83,30 @@ extension MachineTypeEx on MachineType {
       MachineType.stepClimber,
       MachineType.stairClimber,
     ].contains(this);
+  }
+
+  static int getMachineByteFlag(String sport) {
+    switch (sport) {
+      case ActivityType.ride:
+        return MachineType.indoorBike.bit;
+      case ActivityType.run:
+        return MachineType.treadmill.bit;
+      case ActivityType.elliptical:
+        return MachineType.crossTrainer.bit;
+      case ActivityType.stairStepper:
+        return MachineType.stepClimber.bit;
+      case ActivityType.rockClimbing:
+        return MachineType.stairClimber.bit;
+      case ActivityType.rowing:
+        return MachineType.rower.bit;
+      case ActivityType.kayaking:
+        return MachineType.rower.bit;
+      case ActivityType.canoeing:
+        return MachineType.rower.bit;
+      case ActivityType.swim:
+        return MachineType.rower.bit;
+      default:
+        return MachineType.notFitnessMachine.bit;
+    }
   }
 }

@@ -9,7 +9,7 @@ import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
 class RowConfigurationDialog extends ConsumerStatefulWidget {
-  const RowConfigurationDialog({Key? key}) : super(key: key);
+  const RowConfigurationDialog({super.key});
 
   @override
   RowConfigurationDialogState createState() => RowConfigurationDialogState();
@@ -40,7 +40,7 @@ class RowConfigurationDialogState extends ConsumerState<RowConfigurationDialog> 
   Widget build(BuildContext context) {
     final themeManager = Get.find<ThemeManager>();
     final themeMode = ref.watch(themeModeProvider);
-    final textStyle = Theme.of(context).textTheme.headline3!.apply(
+    final textStyle = Theme.of(context).textTheme.displaySmall!.apply(
           color: themeManager.getProtagonistColor(themeMode),
         );
 

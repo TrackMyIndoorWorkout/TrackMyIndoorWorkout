@@ -1,63 +1,54 @@
-import '../../persistence/models/record.dart';
+import '../../persistence/record.dart';
 import 'device_descriptor.dart';
 
 abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
   FixedLayoutDeviceDescriptor({
-    required defaultSport,
-    required isMultiSport,
-    required fourCC,
-    required vendorName,
-    required modelName,
-    required namePrefixes,
-    manufacturerPrefix,
-    manufacturerFitId,
-    model,
-    dataServiceId,
-    dataCharacteristicId,
-    controlCharacteristicId = "",
-    listenOnControl = true,
-    heartRateByteIndex,
-    timeMetric,
-    caloriesMetric,
-    speedMetric,
-    powerMetric,
-    cadenceMetric,
-    distanceMetric,
+    required super.sport,
+    required super.isMultiSport,
+    required super.fourCC,
+    required super.vendorName,
+    required super.modelName,
+    required super.manufacturerNamePart,
+    required super.manufacturerFitId,
+    required super.model,
+    required super.dataServiceId,
+    required super.dataCharacteristicId,
+    super.controlCharacteristicId = "",
+    super.statusCharacteristicId = "",
+    super.tag = "FIXED_LAYOUT_DEVICE_DESCRIPTOR",
+    super.listenOnControl = true,
+    super.flagByteSize = 3,
+    super.heartRateByteIndex,
+    super.timeMetric,
+    super.caloriesMetric,
+    super.speedMetric,
+    super.powerMetric,
+    super.cadenceMetric,
+    super.distanceMetric,
   }) : super(
-          defaultSport: defaultSport,
-          isMultiSport: isMultiSport,
-          fourCC: fourCC,
-          vendorName: vendorName,
-          modelName: modelName,
-          namePrefixes: namePrefixes,
-          manufacturerPrefix: manufacturerPrefix,
-          manufacturerFitId: manufacturerFitId,
-          model: model,
-          dataServiceId: dataServiceId,
-          dataCharacteristicId: dataCharacteristicId,
-          controlCharacteristicId: controlCharacteristicId,
-          listenOnControl: listenOnControl,
+          deviceCategory: DeviceCategory.smartDevice,
           hasFeatureFlags: false,
-          heartRateByteIndex: heartRateByteIndex,
-          timeMetric: timeMetric,
-          caloriesMetric: caloriesMetric,
-          speedMetric: speedMetric,
-          powerMetric: powerMetric,
-          cadenceMetric: cadenceMetric,
-          distanceMetric: distanceMetric,
         );
 
   @override
+  void processFlag(int flag, int dataLength) {
+    // Empty implementation, hard coded layouts overlook flags
+  }
+
+  @override
   RecordWithSport? stubRecord(List<int> data) {
+    final cadence = getCadence(data);
     return RecordWithSport(
       distance: getDistance(data),
       elapsed: getTime(data)?.toInt(),
       calories: getCalories(data)?.toInt(),
       power: getPower(data)?.toInt(),
       speed: getSpeed(data),
-      cadence: getCadence(data)?.toInt(),
-      heartRate: getHeartRate(data)?.toInt(),
-      sport: defaultSport,
+      cadence: cadence?.toInt(),
+      preciseCadence: cadence,
+      resistance: getResistance(data)?.toInt(),
+      heartRate: getHeartRate(data),
+      sport: sport,
     );
   }
 }

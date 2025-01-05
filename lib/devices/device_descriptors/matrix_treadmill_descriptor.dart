@@ -8,8 +8,7 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
           fourCC: matrixTreadmillFourCC,
           vendorName: "Matrix",
           modelName: "Matrix Treadmill",
-          namePrefixes: ["CTM", "Johnson", "Matrix"],
-          manufacturerPrefix: "CTM",
+          manufacturerNamePart: "CTM",
           manufacturerFitId: johnsonHealthTechId,
           model: "Matrix Treadmill",
         );
@@ -19,8 +18,12 @@ class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
-  void processFlag(int flag) {
-    initFlag();
+  void processFlag(int flag, int dataLength) {
+    if (![31 * 256 + 158, 27 * 256 + 158].contains(flag) || dataLength != 20) {
+      super.processFlag(flag, dataLength);
+      return;
+    }
+
     // Matrix violates the FTMS Treadmill protocol and promises every feature
     // except the Instantaneous Pace and Average Pace (C7 and C8)
     // Flag bytes:

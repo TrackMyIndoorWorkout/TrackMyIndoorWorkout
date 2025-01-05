@@ -3,11 +3,11 @@ import 'metric_descriptor.dart';
 
 class ShortMetricDescriptor extends MetricDescriptor {
   ShortMetricDescriptor({
-    required lsb,
-    required msb,
-    divider = 1.0,
-    optional = false,
-  }) : super(lsb: lsb, msb: msb, divider: divider, optional: optional);
+    required super.lsb,
+    required super.msb,
+    super.divider = 1.0,
+    super.optional = false,
+  });
 
   @override
   double? getMeasurementValue(List<int> data) {

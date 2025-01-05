@@ -9,6 +9,8 @@ class CompanyRegistry {
   static const stagesCyclingLlcKey = 442;
   static const matrixIncKey = 859;
   static const johnsonHealthTechKey = 1988;
+  static const huaweiTechnologiesCoKey = 637;
+  static const technogymSpaKey = 621;
   Map<int, String> registry = {};
 
   Future<void> loadCompanyIdentifiers() async {

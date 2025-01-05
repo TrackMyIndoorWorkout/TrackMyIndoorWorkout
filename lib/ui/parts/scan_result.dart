@@ -2,35 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+
 import '../../devices/company_registry.dart';
 import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
+import '../../utils/guid_ex.dart';
 import '../../utils/scan_result_ex.dart';
 import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 
 class ScanResultTile extends ConsumerWidget {
-  static RegExp colonRegex = RegExp(r'\:');
-
   const ScanResultTile({
-    Key? key,
+    super.key,
     required this.result,
+    required this.deviceSport,
+    required this.mediaWidth,
     required this.onEquipmentTap,
     required this.onHrmTap,
-  }) : super(key: key);
+  });
 
   final ScanResult result;
+  final String deviceSport;
+  final double mediaWidth;
   final VoidCallback onEquipmentTap;
   final VoidCallback onHrmTap;
 
   Widget _buildTitle(ThemeManager themeManger, TextStyle captionStyle, TextStyle dataStyle) {
-    final deviceIdString = result.device.id.id.replaceAll(colonRegex, '');
+    final deviceIdString = result.device.remoteId.str.shortAddressString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          result.device.name.isNotEmpty ? result.device.name : deviceIdString,
+          result.nonEmptyName,
           style: themeManger.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),
@@ -61,7 +65,7 @@ class ScanResultTile extends ConsumerWidget {
 
   String getNiceManufacturerData(List<int> companyIds) {
     if (companyIds.isEmpty) {
-      return 'N/A';
+      return notAvailable;
     }
 
     final companyRegistry = Get.find<CompanyRegistry>();
@@ -73,9 +77,9 @@ class ScanResultTile extends ConsumerWidget {
     return nameStrings.join(', ');
   }
 
-  String getNiceServiceData(Map<String, List<int>> data) {
+  String getNiceServiceData(Map<Guid, List<int>> data) {
     if (data.isEmpty) {
-      return 'N/A';
+      return notAvailable;
     }
 
     List<String> res = [];
@@ -88,39 +92,34 @@ class ScanResultTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final captionStyle = Theme.of(context).textTheme.headline6!;
+    final captionStyle = Theme.of(context).textTheme.titleLarge!;
     final detailStyle = captionStyle.apply(fontSizeFactor: 1 / fontSizeFactor);
     final secondaryStyle = captionStyle.apply(fontFamily: fontFamily);
     final themeManager = Get.find<ThemeManager>();
     final themeMode = ref.watch(themeModeProvider);
 
+    final logoSize = captionStyle.fontSize! * 2.5;
+    final deviceIcon = result.getIcon([], deviceSport);
+    final logoAndBanner =
+        result.getLogoAndBanner([], deviceSport, logoSize, mediaWidth, themeManager);
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
-      leading: Icon(
-        result.getIcon([]),
-        size: captionStyle.fontSize! * 2.5,
-        color: themeManager.getProtagonistColor(themeMode),
-      ),
+      leading: logoAndBanner.item1,
       trailing: themeManager.getIconFab(
         result.advertisementData.connectable
             ? themeManager.getBlueColor(themeMode)
             : themeManager.getGreyColor(themeMode),
-        result.isHeartRateMonitor ? Icons.favorite : Icons.play_arrow,
+        deviceIcon == Icons.favorite ? Icons.favorite : Icons.play_arrow,
         themeMode,
         result.advertisementData.connectable
-            ? (result.isHeartRateMonitor ? onHrmTap : onEquipmentTap)
+            ? (deviceIcon == Icons.favorite ? onHrmTap : onEquipmentTap)
             : null,
       ),
       children: [
+        logoAndBanner.item2,
         _buildAdvRow(
           'Complete Name',
-          result.advertisementData.localName,
-          detailStyle,
-          secondaryStyle,
-        ),
-        _buildAdvRow(
-          'Tx Power Level',
-          '${result.advertisementData.txPowerLevel ?? 'N/A'}',
+          result.advertisementData.advName,
           detailStyle,
           secondaryStyle,
         ),
@@ -135,7 +134,7 @@ class ScanResultTile extends ConsumerWidget {
           'Service UUIDs',
           result.advertisementData.serviceUuids.isNotEmpty
               ? result.serviceUuids.join(', ').toUpperCase()
-              : 'N/A',
+              : notAvailable,
           detailStyle,
           secondaryStyle,
         ),

@@ -8,7 +8,7 @@ import '../../providers/theme_mode.dart';
 import '../../utils/theme_manager.dart';
 
 class ExportFormatPickerBottomSheet extends ConsumerStatefulWidget {
-  const ExportFormatPickerBottomSheet({Key? key}) : super(key: key);
+  const ExportFormatPickerBottomSheet({super.key});
 
   @override
   ExportFormatPickerBottomSheetState createState() => ExportFormatPickerBottomSheetState();
@@ -31,7 +31,7 @@ class ExportFormatPickerBottomSheetState extends ConsumerState<ExportFormatPicke
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
-    final largerTextStyle = Theme.of(context).textTheme.headline4!;
+    final largerTextStyle = Theme.of(context).textTheme.headlineMedium!;
     final selectedTextStyle = largerTextStyle.apply(
       color: _themeManager.getProtagonistColor(themeMode),
     );

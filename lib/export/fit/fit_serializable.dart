@@ -1,14 +1,16 @@
 import 'dart:convert';
+import 'dart:math';
 
 import '../../utils/constants.dart';
 import 'fit_base_type.dart';
 import 'fit_crc.dart';
 
 abstract class FitSerializable {
-  static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0).millisecondsSinceEpoch;
+  static final fitEpoch = DateTime.utc(1989, 12, 31, 0, 0, 0);
   late List<int> output = [];
 
   void addNonFloatingNumber(int? number, int length, {bool signed = false}) {
+    bool wasNull = number == null;
     if (number == null) {
       if (length == 1) {
         number = signed ? FitBaseTypes.sint8Type.invalidValue : FitBaseTypes.uint8Type.invalidValue;
@@ -23,25 +25,33 @@ abstract class FitSerializable {
       }
     }
 
-    if (number < 0) {
-      // Two compliments flipping
-      int threshold = maxUint8;
-      if (length == 2) {
-        threshold = maxUint16;
-      } else if (length == 3) {
-        threshold = maxUint24;
-      } else if (length == 4) {
-        threshold = maxUint32;
-      }
+    int threshold = maxUint8;
+    if (length == 2) {
+      threshold = maxUint16;
+    } else if (length == 3) {
+      threshold = maxUint24;
+    } else if (length == 4) {
+      threshold = maxUint32;
+    }
 
+    // Two compliments flipping
+    if (number < 0) {
       number += threshold;
+    }
+
+    if (!wasNull) {
+      // Limiting to maximum
+      // -2 because
+      // 1. -1 would result in 0 by the later modulo operator
+      // 2. -1 would match the invalid value constant in many cases
+      // And we shouldn't limit when the number was null (it is now invalid value)
+      number = min(number, threshold - 2);
     }
 
     for (int i = 0; i < length; i++) {
       output.add(number! % maxUint8);
       number ~/= maxUint8;
     }
-    assert(number == 0);
   }
 
   void addByte(int? byte, {bool signed = false}) {
@@ -70,15 +80,11 @@ abstract class FitSerializable {
     return output;
   }
 
-  static int fitTimeStamp(int? unixMilliseconds) {
-    if (unixMilliseconds == null) {
+  static int fitTimeStamp(DateTime? dateTime) {
+    if (dateTime == null) {
       return 0;
     }
 
-    return (unixMilliseconds - fitEpoch) ~/ 1000;
-  }
-
-  static int fitDateTime(DateTime dateTime) {
-    return fitTimeStamp(dateTime.millisecondsSinceEpoch);
+    return dateTime.difference(fitEpoch).inSeconds;
   }
 }

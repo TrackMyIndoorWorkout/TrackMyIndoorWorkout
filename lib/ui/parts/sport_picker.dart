@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -12,10 +13,10 @@ class SportPickerBottomSheet extends ConsumerStatefulWidget {
   final String initialSport;
 
   const SportPickerBottomSheet({
-    Key? key,
+    super.key,
     required this.sportChoices,
     required this.initialSport,
-  }) : super(key: key);
+  });
 
   @override
   SportPickerBottomSheetState createState() => SportPickerBottomSheetState();
@@ -34,7 +35,7 @@ class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> 
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final themeManager = Get.find<ThemeManager>();
-    final largerTextStyle = Theme.of(context).textTheme.headline4!;
+    final largerTextStyle = Theme.of(context).textTheme.headlineMedium!;
     final selectedTextStyle = largerTextStyle.apply(
       color: themeManager.getProtagonistColor(themeMode),
     );
@@ -68,13 +69,12 @@ class SportPickerBottomSheetState extends ConsumerState<SportPickerBottomSheet> 
                       });
                     },
                     icon: themeManager.getBlueIcon(
-                      getSportIcon(e.value),
-                      largerTextStyle.fontSize!,
-                      themeMode,
-                    ),
-                    label: Text(
+                        getSportIcon(e.value), largerTextStyle.fontSize!),
+                    label: TextOneLine(
                       e.value,
                       style: _sportIndex == e.key ? selectedTextStyle : largerTextStyle,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

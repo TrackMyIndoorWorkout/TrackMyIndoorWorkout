@@ -6,13 +6,14 @@ import '../../preferences/metric_spec.dart';
 import '../../preferences/sound_effects.dart';
 import '../../preferences/target_heart_rate.dart';
 import '../../utils/sound.dart';
+import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
 
 class TargetHrPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
   static String shortTitle = targetHrShortTitle;
   static String title = "$shortTitle Preferences";
 
-  const TargetHrPreferencesScreen({Key? key}) : super(key: key);
+  const TargetHrPreferencesScreen({super.key});
 
   @override
   TargetHrPreferencesScreenState createState() => TargetHrPreferencesScreenState();
@@ -25,7 +26,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
       PrefLabel(
         title: Text(
           targetHeartRateMode,
-          style: Theme.of(context).textTheme.headline5!,
+          style: Theme.of(context).textTheme.headlineSmall!,
           maxLines: 3,
         ),
         subtitle: const Text(targetHeartRateModeDescription),
@@ -53,8 +54,27 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerBpmMin,
         max: targetHeartRateUpperBpmMax,
+        divisions: targetHeartRateUpperBpmMax - targetHeartRateLowerBpmMin,
         direction: Axis.vertical,
         onChange: (num value) {
+          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
+              targetHeartRateUpperBpmDefault;
+          if (value >= upperLimit) {
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateLowerBpmIntTag, upperLimit - 1);
+            });
+          }
+        },
+      ),
+      PrefInteger(
+        pref: targetHeartRateLowerBpmIntTag,
+        min: targetHeartRateLowerBpmMin,
+        max: targetHeartRateUpperBpmMax,
+        onChange: (int? value) {
+          if (value == null) {
+            return;
+          }
+
           final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
               targetHeartRateUpperBpmDefault;
           if (value >= upperLimit) {
@@ -71,8 +91,27 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerBpmMin,
         max: targetHeartRateUpperBpmMax,
+        divisions: targetHeartRateUpperBpmMax - targetHeartRateLowerBpmMin,
         direction: Axis.vertical,
         onChange: (num value) {
+          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
+              targetHeartRateLowerBpmDefault;
+          if (value <= lowerLimit) {
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateUpperBpmIntTag, lowerLimit + 1);
+            });
+          }
+        },
+      ),
+      PrefInteger(
+        pref: targetHeartRateUpperBpmIntTag,
+        min: targetHeartRateLowerBpmMin,
+        max: targetHeartRateUpperBpmMax,
+        onChange: (int? value) {
+          if (value == null) {
+            return;
+          }
+
           final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
               targetHeartRateLowerBpmDefault;
           if (value <= lowerLimit) {
@@ -89,8 +128,27 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerZoneMin,
         max: targetHeartRateUpperZoneMax,
+        divisions: targetHeartRateUpperZoneMax - targetHeartRateLowerZoneMin,
         direction: Axis.vertical,
         onChange: (num value) {
+          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
+              targetHeartRateUpperZoneDefault;
+          if (value > upperLimit) {
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateLowerZoneIntTag, upperLimit);
+            });
+          }
+        },
+      ),
+      PrefInteger(
+        pref: targetHeartRateLowerZoneIntTag,
+        min: targetHeartRateLowerZoneMin,
+        max: targetHeartRateUpperZoneMax,
+        onChange: (int? value) {
+          if (value == null) {
+            return;
+          }
+
           final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
               targetHeartRateUpperZoneDefault;
           if (value > upperLimit) {
@@ -107,8 +165,27 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value"),
         min: targetHeartRateLowerZoneMin,
         max: targetHeartRateUpperZoneMax,
+        divisions: targetHeartRateUpperZoneMax - targetHeartRateLowerZoneMin,
         direction: Axis.vertical,
         onChange: (num value) {
+          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
+              targetHeartRateLowerZoneDefault;
+          if (value < lowerLimit) {
+            setState(() {
+              PrefService.of(context).set<int>(targetHeartRateUpperZoneIntTag, lowerLimit);
+            });
+          }
+        },
+      ),
+      PrefInteger(
+        pref: targetHeartRateUpperZoneIntTag,
+        min: targetHeartRateLowerZoneMin,
+        max: targetHeartRateUpperZoneMax,
+        onChange: (int? value) {
+          if (value == null) {
+            return;
+          }
+
           final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
               targetHeartRateLowerZoneDefault;
           if (value < lowerLimit) {
@@ -130,12 +207,18 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value s"),
         min: targetHeartRateAudioPeriodMin,
         max: targetHeartRateAudioPeriodMax,
+        divisions: targetHeartRateAudioPeriodMax - targetHeartRateAudioPeriodMin,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: targetHeartRateAudioPeriodIntTag,
+        min: targetHeartRateAudioPeriodMin,
+        max: targetHeartRateAudioPeriodMax,
       ),
       PrefLabel(
         title: Text(
           targetHeartRateSoundEffect,
-          style: Theme.of(context).textTheme.headline5!,
+          style: Theme.of(context).textTheme.headlineSmall!,
           maxLines: 3,
         ),
         subtitle: const Text(targetHeartRateSoundEffectDescription),
@@ -172,7 +255,13 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         trailing: (num value) => Text("$value %"),
         min: audioVolumeMin,
         max: audioVolumeMax,
+        divisions: audioVolumeDivisions,
         direction: Axis.vertical,
+      ),
+      const PrefInteger(
+        pref: audioVolumeIntTag,
+        min: audioVolumeMin,
+        max: audioVolumeMax,
       ),
     ];
 

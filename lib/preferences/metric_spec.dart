@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+
 import '../preferences/sport_spec.dart';
 import '../ui/models/row_configuration.dart';
 import '../utils/constants.dart';
@@ -25,10 +26,13 @@ class MetricSpec {
   static const zoneIndexDisplayText = "Zone Index Display";
   static const zoneIndexDisplayDescriptionPart1 = "Display the Zone Index Next to the ";
   static const zoneIndexDisplayDescriptionPart2 = " Measurement Value";
-  static const zoneIndexDisplayExtraNote =
-      "These Zone settings apply for the fixed panel sections. "
-      "For extra HR zone display feature check out '$targetHrShortTitle' configuration "
-      "in the upstream settings selection. For extra speed feedback check out leaderboard rank settings.";
+  static const coloringByZoneTagPostfix = "coloring_by_zone";
+  static const coloringByZoneTitle = "Coloring by Zone";
+  static const coloringByZoneDescriptionPart1 = "Color the ";
+  static const coloringByZoneDescriptionPart2 = " Measurement based on the Zone";
+  static const zoneIndexDisplayExtraNote = "These settings are for non cumulative metrics. "
+      "For extra HR zone display feature check out '$targetHrShortTitle' configuration. "
+      "For extra speed feedback check out leaderboard rank settings.";
   static const zoneIndexDisplayDefault = false;
   static const veryOldZoneBoundaries = "55,75,90,105,120,150";
 
@@ -63,6 +67,7 @@ class MetricSpec {
       },
       icon: Icons.bolt,
       indexDisplayDefault: false,
+      coloringByZoneDefault: false,
     ),
     MetricSpec(
       metric: metrics[1],
@@ -94,6 +99,7 @@ class MetricSpec {
       },
       icon: Icons.speed,
       indexDisplayDefault: false,
+      coloringByZoneDefault: false,
     ),
     MetricSpec(
       metric: metrics[2],
@@ -125,6 +131,7 @@ class MetricSpec {
       },
       icon: Icons.directions_bike,
       indexDisplayDefault: false,
+      coloringByZoneDefault: false,
     ),
     MetricSpec(
       metric: metrics[3],
@@ -146,16 +153,26 @@ class MetricSpec {
         SportSpec.sportPrefixes[4]: 153,
       },
       zonesTagPostfix: metrics[3] + zonesPostfix,
+      // This was based on Max HR not, Threshold HR
       oldZoneDefaultInts: [50, 60, 70, 80, 90, 100],
+      // 7 zones based on Lactate Threshold Heart Rate (according to Gemini):
+      // 1, <85%, Very easy, Recovery
+      // 2, 85-89%, Easy Aerobic
+      // 3, 90-94%, Moderate
+      // 4, 95-99%, Somewhat hard
+      // 5a, 100-102%, Hard
+      // 5b, 103-106%, Very hard
+      // 5c, >106%, Maximal
       zonesDefaultInts: {
-        SportSpec.sportPrefixes[0]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[1]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[2]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[3]: [80, 88, 92, 152, 156, 163],
-        SportSpec.sportPrefixes[4]: [80, 88, 92, 152, 156, 163],
+        SportSpec.sportPrefixes[0]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[1]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[2]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[3]: [85, 90, 95, 100, 103, 106],
+        SportSpec.sportPrefixes[4]: [85, 90, 95, 100, 103, 106],
       },
       icon: Icons.favorite,
       indexDisplayDefault: false,
+      coloringByZoneDefault: false,
     ),
   ].toList(growable: false);
 
@@ -170,8 +187,10 @@ class MetricSpec {
   final List<int> oldZoneDefaultInts;
   final Map<String, List<int>> zonesDefaultInts;
   final bool indexDisplayDefault;
+  final bool coloringByZoneDefault;
   IconData icon;
   bool indexDisplay = false;
+  bool coloringByZone = false;
   double threshold = 0.0;
   List<int> zonePercents = [];
   List<double> zoneBounds = [];
@@ -193,11 +212,13 @@ class MetricSpec {
     required this.oldZoneDefaultInts,
     required this.zonesDefaultInts,
     required this.indexDisplayDefault,
+    required this.coloringByZoneDefault,
     required this.icon,
   }) {
     updateMultiLineUnit();
     plotBands = [];
     indexDisplay = indexDisplayDefault;
+    coloringByZone = coloringByZoneDefault;
   }
 
   String get fullTitle => "$title ($unit)";
@@ -208,6 +229,11 @@ class MetricSpec {
   String get zoneIndexTag => "${metric}_$zoneIndexDisplayTagPostfix";
   String get zoneIndexDescription =>
       "$zoneIndexDisplayDescriptionPart1 $title $zoneIndexDisplayDescriptionPart2";
+
+  String get coloringByZoneText => "$title $coloringByZoneTitle";
+  String get coloringByZoneTag => "${metric}_$coloringByZoneTagPostfix";
+  String get coloringByZoneDescription =>
+      "$coloringByZoneDescriptionPart1 $title $coloringByZoneDescriptionPart2";
 
   String oldThresholdDefault(String sport) {
     return oldThresholdDefaultInts[SportSpec.sport2Sport(sport)].toString();
@@ -262,6 +288,7 @@ class MetricSpec {
     zoneBounds =
         zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
     indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
+    coloringByZone = prefService.get<bool>(coloringByZoneTag) ?? coloringByZoneDefault;
   }
 
   void calculateBounds(double minVal, double maxVal, bool isLight, PaletteSpec paletteSpec) {

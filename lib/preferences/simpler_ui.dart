@@ -13,8 +13,8 @@ const simplerUiDescription = "On: the track visualization and the real-time"
 Future<bool> getSimplerUiDefault() async {
   var simplerUiDefault = simplerUiFastDefault;
   if (Platform.isAndroid) {
-    var androidInfo = await DeviceInfoPlugin().androidInfo;
-    if ((androidInfo.version.sdkInt ?? 31) < 26) {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+    if (androidInfo.version.sdkInt < 26) {
       // Remove complexities for very old Android devices
       simplerUiDefault = simplerUiSlowDefault;
     }

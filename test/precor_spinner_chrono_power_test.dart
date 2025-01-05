@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/precor_spinner_chrono_power.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -15,7 +16,7 @@ void main() {
   test('Precor Spinner Chrono Power constructor tests', () async {
     final bike = PrecorSpinnerChronoPower();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, precorSpinnerChronoPowerFourCC);
   });
 
@@ -32,8 +33,12 @@ void main() {
     expect(bike.timeMetric, isNotNull);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.strokeCountMetric, null);
   });
 
+  // 0th flag: 83 = 0101 0011 (so Flag 1 and Flag 2 present)
+  // Flag 1: 89 = 0101 1001 C12 Cumulative Horizontal Distance, C10 Cadence, C9 Speed, C6 HR
+  // Flag 2: 22 = 0001 0110 C18 Power, C16 Energy Rate, C15 Cumulative Energy
   group('Precor Spinner Chrono Power interprets Data properly', () {
     for (final testPair in [
       TestPair(
@@ -50,6 +55,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -66,6 +72,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -82,6 +89,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -98,6 +106,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -114,6 +123,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -130,6 +140,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -146,6 +157,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -162,6 +174,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -178,6 +191,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -194,19 +208,20 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
         final bike = PrecorSpinnerChronoPower();
         expect(bike.isDataProcessable(testPair.data), true);
 
         final record = bike.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -217,10 +232,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

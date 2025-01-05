@@ -3,8 +3,13 @@ import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
 const nautilusFitId = 14;
+const suuntoFitId = 23;
+const wahooFitnessFitId = 32;
+const concept2FitId = 40;
 const northPoleEngineeringFitId = 66;
 const stagesCyclingFitId = 69;
+const strydFitId = 95;
+const technogymFitId = 111;
 const johnsonHealthTechId = 122;
 const precorFitId = 266;
 const stravaFitId = 265;
@@ -32,7 +37,7 @@ Map<int, String> fitManufacturer = {
   20: 'cardiosport',
   21: 'a and d',
   22: 'hmm',
-  23: 'suunto',
+  suuntoFitId: 'suunto',
   24: 'thita elektronik',
   25: 'gpulse',
   26: 'clean mobile',
@@ -41,7 +46,7 @@ Map<int, String> fitManufacturer = {
   29: 'saxonar',
   30: 'lemond fitness',
   31: 'dexcom',
-  32: 'wahoo fitness',
+  wahooFitnessFitId: 'wahoo fitness',
   33: 'octane fitness',
   34: 'archinoetics',
   35: 'the hurt box',
@@ -49,7 +54,7 @@ Map<int, String> fitManufacturer = {
   37: 'magellan',
   38: 'osynce',
   39: 'holux',
-  40: 'concept2',
+  concept2FitId: 'concept2',
   42: 'one giant leap',
   43: 'ace sensor',
   44: 'brim brothers',
@@ -101,7 +106,7 @@ Map<int, String> fitManufacturer = {
   92: '1partcarbon',
   93: 'inside ride technologies',
   94: 'sound of motion',
-  95: 'stryd',
+  strydFitId: 'stryd',
   96: 'icg', // Indoorcycling Group
   97: 'MiPulse',
   98: 'bsx athletics',
@@ -117,7 +122,7 @@ Map<int, String> fitManufacturer = {
   108: 'giant manufacturing co',
   109: 'tigrasport', // Tigrasport
   110: 'salutron',
-  111: 'technogym',
+  technogymFitId: 'technogym',
   112: 'bryton sensors',
   113: 'latitude limited',
   114: 'soaring technology',
@@ -178,7 +183,7 @@ int getFitManufacturer(String manufacturer) {
   }
 
   final matrixDescriptor = MatrixTreadmillDescriptor();
-  if (manufacturer.startsWith(matrixDescriptor.manufacturerPrefix)) {
+  if (manufacturer.startsWith(matrixDescriptor.manufacturerNamePart)) {
     return johnsonHealthTechId;
   }
 

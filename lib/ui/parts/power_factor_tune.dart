@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import '../../persistence/database.dart';
-import '../../persistence/models/power_tune.dart';
+import 'package:isar/isar.dart';
+
+import '../../persistence/power_tune.dart';
 import '../../providers/theme_mode.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
@@ -12,8 +13,11 @@ class PowerFactorTuneBottomSheet extends ConsumerStatefulWidget {
   final String deviceId;
   final double oldPowerFactor;
 
-  const PowerFactorTuneBottomSheet({Key? key, required this.deviceId, required this.oldPowerFactor})
-      : super(key: key);
+  const PowerFactorTuneBottomSheet({
+    super.key,
+    required this.deviceId,
+    required this.oldPowerFactor,
+  });
 
   @override
   PowerFactorTuneBottomSheetState createState() => PowerFactorTuneBottomSheetState();
@@ -32,7 +36,7 @@ class PowerFactorTuneBottomSheetState extends ConsumerState<PowerFactorTuneBotto
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
     final themeManager = Get.find<ThemeManager>();
-    final largerTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final largerTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: themeManager.getProtagonistColor(themeMode),
         );
@@ -60,24 +64,30 @@ class PowerFactorTuneBottomSheetState extends ConsumerState<PowerFactorTuneBotto
             themeManager.getBlueFab(Icons.clear, themeMode, () => Get.back()),
             const SizedBox(width: 10, height: 10),
             themeManager.getGreenFab(Icons.check, themeMode, () async {
-              final database = Get.find<AppDatabase>();
+              final database = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
-              PowerTune? powerTune;
-              if (await database.hasPowerTune(widget.deviceId)) {
-                powerTune = await database.powerTuneDao.findPowerTuneByMac(widget.deviceId).first;
-              }
-
+              final powerTune = await database.powerTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (powerTune != null) {
                 powerTune.powerFactor = powerFactor;
-                await database.powerTuneDao.updatePowerTune(powerTune);
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
+                });
               } else {
                 final powerTune = PowerTune(
                   mac: widget.deviceId,
                   powerFactor: powerFactor,
-                  time: DateTime.now().millisecondsSinceEpoch,
+                  time: DateTime.now(),
                 );
-                await database.powerTuneDao.insertPowerTune(powerTune);
+                database.writeTxnSync(() {
+                  database.powerTunes.putSync(powerTune);
+                });
               }
+
               Get.back(result: powerFactor);
             }),
           ],

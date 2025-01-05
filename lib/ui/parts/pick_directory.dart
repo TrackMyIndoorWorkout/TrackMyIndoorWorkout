@@ -1,15 +1,10 @@
-import 'dart:io';
-
-import 'package:easy_folder_picker/FolderPicker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 
-Future<String> pickDirectory(BuildContext context, String existingPath) async {
-  final directory = Directory(existingPath.isEmpty ? FolderPicker.rootPath : existingPath);
-  final newDirectory = await FolderPicker.pick(
-    allowFolderCreation: true,
-    context: context,
-    rootDirectory: directory,
-  );
+Future<String> pickDirectory(BuildContext context, String title, String existingPath) async {
+  final initialDir = existingPath.isNotEmpty ? existingPath : null;
+  final path =
+      await FilePicker.platform.getDirectoryPath(dialogTitle: title, initialDirectory: initialDir);
 
-  return newDirectory?.path ?? "";
+  return path ?? "";
 }

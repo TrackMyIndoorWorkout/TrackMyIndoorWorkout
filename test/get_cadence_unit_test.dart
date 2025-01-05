@@ -9,7 +9,8 @@ void main() {
               sport == ActivityType.canoeing ||
               sport == ActivityType.rowing ||
               sport == ActivityType.swim ||
-              sport == ActivityType.elliptical)
+              sport == ActivityType.elliptical ||
+              sport == ActivityType.nordicSki)
           ? "spm"
           : "rpm";
       test("$sport -> $expected", () {

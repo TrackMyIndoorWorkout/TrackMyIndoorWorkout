@@ -1,14 +1,14 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:isar/isar.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/npe_runn_treadmill.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/devices/gadgets/running_cadence_sensor.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/devices/gadgets/running_speed_and_cadence_sensor.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
-import 'runn_rsc_test.mocks.dart';
 
 class TestPair {
   final List<int> data;
@@ -19,7 +19,8 @@ class TestPair {
 
 const sampleData = [0, 145, 1, 187];
 
-@GenerateMocks([BluetoothDevice])
+class MockBluetoothDevice extends Mock implements BluetoothDevice {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
@@ -28,13 +29,13 @@ void main() {
   test('Runn RSC constructor tests', () async {
     final treadmill = NpeRunnTreadmill();
 
-    expect(treadmill.defaultSport, ActivityType.run);
+    expect(treadmill.sport, ActivityType.run);
     expect(treadmill.fourCC, npeRunnFourCC);
     expect(treadmill.isMultiSport, false);
   });
 
   test('Runn RSC Device interprets flags properly', () async {
-    final runnRsc = RunningCadenceSensor(MockBluetoothDevice());
+    final runnRsc = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 
     final canProcess = runnRsc.canMeasurementProcessed(sampleData);
 
@@ -60,18 +61,19 @@ void main() {
           sport: ActivityType.run,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {
-        final runnRsc = RunningCadenceSensor(MockBluetoothDevice());
+        final runnRsc = RunningSpeedAndCadenceSensor(MockBluetoothDevice());
 
         final record = runnRsc.processMeasurement(testPair.data);
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -86,10 +88,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

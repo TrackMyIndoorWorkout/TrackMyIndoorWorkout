@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pref/pref.dart';
 import '../ui/about.dart';
+import '../preferences/theme_selection.dart';
 import '../utils/constants.dart';
 
 class ThemeManager {
@@ -11,7 +13,6 @@ class ThemeManager {
       return true;
     }
 
-    // ThemeMode.system;
     return Get.isPlatformDarkMode;
   }
 
@@ -41,6 +42,10 @@ class ThemeManager {
 
   Color getGreenColor(ThemeMode themeMode) {
     return isDark(themeMode) ? Colors.lightGreenAccent : Colors.green;
+  }
+
+  Color getGreenColorInverse(ThemeMode themeMode) {
+    return isDark(themeMode) ? Colors.green : Colors.lightGreenAccent;
   }
 
   Color getYellowColor(ThemeMode themeMode) {
@@ -99,6 +104,7 @@ class ThemeManager {
       heroTag: null,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
+      shape: const CircleBorder(),
       onPressed: onPressed,
       child: widget,
     );
@@ -156,22 +162,12 @@ class ThemeManager {
     return getIconFabWKey(getGreenColor(themeMode), icon, themeMode, onPressed, key);
   }
 
-  Widget getGreenGenericFab(Widget widget, ThemeMode themeMode, VoidCallback? onPressed) {
-    return _getFabCore(
-      getAntagonistColor(themeMode),
-      getGreenColor(themeMode),
-      widget,
-      onPressed,
-      null,
-    );
-  }
-
   Widget getGreyFab(IconData icon, ThemeMode themeMode, VoidCallback? onPressed) {
     return getIconFab(getGreyColor(themeMode), icon, themeMode, onPressed);
   }
 
   Widget getRankIcon(int rank, ThemeMode themeMode, BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.headline4!.apply(
+    final textStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: Colors.black,
         );
@@ -204,5 +200,19 @@ class ThemeManager {
       fontSizeFactor: fontSizeFactor,
       fontWeightDelta: 3,
     );
+  }
+
+  Color getAverageChartColor() {
+    final prefService = Get.find<BasePrefService>();
+    final averageChartColorValue =
+        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+    return Color(averageChartColorValue);
+  }
+
+  Color getMaximumChartColor() {
+    final prefService = Get.find<BasePrefService>();
+    final maximumChartColorValue =
+        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+    return Color(maximumChartColorValue);
   }
 }

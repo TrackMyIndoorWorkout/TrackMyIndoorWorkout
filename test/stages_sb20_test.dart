@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:isar/isar.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
-import 'package:track_my_indoor_exercise/persistence/models/record.dart';
+import 'package:track_my_indoor_exercise/persistence/record.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 class TestPair {
@@ -15,7 +16,7 @@ void main() {
   test('Stages SB20 constructor tests', () async {
     final bike = DeviceFactory.getStagesSB20();
 
-    expect(bike.defaultSport, ActivityType.ride);
+    expect(bike.sport, ActivityType.ride);
     expect(bike.fourCC, stagesSB20FourCC);
     expect(bike.isMultiSport, false);
   });
@@ -25,9 +26,9 @@ void main() {
     const lsb = 0;
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
-    bike.processFlag(flag);
+    bike.processFlag(flag, 4);
 
     expect(bike.speedMetric, isNotNull);
     expect(bike.cadenceMetric, null);
@@ -37,6 +38,7 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.strokeCountMetric, null);
     expect(bike.heartRateByteIndex, null);
   });
 
@@ -45,9 +47,9 @@ void main() {
     const lsb = 17; // 0x11
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
-    bike.processFlag(flag);
+    bike.processFlag(flag, 5);
 
     expect(bike.speedMetric, null);
     expect(bike.cadenceMetric, null);
@@ -57,6 +59,7 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.strokeCountMetric, null);
     expect(bike.heartRateByteIndex, null);
   });
 
@@ -65,9 +68,9 @@ void main() {
     const lsb = 197; // 0xC5
     const msb = 0;
     const flag = maxUint8 * msb + lsb;
+    bike.initFlag();
     bike.stopWorkout();
-
-    bike.processFlag(flag);
+    bike.processFlag(flag, 8);
 
     expect(bike.speedMetric, null);
     expect(bike.cadenceMetric, isNotNull);
@@ -77,6 +80,7 @@ void main() {
     expect(bike.timeMetric, null);
     expect(bike.caloriesPerHourMetric, null);
     expect(bike.caloriesPerMinuteMetric, null);
+    expect(bike.strokeCountMetric, null);
     expect(bike.heartRateByteIndex, null);
   });
 
@@ -96,6 +100,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -112,6 +117,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -128,6 +134,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -144,6 +151,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -160,6 +168,7 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
       TestPair(
@@ -176,10 +185,11 @@ void main() {
           sport: ActivityType.ride,
           caloriesPerHour: null,
           caloriesPerMinute: null,
+          strokeCount: null,
         ),
       ),
     ]) {
-      final sum = testPair.data.fold<double>(0.0, (a, b) => a + b);
+      final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum ${testPair.data.length}", () async {
         final bike = DeviceFactory.getStagesSB20();
         bike.initFlag();
@@ -188,9 +198,9 @@ void main() {
 
         final record = bike.wrappedStubRecord(testPair.data)!;
 
-        expect(record.id, null);
+        expect(record.id, Isar.autoIncrement);
         expect(record.id, testPair.record.id);
-        expect(record.activityId, null);
+        expect(record.activityId, Isar.minId);
         expect(record.activityId, testPair.record.activityId);
         expect(record.distance, testPair.record.distance);
         expect(record.elapsed, testPair.record.elapsed);
@@ -201,10 +211,10 @@ void main() {
         expect(record.heartRate, testPair.record.heartRate);
         expect(record.elapsedMillis, testPair.record.elapsedMillis);
         expect(record.pace, testPair.record.pace);
-        expect(record.strokeCount, testPair.record.strokeCount);
         expect(record.sport, testPair.record.sport);
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
+        expect(record.strokeCount, testPair.record.strokeCount);
       });
     }
   });

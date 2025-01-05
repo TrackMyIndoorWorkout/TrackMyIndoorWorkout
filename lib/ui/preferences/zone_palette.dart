@@ -16,11 +16,11 @@ class ZonePalettePreferencesScreen extends ConsumerStatefulWidget {
   final int size;
 
   const ZonePalettePreferencesScreen({
-    Key? key,
+    super.key,
     required this.lightOrDark,
     required this.fgOrBg,
     required this.size,
-  }) : super(key: key);
+  });
 
   @override
   ZonePalettePreferencesScreenState createState() => ZonePalettePreferencesScreenState();
@@ -44,13 +44,13 @@ class ZonePalettePreferencesScreenState extends ConsumerState<ZonePalettePrefere
 
   @override
   Widget build(BuildContext context) {
-    final sizeDefault = Theme.of(context).textTheme.headline5!.fontSize! * 2;
+    final sizeDefault = Theme.of(context).textTheme.headlineSmall!.fontSize! * 2;
     final themeMode = ref.watch(themeModeProvider);
-    final lightTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final lightTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getProtagonistColor(themeMode),
         );
-    final darkTextStyle = Theme.of(context).textTheme.headline4!.apply(
+    final darkTextStyle = Theme.of(context).textTheme.headlineMedium!.apply(
           fontFamily: fontFamily,
           color: _themeManager.getAntagonistColor(themeMode),
         );
@@ -60,7 +60,7 @@ class ZonePalettePreferencesScreenState extends ConsumerState<ZonePalettePrefere
         padding: const EdgeInsets.all(5.0),
         margin: const EdgeInsets.all(5.0),
         child: ElevatedButton(
-          style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)),
+          style: ButtonStyle(backgroundColor: WidgetStateProperty.all(color)),
           onPressed: () async {
             final Color? newColor = await Get.bottomSheet(
               SafeArea(

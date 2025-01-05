@@ -11,7 +11,7 @@ const paddlingSportId = 19;
 
 const Map<String, Tuple2<int, int>> fitSport = {
   ActivityType.alpineSki: Tuple2(13, 9),
-  ActivityType.backcountrySki: Tuple2(12, 0), // Cross country skiing
+  ActivityType.backcountrySki: Tuple2(12, 0),
   ActivityType.canoeing: Tuple2(paddlingSportId, 0), // Paddling
   ActivityType.crossfit: Tuple2(trainingSportId, 0), // Training
   ActivityType.eBikeRide: Tuple2(cyclingSportId, 28),
@@ -25,7 +25,7 @@ const Map<String, Tuple2<int, int>> fitSport = {
   ActivityType.inlineSkate: Tuple2(30, 0),
   ActivityType.kayaking: Tuple2(41, 0),
   ActivityType.kitesurf: Tuple2(44, 0),
-  ActivityType.nordicSki: Tuple2(genericSportId, 0),
+  ActivityType.nordicSki: Tuple2(12, 0), // Cross country skiing
   "OpenWaterSwim": Tuple2(swimmingSportId, 18),
   "Paddling": Tuple2(paddlingSportId, 0),
   ActivityType.ride: Tuple2(cyclingSportId, 0), // Cycling
