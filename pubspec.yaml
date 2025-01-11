@@ -17,7 +17,7 @@ dependency_overrides:
 
 dependencies:
   app_links: ^6.3.3
-  assorted_layout_widgets: ^10.1.2
+  assorted_layout_widgets: ^10.4.4
   audioplayers: ^6.1.0
   collection: ^1.19.1
   datetime_picker_formfield_new: ^2.1.0
@@ -33,14 +33,14 @@ dependencies:
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.7
   flutter_spinbox: ^0.13.1
-  flutter_svg: ^2.0.16
+  flutter_svg: ^2.0.17
   flutter_timezone: ^4.0.0
   get: ^4.6.6
   group_button: ^5.3.4
   http: ^1.2.2
   http_parser: ^4.1.2
   internet_connection_checker_plus: ^2.7.0
-  intl: ^0.19.0
+  intl: ^0.20.1
   is_first_run: ^1.0.0
   isar:
     version: *isar_version
@@ -61,7 +61,7 @@ dependencies:
   share_files_and_screenshot_widgets: ^1.0.6
   share_plus: ^10.1.3
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^28.1.37
+  syncfusion_flutter_charts: ^28.1.38
   timezone: ^0.10.0
   tuple: ^2.0.2
   url_launcher: ^6.3.1
