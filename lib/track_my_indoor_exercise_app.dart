@@ -45,16 +45,14 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
         Get.snackbar("Success", "Workout imported!");
         if (_leaderboardFeature) {
           final deviceDescriptor = activity.deviceDescriptor();
-          final workoutSummary = activity
-              .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
+          final workoutSummary = activity.getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
           final database = Get.find<Isar>();
           database.writeTxnSync(() {
             database.workoutSummarys.putSync(workoutSummary);
           });
         }
       } else {
-        Get.snackbar(
-            "Failure", "Problem while importing: ${importer.message}");
+        Get.snackbar("Failure", "Problem while importing: ${importer.message}");
       }
     }
     return importedFileCount;
@@ -64,7 +62,8 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
   void initState() {
     super.initState();
     _themeManager = Get.put<ThemeManager>(ThemeManager(), permanent: true);
-    _leaderboardFeature = widget.prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
+    _leaderboardFeature =
+        widget.prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
 
     // Listen to media sharing coming from outside the app while the app is in the memory.
     _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
