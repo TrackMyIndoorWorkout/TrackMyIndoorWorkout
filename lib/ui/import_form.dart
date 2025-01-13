@@ -1,9 +1,8 @@
 import 'dart:io';
 
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
-// import 'package:file_picker/file_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_document_picker/flutter_document_picker.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
@@ -86,25 +85,13 @@ class ImportFormState extends State<ImportForm> {
                       style: TextStyle(fontSize: 30),
                     ),
                     onPressed: () async {
-                      FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
-                        allowedFileExtensions: ["csv"],
-                        allowedUtiTypes: null,
-                        allowedMimeTypes: ['text/csv'],
-                      );
-                      final filePath = await FlutterDocumentPicker.openDocument(params: params);
-                      if (filePath != null) {
-                        _textController.text = filePath;
+                      final result = await FilePicker.platform.pickFiles();
+                      if (result != null && result.files.single.path != null) {
+                        _textController.text = result.files.single.path!;
                         setState(() {
-                          _filePath = filePath;
+                          _filePath = result.files.single.path;
                         });
                       }
-                      // final result = await FilePicker.platform.pickFiles();
-                      // if (result != null && result.files.single.path != null) {
-                      //   _textController.text = result.files.single.path!;
-                      //   setState(() {
-                      //     _filePath = result.files.single.path;
-                      //   });
-                      // }
                     },
                   ),
                 ),

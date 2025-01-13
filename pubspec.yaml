@@ -31,7 +31,6 @@ dependencies:
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.34.5
   flutter_circle_color_picker: ^0.3.0
-  flutter_document_picker: ^5.2.3
   flutter_layout_grid: ^2.0.7
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.0.17
