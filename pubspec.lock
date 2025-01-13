@@ -459,6 +459,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+  flutter_document_picker:
+    dependency: "direct main"
+    description:
+      name: flutter_document_picker
+      sha256: "5229e22fb9ac7939c516b56736714bb92305762cf4027f34aaf9edda229c5004"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.3"
   flutter_driver:
     dependency: "direct dev"
     description: flutter
