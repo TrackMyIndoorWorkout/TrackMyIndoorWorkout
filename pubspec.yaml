@@ -58,6 +58,7 @@ dependencies:
   progress_indicators: ^1.0.0
   qr_widget: ^4.1.0
   rxdart: ^0.28.0
+  receive_sharing_intent: ^1.8.1
   share_files_and_screenshot_widgets: ^1.0.6
   share_plus: ^10.1.3
   string_validator: ^1.1.0
@@ -102,8 +103,8 @@ flutter:
     - assets/donation/
     - assets/integration/
     - assets/equipment/
-  plugin:
-    platforms:
-      android:
-        package: heart_rate_flutter
-        pluginClass: HeartRateFlutter
+#  plugin:
+#    platforms:
+#      android:
+#        package: heart_rate_flutter
+#        pluginClass: HeartRateFlutter

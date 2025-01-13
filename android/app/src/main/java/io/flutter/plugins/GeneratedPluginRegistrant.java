@@ -81,6 +81,11 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin path_provider_android, io.flutter.plugins.pathprovider.PathProviderPlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new com.kasem.receive_sharing_intent.ReceiveSharingIntentPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin receive_sharing_intent, com.kasem.receive_sharing_intent.ReceiveSharingIntentPlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin());
     } catch (Exception e) {
       Log.e(TAG, "Error registering plugin share_files_and_screenshot_widgets, com.twwm.share_files_and_screenshot_widgets.ShareFilesAndScreenshotWidgetsPlugin", e);

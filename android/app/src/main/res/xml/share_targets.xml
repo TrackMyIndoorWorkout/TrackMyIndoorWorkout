@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <share-target android:targetClass="dev.csaba.track_my_indoor_exercise.MainActivity">
+        <data android:mimeType="text/csv" />
+        <category android:name="dev.csaba.track_my_indoor_exercise.dynamic_share_target" />
+    </share-target>
+</shortcuts>
