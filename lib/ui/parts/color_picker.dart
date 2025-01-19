@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:get/get.dart';
+import 'package:tuple/tuple.dart';
 
 import '../../utils/color_ex.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
+import 'legend_dialog.dart';
 
 class ColorPickerBottomSheet extends StatefulWidget {
   final Color color;
@@ -69,7 +71,20 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
           children: [
             _themeManager.getBlueFab(Icons.clear, () => Get.back()),
             const SizedBox(width: 10, height: 10),
-            _themeManager.getBlueFab(Icons.refresh, () => _controller.color = _initialColor),
+            _themeManager.getBlueFab(Icons.info_rounded, () {
+              legendDialog([
+                const Tuple2<IconData, String>(Icons.arrow_back, "Navigate back"),
+                const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+                const Tuple2<IconData, String>(Icons.u_turn_left, "Reset to initial"),
+                // const Tuple2<IconData, String>(Icons.format_color_reset, "Reset to default"),
+                const Tuple2<IconData, String>(Icons.check, "Apply selected color"),
+              ]);
+            }),
+            const SizedBox(width: 30, height: 10),
+            _themeManager.getBlueFab(Icons.u_turn_left, () => _controller.color = _initialColor),
+            const SizedBox(width: 10, height: 10),
+            // _themeManager.getBlueFab(
+            //     Icons.format_color_reset, () => _controller.color = _initialColor), // TODO
             const SizedBox(width: 10, height: 10),
             _themeManager.getGreenFab(Icons.check, () => Get.back(result: _color)),
           ],
