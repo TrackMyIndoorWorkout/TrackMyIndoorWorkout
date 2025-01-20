@@ -20,6 +20,8 @@ import '../../persistence/power_tune.dart';
 import '../../persistence/record.dart';
 import '../../persistence/workout_summary.dart';
 import '../../preferences/app_debug_mode.dart';
+import '../../preferences/block_ftms_feature_read.dart';
+import '../../preferences/block_manufacturer_name_read.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/data_connection_addresses.dart';
 import '../../preferences/database_location.dart';
@@ -126,6 +128,16 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         title: Text(blockSignalStartStop),
         subtitle: Text(blockSignalStartStopDescription),
         pref: blockSignalStartStopTag,
+      ),
+      const PrefCheckbox(
+        title: Text(blockFTMSFeatureRead),
+        subtitle: Text(blockFTMSFeatureReadDescription),
+        pref: blockFTMSFeatureReadTag,
+      ),
+      const PrefCheckbox(
+        title: Text(blockManufacturerNameRead),
+        subtitle: Text(blockManufacturerNameReadDescription),
+        pref: blockManufacturerNameReadTag,
       ),
       const PrefLabel(title: Divider(height: 1)),
       PrefLabel(

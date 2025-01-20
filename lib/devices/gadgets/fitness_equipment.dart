@@ -14,6 +14,8 @@ import '../../persistence/db_utils.dart';
 import '../../persistence/record.dart';
 import '../../preferences/athlete_age.dart';
 import '../../preferences/athlete_body_weight.dart';
+import '../../preferences/block_ftms_feature_read.dart';
+import '../../preferences/block_manufacturer_name_read.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/cadence_data_gap_workaround.dart';
 import '../../preferences/enable_asserts.dart';
@@ -125,6 +127,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _heartRateLevels;
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
+  bool _blockFTMSFeatureRead = blockFTMSFeatureReadDefault;
+  bool _blockManufacturerNameRead = blockManufacturerNameReadDefault;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;
 
@@ -580,7 +584,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     return data[index] + 256 * (data[index + 1] + 256 * (data[index + 2] + 256 * data[index + 3]));
   }
 
-  Future<void> _fitnessMachineFeature() async {
+  Future<void> _readFitnessMachineFeatures() async {
+    if (_blockFTMSFeatureRead) {
+      return;
+    }
+
     final machineFeatures =
         BluetoothDeviceEx.filterCharacteristic(service!.characteristics, fitnessMachineFeature);
 
@@ -636,7 +644,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
           logLevel,
           logLevelInfo,
           tag,
-          "_fitnessMachineFeature",
+          "_readFitnessMachineFeatures",
           "readFeatures $readFeatures writeFeatures $writeFeatures "
               "_speedLevels $_speedLevels _inclinationLevels $_inclinationLevels "
               "_resistanceLevels $_resistanceLevels _heartRateLevels $_heartRateLevels "
@@ -645,7 +653,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       }
     } on Exception catch (e, stack) {
       Logging().logException(
-          logLevel, tag, "_fitnessMachineFeature", "getWriteSupportParameters?", e, stack);
+          logLevel, tag, "_readFitnessMachineFeatures", "getWriteSupportParameters?", e, stack);
     }
   }
 
@@ -681,7 +689,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     _equipmentDiscovery = true;
 
-    await _fitnessMachineFeature();
+    await _readFitnessMachineFeatures();
 
     // Check manufacturer name
     if (manufacturerName == null && !descriptor!.doNotReadManufacturerName) {
@@ -717,7 +725,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   Future<String?> _getManufacturerName(BluetoothService? deviceInfo) async {
     final nameCharacteristic =
         BluetoothDeviceEx.filterCharacteristic(deviceInfo?.characteristics, manufacturerNameUuid);
-    if (nameCharacteristic == null) {
+    if (nameCharacteristic == null || _blockManufacturerNameRead) {
       return null;
     }
 
@@ -1294,6 +1302,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     useHrBasedCalorieCounting &=
         (athlete.weight > athleteBodyWeightMin && athlete.age > athleteAgeMin);
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
+    _blockFTMSFeatureRead =
+        testing || (prefService.get<bool>(blockFTMSFeatureReadTag) ?? blockFTMSFeatureReadDefault);
+    _blockManufacturerNameRead = testing ||
+        (prefService.get<bool>(blockManufacturerNameReadTag) ?? blockManufacturerNameReadDefault);
     _blockSignalStartStop =
         testing || (prefService.get<bool>(blockSignalStartStopTag) ?? blockSignalStartStopDefault);
     _enableAsserts = prefService.get<bool>(enableAssertsTag) ?? enableAssertsDefault;
@@ -1314,6 +1326,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
             "useHrBasedCalorieCounting $useHrBasedCalorieCounting, "
             "athlete $athlete, "
             "extendTuning $_extendTuning, "
+            "blockFTMSFeatureRead $_blockFTMSFeatureRead, "
+            "blockSignalStartStop $_blockSignalStartStop, "
+            "enableAsserts $_enableAsserts, "
+            "ftmsDataThreshold $_ftmsDataThreshold, "
             "logLevel $logLevel",
       );
     }
