@@ -383,14 +383,14 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         subtitle: Text(enableAssertsDescription),
         pref: enableAssertsTag,
       ));
-      expertPreferences.add(const PrefCheckbox(
-        title: Text(recalculateMore),
-        subtitle: Text(recalculateMoreDescription),
-        pref: recalculateMoreTag,
-      ));
     }
 
     expertPreferences.addAll([
+      const PrefCheckbox(
+        title: Text(recalculateMore),
+        subtitle: Text(recalculateMoreDescription),
+        pref: recalculateMoreTag,
+      ),
       PrefSlider<int>(
         title: const Text(ftmsDataThreshold),
         subtitle: const Text(ftmsDataThresholdDescription),
