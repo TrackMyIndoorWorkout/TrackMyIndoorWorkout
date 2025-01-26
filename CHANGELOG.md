@@ -1,3 +1,13 @@
+## 2.0.160
+* Being able to pick Track My Indoor Workout as an "Open With" target app for workout CSVs to import
+* File import permission changes for newer Android versions
+* Usability rework of zone coloring palette pickers: only need to pick palette (zone) size,
+  current theme implied and configure foreground and background colors side-by-side
+* Being able to skip FTMS Feature reads and Bluetooth manufacturer name reads to overcome errors
+* Being able to recalculate workouts for possible correction if there was any inconsistency
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
 ## 2.0.159
 * BREAKING: removed support for migrating old Floor/SQLite database to Isar
 * v3 version for Schwinn 170 / 270 / 570 proprietary support (thanks @tkordenbrock)
