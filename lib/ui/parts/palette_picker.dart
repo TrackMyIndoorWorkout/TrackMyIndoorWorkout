@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:group_button/group_button.dart';
 import 'package:pref/pref.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../preferences/palette_spec.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
+import 'legend_dialog.dart';
 
 class PalettePickerBottomSheet extends StatefulWidget {
   const PalettePickerBottomSheet({super.key});
@@ -15,29 +17,20 @@ class PalettePickerBottomSheet extends StatefulWidget {
 }
 
 class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
-  bool _lightOrDark = false;
-  bool _fgOrBg = false;
-  int _size = 5;
+  int _zoneCount = 7;
   double _mediaHeight = 0;
   double _mediaWidth = 0;
   bool _landscape = false;
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _textStyle = const TextStyle();
-  TextStyle _largerTextStyle = const TextStyle();
   TextStyle _groupStyle = const TextStyle();
-  final _darknessController = GroupButtonController(selectedIndex: 0);
-  final _fgBgController = GroupButtonController(selectedIndex: 0);
-  final _sizeController = GroupButtonController(selectedIndex: 0);
-  GroupButtonOptions? _landscapeGroupButtonOptions;
-  GroupButtonOptions? _portraitGroupButtonOptions;
+  final _zoneCountController = GroupButtonController(selectedIndex: 0);
+  late final GroupButtonOptions _landscapeGroupButtonOptions;
+  late final GroupButtonOptions _portraitGroupButtonOptions;
 
   @override
   void initState() {
     super.initState();
-    _largerTextStyle = Get.textTheme.headlineMedium!.apply(
-      fontFamily: fontFamily,
-      color: _themeManager.getProtagonistColor(),
-    );
     _textStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),
@@ -73,111 +66,25 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
     }
 
     return Scaffold(
-      body: _landscape
-          ? Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      Text("Palette", style: _largerTextStyle),
-                      Text("type:", style: _largerTextStyle),
-                    ],
-                  ),
-                  const VerticalDivider(),
-                  Column(
-                    children: [
-                      Text("Theme:", style: _textStyle),
-                      GroupButton(
-                        controller: _darknessController,
-                        isRadio: true,
-                        buttons: const ["Dark", "Light"],
-                        maxSelected: 1,
-                        options: _landscapeGroupButtonOptions!,
-                        onSelected: (_, i, selected) =>
-                            _lightOrDark = (i == 1 && selected || i == 0 && !selected),
-                      ),
-                    ],
-                  ),
-                  const VerticalDivider(),
-                  Column(
-                    children: [
-                      Text("Fg./Bg.:", style: _textStyle),
-                      GroupButton(
-                        controller: _fgBgController,
-                        isRadio: true,
-                        buttons: const ["Foregr.", "Backgr."],
-                        maxSelected: 1,
-                        options: _landscapeGroupButtonOptions!,
-                        onSelected: (_, i, selected) =>
-                            _fgOrBg = (i == 1 && selected || i == 0 && !selected),
-                      ),
-                    ],
-                  ),
-                  const VerticalDivider(),
-                  Column(
-                    children: [
-                      Text("Size:", style: _textStyle),
-                      GroupButton(
-                        controller: _sizeController,
-                        isRadio: true,
-                        buttons: const ["5", "6", "7"],
-                        maxSelected: 1,
-                        options: _landscapeGroupButtonOptions!,
-                        onSelected: (_, i, selected) {
-                          if (selected) {
-                            _size = i + 5;
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            )
-          : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Palette type:", style: _largerTextStyle),
-                  Text("Theme:", style: _textStyle),
-                  GroupButton(
-                    controller: _darknessController,
-                    isRadio: true,
-                    buttons: const ["Dark", "Light"],
-                    maxSelected: 1,
-                    options: _portraitGroupButtonOptions!,
-                    onSelected: (_, i, selected) =>
-                        _lightOrDark = (i == 1 && selected || i == 0 && !selected),
-                  ),
-                  Text("Fg./Bg.:", style: _textStyle),
-                  GroupButton(
-                    controller: _fgBgController,
-                    isRadio: true,
-                    buttons: const ["Foregr.", "Backgr."],
-                    maxSelected: 1,
-                    options: _portraitGroupButtonOptions!,
-                    onSelected: (_, i, selected) =>
-                        _fgOrBg = (i == 1 && selected || i == 0 && !selected),
-                  ),
-                  Text("Size:", style: _textStyle),
-                  GroupButton(
-                    controller: _sizeController,
-                    isRadio: true,
-                    buttons: const ["5", "6", "7"],
-                    maxSelected: 1,
-                    options: _portraitGroupButtonOptions!,
-                    onSelected: (_, i, selected) {
-                      if (selected) {
-                        _size = i + 5;
-                      }
-                    },
-                  ),
-                ],
-              ),
+      body: Center(
+        child: Column(
+          children: [
+            Text("Zone Count:", style: _textStyle),
+            GroupButton(
+              controller: _zoneCountController,
+              isRadio: true,
+              buttons: const ["5", "6", "7"],
+              maxSelected: 1,
+              options: _landscape ? _landscapeGroupButtonOptions : _portraitGroupButtonOptions,
+              onSelected: (_, i, selected) {
+                if (selected) {
+                  _zoneCount = i + 5;
+                }
+              },
             ),
+          ],
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Container(
         margin: const EdgeInsets.all(10.0),
@@ -185,10 +92,19 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+            _themeManager.getBlueFab(Icons.arrow_back, () => Get.back()),
+            const SizedBox(width: 30, height: 10),
+            _themeManager.getBlueFab(Icons.info_rounded, () {
+              legendDialog([
+                const Tuple2<IconData, String>(Icons.arrow_back, "Navigate back"),
+                const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+                const Tuple2<IconData, String>(Icons.format_color_reset, "Reset all to default"),
+                const Tuple2<IconData, String>(Icons.arrow_forward, "Configure palette"),
+              ]);
+            }),
             const SizedBox(width: 30, height: 10),
             _themeManager.getBlueFab(
-                Icons.refresh,
+                Icons.format_color_reset,
                 () => Get.defaultDialog(
                       title: 'Reset all colors to default!',
                       middleText: 'Are you sure?',
@@ -216,8 +132,7 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
                       ),
                     )),
             const SizedBox(width: 30, height: 10),
-            _themeManager.getGreenFab(Icons.arrow_forward,
-                () => Get.back(result: Tuple3<bool, bool, int>(_lightOrDark, _fgOrBg, _size))),
+            _themeManager.getGreenFab(Icons.arrow_forward, () => Get.back(result: _zoneCount)),
           ],
         ),
       ),

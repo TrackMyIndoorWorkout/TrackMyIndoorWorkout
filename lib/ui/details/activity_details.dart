@@ -1,13 +1,14 @@
 import 'dart:math';
 
 import 'package:expandable/expandable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+import 'package:track_my_indoor_exercise/ui/parts/legend_dialog.dart';
+import 'package:tuple/tuple.dart';
 
 import '../../persistence/activity.dart';
 import '../../persistence/db_utils.dart';
@@ -620,49 +621,70 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
     final appBarActions = [
       IconButton(
+        icon: const Icon(Icons.info_rounded),
+        onPressed: () {
+          legendDialog([
+            const Tuple2<IconData, String>(Icons.help, "About"),
+            const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+            const Tuple2<IconData, String>(Icons.build, "Recalculate"),
+          ]);
+        },
+      ),
+      IconButton(
         icon: const Icon(Icons.help),
         onPressed: () => Get.to(() => const AboutScreen()),
       ),
+      IconButton(
+        icon: const Icon(Icons.build),
+        onPressed: () {
+          Get.defaultDialog(
+            title: 'Warning!!!',
+            middleText: 'Are you sure to recalculate?',
+            confirm: TextButton(
+              child: const Text("Yes"),
+              onPressed: () async {
+                // final tm = TrackManager();
+                // final track = await tm.getTrack(widget.activity.sport);
+                // debugPrint(track.name);
+
+                // await DbUtils().finalizeActivity(widget.activity);
+
+                await DbUtils().bridgeDataGaps(widget.activity);
+                final prefService = Get.find<BasePrefService>();
+                final recalculateMore =
+                    prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
+                await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
+
+                // await DbUtils().offsetActivity(widget.activity, 1440);
+
+                // await DbUtils().splitActivity(widget.activity, 29, 87);
+
+                // widget.activity.clearSuuntoUpload();
+                // DbUtils().updateActivity(widget.activity);
+
+                // // KPro
+                // await DbUtils().appendActivities(30, 31);
+                // await DbUtils().appendActivities(30, 32);
+                // await DbUtils().appendActivities(30, 33);
+                // // PSCP
+                // await DbUtils().appendActivities(34, 35);
+                // await DbUtils().appendActivities(34, 36);
+                // await DbUtils().appendActivities(34, 37);
+                // await DbUtils().appendActivities(34, 38);
+                // await DbUtils().appendActivities(34, 39);
+                // await DbUtils().appendActivities(34, 40);
+
+                Get.close(1);
+              },
+            ),
+            cancel: TextButton(
+              child: const Text("No"),
+              onPressed: () => Get.close(1),
+            ),
+          );
+        },
+      ),
     ];
-    if (kDebugMode) {
-      appBarActions.add(
-        IconButton(
-          icon: const Icon(Icons.build),
-          onPressed: () async {
-            // final tm = TrackManager();
-            // final track = await tm.getTrack(widget.activity.sport);
-            // debugPrint(track.name);
-
-            // await DbUtils().finalizeActivity(widget.activity);
-
-            await DbUtils().bridgeDataGaps(widget.activity);
-            final prefService = Get.find<BasePrefService>();
-            final recalculateMore =
-                prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
-            await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
-
-            // await DbUtils().offsetActivity(widget.activity, 1440);
-
-            // await DbUtils().splitActivity(widget.activity, 29, 87);
-
-            // widget.activity.clearSuuntoUpload();
-            // DbUtils().updateActivity(widget.activity);
-
-            // // KPro
-            // await DbUtils().appendActivities(30, 31);
-            // await DbUtils().appendActivities(30, 32);
-            // await DbUtils().appendActivities(30, 33);
-            // // PSCP
-            // await DbUtils().appendActivities(34, 35);
-            // await DbUtils().appendActivities(34, 36);
-            // await DbUtils().appendActivities(34, 37);
-            // await DbUtils().appendActivities(34, 38);
-            // await DbUtils().appendActivities(34, 39);
-            // await DbUtils().appendActivities(34, 40);
-          },
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(

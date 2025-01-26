@@ -351,6 +351,22 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     );
   }
 
+  void invokeLegendDialog() {
+    legendDialog([
+      const Tuple2<IconData, String>(Icons.file_upload, "Import Workout"),
+      const Tuple2<IconData, String>(Icons.collections_bookmark, "Device Usages"),
+      const Tuple2<IconData, String>(Icons.bolt, "Power Tunes"),
+      const Tuple2<IconData, String>(Icons.whatshot, "Calorie Tunes"),
+      const Tuple2<IconData, String>(Icons.leaderboard, "Leaderboards"),
+      const Tuple2<IconData, String>(Icons.help, "About"),
+      const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+      const Tuple2<IconData, String>(Icons.cloud_upload, "Upload / Sync"),
+      const Tuple2<IconData, String>(Icons.file_download, "Download Workout"),
+      const Tuple2<IconData, String>(Icons.delete, "Delete Workout"),
+      const Tuple2<IconData, String>(Icons.chevron_right, "Workout Details"),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
@@ -374,6 +390,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     }
 
     List<Widget> floatingActionButtons = [
+      _themeManager.getTutorialFab(() => invokeLegendDialog()),
       _themeManager.getAboutFab(),
       _themeManager.getBlueFab(Icons.file_upload, () async {
         final formatPick = await Get.bottomSheet(
@@ -449,23 +466,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       appBar: AppBar(
         title: const Text('Activities'),
         actions: [
-          IconButton(
-              icon: const Icon(Icons.info_rounded),
-              onPressed: () {
-                legendDialog([
-                  const Tuple2<IconData, String>(Icons.file_upload, "Import Workout"),
-                  const Tuple2<IconData, String>(Icons.collections_bookmark, "Device Usages"),
-                  const Tuple2<IconData, String>(Icons.bolt, "Power Tunes"),
-                  const Tuple2<IconData, String>(Icons.whatshot, "Calorie Tunes"),
-                  const Tuple2<IconData, String>(Icons.leaderboard, "Leaderboards"),
-                  const Tuple2<IconData, String>(Icons.help, "About"),
-                  const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
-                  const Tuple2<IconData, String>(Icons.cloud_upload, "Upload / Sync"),
-                  const Tuple2<IconData, String>(Icons.file_download, "Download Workout"),
-                  const Tuple2<IconData, String>(Icons.delete, "Delete Workout"),
-                  const Tuple2<IconData, String>(Icons.chevron_right, "Workout Details"),
-                ]);
-              }),
+          IconButton(icon: const Icon(Icons.info_rounded), onPressed: () => invokeLegendDialog()),
         ],
       ),
       body: CustomListView(

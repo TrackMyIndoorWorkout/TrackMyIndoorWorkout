@@ -215,7 +215,7 @@ class ThemeManager {
   Color getMaximumChartColor() {
     final prefService = Get.find<BasePrefService>();
     final maximumChartColorValue =
-        prefService.get<int>(averageChartColorTag) ?? averageChartColorDefault;
+        prefService.get<int>(maximumChartColorTag) ?? maximumChartColorDefault;
     return Color(maximumChartColorValue);
   }
 }

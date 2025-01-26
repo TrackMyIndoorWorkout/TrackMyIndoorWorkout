@@ -2,7 +2,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
-import 'package:tuple/tuple.dart';
+
 import '../../preferences/palette_spec.dart';
 import '../../preferences/sport_spec.dart';
 import '../../utils/constants.dart';
@@ -68,7 +68,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
         margin: const EdgeInsets.all(5.0),
         child: ElevatedButton(
           onPressed: () async {
-            final Tuple3<bool, bool, int>? paletteSelection = await Get.bottomSheet(
+            final int? paletteSelection = await Get.bottomSheet(
               const SafeArea(
                 child: Column(
                   children: [
@@ -90,9 +90,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             }
 
             Get.to(() => ZonePalettePreferencesScreen(
-                  lightOrDark: paletteSelection.item1,
-                  fgOrBg: paletteSelection.item2,
-                  size: paletteSelection.item3,
+                  zoneCount: paletteSelection,
                 ));
           },
           child: Row(

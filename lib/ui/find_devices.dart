@@ -1103,21 +1103,19 @@ class FindDevicesState extends State<FindDevicesScreen> {
         ringColor: _themeManager.getBlueColorInverse(),
         children: [
           _themeManager.getTutorialFab(
-            () async {
-              legendDialog([
-                const Tuple2<IconData, String>(Icons.favorite, "HRM"),
-                const Tuple2<IconData, String>(Icons.search, "Start Scanning"),
-                const Tuple2<IconData, String>(Icons.stop, "Stop Scanning"),
-                const Tuple2<IconData, String>(Icons.refresh, "Scan Again"),
-                const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
-                const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
-                const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
-                const Tuple2<IconData, String>(Icons.settings, "Preferences"),
-                const Tuple2<IconData, String>(Icons.coffee, "Donation"),
-                const Tuple2<IconData, String>(Icons.help, "About"),
-                const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
-              ]);
-            },
+            () => legendDialog([
+              const Tuple2<IconData, String>(Icons.favorite, "HRM"),
+              const Tuple2<IconData, String>(Icons.search, "Start Scanning"),
+              const Tuple2<IconData, String>(Icons.stop, "Stop Scanning"),
+              const Tuple2<IconData, String>(Icons.refresh, "Scan Again"),
+              const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+              const Tuple2<IconData, String>(Icons.open_in_new, "Workout Again"),
+              const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+              const Tuple2<IconData, String>(Icons.settings, "Preferences"),
+              const Tuple2<IconData, String>(Icons.coffee, "Donation"),
+              const Tuple2<IconData, String>(Icons.help, "About"),
+              const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
+            ]),
           ),
           _themeManager.getAboutFab(),
           _themeManager.getBlueFab(Icons.coffee, () async {

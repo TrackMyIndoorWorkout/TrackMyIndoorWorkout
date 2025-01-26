@@ -40,6 +40,7 @@ void main() {
     expect(bike.caloriesPerMinuteMetric, null);
     expect(bike.strokeCountMetric, null);
     expect(bike.heartRateByteIndex, 8);
+    expect(bike.resistanceMetric, null);
   });
 
   group('Schwinn IC4 interprets FTMS Indoor Bike Data properly', () {
@@ -59,6 +60,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
       TestPair(
@@ -76,6 +78,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
       TestPair(
@@ -93,6 +96,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
       TestPair(
@@ -110,6 +114,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
       TestPair(
@@ -127,6 +132,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
       TestPair(
@@ -144,6 +150,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
       TestPair(
@@ -161,6 +168,7 @@ void main() {
           caloriesPerHour: null,
           caloriesPerMinute: null,
           strokeCount: null,
+          resistance: null,
         ),
       ),
     ]) {
@@ -190,6 +198,7 @@ void main() {
         expect(record.caloriesPerHour, testPair.record.caloriesPerHour);
         expect(record.caloriesPerMinute, testPair.record.caloriesPerMinute);
         expect(record.strokeCount, testPair.record.strokeCount);
+        expect(record.resistance, testPair.record.resistance);
       });
     }
   });

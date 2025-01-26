@@ -53,9 +53,11 @@ class ImportFormState extends State<ImportForm> {
 
   @override
   Widget build(BuildContext context) {
+    final uploadType = widget.migration ? 'Workout Migration' : 'MPower Workout';
+    final csvType = widget.migration ? "Migration" : "MPower";
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MPower Workout Import'),
+        title: Text('$uploadType Import'),
       ),
       body: LoadingOverlay(
         isLoading: _isLoading,
@@ -75,7 +77,7 @@ class ImportFormState extends State<ImportForm> {
               TextFormField(
                 decoration: InputDecoration(
                   filled: true,
-                  labelText: '${widget.migration ? "Migration" : "MPower Echelon"} CSV File URL',
+                  labelText: '$csvType CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
                     child: const Text(

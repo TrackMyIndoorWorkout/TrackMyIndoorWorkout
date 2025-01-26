@@ -10,7 +10,7 @@ Future<void> legendDialog(List<Tuple2<IconData, String>> legendItems) async {
   await Get.defaultDialog(
     title: 'Legend:',
     content: SizedBox(
-      height: min(Get.mediaQuery.size.height - 4 * fontSize, legendItems.length * fontSize),
+      height: min(Get.mediaQuery.size.height - 4 * fontSize, legendItems.length * fontSize * 1.25),
       width: Get.mediaQuery.size.width - 2 * fontSize,
       child: ListView(
         shrinkWrap: true,

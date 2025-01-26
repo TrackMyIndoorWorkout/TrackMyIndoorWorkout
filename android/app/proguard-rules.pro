@@ -48,6 +48,8 @@
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
 -keepclassmembernames class io.flutter.plugins.pathprovider.** { *; }
+-keep class com.kasem.receive_sharing_intent.** { *; }
+-keepclassmembernames class com.kasem.receive_sharing_intent.** { *; }
 -keep class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keepclassmembernames class com.twwm.share_files_and_screenshot_widgets.** { *; }
 -keep class dev.fluttercommunity.plus.share.** { *; }
