@@ -29,7 +29,7 @@ dependencies:
   file_picker: ^8.1.7
   flex_color_scheme: ^8.1.0
   flutter_archive: ^6.0.3
-  flutter_blue_plus: 1.34.5
+  flutter_blue_plus: ^1.35.2
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.7
   flutter_spinbox: ^0.13.1
