@@ -71,8 +71,13 @@ mixin CadenceMixin {
         cadenceData.last.timeStamp = DateTime.now();
         if (logLevel >= logLevelInfo) {
           final timeChangeQualifier = timeDiff < eps ? "same" : "new";
-          Logging().log(logLevel, logLevelInfo, mixinTag, "addCadenceData",
-              "Skipping duplicate rev count with $timeChangeQualifier time: revDiff = $revDiff ; timeDiff = $timeDiff");
+          Logging().log(
+            logLevel,
+            logLevelInfo,
+            mixinTag,
+            "addCadenceData",
+            "Skipping duplicate rev count with $timeChangeQualifier time: revDiff = $revDiff ; timeDiff = $timeDiff",
+          );
         }
 
         return;
@@ -83,10 +88,7 @@ mixin CadenceMixin {
       }
     }
 
-    cadenceData.add(CadenceData(
-      time: nonNullTime,
-      revolutions: nonNullRevolutions,
-    ));
+    cadenceData.add(CadenceData(time: nonNullTime, revolutions: nonNullRevolutions));
 
     trimQueue();
   }
@@ -99,12 +101,13 @@ mixin CadenceMixin {
     var timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
     var timeStampDiff =
         cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
-            sensorDataThreshold / 1000.0;
+        sensorDataThreshold / 1000.0;
     while (cadenceData.length > 1 &&
         (timeDiff > revolutionSlidingWindow || timeStampDiff > revolutionSlidingWindow)) {
       cadenceData.removeFirst();
       timeDiff = _getTimeDiff(cadenceData.last.time, cadenceData.first.time);
-      timeStampDiff = cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
+      timeStampDiff =
+          cadenceData.last.timeStamp.difference(cadenceData.first.timeStamp).inSeconds -
           sensorDataThreshold / 1000.0;
     }
   }
@@ -123,8 +126,13 @@ mixin CadenceMixin {
 
     final revDiff = _getRevDiff(lastData.revolutions, firstData.revolutions);
     if (logLevel >= logLevelInfo) {
-      Logging().log(logLevel, logLevelInfo, mixinTag, "computeCadence",
-          "cadenceData $cadenceData, $revDiff * 60 / $timeDiff");
+      Logging().log(
+        logLevel,
+        logLevelInfo,
+        mixinTag,
+        "computeCadence",
+        "cadenceData $cadenceData, $revDiff * 60 / $timeDiff",
+      );
     }
 
     return revDiff * 60 / timeDiff; // rpm (rev/sec * 60 = rev/min)

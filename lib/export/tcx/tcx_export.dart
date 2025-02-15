@@ -20,14 +20,16 @@ class TCXExport extends ActivityExport {
   @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
     // The prolog of the TCX file
-    _sb.writeln("""<?xml version="1.0" encoding="UTF-8"?>
+    _sb.writeln(
+      """<?xml version="1.0" encoding="UTF-8"?>
 <TrainingCenterDatabase
     xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd"
     xmlns:ns5="http://www.garmin.com/xmlschemas/ActivityGoals/v1"
     xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2"
     xmlns:ns2="http://www.garmin.com/xmlschemas/UserProfile/v2"
     xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.garmin.com/xmlschemas/ProfileExtension/v1">""");
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns4="http://www.garmin.com/xmlschemas/ProfileExtension/v1">""",
+    );
 
     addActivity(exportModel);
     addAuthor(exportModel);

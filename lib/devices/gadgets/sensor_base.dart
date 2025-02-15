@@ -6,11 +6,7 @@ abstract class SensorBase extends DeviceBase {
   // Adjusting skewed calories
 
   SensorBase(serviceId, characteristicId, device)
-      : super(
-          serviceId: serviceId,
-          characteristicId: characteristicId,
-          device: device,
-        );
+    : super(serviceId: serviceId, characteristicId: characteristicId, device: device);
 
   void initFlag() {
     featureFlag = -1;

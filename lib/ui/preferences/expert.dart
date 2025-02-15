@@ -57,10 +57,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
     await Get.defaultDialog(
       title: "Nothing to Export",
       middleText: "",
-      confirm: TextButton(
-        child: const Text("Dismiss"),
-        onPressed: () => Get.close(1),
-      ),
+      confirm: TextButton(child: const Text("Dismiss"), onPressed: () => Get.close(1)),
     );
   }
 
@@ -101,19 +98,13 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             await Get.defaultDialog(
               title: "Data connection detected",
               middleText: "",
-              confirm: TextButton(
-                child: const Text("Dismiss"),
-                onPressed: () => Get.close(1),
-              ),
+              confirm: TextButton(child: const Text("Dismiss"), onPressed: () => Get.close(1)),
             );
           } else {
             await Get.defaultDialog(
               title: "No data connection detected",
               middleText: "",
-              confirm: TextButton(
-                child: const Text("Dismiss"),
-                onPressed: () => Get.close(1),
-              ),
+              confirm: TextButton(child: const Text("Dismiss"), onPressed: () => Get.close(1)),
             );
           }
         },
@@ -190,7 +181,13 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             zipped = true;
           } on Exception catch (e, stack) {
             Logging().logException(
-                logLevel, logTag, "ZipFile.createFromFiles", "error during creation", e, stack);
+              logLevel,
+              logTag,
+              "ZipFile.createFromFiles",
+              "error during creation",
+              e,
+              stack,
+            );
           }
 
           await logFile.delete();
@@ -212,10 +209,7 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           Get.defaultDialog(
             title: "Logs cleared",
             middleText: "",
-            confirm: TextButton(
-              child: const Text("Dismiss"),
-              onPressed: () => Get.close(1),
-            ),
+            confirm: TextButton(child: const Text("Dismiss"), onPressed: () => Get.close(1)),
           );
         },
         child: const Text("Clear All Logs"),
@@ -271,7 +265,13 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             zipped = true;
           } on Exception catch (e, stack) {
             Logging().logException(
-                logLevel, logTag, "ZipFile.createFromFiles", "error during creation", e, stack);
+              logLevel,
+              logTag,
+              "ZipFile.createFromFiles",
+              "error during creation",
+              e,
+              stack,
+            );
           }
 
           await settingsFile.delete();
@@ -299,8 +299,10 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             }
 
             if (zipFilePath.endsWith(".bin.gz")) {
-              Get.snackbar("Old export format",
-                  "Please upgrade the app on the source device and export again");
+              Get.snackbar(
+                "Old export format",
+                "Please upgrade the app on the source device and export again",
+              );
               return;
             }
 
@@ -320,8 +322,14 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             try {
               ZipFile.extractToDirectory(zipFile: zipFile, destinationDir: tempDir);
             } on Exception catch (e, stack) {
-              Logging().logException(logLevel, logTag, "ZipFile.extractToDirectory",
-                  "error during extraction", e, stack);
+              Logging().logException(
+                logLevel,
+                logTag,
+                "ZipFile.extractToDirectory",
+                "error during extraction",
+                e,
+                stack,
+              );
             }
 
             final sourceDatabaseFilePath = "${tempDir.path}/${Isar.defaultName}.isar";
@@ -343,15 +351,19 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             debugPrint(newDatabaseFile.path);
             final databaseFileName = databasePath.split("/").last;
             await Get.delete<Isar>(force: true);
-            final isar = await Isar.open([
-              ActivitySchema,
-              CalorieTuneSchema,
-              DeviceUsageSchema,
-              LogEntrySchema,
-              PowerTuneSchema,
-              RecordSchema,
-              WorkoutSummarySchema,
-            ], directory: databaseDirectory, name: databaseFileName);
+            final isar = await Isar.open(
+              [
+                ActivitySchema,
+                CalorieTuneSchema,
+                DeviceUsageSchema,
+                LogEntrySchema,
+                PowerTuneSchema,
+                RecordSchema,
+                WorkoutSummarySchema,
+              ],
+              directory: databaseDirectory,
+              name: databaseFileName,
+            );
             Get.put<Isar>(isar, permanent: true);
 
             final settingsFile = File("${tempDir.path}/preferences.json");
@@ -366,23 +378,29 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       ),
     ];
 
-    expertPreferences.add(const PrefCheckbox(
-      title: Text(showPerformanceOverlay),
-      subtitle: Text(showPerformanceOverlayDescription),
-      pref: showPerformanceOverlayTag,
-    ));
+    expertPreferences.add(
+      const PrefCheckbox(
+        title: Text(showPerformanceOverlay),
+        subtitle: Text(showPerformanceOverlayDescription),
+        pref: showPerformanceOverlayTag,
+      ),
+    );
 
     if (kDebugMode) {
-      expertPreferences.add(const PrefCheckbox(
-        title: Text(appDebugMode),
-        subtitle: Text(appDebugModeDescription),
-        pref: appDebugModeTag,
-      ));
-      expertPreferences.add(const PrefCheckbox(
-        title: Text(enableAsserts),
-        subtitle: Text(enableAssertsDescription),
-        pref: enableAssertsTag,
-      ));
+      expertPreferences.add(
+        const PrefCheckbox(
+          title: Text(appDebugMode),
+          subtitle: Text(appDebugModeDescription),
+          pref: appDebugModeTag,
+        ),
+      );
+      expertPreferences.add(
+        const PrefCheckbox(
+          title: Text(enableAsserts),
+          subtitle: Text(enableAssertsDescription),
+          pref: enableAssertsTag,
+        ),
+      );
     }
 
     expertPreferences.addAll([

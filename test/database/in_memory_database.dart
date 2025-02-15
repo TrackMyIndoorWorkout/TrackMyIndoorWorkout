@@ -12,10 +12,7 @@ class InMemoryDatabase extends Isar {
   InMemoryDatabase(super.name) {
     activities = ActivityCollection(this);
     records = RecordCollection(this);
-    attachCollections({
-      Activity: activities,
-      Record: records,
-    });
+    attachCollections({Activity: activities, Record: records});
   }
 
   @override

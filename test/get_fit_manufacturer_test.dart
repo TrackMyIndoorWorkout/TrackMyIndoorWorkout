@@ -14,13 +14,15 @@ void main() {
   group('getFitManufacturer test', () {
     DeviceFactory.allDescriptors().forEach((deviceDescriptor) {
       test(
-          "${deviceDescriptor.fourCC} (${deviceDescriptor.manufacturerNamePart}) -> ${deviceDescriptor.manufacturerFitId}",
-          () async {
-        final manufacturerFitId = deviceDescriptor.fourCC != virtufitUltimatePro2FourCC
-            ? getFitManufacturer(deviceDescriptor.manufacturerNamePart)
-            : wahooFitnessFitId;
-        expect(manufacturerFitId, deviceDescriptor.manufacturerFitId);
-      });
+        "${deviceDescriptor.fourCC} (${deviceDescriptor.manufacturerNamePart}) -> ${deviceDescriptor.manufacturerFitId}",
+        () async {
+          final manufacturerFitId =
+              deviceDescriptor.fourCC != virtufitUltimatePro2FourCC
+                  ? getFitManufacturer(deviceDescriptor.manufacturerNamePart)
+                  : wahooFitnessFitId;
+          expect(manufacturerFitId, deviceDescriptor.manufacturerFitId);
+        },
+      );
     });
   });
 }

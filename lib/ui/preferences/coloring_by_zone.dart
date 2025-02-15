@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/metric_spec.dart';
 import 'preferences_screen_mixin.dart';
 
@@ -15,13 +16,15 @@ class ColoringByZonePreferencesScreen extends StatelessWidget with PreferencesSc
       const PrefLabel(title: Text(MetricSpec.zoneIndexDisplayExtraNote, maxLines: 10)),
     ];
 
-    coloringByZonePreferences.addAll(MetricSpec.preferencesSpecs.map((prefSpec) {
-      return PrefCheckbox(
-        title: Text(prefSpec.coloringByZoneText),
-        subtitle: Text(prefSpec.coloringByZoneDescription),
-        pref: prefSpec.coloringByZoneTag,
-      );
-    }));
+    coloringByZonePreferences.addAll(
+      MetricSpec.preferencesSpecs.map((prefSpec) {
+        return PrefCheckbox(
+          title: Text(prefSpec.coloringByZoneText),
+          subtitle: Text(prefSpec.coloringByZoneDescription),
+          pref: prefSpec.coloringByZoneTag,
+        );
+      }),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),

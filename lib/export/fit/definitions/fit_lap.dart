@@ -20,7 +20,7 @@ class FitLap extends FitDefinitionMessage {
   final int exportTarget;
 
   FitLap(localMessageType, this.altitude, this.exportTarget)
-      : super(localMessageType, FitMessage.lap) {
+    : super(localMessageType, FitMessage.lap) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
       FitField(0, FitBaseTypes.enumType), // Event

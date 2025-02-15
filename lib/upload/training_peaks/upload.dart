@@ -71,7 +71,8 @@ mixin Upload {
         prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
     final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
     String fileContentString = base64.encode(fileContent);
-    String contentString = '{"UploadClient": "$appName",'
+    String contentString =
+        '{"UploadClient": "$appName",'
         '"Filename": "$fileName",'
         '"Data": "$fileContentString",'
         '"Title": "${activity.getTitle(false)}",'
@@ -160,8 +161,10 @@ mixin Upload {
                   beginningIndex = workoutBeginningIndex + workoutIdsTag.length;
                   int workoutIdsEndIndex = processingBody.indexOf(']', beginningIndex);
                   if (workoutIdsEndIndex > 0) {
-                    final workoutIdsString =
-                        processingBody.substring(beginningIndex, workoutIdsEndIndex);
+                    final workoutIdsString = processingBody.substring(
+                      beginningIndex,
+                      workoutIdsEndIndex,
+                    );
                     debugPrint('---> Workout IDs  $workoutIdsString');
                     final workoutIds = workoutIdsString
                         .split(",")

@@ -30,23 +30,20 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
     required super.model,
     super.heartRateByteIndex,
     super.isMultiSport = true,
-  }) : super(
-          dataServiceId: fitnessMachineUuid,
-          dataCharacteristicId: rowerDeviceUuid,
-        );
+  }) : super(dataServiceId: fitnessMachineUuid, dataCharacteristicId: rowerDeviceUuid);
 
   @override
   RowerDeviceDescriptor clone() => RowerDeviceDescriptor(
-        sport: sport,
-        isMultiSport: isMultiSport,
-        fourCC: fourCC,
-        vendorName: vendorName,
-        modelName: modelName,
-        manufacturerNamePart: manufacturerNamePart,
-        manufacturerFitId: manufacturerFitId,
-        model: model,
-        heartRateByteIndex: heartRateByteIndex,
-      );
+    sport: sport,
+    isMultiSport: isMultiSport,
+    fourCC: fourCC,
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+    heartRateByteIndex: heartRateByteIndex,
+  );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rower_data.xml
   @override

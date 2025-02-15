@@ -14,7 +14,7 @@ const List<int> crcTable = [
   0x5000,
   0x9C01,
   0x8801,
-  0x4400
+  0x4400,
 ];
 
 int crcByte(int crc, int byte) {

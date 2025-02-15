@@ -21,68 +21,74 @@ void main() {
     expect(treadmill.isMultiSport, false);
   });
 
-  test('Life Fitness Treadmill interprets FTMS Treadmill Data flags wo heart rate properly',
-      () async {
-    final treadmill = LifeFitnessTreadmillDescriptor();
-    const flag = maxUint8 * 4 + 158;
-    treadmill.initFlag();
-    treadmill.stopWorkout();
-    treadmill.processFlag(flag, 24);
+  test(
+    'Life Fitness Treadmill interprets FTMS Treadmill Data flags wo heart rate properly',
+    () async {
+      final treadmill = LifeFitnessTreadmillDescriptor();
+      const flag = maxUint8 * 4 + 158;
+      treadmill.initFlag();
+      treadmill.stopWorkout();
+      treadmill.processFlag(flag, 24);
 
-    expect(treadmill.speedMetric, isNotNull);
-    expect(treadmill.cadenceMetric, null);
-    expect(treadmill.distanceMetric, isNotNull);
-    expect(treadmill.powerMetric, null);
-    expect(treadmill.caloriesMetric, isNotNull);
-    expect(treadmill.timeMetric, isNotNull);
-    expect(treadmill.caloriesPerHourMetric, isNotNull);
-    expect(treadmill.caloriesPerMinuteMetric, isNotNull);
-    expect(treadmill.strokeCountMetric, null);
-    expect(treadmill.heartRateByteIndex, null);
-    expect(treadmill.resistanceMetric, null);
-  });
+      expect(treadmill.speedMetric, isNotNull);
+      expect(treadmill.cadenceMetric, null);
+      expect(treadmill.distanceMetric, isNotNull);
+      expect(treadmill.powerMetric, null);
+      expect(treadmill.caloriesMetric, isNotNull);
+      expect(treadmill.timeMetric, isNotNull);
+      expect(treadmill.caloriesPerHourMetric, isNotNull);
+      expect(treadmill.caloriesPerMinuteMetric, isNotNull);
+      expect(treadmill.strokeCountMetric, null);
+      expect(treadmill.heartRateByteIndex, null);
+      expect(treadmill.resistanceMetric, null);
+    },
+  );
 
-  test('Life Fitness Treadmill interprets FTMS Treadmill Data flags with heart rate properly',
-      () async {
-    final treadmill = LifeFitnessTreadmillDescriptor();
-    const flag = maxUint8 * 5 + 158;
-    treadmill.initFlag();
-    treadmill.stopWorkout();
-    treadmill.processFlag(flag, 25);
+  test(
+    'Life Fitness Treadmill interprets FTMS Treadmill Data flags with heart rate properly',
+    () async {
+      final treadmill = LifeFitnessTreadmillDescriptor();
+      const flag = maxUint8 * 5 + 158;
+      treadmill.initFlag();
+      treadmill.stopWorkout();
+      treadmill.processFlag(flag, 25);
 
-    expect(treadmill.speedMetric, isNotNull);
-    expect(treadmill.cadenceMetric, null);
-    expect(treadmill.distanceMetric, isNotNull);
-    expect(treadmill.powerMetric, null);
-    expect(treadmill.caloriesMetric, isNotNull);
-    expect(treadmill.timeMetric, isNotNull);
-    expect(treadmill.caloriesPerHourMetric, isNotNull);
-    expect(treadmill.caloriesPerMinuteMetric, isNotNull);
-    expect(treadmill.strokeCountMetric, null);
-    expect(treadmill.heartRateByteIndex, 22);
-    expect(treadmill.resistanceMetric, null);
-  });
+      expect(treadmill.speedMetric, isNotNull);
+      expect(treadmill.cadenceMetric, null);
+      expect(treadmill.distanceMetric, isNotNull);
+      expect(treadmill.powerMetric, null);
+      expect(treadmill.caloriesMetric, isNotNull);
+      expect(treadmill.timeMetric, isNotNull);
+      expect(treadmill.caloriesPerHourMetric, isNotNull);
+      expect(treadmill.caloriesPerMinuteMetric, isNotNull);
+      expect(treadmill.strokeCountMetric, null);
+      expect(treadmill.heartRateByteIndex, 22);
+      expect(treadmill.resistanceMetric, null);
+    },
+  );
 
-  test('Life Fitness Treadmill interprets FTMS Treadmill Data flags with remaining time properly',
-      () async {
-    final treadmill = LifeFitnessTreadmillDescriptor();
-    const flag = maxUint8 * 12 + 158;
-    treadmill.initFlag();
-    treadmill.stopWorkout();
-    treadmill.processFlag(flag, 26);
+  test(
+    'Life Fitness Treadmill interprets FTMS Treadmill Data flags with remaining time properly',
+    () async {
+      final treadmill = LifeFitnessTreadmillDescriptor();
+      const flag = maxUint8 * 12 + 158;
+      treadmill.initFlag();
+      treadmill.stopWorkout();
+      treadmill.processFlag(flag, 26);
 
-    expect(treadmill.speedMetric, isNotNull);
-    expect(treadmill.cadenceMetric, null);
-    expect(treadmill.distanceMetric, isNotNull);
-    expect(treadmill.powerMetric, null);
-    expect(treadmill.caloriesMetric, isNotNull);
-    expect(treadmill.timeMetric, isNotNull);
-    expect(treadmill.caloriesPerHourMetric, isNotNull);
-    expect(treadmill.caloriesPerMinuteMetric, isNotNull);
-    expect(treadmill.strokeCountMetric, null);
-    expect(treadmill.heartRateByteIndex, null);
-    expect(treadmill.resistanceMetric, null);
-  });
+      expect(treadmill.speedMetric, isNotNull);
+      expect(treadmill.cadenceMetric, null);
+      expect(treadmill.distanceMetric, isNotNull);
+      expect(treadmill.powerMetric, null);
+      expect(treadmill.caloriesMetric, isNotNull);
+      expect(treadmill.timeMetric, isNotNull);
+      expect(treadmill.caloriesPerHourMetric, isNotNull);
+      expect(treadmill.caloriesPerMinuteMetric, isNotNull);
+      expect(treadmill.strokeCountMetric, null);
+      expect(treadmill.heartRateByteIndex, null);
+      expect(treadmill.resistanceMetric, null);
+    },
+  );
 
   group('Life Fitness Treadmill interprets faulty FTMS Treadmill Data properly', () {
     for (final testPair in [
@@ -111,7 +117,7 @@ void main() {
           255,
           255,
           31,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 37.0,
@@ -154,7 +160,7 @@ void main() {
           255,
           255,
           77,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 122.0,
@@ -198,7 +204,7 @@ void main() {
           255,
           105,
           138,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 251.0,
@@ -243,7 +249,7 @@ void main() {
           173,
           0,
           59,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 339.0,

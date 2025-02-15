@@ -27,7 +27,8 @@ class CsvExport extends ActivityExport {
 
     _sb.writeln("$startTimeTag,${exportModel.activity.start.millisecondsSinceEpoch},");
     _sb.writeln(
-        "$endTimeTag,${exportModel.activity.end?.millisecondsSinceEpoch.toString() ?? ""},");
+      "$endTimeTag,${exportModel.activity.end?.millisecondsSinceEpoch.toString() ?? ""},",
+    );
     _sb.writeln("$caloriesTag,${exportModel.activity.calories},");
     _sb.writeln("$stridesTag,${exportModel.activity.strides}");
     _sb.writeln("$uploadedTag,${exportModel.activity.uploaded},");
@@ -49,7 +50,8 @@ class CsvExport extends ActivityExport {
     _sb.writeln("$uaWorkoutIdTag,${exportModel.activity.uaWorkoutId},");
     _sb.writeln("$trainingPeaksUploadedTag,${exportModel.activity.trainingPeaksUploaded},");
     _sb.writeln(
-        "$trainingPeaksFileTrackingUuidTag,${exportModel.activity.trainingPeaksFileTrackingUuid},");
+      "$trainingPeaksFileTrackingUuidTag,${exportModel.activity.trainingPeaksFileTrackingUuid},",
+    );
     _sb.writeln("$trainingPeaksWorkoutIdTag,${exportModel.activity.trainingPeaksWorkoutId},");
     _sb.writeln("$movingTimeTag,${exportModel.activity.movingTime},");
     _sb.writeln("");

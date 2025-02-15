@@ -52,8 +52,9 @@ extension ScanResultEx on ScanResult {
     }
 
     final loweredPlatformName = device.platformName.toLowerCase();
-    final loweredManufacturers =
-        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    final loweredManufacturers = manufacturerNames()
+        .map((m) => m.toLowerCase())
+        .toList(growable: false);
     for (final mapEntry in deviceNamePrefixes.values) {
       final lowerPostfix = mapEntry.deviceNameLoweredPostfix;
       for (final loweredPrefix in mapEntry.deviceNameLoweredPrefixes) {
@@ -71,11 +72,12 @@ extension ScanResultEx on ScanResult {
 
   List<String> get serviceUuids => advertisementData.uuids;
 
-  String get nonEmptyName => device.platformName.isNotEmpty
-      ? device.platformName
-      : (advertisementData.advName.isNotEmpty
-          ? advertisementData.advName
-          : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
+  String get nonEmptyName =>
+      device.platformName.isNotEmpty
+          ? device.platformName
+          : (advertisementData.advName.isNotEmpty
+              ? advertisementData.advName
+              : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);
@@ -140,8 +142,9 @@ extension ScanResultEx on ScanResult {
   MachineType getMachineType(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
     if (serviceUuids.contains(fitnessMachineUuid)) {
       if (ftmsServiceDataMachineTypes.isEmpty) {
-        ftmsServiceDataMachineTypes =
-            getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+        ftmsServiceDataMachineTypes = getFtmsServiceDataMachineTypes(
+          getFtmsServiceDataMachineByte(deviceSport),
+        );
       }
 
       if (ftmsServiceDataMachineTypes.length == 1) {
@@ -189,14 +192,17 @@ extension ScanResultEx on ScanResult {
 
   IconData getIcon(List<MachineType> ftmsServiceDataMachineTypes, String deviceSport) {
     final loweredPlatformName = device.platformName.toLowerCase();
-    final loweredManufacturers =
-        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    final loweredManufacturers = manufacturerNames()
+        .map((m) => m.toLowerCase())
+        .toList(growable: false);
     if (ftmsServiceDataMachineTypes.isEmpty) {
-      ftmsServiceDataMachineTypes =
-          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+      ftmsServiceDataMachineTypes = getFtmsServiceDataMachineTypes(
+        getFtmsServiceDataMachineByte(deviceSport),
+      );
     }
-    final ftmsServiceSports =
-        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
+    final ftmsServiceSports = ftmsServiceDataMachineTypes
+        .map((m) => m.sport)
+        .toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       if (multiSportFourCCs.contains(mapEntry.key) && mapEntry.key != concept2ErgFourCC) {
         continue;
@@ -218,26 +224,43 @@ extension ScanResultEx on ScanResult {
     return getMachineType(ftmsServiceDataMachineTypes, deviceSport).icon;
   }
 
-  Tuple2<Widget, Widget> getLogoAndBanner(List<MachineType> ftmsServiceDataMachineTypes,
-      String deviceSport, double logoSize, double mediaWidth, ThemeManager themeManager) {
+  Tuple2<Widget, Widget> getLogoAndBanner(
+    List<MachineType> ftmsServiceDataMachineTypes,
+    String deviceSport,
+    double logoSize,
+    double mediaWidth,
+    ThemeManager themeManager,
+  ) {
     final loweredPlatformName = device.platformName.toLowerCase();
     if (advertisementData.serviceUuids.isNotEmpty) {
       final serviceUuids = advertisementData.uuids;
       if (serviceUuids.contains(schwinnX70ServiceUuid)) {
         return Tuple2(
-          Image.asset("assets/equipment/Schwinn_logo.png",
-              width: logoSize, semanticLabel: "Schwinn Logo"),
-          Image.asset("assets/equipment/Schwinn_banner.png",
-              width: mediaWidth, semanticLabel: "Schwinn Banner"),
+          Image.asset(
+            "assets/equipment/Schwinn_logo.png",
+            width: logoSize,
+            semanticLabel: "Schwinn Logo",
+          ),
+          Image.asset(
+            "assets/equipment/Schwinn_banner.png",
+            width: mediaWidth,
+            semanticLabel: "Schwinn Banner",
+          ),
         );
       }
 
       if (serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
         return Tuple2(
-          Image.asset("assets/equipment/Concept2_logo.png",
-              width: logoSize, semanticLabel: "Concept2 Logo"),
-          Image.asset("assets/equipment/Concept2_banner.png",
-              width: mediaWidth, semanticLabel: "Concept2 Banner"),
+          Image.asset(
+            "assets/equipment/Concept2_logo.png",
+            width: logoSize,
+            semanticLabel: "Concept2 Logo",
+          ),
+          Image.asset(
+            "assets/equipment/Concept2_banner.png",
+            width: mediaWidth,
+            semanticLabel: "Concept2 Banner",
+          ),
         );
       }
 
@@ -274,14 +297,17 @@ extension ScanResultEx on ScanResult {
       }
     }
 
-    final loweredManufacturers =
-        manufacturerNames().map((m) => m.toLowerCase()).toList(growable: false);
+    final loweredManufacturers = manufacturerNames()
+        .map((m) => m.toLowerCase())
+        .toList(growable: false);
     if (ftmsServiceDataMachineTypes.isEmpty) {
-      ftmsServiceDataMachineTypes =
-          getFtmsServiceDataMachineTypes(getFtmsServiceDataMachineByte(deviceSport));
+      ftmsServiceDataMachineTypes = getFtmsServiceDataMachineTypes(
+        getFtmsServiceDataMachineByte(deviceSport),
+      );
     }
-    final ftmsServiceSports =
-        ftmsServiceDataMachineTypes.map((m) => m.sport).toList(growable: false);
+    final ftmsServiceSports = ftmsServiceDataMachineTypes
+        .map((m) => m.sport)
+        .toList(growable: false);
     for (MapEntry<String, DeviceIdentifierHelperEntry> mapEntry in deviceNamePrefixes.entries) {
       final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
       final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
@@ -293,17 +319,29 @@ extension ScanResultEx on ScanResult {
             (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport))) {
           if (mapEntry.key == schwinnICBikeFourCC || mapEntry.key == schwinnUprightBikeFourCC) {
             return Tuple2(
-              Image.asset("assets/equipment/Schwinn_logo.png",
-                  width: logoSize, semanticLabel: "Schwinn Logo"),
-              Image.asset("assets/equipment/Schwinn_banner.png",
-                  width: mediaWidth, semanticLabel: "Schwinn Banner"),
+              Image.asset(
+                "assets/equipment/Schwinn_logo.png",
+                width: logoSize,
+                semanticLabel: "Schwinn Logo",
+              ),
+              Image.asset(
+                "assets/equipment/Schwinn_banner.png",
+                width: mediaWidth,
+                semanticLabel: "Schwinn Banner",
+              ),
             );
           } else if (mapEntry.key == kayakProGenesisPortFourCC) {
             return Tuple2(
-              Image.asset("assets/equipment/KayakPro_logo.jpg",
-                  width: logoSize, semanticLabel: "KayakPro Logo"),
-              Image.asset("assets/equipment/KayakPro_banner.png",
-                  width: mediaWidth, semanticLabel: "KayakPro Banner"),
+              Image.asset(
+                "assets/equipment/KayakPro_logo.jpg",
+                width: logoSize,
+                semanticLabel: "KayakPro Logo",
+              ),
+              Image.asset(
+                "assets/equipment/KayakPro_banner.png",
+                width: mediaWidth,
+                semanticLabel: "KayakPro Banner",
+              ),
             );
           } else if (mapEntry.key == bowflexC7BikeFourCC) {
             return Tuple2(

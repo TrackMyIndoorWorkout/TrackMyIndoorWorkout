@@ -24,10 +24,12 @@ void main() {
       Sport2SportTestPair(sportFrom: ActivityType.nordicSki, sportTo: SportSpec.paddleSport),
       Sport2SportTestPair(sportFrom: ActivityType.crossfit, sportTo: ActivityType.crossfit),
     ]) {
-      test("sportFrom: ${sport2SportPair.sportFrom}, sportTo: ${sport2SportPair.sportTo}",
-          () async {
-        expect(SportSpec.sport2Sport(sport2SportPair.sportFrom), sport2SportPair.sportTo);
-      });
+      test(
+        "sportFrom: ${sport2SportPair.sportFrom}, sportTo: ${sport2SportPair.sportTo}",
+        () async {
+          expect(SportSpec.sport2Sport(sport2SportPair.sportFrom), sport2SportPair.sportTo);
+        },
+      );
     }
   });
 }

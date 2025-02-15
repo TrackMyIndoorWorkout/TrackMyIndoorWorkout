@@ -32,8 +32,9 @@ void main() {
     final calculator = TrackCalculator(track: trackManager.longTrack);
 
     final gpsA = calculator.gpsCoordinates(trackManager.longTrack.laneLength);
-    final gpsB = calculator
-        .gpsCoordinates(trackManager.longTrack.laneLength + trackManager.longTrack.halfCircle);
+    final gpsB = calculator.gpsCoordinates(
+      trackManager.longTrack.laneLength + trackManager.longTrack.halfCircle,
+    );
 
     final expected = trackManager.longTrack.halfCircle / pi * 2.0;
     final haversineDistance = TrackCalculator.haversineDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
@@ -54,10 +55,18 @@ void main() {
     Offset currentGps = calculator.gpsCoordinates(0.0);
     for (var i in List<int>.generate(steps, (index) => index)) {
       final nextGps = calculator.gpsCoordinates(i.toDouble());
-      haversineLap +=
-          TrackCalculator.haversineDistance(currentGps.dy, currentGps.dx, nextGps.dy, nextGps.dx);
-      vincentyLap +=
-          TrackCalculator.vincentyDistance(currentGps.dy, currentGps.dx, nextGps.dy, nextGps.dx);
+      haversineLap += TrackCalculator.haversineDistance(
+        currentGps.dy,
+        currentGps.dx,
+        nextGps.dy,
+        nextGps.dx,
+      );
+      vincentyLap += TrackCalculator.vincentyDistance(
+        currentGps.dy,
+        currentGps.dx,
+        nextGps.dy,
+        nextGps.dx,
+      );
       currentGps = nextGps;
     }
 

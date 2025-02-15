@@ -8,22 +8,25 @@ import 'step_climber_device_descriptor.dart';
 
 class LifeFitnessStepClimberDescriptor extends StepClimberDeviceDescriptor with LifeFitnessMixin {
   LifeFitnessStepClimberDescriptor()
-      : super(
-          fourCC: lifeFitnessStepClimberFourCC,
-          vendorName: LifeFitnessMixin.lfManufacturer,
-          modelName: "${LifeFitnessMixin.lfManufacturer} Step Climber",
-          manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
-          manufacturerFitId: stravaFitId,
-          model: "${LifeFitnessMixin.lfManufacturer} Step Climber",
-          doNotReadManufacturerName: true,
-        );
+    : super(
+        fourCC: lifeFitnessStepClimberFourCC,
+        vendorName: LifeFitnessMixin.lfManufacturer,
+        modelName: "${LifeFitnessMixin.lfManufacturer} Step Climber",
+        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        manufacturerFitId: stravaFitId,
+        model: "${LifeFitnessMixin.lfManufacturer} Step Climber",
+        doNotReadManufacturerName: true,
+      );
 
   @override
   LifeFitnessStepClimberDescriptor clone() => LifeFitnessStepClimberDescriptor();
 
   @override
   Future<void> prePumpConfiguration(
-      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    List<BluetoothService> svcs,
+    Athlete athlete,
+    int logLvl,
+  ) async {
     await prePumpConfig(svcs, athlete, logLvl);
   }
 

@@ -17,76 +17,20 @@ const WorkoutSummarySchema = CollectionSchema(
   name: r'WorkoutSummary',
   id: -4926515236964493839,
   properties: {
-    r'calorieFactor': PropertySchema(
-      id: 0,
-      name: r'calorieFactor',
-      type: IsarType.double,
-    ),
-    r'deviceId': PropertySchema(
-      id: 1,
-      name: r'deviceId',
-      type: IsarType.string,
-    ),
-    r'deviceName': PropertySchema(
-      id: 2,
-      name: r'deviceName',
-      type: IsarType.string,
-    ),
-    r'distance': PropertySchema(
-      id: 3,
-      name: r'distance',
-      type: IsarType.double,
-    ),
-    r'elapsed': PropertySchema(
-      id: 4,
-      name: r'elapsed',
-      type: IsarType.long,
-    ),
-    r'elapsedString': PropertySchema(
-      id: 5,
-      name: r'elapsedString',
-      type: IsarType.string,
-    ),
-    r'isPacer': PropertySchema(
-      id: 6,
-      name: r'isPacer',
-      type: IsarType.bool,
-    ),
-    r'manufacturer': PropertySchema(
-      id: 7,
-      name: r'manufacturer',
-      type: IsarType.string,
-    ),
-    r'movingTime': PropertySchema(
-      id: 8,
-      name: r'movingTime',
-      type: IsarType.long,
-    ),
-    r'movingTimeString': PropertySchema(
-      id: 9,
-      name: r'movingTimeString',
-      type: IsarType.string,
-    ),
-    r'powerFactor': PropertySchema(
-      id: 10,
-      name: r'powerFactor',
-      type: IsarType.double,
-    ),
-    r'speed': PropertySchema(
-      id: 11,
-      name: r'speed',
-      type: IsarType.double,
-    ),
-    r'sport': PropertySchema(
-      id: 12,
-      name: r'sport',
-      type: IsarType.string,
-    ),
-    r'start': PropertySchema(
-      id: 13,
-      name: r'start',
-      type: IsarType.dateTime,
-    )
+    r'calorieFactor': PropertySchema(id: 0, name: r'calorieFactor', type: IsarType.double),
+    r'deviceId': PropertySchema(id: 1, name: r'deviceId', type: IsarType.string),
+    r'deviceName': PropertySchema(id: 2, name: r'deviceName', type: IsarType.string),
+    r'distance': PropertySchema(id: 3, name: r'distance', type: IsarType.double),
+    r'elapsed': PropertySchema(id: 4, name: r'elapsed', type: IsarType.long),
+    r'elapsedString': PropertySchema(id: 5, name: r'elapsedString', type: IsarType.string),
+    r'isPacer': PropertySchema(id: 6, name: r'isPacer', type: IsarType.bool),
+    r'manufacturer': PropertySchema(id: 7, name: r'manufacturer', type: IsarType.string),
+    r'movingTime': PropertySchema(id: 8, name: r'movingTime', type: IsarType.long),
+    r'movingTimeString': PropertySchema(id: 9, name: r'movingTimeString', type: IsarType.string),
+    r'powerFactor': PropertySchema(id: 10, name: r'powerFactor', type: IsarType.double),
+    r'speed': PropertySchema(id: 11, name: r'speed', type: IsarType.double),
+    r'sport': PropertySchema(id: 12, name: r'sport', type: IsarType.string),
+    r'start': PropertySchema(id: 13, name: r'start', type: IsarType.dateTime),
   },
   estimateSize: _workoutSummaryEstimateSize,
   serialize: _workoutSummarySerialize,
@@ -100,13 +44,9 @@ const WorkoutSummarySchema = CollectionSchema(
       unique: false,
       replace: false,
       properties: [
-        IndexPropertySchema(
-          name: r'start',
-          type: IndexType.value,
-          caseSensitive: false,
-        )
+        IndexPropertySchema(name: r'start', type: IndexType.value, caseSensitive: false),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -237,9 +177,7 @@ extension WorkoutSummaryQueryWhereSort on QueryBuilder<WorkoutSummary, WorkoutSu
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhere> anyStart() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'start'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'start'));
     });
   }
 }
@@ -247,10 +185,7 @@ extension WorkoutSummaryQueryWhereSort on QueryBuilder<WorkoutSummary, WorkoutSu
 extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummary, QWhereClause> {
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
@@ -258,39 +193,31 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
       } else {
         return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
       }
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
+      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
+      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
     });
   }
 
@@ -301,21 +228,20 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterWhereClause> startEqualTo(DateTime start) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'start',
-        value: [start],
-      ));
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'start', value: [start]));
     });
   }
 
@@ -323,32 +249,40 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'start',
-              lower: [],
-              upper: [start],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'start',
-              lower: [start],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'start',
+                lower: [],
+                upper: [start],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'start',
+                lower: [start],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'start',
-              lower: [start],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'start',
-              lower: [],
-              upper: [start],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'start',
+                lower: [start],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'start',
+                lower: [],
+                upper: [start],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -358,12 +292,14 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'start',
-        lower: [start],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'start',
+          lower: [start],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
@@ -372,12 +308,14 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'start',
-        lower: [],
-        upper: [start],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'start',
+          lower: [],
+          upper: [start],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
@@ -388,13 +326,15 @@ extension WorkoutSummaryQueryWhere on QueryBuilder<WorkoutSummary, WorkoutSummar
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'start',
-        lower: [lowerStart],
-        includeLower: includeLower,
-        upper: [upperStart],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'start',
+          lower: [lowerStart],
+          includeLower: includeLower,
+          upper: [upperStart],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -406,11 +346,9 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'calorieFactor',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'calorieFactor', value: value, epsilon: epsilon),
+      );
     });
   }
 
@@ -420,12 +358,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'calorieFactor',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'calorieFactor',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -435,12 +375,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'calorieFactor',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'calorieFactor',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -452,14 +394,16 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'calorieFactor',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'calorieFactor',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -468,11 +412,9 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'deviceId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'deviceId', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -482,12 +424,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'deviceId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'deviceId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -497,12 +441,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'deviceId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'deviceId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -514,14 +460,16 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'deviceId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'deviceId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -530,11 +478,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'deviceId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'deviceId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -543,52 +493,49 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'deviceId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(property: r'deviceId', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceIdContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceIdContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'deviceId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(property: r'deviceId', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'deviceId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'deviceId',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'deviceId',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'deviceId', value: ''));
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'deviceId',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'deviceId', value: ''),
+      );
     });
   }
 
@@ -597,11 +544,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'deviceName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'deviceName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -611,12 +560,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'deviceName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'deviceName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -626,12 +577,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'deviceName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'deviceName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -643,14 +596,16 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'deviceName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'deviceName',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -659,11 +614,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'deviceName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'deviceName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -672,53 +629,57 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'deviceName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'deviceName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceNameContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'deviceName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'deviceName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceNameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'deviceName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'deviceName',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'deviceName',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'deviceName', value: ''));
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> deviceNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'deviceName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'deviceName', value: ''),
+      );
     });
   }
 
@@ -727,11 +688,9 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'distance', value: value, epsilon: epsilon),
+      );
     });
   }
 
@@ -741,12 +700,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'distance',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -756,12 +717,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'distance',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -773,23 +736,22 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'distance',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'distance',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> elapsedEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'elapsed',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'elapsed', value: value));
     });
   }
 
@@ -798,11 +760,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'elapsed',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'elapsed', value: value),
+      );
     });
   }
 
@@ -811,11 +771,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'elapsed',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'elapsed', value: value),
+      );
     });
   }
 
@@ -826,13 +784,15 @@ extension WorkoutSummaryQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'elapsed',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'elapsed',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -841,11 +801,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'elapsedString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'elapsedString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -855,12 +817,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'elapsedString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'elapsedString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -870,12 +834,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'elapsedString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'elapsedString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -887,14 +853,16 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'elapsedString',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'elapsedString',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -903,11 +871,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'elapsedString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'elapsedString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -916,62 +886,65 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'elapsedString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'elapsedString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> elapsedStringContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'elapsedString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'elapsedString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> elapsedStringMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'elapsedString',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'elapsedString',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> elapsedStringIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'elapsedString',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'elapsedString', value: ''),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> elapsedStringIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'elapsedString',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'elapsedString', value: ''),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
     });
   }
 
@@ -980,11 +953,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'id', value: value),
+      );
     });
   }
 
@@ -993,11 +964,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'id', value: value),
+      );
     });
   }
 
@@ -1008,22 +977,21 @@ extension WorkoutSummaryQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> isPacerEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isPacer',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'isPacer', value: value));
     });
   }
 
@@ -1032,11 +1000,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1046,12 +1016,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1061,12 +1033,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1078,14 +1052,16 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'manufacturer',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'manufacturer',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1094,11 +1070,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1107,62 +1085,67 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> manufacturerContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> manufacturerMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'manufacturer',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'manufacturer',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> manufacturerIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'manufacturer',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'manufacturer', value: ''),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> manufacturerIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'manufacturer',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'manufacturer', value: ''),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> movingTimeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'movingTime',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'movingTime', value: value),
+      );
     });
   }
 
@@ -1171,11 +1154,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'movingTime',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'movingTime', value: value),
+      );
     });
   }
 
@@ -1184,11 +1165,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'movingTime',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'movingTime', value: value),
+      );
     });
   }
 
@@ -1199,13 +1178,15 @@ extension WorkoutSummaryQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'movingTime',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'movingTime',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -1214,11 +1195,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'movingTimeString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'movingTimeString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1228,12 +1211,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'movingTimeString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'movingTimeString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1243,12 +1228,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'movingTimeString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'movingTimeString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1260,14 +1247,16 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'movingTimeString',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'movingTimeString',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1276,11 +1265,13 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'movingTimeString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'movingTimeString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1289,53 +1280,59 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'movingTimeString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'movingTimeString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> movingTimeStringContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'movingTimeString',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'movingTimeString',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> movingTimeStringMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'movingTimeString',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'movingTimeString',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> movingTimeStringIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'movingTimeString',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'movingTimeString', value: ''),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> movingTimeStringIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'movingTimeString',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'movingTimeString', value: ''),
+      );
     });
   }
 
@@ -1344,11 +1341,9 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'powerFactor',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'powerFactor', value: value, epsilon: epsilon),
+      );
     });
   }
 
@@ -1358,12 +1353,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'powerFactor',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'powerFactor',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -1373,12 +1370,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'powerFactor',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'powerFactor',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -1390,14 +1389,16 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'powerFactor',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'powerFactor',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -1406,11 +1407,9 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'speed',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'speed', value: value, epsilon: epsilon),
+      );
     });
   }
 
@@ -1420,12 +1419,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'speed',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'speed',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -1435,12 +1436,14 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'speed',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'speed',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -1452,14 +1455,16 @@ extension WorkoutSummaryQueryFilter
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'speed',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'speed',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -1468,11 +1473,9 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -1482,12 +1485,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'sport',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1497,12 +1502,14 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'sport',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1514,14 +1521,16 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'sport',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'sport',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1530,11 +1539,9 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -1543,60 +1550,53 @@ extension WorkoutSummaryQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> sportContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> sportContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> sportMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> sportMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'sport',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'sport',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> sportIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sport',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'sport', value: ''));
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> sportIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'sport',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'sport', value: ''));
     });
   }
 
   QueryBuilder<WorkoutSummary, WorkoutSummary, QAfterFilterCondition> startEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'start',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'start', value: value));
     });
   }
 
@@ -1605,11 +1605,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'start',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'start', value: value),
+      );
     });
   }
 
@@ -1618,11 +1616,9 @@ extension WorkoutSummaryQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'start',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'start', value: value),
+      );
     });
   }
 
@@ -1633,13 +1629,15 @@ extension WorkoutSummaryQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'start',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'start',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -2011,15 +2009,17 @@ extension WorkoutSummaryQueryWhereDistinct
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByDeviceId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByDeviceId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deviceId', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByDeviceName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByDeviceName({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deviceName', caseSensitive: caseSensitive);
     });
@@ -2037,8 +2037,9 @@ extension WorkoutSummaryQueryWhereDistinct
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByElapsedString(
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByElapsedString({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'elapsedString', caseSensitive: caseSensitive);
     });
@@ -2050,8 +2051,9 @@ extension WorkoutSummaryQueryWhereDistinct
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByManufacturer(
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByManufacturer({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'manufacturer', caseSensitive: caseSensitive);
     });
@@ -2063,8 +2065,9 @@ extension WorkoutSummaryQueryWhereDistinct
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByMovingTimeString(
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctByMovingTimeString({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'movingTimeString', caseSensitive: caseSensitive);
     });
@@ -2082,8 +2085,9 @@ extension WorkoutSummaryQueryWhereDistinct
     });
   }
 
-  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctBySport(
-      {bool caseSensitive = true}) {
+  QueryBuilder<WorkoutSummary, WorkoutSummary, QDistinct> distinctBySport({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'sport', caseSensitive: caseSensitive);
     });

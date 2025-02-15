@@ -88,7 +88,10 @@ import '../utils/time_zone.dart';
 import 'constants.dart';
 
 Future<void> migrateStringIntegerPreference(
-    String tag, int defaultInt, BasePrefService prefService) async {
+  String tag,
+  int defaultInt,
+  BasePrefService prefService,
+) async {
   final valueString = prefService.get<String>(tag) ?? "$defaultInt";
   final intValue = int.tryParse(valueString);
   if (intValue != null && intValue != defaultInt) {
@@ -207,12 +210,14 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
     prefDefaults.addAll({lastEquipmentIdTagPrefix + sport: lastEquipmentIdDefault});
     if (sport != ActivityType.ride) {
-      prefDefaults
-          .addAll({SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeedDefaults[sport].toString()});
+      prefDefaults.addAll({
+        SpeedSpec.slowSpeedTag(sport): SpeedSpec.slowSpeedDefaults[sport].toString(),
+      });
     }
 
-    prefDefaults
-        .addAll({SpeedSpec.pacerSpeedTag(sport): SpeedSpec.pacerSpeedDefaults[sport].toString()});
+    prefDefaults.addAll({
+      SpeedSpec.pacerSpeedTag(sport): SpeedSpec.pacerSpeedDefaults[sport].toString(),
+    });
   }
 
   for (var prefSpec in MetricSpec.preferencesSpecs) {
@@ -224,8 +229,11 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     for (final fgOrBg in [false, true]) {
       for (final paletteSize in [5, 6, 7]) {
         prefDefaults.addAll({
-          PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize):
-              PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize)
+          PaletteSpec.getPaletteTag(
+            lightOrDark,
+            fgOrBg,
+            paletteSize,
+          ): PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize),
         });
       }
     }
@@ -240,8 +248,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
 
 Future<BasePrefService> initPreferences() async {
   var prefDefaults = await getPrefDefaults();
-  final prefService =
-      await PrefServiceShared.init(prefix: preferencesPrefix, defaults: prefDefaults);
+  final prefService = await PrefServiceShared.init(
+    prefix: preferencesPrefix,
+    defaults: prefDefaults,
+  );
   Get.put<BasePrefService>(prefService, permanent: true);
 
   final prefVersion = prefService.get<int>(preferencesVersionTag) ?? preferencesVersionNext;
@@ -266,10 +276,7 @@ Future<BasePrefService> initPreferences() async {
   if (prefVersion <= preferencesVersionEquipmentRemembrancePerSport) {
     final lastEquipmentId = prefService.get<String>(lastEquipmentIdTag) ?? "";
     if (lastEquipmentId.trim().isNotEmpty) {
-      await prefService.set<String>(
-        lastEquipmentIdTagPrefix + ActivityType.ride,
-        lastEquipmentId,
-      );
+      await prefService.set<String>(lastEquipmentIdTagPrefix + ActivityType.ride, lastEquipmentId);
     }
   }
 
@@ -314,11 +321,7 @@ Future<BasePrefService> initPreferences() async {
       targetHeartRateAudioPeriodDefault,
       prefService,
     );
-    await migrateStringIntegerPreference(
-      audioVolumeTag,
-      audioVolumeDefault,
-      prefService,
-    );
+    await migrateStringIntegerPreference(audioVolumeTag, audioVolumeDefault, prefService);
     await migrateStringIntegerPreference(
       athleteBodyWeightTag,
       athleteBodyWeightDefault,
@@ -330,10 +333,7 @@ Future<BasePrefService> initPreferences() async {
       prefService.get<String>(dataConnectionAddressesTag) ?? dataConnectionAddressesDefault;
   if (prefVersion <= preferencesVersionDefaultingDataConnection) {
     if (addressesString == dataConnectionAddressesOldDefault) {
-      await prefService.set<String>(
-        dataConnectionAddressesTag,
-        dataConnectionAddressesDefault,
-      );
+      await prefService.set<String>(dataConnectionAddressesTag, dataConnectionAddressesDefault);
       addressesString = "";
     }
   }
@@ -440,13 +440,15 @@ Future<BasePrefService> initPreferences() async {
 
   for (var sport in SportSpec.sportPrefixes) {
     if (sport != ActivityType.ride) {
-      final slowSpeedString = prefService.get<String>(SpeedSpec.slowSpeedTag(sport)) ??
+      final slowSpeedString =
+          prefService.get<String>(SpeedSpec.slowSpeedTag(sport)) ??
           SpeedSpec.slowSpeedDefaults[sport].toString();
       SpeedSpec.slowSpeeds[sport] =
           double.tryParse(slowSpeedString) ?? SpeedSpec.slowSpeedDefaults[sport];
     }
 
-    final pacerSpeedString = prefService.get<String>(SpeedSpec.pacerSpeedTag(sport)) ??
+    final pacerSpeedString =
+        prefService.get<String>(SpeedSpec.pacerSpeedTag(sport)) ??
         SpeedSpec.pacerSpeedDefaults[sport].toString();
     SpeedSpec.pacerSpeeds[sport] =
         double.tryParse(pacerSpeedString) ?? SpeedSpec.pacerSpeedDefaults[sport];

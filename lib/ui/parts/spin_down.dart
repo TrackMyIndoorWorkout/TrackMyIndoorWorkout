@@ -142,10 +142,14 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
 
     if (!(_fitnessEquipment?.supportsSpinDown ?? false)) return false;
 
-    final userData =
-        BluetoothDeviceEx.filterService(_fitnessEquipment?.services ?? [], userDataServiceUuid);
+    final userData = BluetoothDeviceEx.filterService(
+      _fitnessEquipment?.services ?? [],
+      userDataServiceUuid,
+    );
     _weightData = BluetoothDeviceEx.filterCharacteristic(
-        userData?.characteristics, userWeightCharacteristicUuid);
+      userData?.characteristics,
+      userWeightCharacteristicUuid,
+    );
     if (_weightData == null) return false;
 
     if (_fitnessEquipment?.controlPoint == null || _fitnessEquipment?.status == null) return false;
@@ -155,90 +159,110 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _weightData?.setNotifyValue(true);
     } on Exception catch (e, stack) {
       Logging().logException(
-          _logLevel, tag, "_prepareSpinDownCore", "_weightData.setNotifyValue", e, stack);
+        _logLevel,
+        tag,
+        "_prepareSpinDownCore",
+        "_weightData.setNotifyValue",
+        e,
+        stack,
+      );
     }
 
     _weightDataSubscription = _weightData?.lastValueStream
         .throttleTime(
-      const Duration(milliseconds: spinDownThreshold),
-      leading: false,
-      trailing: true,
-    )
+          const Duration(milliseconds: spinDownThreshold),
+          leading: false,
+          trailing: true,
+        )
         .listen((response) async {
-      if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
-        if (response[0] != userDataSetSuccessOpcode) {
-          setState(() {
-            _calibrationState = CalibrationState.weighInProblem;
-          });
-        }
-      } else if (response.length == 2) {
-        if (_calibrationState == CalibrationState.readyToWeighIn) {
-          setState(() {
-            _calibrationState = CalibrationState.weighInProblem;
-            _oldWeightLsb = response[0];
-            _oldWeightMsb = response[1];
-            _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb, _si);
-          });
-        } else {
-          if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
-            setState(() {
-              _step = stepCalibrating;
-              _calibrationState = CalibrationState.readyToCalibrate;
-            });
-          } else {
-            setState(() {
-              _calibrationState = CalibrationState.weighInProblem;
-            });
+          if (response.length == 1 && _calibrationState == CalibrationState.weightSubmitting) {
+            if (response[0] != userDataSetSuccessOpcode) {
+              setState(() {
+                _calibrationState = CalibrationState.weighInProblem;
+              });
+            }
+          } else if (response.length == 2) {
+            if (_calibrationState == CalibrationState.readyToWeighIn) {
+              setState(() {
+                _calibrationState = CalibrationState.weighInProblem;
+                _oldWeightLsb = response[0];
+                _oldWeightMsb = response[1];
+                _weight = getWeightFromBytes(_oldWeightLsb, _oldWeightMsb, _si);
+              });
+            } else {
+              if (response[0] == _newWeightLsb && response[1] == _newWeightMsb) {
+                setState(() {
+                  _step = stepCalibrating;
+                  _calibrationState = CalibrationState.readyToCalibrate;
+                });
+              } else {
+                setState(() {
+                  _calibrationState = CalibrationState.weighInProblem;
+                });
+              }
+            }
+          } else if (_calibrationState == CalibrationState.weightSubmitting) {
+            try {
+              await _weightData?.write([_newWeightLsb, _newWeightMsb]);
+            } on Exception catch (e, stack) {
+              Logging().logException(
+                _logLevel,
+                tag,
+                "_prepareSpinDownCore",
+                "_weightData.write",
+                e,
+                stack,
+              );
+              setState(() {
+                _calibrationState = CalibrationState.weighInProblem;
+              });
+            }
           }
-        }
-      } else if (_calibrationState == CalibrationState.weightSubmitting) {
-        try {
-          await _weightData?.write([_newWeightLsb, _newWeightMsb]);
-        } on Exception catch (e, stack) {
-          Logging()
-              .logException(_logLevel, tag, "_prepareSpinDownCore", "_weightData.write", e, stack);
-          setState(() {
-            _calibrationState = CalibrationState.weighInProblem;
-          });
-        }
-      }
-    });
+        });
 
     _controlPointSubscription = _fitnessEquipment?.controlPoint?.lastValueStream
         .throttleTime(
-      const Duration(milliseconds: spinDownThreshold),
-      leading: false,
-      trailing: true,
-    )
+          const Duration(milliseconds: spinDownThreshold),
+          leading: false,
+          trailing: true,
+        )
         .listen((data) async {
-      if (data.length == 1) {
-        if (data[0] != spinDownOpcode) {
-          setState(() {
-            _step = stepDone;
-            _calibrationState = CalibrationState.calibrationFail;
-          });
-        }
-      }
+          if (data.length == 1) {
+            if (data[0] != spinDownOpcode) {
+              setState(() {
+                _step = stepDone;
+                _calibrationState = CalibrationState.calibrationFail;
+              });
+            }
+          }
 
-      if (data.length == 7) {
-        if (data[0] != controlOpcode || data[1] != spinDownOpcode || data[2] != successResponse) {
-          setState(() {
-            _step = stepDone;
-            _calibrationState = CalibrationState.calibrationFail;
-          });
-          return;
-        }
-        setState(() {
-          _calibrationState = CalibrationState.calibrationInProgress;
-          _targetSpeedHigh = (data[3] * maxUint8 + data[4]) / 100;
-          _targetSpeedHighString = speedOrPaceString(
-              _targetSpeedHigh, _si, _fitnessEquipment?.sport ?? ActivityType.ride);
-          _targetSpeedLow = (data[5] * maxUint8 + data[6]) / 100;
-          _targetSpeedLowString = speedOrPaceString(
-              _targetSpeedLow, _si, _fitnessEquipment?.sport ?? ActivityType.ride);
+          if (data.length == 7) {
+            if (data[0] != controlOpcode ||
+                data[1] != spinDownOpcode ||
+                data[2] != successResponse) {
+              setState(() {
+                _step = stepDone;
+                _calibrationState = CalibrationState.calibrationFail;
+              });
+              return;
+            }
+            setState(() {
+              _calibrationState = CalibrationState.calibrationInProgress;
+              _targetSpeedHigh = (data[3] * maxUint8 + data[4]) / 100;
+              _targetSpeedHighString = speedOrPaceString(
+                _targetSpeedHigh,
+                _si,
+                _fitnessEquipment?.sport ?? ActivityType.ride,
+              );
+              _targetSpeedLow = (data[5] * maxUint8 + data[6]) / 100;
+              _targetSpeedLowString = speedOrPaceString(
+                _targetSpeedLow,
+                _si,
+                _fitnessEquipment?.sport ?? ActivityType.ride,
+              );
+            });
+          }
         });
-      }
-    });
 
     return _spinDownPossible;
   }
@@ -280,17 +304,22 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   }
 
   TextStyle _weightInputButtonTextStyle() {
-    return _smallerTextStyle.merge(TextStyle(
-        color: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
-            ? (_isLight ? Colors.black : Colors.white)
-            : (_isLight ? Colors.black87 : Colors.white70)));
+    return _smallerTextStyle.merge(
+      TextStyle(
+        color:
+            _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+                ? (_isLight ? Colors.black : Colors.white)
+                : (_isLight ? Colors.black87 : Colors.white70),
+      ),
+    );
   }
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
-      backgroundColor: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
-          ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
-          : (_isLight ? Colors.black12 : Colors.black87),
+      backgroundColor:
+          _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+              ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
+              : (_isLight ? Colors.black12 : Colors.black87),
     );
   }
 
@@ -321,7 +350,13 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _weightData?.write([_newWeightLsb, _newWeightMsb]);
     } on Exception catch (e, stack) {
       Logging().logException(
-          _logLevel, tag, "_onWeightInputButtonPressed", "_weightData.write", e, stack);
+        _logLevel,
+        tag,
+        "_onWeightInputButtonPressed",
+        "_weightData.write",
+        e,
+        stack,
+      );
       setState(() {
         _calibrationState = CalibrationState.weighInProblem;
       });
@@ -385,45 +420,53 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
       await _fitnessEquipment?.controlPoint?.write([spinDownOpcode, spinDownStartCommand]);
       await _fitnessEquipment?.status?.setNotifyValue(true);
     } on Exception catch (e, stack) {
-      Logging().logException(_logLevel, tag, "onCalibrationButtonPressed",
-          "controlPoint.write or status.setNotifyValue(true)", e, stack);
+      Logging().logException(
+        _logLevel,
+        tag,
+        "onCalibrationButtonPressed",
+        "controlPoint.write or status.setNotifyValue(true)",
+        e,
+        stack,
+      );
     }
 
     _fitnessEquipment?.statusSubscription = _fitnessEquipment?.status?.lastValueStream
         .throttleTime(
-      const Duration(milliseconds: ftmsStatusThreshold),
-      leading: false,
-      trailing: true,
-    )
+          const Duration(milliseconds: ftmsStatusThreshold),
+          leading: false,
+          trailing: true,
+        )
         .listen((status) {
-      if (status.length == 2 && status[0] == spinDownStatus) {
-        if (status[1] == spinDownStatusSuccess) {
-          setState(() {
-            _step = stepDone;
-            _calibrationState = CalibrationState.calibrationSuccess;
-          });
-        }
-        if (status[1] == spinDownStatusError) {
-          setState(() {
-            _step = stepDone;
-            _calibrationState = CalibrationState.calibrationFail;
-          });
-        }
-        if (status[1] == spinDownStatusStopPedaling) {
-          setState(() {
-            _calibrationState = CalibrationState.calibrationOver;
-          });
-        }
-      }
-    });
+          if (status.length == 2 && status[0] == spinDownStatus) {
+            if (status[1] == spinDownStatusSuccess) {
+              setState(() {
+                _step = stepDone;
+                _calibrationState = CalibrationState.calibrationSuccess;
+              });
+            }
+            if (status[1] == spinDownStatusError) {
+              setState(() {
+                _step = stepDone;
+                _calibrationState = CalibrationState.calibrationFail;
+              });
+            }
+            if (status[1] == spinDownStatusStopPedaling) {
+              setState(() {
+                _calibrationState = CalibrationState.calibrationOver;
+              });
+            }
+          }
+        });
 
     await _fitnessEquipment?.attach();
     _fitnessEquipment?.calibrating = true;
     _fitnessEquipment?.pumpData((record) async {
       setState(() {
         _currentSpeed = record.speed ?? 0.0;
-        _currentSpeedString =
-            record.speedOrPaceStringByUnit(_si, _fitnessEquipment?.sport ?? ActivityType.ride);
+        _currentSpeedString = record.speedOrPaceStringByUnit(
+          _si,
+          _fitnessEquipment?.sport ?? ActivityType.ride,
+        );
       });
     });
   }
@@ -473,10 +516,7 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                   ElevatedButton(
                     style: _weightInputButtonStyle(),
                     onPressed: () async => await _onWeightInputButtonPressed(),
-                    child: Text(
-                      _weightInputButtonText(),
-                      style: _weightInputButtonTextStyle(),
-                    ),
+                    child: Text(_weightInputButtonText(), style: _weightInputButtonTextStyle()),
                   ),
                 ],
               ),
@@ -496,9 +536,10 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                       Text(_targetSpeedHighString, style: _smallerTextStyle),
                     ],
                   ),
-                  Text(_currentSpeedString,
-                      style:
-                          _largerTextStyle.merge(TextStyle(color: _themeManager.getBlueColor()))),
+                  Text(
+                    _currentSpeedString,
+                    style: _largerTextStyle.merge(TextStyle(color: _themeManager.getBlueColor())),
+                  ),
                   Text(_calibrationInstruction(), style: _calibrationInstructionStyle()),
                   ElevatedButton(
                     style: _buttonBackgroundStyle(),
@@ -515,10 +556,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                      _calibrationState == CalibrationState.calibrationSuccess
-                          ? "SUCCESS"
-                          : "ERROR",
-                      style: _largerTextStyle),
+                    _calibrationState == CalibrationState.calibrationSuccess ? "SUCCESS" : "ERROR",
+                    style: _largerTextStyle,
+                  ),
                   ElevatedButton(
                     style: _buttonBackgroundStyle(),
                     onPressed: () {
@@ -533,10 +573,9 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
                       }
                     },
                     child: Text(
-                        _calibrationState == CalibrationState.calibrationSuccess
-                            ? 'Close'
-                            : 'Retry',
-                        style: _smallerTextStyle),
+                      _calibrationState == CalibrationState.calibrationSuccess ? 'Close' : 'Retry',
+                      style: _smallerTextStyle,
+                    ),
                   ),
                 ],
               ),

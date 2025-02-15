@@ -32,8 +32,10 @@ void main() {
       test(sport, () async {
         final isGeneric = expectation.containsKey(sport);
         final descriptor = DeviceFactory.genericDescriptorForSport(sport);
-        expect(descriptor.fourCC,
-            !isGeneric || sport == ActivityType.ride ? genericFTMSBikeFourCC : expectation[sport]);
+        expect(
+          descriptor.fourCC,
+          !isGeneric || sport == ActivityType.ride ? genericFTMSBikeFourCC : expectation[sport],
+        );
       });
     }
   });

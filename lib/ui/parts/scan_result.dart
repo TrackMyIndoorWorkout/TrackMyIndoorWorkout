@@ -97,8 +97,13 @@ class ScanResultTile extends StatelessWidget {
 
     final logoSize = captionStyle.fontSize! * 2.5;
     final deviceIcon = result.getIcon([], deviceSport);
-    final logoAndBanner =
-        result.getLogoAndBanner([], deviceSport, logoSize, mediaWidth, themeManager);
+    final logoAndBanner = result.getLogoAndBanner(
+      [],
+      deviceSport,
+      logoSize,
+      mediaWidth,
+      themeManager,
+    );
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
       leading: logoAndBanner.item1,
@@ -122,7 +127,8 @@ class ScanResultTile extends StatelessWidget {
         _buildAdvRow(
           'Manufacturer Data',
           getNiceManufacturerData(
-              result.advertisementData.manufacturerData.keys.toList(growable: false)),
+            result.advertisementData.manufacturerData.keys.toList(growable: false),
+          ),
           detailStyle,
           secondaryStyle,
         ),

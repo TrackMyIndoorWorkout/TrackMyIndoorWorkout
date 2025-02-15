@@ -4,14 +4,14 @@ import 'indoor_bike_device_descriptor.dart';
 
 class MatrixBikeDescriptor extends IndoorBikeDeviceDescriptor {
   MatrixBikeDescriptor()
-      : super(
-          fourCC: matrixBikeFourCC,
-          vendorName: "Matrix",
-          modelName: "Matrix Bike",
-          manufacturerNamePart: "CTM",
-          manufacturerFitId: johnsonHealthTechId,
-          model: "Matrix Bike",
-        );
+    : super(
+        fourCC: matrixBikeFourCC,
+        vendorName: "Matrix",
+        modelName: "Matrix Bike",
+        manufacturerNamePart: "CTM",
+        manufacturerFitId: johnsonHealthTechId,
+        model: "Matrix Bike",
+      );
 
   @override
   MatrixBikeDescriptor clone() => MatrixBikeDescriptor();

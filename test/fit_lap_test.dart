@@ -35,20 +35,19 @@ void main() {
         final exportRecord = ExportRecord(
           latitude: rng.nextDouble(),
           longitude: rng.nextDouble(),
-          record: Record(
-            timeStamp: DateTime.now(),
-          ),
+          record: Record(timeStamp: DateTime.now()),
         );
 
-        final exportModel = ExportModelForTests(records: [exportRecord])
-          ..averageSpeed = 0.0
-          ..maximumSpeed = 0.0
-          ..averageHeartRate = 0
-          ..maximumHeartRate = 0
-          ..averageCadence = 0
-          ..maximumCadence = 0
-          ..averagePower = 0.0
-          ..maximumPower = 0;
+        final exportModel =
+            ExportModelForTests(records: [exportRecord])
+              ..averageSpeed = 0.0
+              ..maximumSpeed = 0.0
+              ..averageHeartRate = 0
+              ..maximumHeartRate = 0
+              ..averageCadence = 0
+              ..maximumCadence = 0
+              ..averagePower = 0.0
+              ..maximumPower = 0;
 
         final output = lap.serializeData(exportModel);
         final expected = lap.fields.fold<int>(0, (accu, field) => accu + field.size);

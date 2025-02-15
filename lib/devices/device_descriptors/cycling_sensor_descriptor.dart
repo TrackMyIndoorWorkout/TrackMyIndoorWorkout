@@ -29,14 +29,14 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     required this.characteristicUuid,
     super.flagByteSize,
   }) : super(
-          sport: ActivityType.ride,
-          isMultiSport: false,
-          dataServiceId: serviceUuid,
-          dataCharacteristicId: characteristicUuid,
-          controlCharacteristicId: "",
-          listenOnControl: false,
-          hasFeatureFlags: true,
-        );
+         sport: ActivityType.ride,
+         isMultiSport: false,
+         dataServiceId: serviceUuid,
+         dataCharacteristicId: characteristicUuid,
+         controlCharacteristicId: "",
+         listenOnControl: false,
+         hasFeatureFlags: true,
+       );
 
   @override
   bool isDataProcessable(List<int> data) {
@@ -83,10 +83,13 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
 
   @override
   List<ComplexSensor> getAdditionalSensors(
-      BluetoothDevice device, List<BluetoothService> services) {
+    BluetoothDevice device,
+    List<BluetoothService> services,
+  ) {
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
-    final requiredService = services
-        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == heartRateServiceUuid);
+    final requiredService = services.firstWhereOrNull(
+      (service) => service.serviceUuid.uuidString() == heartRateServiceUuid,
+    );
     if (requiredService == null) {
       return [];
     }
@@ -98,8 +101,12 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
 
   @override
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 
@@ -109,8 +116,9 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
       return;
     }
 
-    final requiredService =
-        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == serviceUuid);
+    final requiredService = services.firstWhereOrNull(
+      (service) => service.serviceUuid.uuidString() == serviceUuid,
+    );
     if (requiredService == null) {
       return;
     }

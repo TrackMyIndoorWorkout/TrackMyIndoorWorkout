@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/air_temperature.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
@@ -37,11 +38,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         divisions: bikeWeightDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: bikeWeightTag,
-        min: bikeWeightMin,
-        max: bikeWeightMax,
-      ),
+      const PrefInteger(pref: bikeWeightTag, min: bikeWeightMin, max: bikeWeightMax),
       PrefSlider<int>(
         title: const Text(wheelCircumference),
         subtitle: const Text(wheelCircumferenceDescription),
@@ -67,11 +64,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         divisions: driveTrainLossDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: driveTrainLossTag,
-        min: driveTrainLossMin,
-        max: driveTrainLossMax,
-      ),
+      const PrefInteger(pref: driveTrainLossTag, min: driveTrainLossMin, max: driveTrainLossMax),
       PrefSlider<int>(
         title: const Text(airTemperature),
         subtitle: const Text(airTemperatureDescription),
@@ -82,11 +75,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         divisions: airTemperatureDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: airTemperatureTag,
-        min: airTemperatureMin,
-        max: airTemperatureMax,
-      ),
+      const PrefInteger(pref: airTemperatureTag, min: airTemperatureMin, max: airTemperatureMax),
       PrefSlider<int>(
         title: const Text(dragForceTune),
         subtitle: const Text(dragForceTuneDescription),
@@ -97,11 +86,7 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         divisions: dragForceTuneDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: dragForceTuneTag,
-        min: dragForceTuneMin,
-        max: dragForceTuneMax,
-      ),
+      const PrefInteger(pref: dragForceTuneTag, min: dragForceTuneMin, max: dragForceTuneMax),
       const PrefCheckbox(
         title: Text(paddlingWithCyclingSensors),
         subtitle: Text(paddlingWithCyclingSensorsDescription),
@@ -162,36 +147,44 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
           return null;
         },
       ),
-      PrefLabel(
-        title: Text(kayakFirstDisplay, style: Get.textTheme.headlineSmall!, maxLines: 3),
-      ),
+      PrefLabel(title: Text(kayakFirstDisplay, style: Get.textTheme.headlineSmall!, maxLines: 3)),
     ];
 
-    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
-      kayakFirstDisplaySlot1Tag,
-      kayakFirstDisplaySlot1,
-      kayakFirstDisplaySlot1Description,
-    ));
-    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
-      kayakFirstDisplaySlot2Tag,
-      kayakFirstDisplaySlot2,
-      kayakFirstDisplaySlot2Description,
-    ));
-    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
-      kayakFirstDisplaySlot3Tag,
-      kayakFirstDisplaySlot3,
-      kayakFirstDisplaySlot3Description,
-    ));
-    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
-      kayakFirstDisplaySlot4Tag,
-      kayakFirstDisplaySlot4,
-      kayakFirstDisplaySlot4Description,
-    ));
-    equipmentPreferences.add(getKayakFirstDisplaySlotPref(
-      kayakFirstDisplaySlot5Tag,
-      kayakFirstDisplaySlot5,
-      kayakFirstDisplaySlot5Description,
-    ));
+    equipmentPreferences.add(
+      getKayakFirstDisplaySlotPref(
+        kayakFirstDisplaySlot1Tag,
+        kayakFirstDisplaySlot1,
+        kayakFirstDisplaySlot1Description,
+      ),
+    );
+    equipmentPreferences.add(
+      getKayakFirstDisplaySlotPref(
+        kayakFirstDisplaySlot2Tag,
+        kayakFirstDisplaySlot2,
+        kayakFirstDisplaySlot2Description,
+      ),
+    );
+    equipmentPreferences.add(
+      getKayakFirstDisplaySlotPref(
+        kayakFirstDisplaySlot3Tag,
+        kayakFirstDisplaySlot3,
+        kayakFirstDisplaySlot3Description,
+      ),
+    );
+    equipmentPreferences.add(
+      getKayakFirstDisplaySlotPref(
+        kayakFirstDisplaySlot4Tag,
+        kayakFirstDisplaySlot4,
+        kayakFirstDisplaySlot4Description,
+      ),
+    );
+    equipmentPreferences.add(
+      getKayakFirstDisplaySlotPref(
+        kayakFirstDisplaySlot5Tag,
+        kayakFirstDisplaySlot5,
+        kayakFirstDisplaySlot5Description,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(EquipmentPreferencesScreen.title)),

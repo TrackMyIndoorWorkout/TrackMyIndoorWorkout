@@ -15,7 +15,7 @@ import 'utils.dart';
 
 class FitDefinitionMessageTest extends FitDefinitionMessage {
   FitDefinitionMessageTest({localMessageType, globalMessageNumber})
-      : super(localMessageType, globalMessageNumber);
+    : super(localMessageType, globalMessageNumber);
 
   @override
   List<int> serializeData(dynamic parameter) {
@@ -69,7 +69,7 @@ void main() {
         bigEndian ? 1 : 0,
         shortLsb,
         shortMsb,
-        0
+        0,
       ];
       test('$short -> $expected', () async {
         final subject = FitDefinitionMessageTest(

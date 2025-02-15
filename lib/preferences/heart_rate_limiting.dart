@@ -7,7 +7,8 @@ const heartRateUpperLimitMin = 0;
 const heartRateUpperLimitDefault = 0;
 const heartRateUpperLimitMax = 300;
 const heartRateUpperLimitDivisions = heartRateUpperLimitMax - heartRateUpperLimitMin;
-const heartRateUpperLimitDescription = "This is a heart rate upper bound where the methods "
+const heartRateUpperLimitDescription =
+    "This is a heart rate upper bound where the methods "
     "bellow would be applied. 0 means no upper limiting is performed.";
 
 const heartRateLimitingMethod = "Heart Rate Limiting Method Selection:";

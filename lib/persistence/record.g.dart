@@ -17,51 +17,15 @@ const RecordSchema = CollectionSchema(
   name: r'Record',
   id: -5560585825827271694,
   properties: {
-    r'activityId': PropertySchema(
-      id: 0,
-      name: r'activityId',
-      type: IsarType.long,
-    ),
-    r'cadence': PropertySchema(
-      id: 1,
-      name: r'cadence',
-      type: IsarType.long,
-    ),
-    r'calories': PropertySchema(
-      id: 2,
-      name: r'calories',
-      type: IsarType.long,
-    ),
-    r'distance': PropertySchema(
-      id: 3,
-      name: r'distance',
-      type: IsarType.double,
-    ),
-    r'elapsed': PropertySchema(
-      id: 4,
-      name: r'elapsed',
-      type: IsarType.long,
-    ),
-    r'heartRate': PropertySchema(
-      id: 5,
-      name: r'heartRate',
-      type: IsarType.long,
-    ),
-    r'power': PropertySchema(
-      id: 6,
-      name: r'power',
-      type: IsarType.long,
-    ),
-    r'speed': PropertySchema(
-      id: 7,
-      name: r'speed',
-      type: IsarType.double,
-    ),
-    r'timeStamp': PropertySchema(
-      id: 8,
-      name: r'timeStamp',
-      type: IsarType.dateTime,
-    )
+    r'activityId': PropertySchema(id: 0, name: r'activityId', type: IsarType.long),
+    r'cadence': PropertySchema(id: 1, name: r'cadence', type: IsarType.long),
+    r'calories': PropertySchema(id: 2, name: r'calories', type: IsarType.long),
+    r'distance': PropertySchema(id: 3, name: r'distance', type: IsarType.double),
+    r'elapsed': PropertySchema(id: 4, name: r'elapsed', type: IsarType.long),
+    r'heartRate': PropertySchema(id: 5, name: r'heartRate', type: IsarType.long),
+    r'power': PropertySchema(id: 6, name: r'power', type: IsarType.long),
+    r'speed': PropertySchema(id: 7, name: r'speed', type: IsarType.double),
+    r'timeStamp': PropertySchema(id: 8, name: r'timeStamp', type: IsarType.dateTime),
   },
   estimateSize: _recordEstimateSize,
   serialize: _recordSerialize,
@@ -75,13 +39,9 @@ const RecordSchema = CollectionSchema(
       unique: false,
       replace: false,
       properties: [
-        IndexPropertySchema(
-          name: r'timeStamp',
-          type: IndexType.value,
-          caseSensitive: false,
-        )
+        IndexPropertySchema(name: r'timeStamp', type: IndexType.value, caseSensitive: false),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -91,11 +51,7 @@ const RecordSchema = CollectionSchema(
   version: '3.1.8',
 );
 
-int _recordEstimateSize(
-  Record object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _recordEstimateSize(Record object, List<int> offsets, Map<Type, List<int>> allOffsets) {
   var bytesCount = offsets.last;
   return bytesCount;
 }
@@ -189,9 +145,7 @@ extension RecordQueryWhereSort on QueryBuilder<Record, Record, QWhere> {
 
   QueryBuilder<Record, Record, QAfterWhere> anyTimeStamp() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'timeStamp'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'timeStamp'));
     });
   }
 }
@@ -199,10 +153,7 @@ extension RecordQueryWhereSort on QueryBuilder<Record, Record, QWhere> {
 extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
   QueryBuilder<Record, Record, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
@@ -210,37 +161,25 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
       } else {
         return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
       }
     });
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
+      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
     });
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
+      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
     });
   }
 
@@ -251,41 +190,41 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'timeStamp',
-        value: [null],
-      ));
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'timeStamp', value: [null]));
     });
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [null],
-        includeLower: false,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'timeStamp',
+          lower: [null],
+          includeLower: false,
+          upper: [],
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampEqualTo(DateTime? timeStamp) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'timeStamp',
-        value: [timeStamp],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'timeStamp', value: [timeStamp]),
+      );
     });
   }
 
@@ -293,32 +232,40 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [],
-              upper: [timeStamp],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [timeStamp],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'timeStamp',
+                lower: [],
+                upper: [timeStamp],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'timeStamp',
+                lower: [timeStamp],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [timeStamp],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'timeStamp',
-              lower: [],
-              upper: [timeStamp],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'timeStamp',
+                lower: [timeStamp],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'timeStamp',
+                lower: [],
+                upper: [timeStamp],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -328,12 +275,14 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [timeStamp],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'timeStamp',
+          lower: [timeStamp],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
@@ -342,12 +291,14 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [],
-        upper: [timeStamp],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'timeStamp',
+          lower: [],
+          upper: [timeStamp],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
@@ -358,13 +309,15 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'timeStamp',
-        lower: [lowerTimeStamp],
-        includeLower: includeLower,
-        upper: [upperTimeStamp],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'timeStamp',
+          lower: [lowerTimeStamp],
+          includeLower: includeLower,
+          upper: [upperTimeStamp],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -372,10 +325,9 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
 extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   QueryBuilder<Record, Record, QAfterFilterCondition> activityIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'activityId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'activityId', value: value),
+      );
     });
   }
 
@@ -384,11 +336,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'activityId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'activityId', value: value),
+      );
     });
   }
 
@@ -397,11 +347,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'activityId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'activityId', value: value),
+      );
     });
   }
 
@@ -412,38 +360,33 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'activityId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'activityId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> cadenceIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'cadence',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'cadence'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> cadenceIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'cadence',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'cadence'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> cadenceEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'cadence',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'cadence', value: value));
     });
   }
 
@@ -452,11 +395,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'cadence',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'cadence', value: value),
+      );
     });
   }
 
@@ -465,11 +406,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'cadence',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'cadence', value: value),
+      );
     });
   }
 
@@ -480,38 +419,33 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'cadence',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cadence',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> caloriesIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'calories',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'calories'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> caloriesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'calories',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'calories'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> caloriesEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'calories',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'calories', value: value));
     });
   }
 
@@ -520,11 +454,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'calories',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'calories', value: value),
+      );
     });
   }
 
@@ -533,11 +465,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'calories',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'calories', value: value),
+      );
     });
   }
 
@@ -548,29 +478,27 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'calories',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'calories',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> distanceIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'distance',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'distance'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> distanceIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'distance',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'distance'));
     });
   }
 
@@ -579,11 +507,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'distance', value: value, epsilon: epsilon),
+      );
     });
   }
 
@@ -593,12 +519,14 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'distance',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -608,12 +536,14 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'distance',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -625,39 +555,34 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'distance',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'distance',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> elapsedIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'elapsed',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'elapsed'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> elapsedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'elapsed',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'elapsed'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> elapsedEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'elapsed',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'elapsed', value: value));
     });
   }
 
@@ -666,11 +591,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'elapsed',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'elapsed', value: value),
+      );
     });
   }
 
@@ -679,11 +602,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'elapsed',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'elapsed', value: value),
+      );
     });
   }
 
@@ -694,38 +615,35 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'elapsed',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'elapsed',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> heartRateIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'heartRate',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'heartRate'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> heartRateIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'heartRate',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'heartRate'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> heartRateEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'heartRate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'heartRate', value: value),
+      );
     });
   }
 
@@ -734,11 +652,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'heartRate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'heartRate', value: value),
+      );
     });
   }
 
@@ -747,11 +663,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'heartRate',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'heartRate', value: value),
+      );
     });
   }
 
@@ -762,22 +676,21 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'heartRate',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'heartRate',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
     });
   }
 
@@ -786,24 +699,17 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'id', value: value),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> idLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> idLessThan(Id value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'id', value: value),
+      );
     });
   }
 
@@ -814,38 +720,33 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> powerIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'power',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'power'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> powerIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'power',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'power'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> powerEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'power',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'power', value: value));
     });
   }
 
@@ -854,11 +755,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'power',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'power', value: value),
+      );
     });
   }
 
@@ -867,11 +766,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'power',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'power', value: value),
+      );
     });
   }
 
@@ -882,29 +779,27 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'power',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'power',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> speedIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'speed',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'speed'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> speedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'speed',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'speed'));
     });
   }
 
@@ -913,11 +808,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'speed',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'speed', value: value, epsilon: epsilon),
+      );
     });
   }
 
@@ -927,12 +820,14 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'speed',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'speed',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -942,12 +837,14 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'speed',
-        value: value,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'speed',
+          value: value,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
@@ -959,39 +856,36 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'speed',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'speed',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          epsilon: epsilon,
+        ),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'timeStamp',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'timeStamp'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'timeStamp',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'timeStamp'));
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'timeStamp',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'timeStamp', value: value),
+      );
     });
   }
 
@@ -1000,11 +894,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'timeStamp', value: value),
+      );
     });
   }
 
@@ -1013,11 +905,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'timeStamp',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'timeStamp', value: value),
+      );
     });
   }
 
@@ -1028,13 +918,15 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'timeStamp',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'timeStamp',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }

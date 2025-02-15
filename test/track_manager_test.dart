@@ -13,9 +13,10 @@ void main() {
       final timeZone = timeZoneTracks.key;
       for (final track in timeZoneTracks.value.values) {
         test("$timeZone ${track.kind} ${track.lengthFactor}", () async {
-          final expectedLengthFactor = track.kind == TrackKind.forWater
-              ? fiveHundredMTrackLengthFactor
-              : fourHundredMTrackLengthFactor;
+          final expectedLengthFactor =
+              track.kind == TrackKind.forWater
+                  ? fiveHundredMTrackLengthFactor
+                  : fourHundredMTrackLengthFactor;
           expect(track.lengthFactor, expectedLengthFactor);
         });
       }
@@ -33,12 +34,20 @@ void main() {
           final gpsA = calculator.gpsCoordinates(0);
           final gpsB = calculator.gpsCoordinates(50);
 
-          final haversineDistance =
-              TrackCalculator.haversineDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
+          final haversineDistance = TrackCalculator.haversineDistance(
+            gpsA.dy,
+            gpsA.dx,
+            gpsB.dy,
+            gpsB.dx,
+          );
           expect(haversineDistance, closeTo(50, 0.27));
 
-          final vincentyDistance =
-              TrackCalculator.vincentyDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
+          final vincentyDistance = TrackCalculator.vincentyDistance(
+            gpsA.dy,
+            gpsA.dx,
+            gpsB.dy,
+            gpsB.dx,
+          );
           expect(vincentyDistance, closeTo(50, 0.13));
 
           expect(haversineDistance, closeTo(vincentyDistance, 0.264));
@@ -59,12 +68,20 @@ void main() {
           final gpsB = calculator.gpsCoordinates(track.laneLength + track.halfCircle);
 
           final expected = track.halfCircle / pi * 2.0;
-          final haversineDistance =
-              TrackCalculator.haversineDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
+          final haversineDistance = TrackCalculator.haversineDistance(
+            gpsA.dy,
+            gpsA.dx,
+            gpsB.dy,
+            gpsB.dx,
+          );
           expect(haversineDistance, closeTo(expected, 0.51));
 
-          final vincentyDistance =
-              TrackCalculator.vincentyDistance(gpsA.dy, gpsA.dx, gpsB.dy, gpsB.dx);
+          final vincentyDistance = TrackCalculator.vincentyDistance(
+            gpsA.dy,
+            gpsA.dx,
+            gpsB.dy,
+            gpsB.dx,
+          );
           expect(vincentyDistance, closeTo(expected, 0.622));
 
           expect(haversineDistance, closeTo(vincentyDistance, 0.353));
@@ -87,9 +104,17 @@ void main() {
           for (var i in List<int>.generate(steps, (index) => index)) {
             final nextGps = calculator.gpsCoordinates(i.toDouble());
             haversineLap += TrackCalculator.haversineDistance(
-                currentGps.dy, currentGps.dx, nextGps.dy, nextGps.dx);
+              currentGps.dy,
+              currentGps.dx,
+              nextGps.dy,
+              nextGps.dx,
+            );
             vincentyLap += TrackCalculator.vincentyDistance(
-                currentGps.dy, currentGps.dx, nextGps.dy, nextGps.dx);
+              currentGps.dy,
+              currentGps.dx,
+              nextGps.dy,
+              nextGps.dx,
+            );
             currentGps = nextGps;
           }
 

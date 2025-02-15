@@ -42,8 +42,11 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
       if (flag % 2 == 1) {
         wheelRevolutionMetric = LongMetricDescriptor(lsb: expectedLength, msb: expectedLength + 3);
         expectedLength += 4; // 32 bit revolution
-        wheelRevolutionTime =
-            ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: 1024.0);
+        wheelRevolutionTime = ShortMetricDescriptor(
+          lsb: expectedLength,
+          msb: expectedLength + 1,
+          divider: 1024.0,
+        );
         expectedLength += 2; // 16 bit time
       }
 
@@ -52,8 +55,11 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
       if (flag % 2 == 1) {
         crankRevolutionMetric = ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1);
         expectedLength += 2; // 16 bit revolution
-        crankRevolutionTime =
-            ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: 1024.0);
+        crankRevolutionTime = ShortMetricDescriptor(
+          lsb: expectedLength,
+          msb: expectedLength + 1,
+          divider: 1024.0,
+        );
         expectedLength += 2; // 16 bit time
       }
 
@@ -80,7 +86,8 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
     double? speed;
     if (wheelRevolutionMetric != null) {
       wheelCadence.addCadenceData(getWheelRevolutionTime(data), getWheelRevolutions(data));
-      distance = (wheelCadence.overflowCounter * wheelCadence.revolutionOverflow +
+      distance =
+          (wheelCadence.overflowCounter * wheelCadence.revolutionOverflow +
               wheelCadence.cadenceData.last.revolutions) *
           circumference;
       // https://endless-sphere.com/forums/viewtopic.php?t=16114

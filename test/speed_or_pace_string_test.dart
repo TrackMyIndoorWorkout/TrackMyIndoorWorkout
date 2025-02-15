@@ -5,22 +5,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/display.dart';
 
 void main() {
-  final speeds = [
-    0.0,
-    0.2,
-    0.3,
-    0.5,
-    1.0,
-    1.2,
-    1.3,
-    1.5,
-    2.0,
-    5.0,
-    10.0,
-    12.0,
-    15.0,
-    20.0,
-  ];
+  final speeds = [0.0, 0.2, 0.3, 0.5, 1.0, 1.2, 1.3, 1.5, 2.0, 5.0, 10.0, 12.0, 15.0, 20.0];
 
   group("speedStringByUnit for metric system and riding:", () {
     for (final speed in speeds) {
@@ -160,8 +145,10 @@ void main() {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
-        expect(speedOrPaceString(speed, true, ActivityType.elliptical, limitSlowSpeed: true),
-            expected);
+        expect(
+          speedOrPaceString(speed, true, ActivityType.elliptical, limitSlowSpeed: true),
+          expected,
+        );
       });
     }
   });
@@ -182,8 +169,10 @@ void main() {
       final pace = speed.abs() < displayEps ? 0.0 : 60.0 / speed / km2mi;
       final expected = speed < slowSpeed ? "0:00" : paceString(pace);
       test("$speed (Elliptical) -> $expected", () async {
-        expect(speedOrPaceString(speed, false, ActivityType.elliptical, limitSlowSpeed: true),
-            expected);
+        expect(
+          speedOrPaceString(speed, false, ActivityType.elliptical, limitSlowSpeed: true),
+          expected,
+        );
       });
     }
   });

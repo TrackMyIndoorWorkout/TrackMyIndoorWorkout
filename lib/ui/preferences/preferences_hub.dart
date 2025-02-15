@@ -2,6 +2,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
@@ -49,8 +50,10 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
         .join("_");
     final integrationsKey = "integrations$keyPart";
     final List<Tuple2<String, Function>> screenConfigs = [
-      Tuple2(UserExperiencePreferencesScreen.shortTitle,
-          () => const UserExperiencePreferencesScreen()),
+      Tuple2(
+        UserExperiencePreferencesScreen.shortTitle,
+        () => const UserExperiencePreferencesScreen(),
+      ),
       Tuple2(DataPreferencesScreen.shortTitle, () => const DataPreferencesScreen()),
       Tuple2(HeartRatePreferencesScreen.shortTitle, () => const HeartRatePreferencesScreen()),
       Tuple2(TargetHrPreferencesScreen.shortTitle, () => const TargetHrPreferencesScreen()),
@@ -59,8 +62,10 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
       Tuple2(AthletePreferencesScreen.shortTitle, () => const AthletePreferencesScreen()),
       Tuple2(EquipmentPreferencesScreen.shortTitle, () => const EquipmentPreferencesScreen()),
       Tuple2(WorkoutPreferencesScreen.shortTitle, () => const WorkoutPreferencesScreen()),
-      Tuple2(IntegrationPreferencesScreen.shortTitle,
-          () => IntegrationPreferencesScreen(key: Key(integrationsKey))),
+      Tuple2(
+        IntegrationPreferencesScreen.shortTitle,
+        () => IntegrationPreferencesScreen(key: Key(integrationsKey)),
+      ),
       Tuple2(ExpertPreferencesScreen.shortTitle, () => const ExpertPreferencesScreen()),
     ];
 
@@ -89,9 +94,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Preferences')),
-      body: ListView(
-        children: screens,
-      ),
+      body: ListView(children: screens),
     );
   }
 }

@@ -160,11 +160,7 @@ void main() {
         ),
         expected: true,
       ),
-      TestPair(
-        comment: "default stops",
-        record: Record(),
-        expected: true,
-      ),
+      TestPair(comment: "default stops", record: Record(), expected: true),
     ]) {
       test(testPair.comment, () async {
         final record = testPair.record;

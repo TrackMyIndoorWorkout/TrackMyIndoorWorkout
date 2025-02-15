@@ -109,7 +109,8 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
     // initialize buttons
     _plusSpinnerSize = widget.plusButtonSize ?? SpinnerInput.defaultSize;
     _plusSpinnerChild = widget.plusButtonChild ?? const Icon(Icons.add);
-    _plusSpinnerStyle = widget.plusButtonStyle ??
+    _plusSpinnerStyle =
+        widget.plusButtonStyle ??
         ElevatedButton.styleFrom(
           minimumSize: _plusSpinnerSize,
           shape: const CircleBorder(),
@@ -120,7 +121,8 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
 
     _minusSpinnerSize = widget.minusButtonSize ?? SpinnerInput.defaultSize;
     _minusSpinnerChild = widget.minusButtonChild ?? const Icon(Icons.remove);
-    _minusSpinnerStyle = widget.minusButtonStyle ??
+    _minusSpinnerStyle =
+        widget.minusButtonStyle ??
         ElevatedButton.styleFrom(
           minimumSize: _minusSpinnerSize,
           shape: const CircleBorder(),
@@ -131,12 +133,11 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
 
     _popupButtonSize = widget.popupButtonSize ?? SpinnerInput.defaultSize;
     _popupButtonChild = widget.popupButtonChild ?? const Icon(Icons.check);
-    _popupButtonStyle = widget.popupButtonStyle ??
+    _popupButtonStyle =
+        widget.popupButtonStyle ??
         ElevatedButton.styleFrom(
           minimumSize: _popupButtonSize,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
           foregroundColor: themeManager.getProtagonistColor(),
           backgroundColor: themeManager.getGreenColor(),
           padding: const EdgeInsets.all(1),
@@ -232,13 +233,7 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
             ],
           ),
           if (widget.disabledPopup == false)
-            Positioned(
-              left: 0,
-              top: 0,
-              right: 0,
-              bottom: 0,
-              child: textFieldPopUp(),
-            ),
+            Positioned(left: 0, top: 0, right: 0, bottom: 0, child: textFieldPopUp()),
         ],
       ),
     );
@@ -276,21 +271,16 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
 
     return ScaleTransition(
       scale: CurvedAnimation(
-          parent: popupAnimationController!,
-          curve: const Interval(0.0, 1.0, curve: Curves.elasticOut)),
+        parent: popupAnimationController!,
+        curve: const Interval(0.0, 1.0, curve: Curves.elasticOut),
+      ),
       child: Center(
         child: Container(
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(5),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                spreadRadius: 1,
-              ),
-            ],
+            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 1)],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -326,11 +316,12 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
                     onPressed: () {
                       FocusScope.of(context).requestFocus(FocusNode());
                       try {
-                        double value = widget.numberFormat != null
-                            ? widget.numberFormat!
-                                .parse(textEditingController?.text ?? "0")
-                                .toDouble()
-                            : double.parse(textEditingController?.text ?? "0");
+                        double value =
+                            widget.numberFormat != null
+                                ? widget.numberFormat!
+                                    .parse(textEditingController?.text ?? "0")
+                                    .toDouble()
+                                : double.parse(textEditingController?.text ?? "0");
                         if (value <= widget.maxValue && value >= widget.minValue) {
                           setState(() {
                             if (widget.onChange != null) {
@@ -348,7 +339,7 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
                     child: _popupButtonChild,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

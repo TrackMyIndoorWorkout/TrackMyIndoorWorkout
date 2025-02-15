@@ -15,23 +15,23 @@ class IndoorBikeDeviceDescriptor extends FitnessMachineDescriptor {
     super.canMeasureCalories,
     super.doNotReadManufacturerName,
   }) : super(
-          sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,
-          dataServiceId: fitnessMachineUuid,
-          dataCharacteristicId: indoorBikeUuid,
-        );
+         sport: deviceSportDescriptors[genericFTMSBikeFourCC]!.defaultSport,
+         isMultiSport: deviceSportDescriptors[genericFTMSBikeFourCC]!.isMultiSport,
+         dataServiceId: fitnessMachineUuid,
+         dataCharacteristicId: indoorBikeUuid,
+       );
 
   @override
   IndoorBikeDeviceDescriptor clone() => IndoorBikeDeviceDescriptor(
-        fourCC: fourCC,
-        vendorName: vendorName,
-        modelName: modelName,
-        manufacturerNamePart: manufacturerNamePart,
-        manufacturerFitId: manufacturerFitId,
-        model: model,
-        heartRateByteIndex: heartRateByteIndex,
-        canMeasureCalories: canMeasureCalories,
-      );
+    fourCC: fourCC,
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+    heartRateByteIndex: heartRateByteIndex,
+    canMeasureCalories: canMeasureCalories,
+  );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.indoor_bike_data.xml
   @override

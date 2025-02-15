@@ -29,8 +29,10 @@ void main() {
       final expected = pacePair[1];
       for (var sport in [ActivityType.run, ActivityType.virtualRun]) {
         test("${pacePair[0]} -> $expected", () async {
-          expect(RecordWithSport(pace: pacePair[0].toDouble(), sport: sport).speed,
-              closeTo(expected, eps));
+          expect(
+            RecordWithSport(pace: pacePair[0].toDouble(), sport: sport).speed,
+            closeTo(expected, eps),
+          );
         });
       }
     }

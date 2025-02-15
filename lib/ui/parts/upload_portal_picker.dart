@@ -32,8 +32,9 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   @override
   void initState() {
     super.initState();
-    _largerTextStyle =
-        Get.textTheme.headlineMedium!.apply(color: _themeManager.getProtagonistColor());
+    _largerTextStyle = Get.textTheme.headlineMedium!.apply(
+      color: _themeManager.getProtagonistColor(),
+    );
     final prefService = Get.find<BasePrefService>();
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     for (final portalName in portalNames) {
@@ -59,9 +60,10 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     final statusCode = await uploadService.upload(widget.activity, _calculateGps);
     final finalResult =
         statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
-    final resultMessage = finalResult
-        ? "Activity ${widget.activity.id} submitted successfully"
-        : "Activity ${widget.activity.id} upload failure";
+    final resultMessage =
+        finalResult
+            ? "Activity ${widget.activity.id} submitted successfully"
+            : "Activity ${widget.activity.id} upload failure";
     Get.snackbar("Upload", resultMessage);
 
     setState(() {
@@ -82,89 +84,82 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     List<Widget> choiceRows = [
       uploadInProgress
           ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(
-                  semanticsLabel: "Progress indicator",
-                ),
-                JumpingText(
-                  "Uploading...",
-                  style: _largerTextStyle,
-                ),
-              ],
-            )
-          : Text(
-              "Integrations:",
-              style: _largerTextStyle,
-              textAlign: TextAlign.center,
-            ),
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(semanticsLabel: "Progress indicator"),
+              JumpingText("Uploading...", style: _largerTextStyle),
+            ],
+          )
+          : Text("Integrations:", style: _largerTextStyle, textAlign: TextAlign.center),
     ];
     choiceRows.addAll(
       getPortalChoices(false, _themeManager).asMap().entries.map(
-            (e) => ListTile(
-              title: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: _largerTextStyle.fontSize! / 3,
-                  horizontal: 0.0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        uploadActivity(e.value.name);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
-                            size: _largerTextStyle.fontSize! * 1.5,
-                            color: (uploadStates[e.value.name] ?? false)
+        (e) => ListTile(
+          title: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: _largerTextStyle.fontSize! / 3,
+              horizontal: 0.0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    uploadActivity(e.value.name);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
+                        size: _largerTextStyle.fontSize! * 1.5,
+                        color:
+                            (uploadStates[e.value.name] ?? false)
                                 ? _themeManager.getGreenColor()
                                 : _themeManager.getProtagonistColor(),
-                          ),
-                          SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.white,
-                            ),
-                            height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
-                            width: mediaWidth - 150,
-                            padding: const EdgeInsets.all(5),
-                            child: e.value.getSvg(false, _largerTextStyle.fontSize!),
-                          ),
-                        ],
                       ),
-                    ),
-                    (uploadStates[e.value.name] ?? false)
-                        ? IconButton(
-                            icon: Icon(
-                              Icons.open_in_new,
-                              size: _largerTextStyle.fontSize! * 1.5,
-                              color: widget.activity.isSpecificWorkoutUrl(e.value.name)
-                                  ? _themeManager.getProtagonistColor()
-                                  : _themeManager.getGreyColor(),
-                            ),
-                            onPressed: () async {
-                              final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                              if (await canLaunchUrlString(workoutUrl)) {
-                                launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
-                              } else {
-                                Get.snackbar("Attention", "Cannot open URL");
-                              }
-                            },
-                          )
-                        : Container(),
-                  ],
+                      SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.white,
+                        ),
+                        height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                        width: mediaWidth - 150,
+                        padding: const EdgeInsets.all(5),
+                        child: e.value.getSvg(false, _largerTextStyle.fontSize!),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                (uploadStates[e.value.name] ?? false)
+                    ? IconButton(
+                      icon: Icon(
+                        Icons.open_in_new,
+                        size: _largerTextStyle.fontSize! * 1.5,
+                        color:
+                            widget.activity.isSpecificWorkoutUrl(e.value.name)
+                                ? _themeManager.getProtagonistColor()
+                                : _themeManager.getGreyColor(),
+                      ),
+                      onPressed: () async {
+                        final workoutUrl = widget.activity.workoutUrl(e.value.name);
+                        if (await canLaunchUrlString(workoutUrl)) {
+                          launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
+                        } else {
+                          Get.snackbar("Attention", "Cannot open URL");
+                        }
+                      },
+                    )
+                    : Container(),
+              ],
             ),
           ),
+        ),
+      ),
     );
 
     return Scaffold(

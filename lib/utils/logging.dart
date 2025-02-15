@@ -27,13 +27,7 @@ class Logging {
     database = Get.find<Isar>();
   }
 
-  void log(
-    int logLevelThreshold,
-    int logLevel,
-    String tag,
-    String subTag,
-    String message,
-  ) {
+  void log(int logLevelThreshold, int logLevel, String tag, String subTag, String message) {
     if (kDebugMode) {
       debugPrint("$tag | $subTag | $message");
     }
@@ -71,12 +65,7 @@ class Logging {
     _logCore(logLevelError, tag, subTag, "$message; $e; $stack");
   }
 
-  void _logCore(
-    int logLevel,
-    String tag,
-    String subTag,
-    String message,
-  ) {
+  void _logCore(int logLevel, String tag, String subTag, String message) {
     final level = levelToDescription[logLevel] ?? "UNK";
     // Check last entry if it's identical to prevent flooding
     if (lastEntry != null &&

@@ -38,27 +38,28 @@ void main() {
           heartRateLimitingMethodDefault,
           withGps,
         );
-        final exportRecord = withGps
-            ? ExportRecord(
-                latitude: rng.nextDouble(),
-                longitude: rng.nextDouble(),
-                record: Record(
-                  timeStamp: DateTime.now(),
-                  power: 0,
-                  speed: 0.0,
-                  cadence: 0,
-                  heartRate: 0,
-                ),
-              )
-            : ExportRecord(
-                record: Record(
-                  timeStamp: DateTime.now(),
-                  power: 0,
-                  speed: 0.0,
-                  cadence: 0,
-                  heartRate: 0,
-                ),
-              );
+        final exportRecord =
+            withGps
+                ? ExportRecord(
+                  latitude: rng.nextDouble(),
+                  longitude: rng.nextDouble(),
+                  record: Record(
+                    timeStamp: DateTime.now(),
+                    power: 0,
+                    speed: 0.0,
+                    cadence: 0,
+                    heartRate: 0,
+                  ),
+                )
+                : ExportRecord(
+                  record: Record(
+                    timeStamp: DateTime.now(),
+                    power: 0,
+                    speed: 0.0,
+                    cadence: 0,
+                    heartRate: 0,
+                  ),
+                );
 
         final output = dataRecord.serializeData(exportRecord);
         final expected = dataRecord.fields.fold<int>(0, (accu, field) => accu + field.size);

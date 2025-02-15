@@ -6,11 +6,7 @@ class ExportRecord {
   double latitude; // in degrees
   double longitude;
 
-  ExportRecord({
-    required this.record,
-    this.latitude = 0.0,
-    this.longitude = 0.0,
-  });
+  ExportRecord({required this.record, this.latitude = 0.0, this.longitude = 0.0});
 
   double elapsed(Activity activity) {
     return (record.timeStamp ?? DateTime.now()).difference(activity.start).inMilliseconds / 1000;

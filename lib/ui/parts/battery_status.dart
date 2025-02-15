@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
@@ -108,7 +109,9 @@ class BatteryStatusBottomSheetState extends State<BatteryStatusBottomSheet> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _themeManager.getBlueIcon(
-                  getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout), _sizeDefault),
+                getSportIcon(_fitnessEquipment?.sport ?? ActivityType.workout),
+                _sizeDefault,
+              ),
               _themeManager.getBlueIcon(Icons.battery_full, _sizeDefault),
               Text(_batteryLevel, style: _textStyle),
             ],

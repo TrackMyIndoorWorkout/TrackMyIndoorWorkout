@@ -12,10 +12,7 @@ class ZonePalettePreferencesScreen extends StatefulWidget {
   static String shortTitle = "Palettes";
   final int zoneCount;
 
-  const ZonePalettePreferencesScreen({
-    super.key,
-    required this.zoneCount,
-  });
+  const ZonePalettePreferencesScreen({super.key, required this.zoneCount});
 
   @override
   ZonePalettePreferencesScreenState createState() => ZonePalettePreferencesScreenState();
@@ -52,13 +49,7 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
     final Color? newColor = await Get.bottomSheet(
       SafeArea(
         child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: ColorPickerBottomSheet(color: color),
-              ),
-            ),
-          ],
+          children: [Expanded(child: Center(child: ColorPickerBottomSheet(color: color)))],
         ),
       ),
       isScrollControlled: true,
@@ -100,20 +91,14 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(" ", style: _paletteStyle),
-          ],
+          children: [Text(" ", style: _paletteStyle)],
         ),
       ),
     );
   }
 
   List<Widget> getPaletteRow(bool fgOrBg) {
-    List<Widget> items = [
-      Center(
-        child: Text(fgOrBg ? "FG" : "BG", style: _textStyle),
-      ),
-    ];
+    List<Widget> items = [Center(child: Text(fgOrBg ? "FG" : "BG", style: _textStyle))];
 
     for (final i in List<int>.generate(widget.zoneCount, (i) => i)) {
       items.add(paletteSelectorActivatorButton(i, fgOrBg));
@@ -138,38 +123,24 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
       }
     }
 
-    List<Widget> items = [
-      Center(
-        child: Text("Z#", style: _textStyle),
-      )
-    ];
+    List<Widget> items = [Center(child: Text("Z#", style: _textStyle))];
 
     if (horizontal) {
       for (final i in List<int>.generate(widget.zoneCount, (i) => i)) {
-        items.add(
-          Center(
-            child: Text("${i + 1}", style: _textStyle),
-          ),
-        );
+        items.add(Center(child: Text("${i + 1}", style: _textStyle)));
       }
 
       items.addAll(getPaletteRow(true));
       items.addAll(getPaletteRow(false));
     } else {
       items.addAll([
-        Center(
-          child: Text("FG", style: _textStyle),
-        ),
-        Center(
-          child: Text("BG", style: _textStyle),
-        ),
+        Center(child: Text("FG", style: _textStyle)),
+        Center(child: Text("BG", style: _textStyle)),
       ]);
 
       for (final i in List<int>.generate(widget.zoneCount, (i) => i)) {
         items.addAll([
-          Center(
-            child: Text("${i + 1}", style: _textStyle),
-          ),
+          Center(child: Text("${i + 1}", style: _textStyle)),
           paletteSelectorActivatorButton(i, true),
           paletteSelectorActivatorButton(i, false),
         ]);
@@ -179,11 +150,7 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
     return Scaffold(
       appBar: AppBar(title: const Text('Palette Preferences')),
       body: Center(
-        child: LayoutGrid(
-          columnSizes: columnSizes,
-          rowSizes: rowSizes,
-          children: items,
-        ),
+        child: LayoutGrid(columnSizes: columnSizes, rowSizes: rowSizes, children: items),
       ),
     );
   }

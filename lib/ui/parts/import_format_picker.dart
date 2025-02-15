@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../utils/theme_manager.dart';
 
 class ImportFormatPickerBottomSheet extends StatefulWidget {
@@ -13,10 +14,7 @@ class ImportFormatPickerBottomSheet extends StatefulWidget {
 
 class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomSheet> {
   int _formatIndex = 0;
-  final List<String> _formatChoices = [
-    "MPower Echelon",
-    "Migration",
-  ];
+  final List<String> _formatChoices = ["MPower Echelon", "Migration"];
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
   TextStyle _selectedTextStyle = const TextStyle();
@@ -59,8 +57,10 @@ class ImportFormatPickerBottomSheetState extends State<ImportFormatPickerBottomS
                         _formatIndex = e.key;
                       });
                     },
-                    child: Text(e.value,
-                        style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                    child: Text(
+                      e.value,
+                      style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle,
+                    ),
                   ),
                 ],
               ),

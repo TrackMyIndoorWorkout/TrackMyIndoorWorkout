@@ -39,28 +39,29 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items = SportSpec.sportPrefixes.map((sport) {
-      return Container(
-        padding: const EdgeInsets.all(5.0),
-        margin: const EdgeInsets.all(5.0),
-        child: ElevatedButton(
-          onPressed: () => Get.to(() => MeasurementZonesPreferencesScreen(sport)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TextOneLine(
-                sport,
-                style: _textStyle,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
+    final items =
+        SportSpec.sportPrefixes.map((sport) {
+          return Container(
+            padding: const EdgeInsets.all(5.0),
+            margin: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: () => Get.to(() => MeasurementZonesPreferencesScreen(sport)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextOneLine(
+                    sport,
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Icon(Icons.chevron_right, size: _sizeDefault),
+                ],
               ),
-              Icon(Icons.chevron_right, size: _sizeDefault),
-            ],
-          ),
-        ),
-      );
-    }).toList();
+            ),
+          );
+        }).toList();
 
     items.addAll([
       Container(
@@ -71,13 +72,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             final int? paletteSelection = await Get.bottomSheet(
               const SafeArea(
                 child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: PalettePickerBottomSheet(),
-                      ),
-                    ),
-                  ],
+                  children: [Expanded(child: Center(child: PalettePickerBottomSheet()))],
                 ),
               ),
               isScrollControlled: true,
@@ -89,9 +84,7 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
               return;
             }
 
-            Get.to(() => ZonePalettePreferencesScreen(
-                  zoneCount: paletteSelection,
-                ));
+            Get.to(() => ZonePalettePreferencesScreen(zoneCount: paletteSelection));
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -52,33 +52,39 @@ void main() {
       final timeSum = deltaTimes.sum;
       final revolutionSum = deltaRevolutions.sum;
       test(
-          "len $len, 0. (${deltaTimes.first}, ${deltaRevolutions.first}) $len. ($timeSum, $revolutionSum)",
-          () async {
-        final cadenceMixin = CadenceMixinImpl();
-        var cumulativeTime = 0.0;
-        var cumulativeRevolution = 0.0;
-        for (final i in List<int>.generate(len, (i) => i, growable: false)) {
-          cumulativeTime += deltaTimes[i];
-          cumulativeRevolution += deltaRevolutions[i];
-          cadenceMixin.addCadenceData(cumulativeTime, cumulativeRevolution);
-        }
+        "len $len, 0. (${deltaTimes.first}, ${deltaRevolutions.first}) $len. ($timeSum, $revolutionSum)",
+        () async {
+          final cadenceMixin = CadenceMixinImpl();
+          var cumulativeTime = 0.0;
+          var cumulativeRevolution = 0.0;
+          for (final i in List<int>.generate(len, (i) => i, growable: false)) {
+            cumulativeTime += deltaTimes[i];
+            cumulativeRevolution += deltaRevolutions[i];
+            cadenceMixin.addCadenceData(cumulativeTime, cumulativeRevolution);
+          }
 
-        expect(cadenceMixin.cadenceData.length, len);
-        final cadence = cadenceMixin.computeCadence().toInt();
-        if (len == 1) {
-          expect(cadence, 0);
-        } else {
-          expect(cadence,
-              (revolutionSum - deltaRevolutions.first) * 60 ~/ (timeSum - deltaTimes.first));
-        }
-      });
+          expect(cadenceMixin.cadenceData.length, len);
+          final cadence = cadenceMixin.computeCadence().toInt();
+          if (len == 1) {
+            expect(cadence, 0);
+          } else {
+            expect(
+              cadence,
+              (revolutionSum - deltaRevolutions.first) * 60 ~/ (timeSum - deltaTimes.first),
+            );
+          }
+        },
+      );
     }
   });
 
   group('Cadence Mixin trimQueue empties queue when entries are old by time ticks', () {
     final rnd = Random();
-    for (var numRevolutions
-        in getRandomInts(smallRepetition, revolutionSlidingWindowDefault * 5 + 1, rnd)) {
+    for (var numRevolutions in getRandomInts(
+      smallRepetition,
+      revolutionSlidingWindowDefault * 5 + 1,
+      rnd,
+    )) {
       numRevolutions++;
       test('# revolutions $numRevolutions', () async {
         final cadenceMixin = CadenceMixinImpl();
@@ -93,7 +99,9 @@ void main() {
 
         expect(cadenceMixin.cadenceData.length, numRevolutions);
         cadenceMixin.addCadenceData(
-            timeTick + revolutionSlidingWindowDefault * 2, revolutions * 100.0);
+          timeTick + revolutionSlidingWindowDefault * 2,
+          revolutions * 100.0,
+        );
 
         expect(cadenceMixin.cadenceData.length, 1);
       });
@@ -102,8 +110,11 @@ void main() {
 
   group('Cadence Mixin trimQueue empties queue when entries are old by time stamps', () {
     final rnd = Random();
-    for (var numRevolutions
-        in getRandomInts(smallRepetition, revolutionSlidingWindowDefault * 5 + 1, rnd)) {
+    for (var numRevolutions in getRandomInts(
+      smallRepetition,
+      revolutionSlidingWindowDefault * 5 + 1,
+      rnd,
+    )) {
       numRevolutions++;
       test('# revolutions $numRevolutions', () async {
         final cadenceMixin = CadenceMixinImpl();
@@ -119,11 +130,14 @@ void main() {
         expect(cadenceMixin.cadenceData.length, numRevolutions);
         for (final cadenceData in cadenceMixin.cadenceData) {
           final timeStampAdjust = Duration(
-              milliseconds: revolutionSlidingWindowDefault * 2000 + sensorDataThresholdDefault);
+            milliseconds: revolutionSlidingWindowDefault * 2000 + sensorDataThresholdDefault,
+          );
           cadenceData.timeStamp = DateTime.now().subtract(timeStampAdjust);
         }
         cadenceMixin.addCadenceData(
-            timeTick + revolutionSlidingWindowDefault * 2, revolutions * 100.0);
+          timeTick + revolutionSlidingWindowDefault * 2,
+          revolutions * 100.0,
+        );
 
         expect(cadenceMixin.cadenceData.length, 1);
       });

@@ -10,9 +10,5 @@ class ActivityDetailRowFitHorizontal extends ActivityDetailRowBase {
     required super.textStyle,
     required super.unitText,
     super.unitStyle,
-  }) : super(
-          spacer: false,
-          forceOneLine: false,
-          fitHorizontally: true,
-        );
+  }) : super(spacer: false, forceOneLine: false, fitHorizontally: true);
 }

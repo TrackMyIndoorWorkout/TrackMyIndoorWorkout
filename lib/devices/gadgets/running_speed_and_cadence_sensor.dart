@@ -27,7 +27,10 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
       expectedLength = 1; // The flag itself + instant speed and cadence
       // UInt16, m/s with 1/256 resolution -> immediately convert it to km/h with the divider
       speedMetric = ShortMetricDescriptor(
-          lsb: expectedLength, msb: expectedLength + 1, divider: 256.0 / DeviceDescriptor.ms2kmh);
+        lsb: expectedLength,
+        msb: expectedLength + 1,
+        divider: 256.0 / DeviceDescriptor.ms2kmh,
+      );
       expectedLength += 2;
       cadenceMetric = ByteMetricDescriptor(lsb: expectedLength);
       expectedLength++;
@@ -42,8 +45,11 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
       // Has total distance? (second bit)
       if (flag % 2 == 1) {
         // UInt32, 1/10 m
-        distanceMetric =
-            LongMetricDescriptor(lsb: expectedLength, msb: expectedLength + 3, divider: 10.0);
+        distanceMetric = LongMetricDescriptor(
+          lsb: expectedLength,
+          msb: expectedLength + 3,
+          divider: 10.0,
+        );
         expectedLength += 4;
       }
 

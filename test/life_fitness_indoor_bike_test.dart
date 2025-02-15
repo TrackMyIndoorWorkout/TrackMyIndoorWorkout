@@ -21,51 +21,55 @@ void main() {
     expect(bike.isMultiSport, false);
   });
 
-  test('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags wo Heart Rate properly',
-      () async {
-    final bike = LifeFitnessBikeDescriptor();
-    const lsb = 250;
-    const msb = 9;
-    const flag = maxUint8 * msb + lsb;
-    bike.initFlag();
-    bike.stopWorkout();
-    bike.processFlag(flag, 26);
+  test(
+    'Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags wo Heart Rate properly',
+    () async {
+      final bike = LifeFitnessBikeDescriptor();
+      const lsb = 250;
+      const msb = 9;
+      const flag = maxUint8 * msb + lsb;
+      bike.initFlag();
+      bike.stopWorkout();
+      bike.processFlag(flag, 26);
 
-    expect(bike.speedMetric, isNotNull);
-    expect(bike.cadenceMetric, isNotNull);
-    expect(bike.distanceMetric, isNotNull);
-    expect(bike.powerMetric, isNotNull);
-    expect(bike.caloriesMetric, isNotNull);
-    expect(bike.timeMetric, isNotNull);
-    expect(bike.caloriesPerHourMetric, isNotNull);
-    expect(bike.caloriesPerMinuteMetric, isNotNull);
-    expect(bike.strokeCountMetric, null);
-    expect(bike.heartRateByteIndex, null);
-    expect(bike.resistanceMetric, isNotNull);
-  });
+      expect(bike.speedMetric, isNotNull);
+      expect(bike.cadenceMetric, isNotNull);
+      expect(bike.distanceMetric, isNotNull);
+      expect(bike.powerMetric, isNotNull);
+      expect(bike.caloriesMetric, isNotNull);
+      expect(bike.timeMetric, isNotNull);
+      expect(bike.caloriesPerHourMetric, isNotNull);
+      expect(bike.caloriesPerMinuteMetric, isNotNull);
+      expect(bike.strokeCountMetric, null);
+      expect(bike.heartRateByteIndex, null);
+      expect(bike.resistanceMetric, isNotNull);
+    },
+  );
 
-  test('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags w Heart Rate properly',
-      () async {
-    final bike = LifeFitnessBikeDescriptor();
-    const lsb = 250;
-    const msb = 11;
-    const flag = maxUint8 * msb + lsb;
-    bike.initFlag();
-    bike.stopWorkout();
-    bike.processFlag(flag, 27);
+  test(
+    'Life Fitness Indoor Bike interprets FTMS Indoor Bike Data flags w Heart Rate properly',
+    () async {
+      final bike = LifeFitnessBikeDescriptor();
+      const lsb = 250;
+      const msb = 11;
+      const flag = maxUint8 * msb + lsb;
+      bike.initFlag();
+      bike.stopWorkout();
+      bike.processFlag(flag, 27);
 
-    expect(bike.speedMetric, isNotNull);
-    expect(bike.cadenceMetric, isNotNull);
-    expect(bike.distanceMetric, isNotNull);
-    expect(bike.powerMetric, isNotNull);
-    expect(bike.caloriesMetric, isNotNull);
-    expect(bike.timeMetric, isNotNull);
-    expect(bike.caloriesPerHourMetric, isNotNull);
-    expect(bike.caloriesPerMinuteMetric, isNotNull);
-    expect(bike.strokeCountMetric, null);
-    expect(bike.heartRateByteIndex, 24);
-    expect(bike.resistanceMetric, isNotNull);
-  });
+      expect(bike.speedMetric, isNotNull);
+      expect(bike.cadenceMetric, isNotNull);
+      expect(bike.distanceMetric, isNotNull);
+      expect(bike.powerMetric, isNotNull);
+      expect(bike.caloriesMetric, isNotNull);
+      expect(bike.timeMetric, isNotNull);
+      expect(bike.caloriesPerHourMetric, isNotNull);
+      expect(bike.caloriesPerMinuteMetric, isNotNull);
+      expect(bike.strokeCountMetric, null);
+      expect(bike.heartRateByteIndex, 24);
+      expect(bike.resistanceMetric, isNotNull);
+    },
+  );
 
   group('Life Fitness Indoor Bike interprets FTMS Indoor Bike Data properly', () {
     for (final testPair in [
@@ -284,7 +288,7 @@ void main() {
           62,
           0,
           59,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 314.0,

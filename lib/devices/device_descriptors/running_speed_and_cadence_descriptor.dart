@@ -29,14 +29,14 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
     super.tag,
     super.flagByteSize = 1,
   }) : super(
-          sport: ActivityType.run,
-          isMultiSport: false,
-          dataServiceId: runningCadenceServiceUuid,
-          dataCharacteristicId: runningCadenceMeasurementUuid,
-          controlCharacteristicId: "",
-          listenOnControl: false,
-          hasFeatureFlags: true,
-        );
+         sport: ActivityType.run,
+         isMultiSport: false,
+         dataServiceId: runningCadenceServiceUuid,
+         dataCharacteristicId: runningCadenceMeasurementUuid,
+         controlCharacteristicId: "",
+         listenOnControl: false,
+         hasFeatureFlags: true,
+       );
 
   @override
   bool isDataProcessable(List<int> data) {
@@ -83,19 +83,23 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
 
   @override
   List<ComplexSensor> getAdditionalSensors(
-      BluetoothDevice device, List<BluetoothService> services) {
+    BluetoothDevice device,
+    List<BluetoothService> services,
+  ) {
     List<ComplexSensor> additionalSensors = [];
     // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
-    final hrmService = services
-        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == heartRateServiceUuid);
+    final hrmService = services.firstWhereOrNull(
+      (service) => service.serviceUuid.uuidString() == heartRateServiceUuid,
+    );
     if (hrmService != null) {
       final additionalSensor = HeartRateMonitor(device);
       additionalSensor.services = services;
       additionalSensors.add(additionalSensor);
     }
 
-    final powerMeterService = services
-        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == cyclingPowerServiceUuid);
+    final powerMeterService = services.firstWhereOrNull(
+      (service) => service.serviceUuid.uuidString() == cyclingPowerServiceUuid,
+    );
     if (powerMeterService != null) {
       final additionalSensor = CyclingPowerMeterSensor(device);
       additionalSensor.services = services;
@@ -107,8 +111,12 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
 
   @override
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 
@@ -118,8 +126,9 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
       return;
     }
 
-    final requiredService =
-        services.firstWhereOrNull((service) => service.serviceUuid.uuidString() == dataServiceId);
+    final requiredService = services.firstWhereOrNull(
+      (service) => service.serviceUuid.uuidString() == dataServiceId,
+    );
     if (requiredService == null) {
       return;
     }
@@ -130,14 +139,14 @@ class RunningSpeedAndCadenceDescriptor extends DeviceDescriptor {
 
   @override
   RunningSpeedAndCadenceDescriptor clone() => RunningSpeedAndCadenceDescriptor(
-        fourCC: fourCC,
-        vendorName: vendorName,
-        modelName: modelName,
-        manufacturerNamePart: manufacturerNamePart,
-        manufacturerFitId: manufacturerFitId,
-        model: model,
-        deviceCategory: deviceCategory,
-      )..sensor = sensor;
+    fourCC: fourCC,
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+    deviceCategory: deviceCategory,
+  )..sensor = sensor;
 
   @override
   ComplexSensor? getSensor(BluetoothDevice device) {

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:tuple/tuple.dart';
+
 import '../preferences/enforced_time_zone.dart';
 
 Future<String> getTimeZone() async {
@@ -37,8 +38,12 @@ String getClosestTimeZone(String timeZoneName) {
 
   final timeOffset = timeZoneOffset(timeZoneName);
   return tz.timeZoneDatabase.locations.entries
-      .map((loc) => Tuple2<String, int>(
-          loc.key, (loc.value.currentTimeZone.offset ~/ 60000 - timeOffset).abs()))
+      .map(
+        (loc) => Tuple2<String, int>(
+          loc.key,
+          (loc.value.currentTimeZone.offset ~/ 60000 - timeOffset).abs(),
+        ),
+      )
       .sortedByCompare((loc) => loc.item2, (int o1, int o2) => o1.compareTo(o2))
       .first
       .item1;

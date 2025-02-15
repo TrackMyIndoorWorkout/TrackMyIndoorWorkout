@@ -45,10 +45,7 @@ mixin Upload {
       return 0;
     }
 
-    headers.addAll({
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    });
+    headers.addAll({"Accept": "application/json", "Content-Type": "application/json"});
 
     if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
       return await checkStatus(headers, activity);
@@ -58,7 +55,8 @@ mixin Upload {
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
-      body: '{"description": "${activity.getDescription(true)}", '
+      body:
+          '{"description": "${activity.getDescription(true)}", '
           '"comment": "${activity.getTitle(true)}"}',
     );
 
@@ -110,10 +108,7 @@ mixin Upload {
 
     final uploadBlobResponse = await http.put(
       putUri,
-      headers: {
-        "x-ms-blob-type": "BlockBlob",
-        "Content-Type": "application/vnd.ant.fit",
-      },
+      headers: {"x-ms-blob-type": "BlockBlob", "Content-Type": "application/vnd.ant.fit"},
       body: fileContent,
     );
 
@@ -128,20 +123,14 @@ mixin Upload {
     return uploadBlobResponse.statusCode;
   }
 
-  Future<int> checkStatus(
-    Map<String, String> headers,
-    Activity activity,
-  ) async {
+  Future<int> checkStatus(Map<String, String> headers, Activity activity) async {
     if (activity.suuntoWorkoutUrl.isNotEmpty) {
       return 200;
     }
 
     final statusUri = Uri.parse("$uploadsEndpoint/${activity.suuntoUploadIdentifier}");
 
-    final uploadStatusResponse = await http.get(
-      statusUri,
-      headers: headers,
-    );
+    final uploadStatusResponse = await http.get(statusUri, headers: headers);
 
     if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
       debugPrint('Error while getting upload status');

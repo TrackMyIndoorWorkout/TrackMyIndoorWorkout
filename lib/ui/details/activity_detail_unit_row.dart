@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+
 import '../../utils/theme_manager.dart';
 
 class ActivityDetailUnitRow extends StatelessWidget {
@@ -18,10 +19,7 @@ class ActivityDetailUnitRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const Spacer(),
-        Text(unitText, style: unitStyle),
-      ],
+      children: [const Spacer(), Text(unitText, style: unitStyle)],
     );
   }
 }

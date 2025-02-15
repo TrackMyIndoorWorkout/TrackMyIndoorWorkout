@@ -41,7 +41,7 @@ mixin Upload {
       "Accept-Encoding": "gzip",
       "Content-Type": "application/json",
       "Content-Encoding": "gzip",
-      "Content-Length": fileContent.length.toString()
+      "Content-Length": fileContent.length.toString(),
     });
 
     final uploadResponse = await http.post(

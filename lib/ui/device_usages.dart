@@ -39,8 +39,10 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _textStyle = Get.textTheme.headlineSmall!
-        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
+    _textStyle = Get.textTheme.headlineSmall!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(),
+    );
     _sizeDefault = _textStyle.fontSize!;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
   }
@@ -109,10 +111,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                   Get.close(1);
                 },
               ),
-              cancel: TextButton(
-                child: const Text("No"),
-                onPressed: () => Get.close(1),
-              ),
+              cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
             );
           },
         ),
@@ -131,12 +130,13 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.deviceUsages
-                .where()
-                .sortByTimeDesc()
-                .offset(page * limit)
-                .limit(limit)
-                .findAll();
+            final data =
+                await _database.deviceUsages
+                    .where()
+                    .sortByTimeDesc()
+                    .offset(page * limit)
+                    .limit(limit)
+                    .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -144,16 +144,11 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
           return Column(
             children: [
               Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: () => state.loadMore(), child: const Text('Retry')),
             ],
           );
         },
-        empty: const Center(
-          child: Text('No usages found'),
-        ),
+        empty: const Center(child: Text('No usages found')),
         itemBuilder: (context, _, item) {
           final deviceUsage = item as DeviceUsage;
           final dateString = DateFormat.yMd().format(deviceUsage.time);

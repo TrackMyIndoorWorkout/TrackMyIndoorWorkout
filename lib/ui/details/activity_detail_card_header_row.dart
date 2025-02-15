@@ -44,12 +44,7 @@ class ActivityDetailCardHeaderRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const Spacer(),
-          Text(
-            unitText,
-            textAlign: TextAlign.left,
-            maxLines: 2,
-            style: unitStyle,
-          ),
+          Text(unitText, textAlign: TextAlign.left, maxLines: 2, style: unitStyle),
         ],
       ),
     );

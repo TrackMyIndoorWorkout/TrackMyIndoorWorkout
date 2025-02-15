@@ -2,6 +2,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
+
 import '../../utils/constants.dart';
 import '../../utils/string_ex.dart';
 import 'device_leaderboard.dart';
@@ -33,32 +34,35 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
     return Scaffold(
       appBar: AppBar(title: const Text('Leaderboard Devices')),
       body: ListView.separated(
-          padding: const EdgeInsets.all(5.0),
-          itemBuilder: (context, index) => ElevatedButton(
-                onPressed: () =>
-                    Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
-                child: FitHorizontally(
-                  shrinkLimit: shrinkLimit,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(widget.devices[index].item1, style: _textStyle),
-                          Text(widget.devices[index].item2.shortAddressString(),
-                              style: _subTextStyle),
-                        ],
-                      ),
-                      Icon(Icons.chevron_right, size: _sizeDefault),
-                    ],
-                  ),
+        padding: const EdgeInsets.all(5.0),
+        itemBuilder:
+            (context, index) => ElevatedButton(
+              onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
+              child: FitHorizontally(
+                shrinkLimit: shrinkLimit,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.devices[index].item1, style: _textStyle),
+                        Text(
+                          widget.devices[index].item2.shortAddressString(),
+                          style: _subTextStyle,
+                        ),
+                      ],
+                    ),
+                    Icon(Icons.chevron_right, size: _sizeDefault),
+                  ],
                 ),
               ),
-          separatorBuilder: (context, index) => const SizedBox(width: 10, height: 10),
-          itemCount: widget.devices.length),
+            ),
+        separatorBuilder: (context, index) => const SizedBox(width: 10, height: 10),
+        itemCount: widget.devices.length,
+      ),
     );
   }
 }

@@ -16,7 +16,7 @@ class FitFileId extends FitDefinitionMessage {
   final int productTextLength;
 
   FitFileId(localMessageType, this.exportTarget, this.productTextLength)
-      : super(localMessageType, FitMessage.fileId) {
+    : super(localMessageType, FitMessage.fileId) {
     fields = [
       FitField(0, FitBaseTypes.enumType), // type (Activity)
       FitField(1, FitBaseTypes.uint16Type), // manufacturer
@@ -42,7 +42,8 @@ class FitFileId extends FitDefinitionMessage {
     data.output = [localMessageType];
     data.addByte(FitFileType.activity);
     data.addShort(
-        exportTarget == ExportTarget.suunto ? suuntoFitId : model.descriptor.manufacturerFitId);
+      exportTarget == ExportTarget.suunto ? suuntoFitId : model.descriptor.manufacturerFitId,
+    );
     if (exportTarget == ExportTarget.suunto) {
       data.addShort(FitProductEnum.suunto7);
     }

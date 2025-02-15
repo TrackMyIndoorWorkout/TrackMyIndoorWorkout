@@ -84,16 +84,9 @@ const waterSports = [
   ActivityType.swim,
 ];
 
-const paddleSports = [
-  ActivityType.kayaking,
-  ActivityType.canoeing,
-];
+const paddleSports = [ActivityType.kayaking, ActivityType.canoeing];
 
-const c2Sports = [
-  ActivityType.rowing,
-  ActivityType.nordicSki,
-  ActivityType.ride,
-];
+const c2Sports = [ActivityType.rowing, ActivityType.nordicSki, ActivityType.ride];
 
 const allSports = [
   ActivityType.ride,

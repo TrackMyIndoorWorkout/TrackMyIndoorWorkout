@@ -19,11 +19,7 @@ import 'suunto_token.dart';
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
 
-  Future<void> registerToken(
-    String? token,
-    String? refreshToken,
-    int? expire,
-  ) async {
+  Future<void> registerToken(String? token, String? refreshToken, int? expire) async {
     if (Get.isRegistered<SuuntoToken>()) {
       var stravaToken = Get.find<SuuntoToken>();
       // Save also in Get
@@ -33,22 +29,14 @@ mixin Auth {
     } else {
       await Get.delete<SuuntoToken>(force: true);
       Get.put<SuuntoToken>(
-        SuuntoToken(
-          accessToken: token,
-          refreshToken: refreshToken,
-          expiresAt: expire,
-        ),
+        SuuntoToken(accessToken: token, refreshToken: refreshToken, expiresAt: expire),
         permanent: true,
       );
     }
   }
 
   /// Save the token and the expiry date
-  Future<void> _saveToken(
-    String? token,
-    String? refreshToken,
-    int? expire,
-  ) async {
+  Future<void> _saveToken(String? token, String? refreshToken, int? expire) async {
     final prefService = Get.find<BasePrefService>();
     await prefService.set<String>(suuntoAccessTokenTag, token ?? '');
     await prefService.set<String>(suuntoRefreshTokenTag, refreshToken ?? '');
@@ -83,10 +71,12 @@ mixin Auth {
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt!);
-      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
+      final details =
+          '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
       debugPrint(
-          'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $details');
+        'stored token ${localToken.accessToken} ${localToken.expiresAt} expires: $details',
+      );
     }
 
     return localToken;
@@ -111,33 +101,36 @@ mixin Auth {
     debugPrint('Running on iOS or Android');
 
     // Attach a listener to the stream
-    sub = AppLinks().uriLinkStream.listen((Uri? uri) {
-      if (uri == null) {
-        debugPrint('Subscription was null');
-        sub?.cancel();
-      } else {
-        // Parse the link and warn the user, if it is not correct
-        debugPrint('Got a link!! $uri');
-        if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
-          debugPrint('This is not the good scheme ${uri.scheme}');
+    sub = AppLinks().uriLinkStream.listen(
+      (Uri? uri) {
+        if (uri == null) {
+          debugPrint('Subscription was null');
+          sub?.cancel();
+        } else {
+          // Parse the link and warn the user, if it is not correct
+          debugPrint('Got a link!! $uri');
+          if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
+            debugPrint('This is not the good scheme ${uri.scheme}');
+          }
+          final code = uri.queryParameters["code"] ?? notAvailable;
+          final error = uri.queryParameters["error"];
+
+          debugPrint('code $code, error $error');
+
+          closeInAppWebView();
+          onCodeReceived.add(code);
+
+          debugPrint('Got the new code: $code');
+
+          sub?.cancel();
         }
-        final code = uri.queryParameters["code"] ?? notAvailable;
-        final error = uri.queryParameters["error"];
-
-        debugPrint('code $code, error $error');
-
-        closeInAppWebView();
-        onCodeReceived.add(code);
-
-        debugPrint('Got the new code: $code');
-
+      },
+      onError: (err) {
+        // Handle exception by warning the user their action did not succeed
+        debugPrint('Found an error $err');
         sub?.cancel();
-      }
-    }, onError: (err) {
-      // Handle exception by warning the user their action did not succeed
-      debugPrint('Found an error $err');
-      sub?.cancel();
-    });
+      },
+    );
   }
 
   Future<bool> hasValidToken() async {
@@ -167,8 +160,10 @@ mixin Auth {
 
     bool storedBefore = token != null && token.isNotEmpty && token != "null";
     if (storedBefore) {
-      debugPrint('token has been stored before! '
-          '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
+      debugPrint(
+        'token has been stored before! '
+        '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}',
+      );
     }
 
     // Use the refresh token to get a new access token
@@ -199,8 +194,10 @@ mixin Auth {
       debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientId, secret);
     } else {
-      debugPrint('token has been stored before! '
-          '${tokenStored.accessToken} exp. ${tokenStored.expiresAt}');
+      debugPrint(
+        'token has been stored before! '
+        '${tokenStored.accessToken} exp. ${tokenStored.expiresAt}',
+      );
       isAuthOk = true;
     }
 
@@ -248,10 +245,7 @@ mixin Auth {
     debugPrint('urlRefresh $tokenRefreshUrl ${suuntoToken.refreshToken}');
 
     final headers = getBasicAuthorizationHeader(clientId, secret);
-    final refreshResponse = await http.post(
-      Uri.parse(tokenRefreshUrl),
-      headers: headers,
-    );
+    final refreshResponse = await http.post(Uri.parse(tokenRefreshUrl), headers: headers);
 
     debugPrint('body ${refreshResponse.body}');
     if (refreshResponse.statusCode >= 200 && refreshResponse.statusCode < 300) {
@@ -277,11 +271,7 @@ mixin Auth {
     return {"Authorization": "Basic $base64String"};
   }
 
-  Future<SuuntoToken> _getSuuntoToken(
-    String clientId,
-    String secret,
-    String code,
-  ) async {
+  Future<SuuntoToken> _getSuuntoToken(String clientId, String secret, String code) async {
     var answer = SuuntoToken();
 
     debugPrint('Entering getSuuntoToken!!');
@@ -294,11 +284,7 @@ mixin Auth {
     final tokenResponse = await http.post(
       Uri.parse(tokenRequestUrl),
       headers: headers,
-      body: {
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": redirectUrl,
-      },
+      body: {"grant_type": "authorization_code", "code": code, "redirect_uri": redirectUrl},
     );
 
     debugPrint('body ${tokenResponse.body}');
@@ -325,8 +311,10 @@ mixin Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(SuuntoToken token) {
-    debugPrint(' current time in ms ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
-        ' exp. time: ${token.expiresAt}');
+    debugPrint(
+      ' current time in ms ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
+      ' exp. time: ${token.expiresAt}',
+    );
 
     // when it is the first run or after a deAuthorize
     if (token.expiresAt == null) {

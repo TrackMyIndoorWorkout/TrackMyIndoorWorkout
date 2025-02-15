@@ -116,11 +116,12 @@ void main() {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint16 ~/ 2, rnd).forEach((short) {
       final complemented = maxUint16 - short;
-      final expected = short != 0
-          ? (short != 1
-              ? [complemented % maxUint8, complemented ~/ maxUint8]
-              : [maxByte - 1, maxByte])
-          : [0, 0];
+      final expected =
+          short != 0
+              ? (short != 1
+                  ? [complemented % maxUint8, complemented ~/ maxUint8]
+                  : [maxByte - 1, maxByte])
+              : [0, 0];
       test('-$short -> $expected', () async {
         final subject = TestSubject();
 
@@ -157,7 +158,7 @@ void main() {
         expectedLong % maxUint8,
         expectedLong ~/ maxUint8 % maxUint8,
         expectedLong ~/ maxUint16 % maxUint8,
-        expectedLong ~/ maxUint24
+        expectedLong ~/ maxUint24,
       ];
       test('$long /$expectedLong/ -> $expected', () async {
         final subject = TestSubject();
@@ -179,7 +180,7 @@ void main() {
         limited % maxUint8,
         limited ~/ maxUint8 % maxUint8,
         limited ~/ maxUint16 % maxUint8,
-        limited ~/ maxUint24
+        limited ~/ maxUint24,
       ];
       final overflown = long + maxUint32;
       test('$overflown -> $expected', () async {
@@ -196,16 +197,17 @@ void main() {
     final rnd = Random();
     getRandomInts(smallRepetition, maxUint32 ~/ 2, rnd).forEach((long) {
       final comp = maxUint32 - long;
-      final expected = long != 0
-          ? (long != 1
-              ? [
-                  comp % maxUint8,
-                  comp ~/ maxUint8 % maxUint8,
-                  comp ~/ maxUint16 % maxUint8,
-                  comp ~/ maxUint24
-                ]
-              : [maxByte - 1, maxByte, maxByte, maxByte])
-          : [0, 0, 0, 0];
+      final expected =
+          long != 0
+              ? (long != 1
+                  ? [
+                    comp % maxUint8,
+                    comp ~/ maxUint8 % maxUint8,
+                    comp ~/ maxUint16 % maxUint8,
+                    comp ~/ maxUint24,
+                  ]
+                  : [maxByte - 1, maxByte, maxByte, maxByte])
+              : [0, 0, 0, 0];
       test('-$long -> $expected', () async {
         final subject = TestSubject();
 

@@ -38,11 +38,6 @@ class UnderArmourService implements UploadService {
       true,
       ExportTarget.regular,
     );
-    return await _underArmour.uploadActivity(
-      activity,
-      fileGzip,
-      exporter,
-      _underArmour.clientId,
-    );
+    return await _underArmour.uploadActivity(activity, fileGzip, exporter, _underArmour.clientId);
   }
 }

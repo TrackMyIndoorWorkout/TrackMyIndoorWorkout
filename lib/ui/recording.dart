@@ -67,7 +67,6 @@ import '../track/constants.dart';
 import '../track/track_descriptor.dart';
 import '../track/track_painter.dart';
 import '../utils/bluetooth.dart';
-import '../utils/color_ex.dart';
 import '../utils/constants.dart';
 import '../utils/display.dart';
 import '../utils/logging.dart';
@@ -93,12 +92,7 @@ import 'parts/upload_portal_picker.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
-enum TargetHrState {
-  off,
-  under,
-  inRange,
-  over,
-}
+enum TargetHrState { off, under, inRange, over }
 
 class RecordingScreen extends StatefulWidget {
   final BluetoothDevice device;
@@ -181,10 +175,7 @@ class RecordingState extends State<RecordingScreen> {
   Color _chartTextColor = Colors.black;
   Color _chartAvgColor = Colors.orange;
   Color _chartMaxColor = Colors.red;
-  TextStyle _chartLabelStyle = const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11,
-  );
+  TextStyle _chartLabelStyle = const TextStyle(fontFamily: fontFamily, fontSize: 11);
   TextStyle _markerStyle = const TextStyle();
   TextStyle _markerStyleSmall = const TextStyle();
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(
@@ -324,10 +315,7 @@ class RecordingState extends State<RecordingScreen> {
 
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
-        confirm: TextButton(
-          child: const Text("Ok"),
-          onPressed: () => Get.close(1),
-        ),
+        confirm: TextButton(child: const Text("Ok"), onPressed: () => Get.close(1)),
       );
     }
   }
@@ -597,17 +585,18 @@ class RecordingState extends State<RecordingScreen> {
       _averageSpeeds.clear();
       _averageSpeedSum = 0.0;
       if (_leaderboardFeature) {
-        _leaderboard = _rankingForSportOrDevice
-            ? await _database.workoutSummarys
-                .filter()
-                .sportEqualTo(widget.descriptor.sport)
-                .sortBySpeedDesc()
-                .findAll()
-            : await _database.workoutSummarys
-                .filter()
-                .deviceIdEqualTo(widget.device.remoteId.str)
-                .sortBySpeedDesc()
-                .findAll();
+        _leaderboard =
+            _rankingForSportOrDevice
+                ? await _database.workoutSummarys
+                    .filter()
+                    .sportEqualTo(widget.descriptor.sport)
+                    .sortBySpeedDesc()
+                    .findAll()
+                : await _database.workoutSummarys
+                    .filter()
+                    .deviceIdEqualTo(widget.device.remoteId.str)
+                    .sortBySpeedDesc()
+                    .findAll();
 
         if (_showPacer && _pacerWorkout != null) {
           int insertionPoint = 0;
@@ -772,14 +761,8 @@ class RecordingState extends State<RecordingScreen> {
     _busy = false;
     _themeManager = Get.find<ThemeManager>();
     _isLight = !_themeManager.isDark();
-    _unitStyle = TextStyle(
-      fontFamily: fontFamily,
-      color: _themeManager.getBlueColor(),
-    );
-    _fullUnitStyle = TextStyle(
-      fontFamily: fontFamily,
-      color: _themeManager.getBlueColor(),
-    );
+    _unitStyle = TextStyle(fontFamily: fontFamily, color: _themeManager.getBlueColor());
+    _fullUnitStyle = TextStyle(fontFamily: fontFamily, color: _themeManager.getBlueColor());
     final prefService = Get.find<BasePrefService>();
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     final sinkAddressString =
@@ -792,10 +775,14 @@ class RecordingState extends State<RecordingScreen> {
     if (sizeAdjustInt != 100) {
       _sizeAdjust = sizeAdjustInt / 100.0;
     }
-    _markerStyle =
-        _themeManager.boldStyle(Get.textTheme.bodyLarge!, fontSizeFactor: _markerStyleSizeAdjust);
-    _markerStyleSmall = _themeManager.boldStyle(Get.textTheme.bodyLarge!,
-        fontSizeFactor: _markerStyleSmallSizeAdjust);
+    _markerStyle = _themeManager.boldStyle(
+      Get.textTheme.bodyLarge!,
+      fontSizeFactor: _markerStyleSizeAdjust,
+    );
+    _markerStyleSmall = _themeManager.boldStyle(
+      Get.textTheme.bodyLarge!,
+      fontSizeFactor: _markerStyleSmallSizeAdjust,
+    );
     prefService.set<String>(
       lastEquipmentIdTagPrefix + SportSpec.sport2Sport(widget.sport),
       widget.device.remoteId.str,
@@ -830,26 +817,35 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
     final now = DateTime.now();
     if (!_simplerUi) {
-      _graphData = ListQueue.from(List<DisplayRecord>.generate(
+      _graphData = ListQueue.from(
+        List<DisplayRecord>.generate(
           _pointCount,
           (i) =>
-              DisplayRecord.blank(widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+              DisplayRecord.blank(widget.sport, now.subtract(Duration(seconds: _pointCount - i))),
+        ),
+      );
       graphData = _graphData.toList(growable: false);
       if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
           _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-        _graphAvgData = ListQueue.from(List<DisplayRecord>.generate(
+        _graphAvgData = ListQueue.from(
+          List<DisplayRecord>.generate(
             _pointCount,
-            (i) => DisplayRecord.blank(
-                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+            (i) =>
+                DisplayRecord.blank(widget.sport, now.subtract(Duration(seconds: _pointCount - i))),
+          ),
+        );
         graphAvgData = _graphAvgData.toList(growable: false);
       }
 
       if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
           _onStageStatisticsType == onStageStatisticsTypeAlternating) {
-        _graphMaxData = ListQueue.from(List<DisplayRecord>.generate(
+        _graphMaxData = ListQueue.from(
+          List<DisplayRecord>.generate(
             _pointCount,
-            (i) => DisplayRecord.blank(
-                widget.sport, now.subtract(Duration(seconds: _pointCount - i)))));
+            (i) =>
+                DisplayRecord.blank(widget.sport, now.subtract(Duration(seconds: _pointCount - i))),
+          ),
+        );
         graphMaxData = _graphMaxData.toList(growable: false);
       }
     }
@@ -887,7 +883,8 @@ class RecordingState extends State<RecordingScreen> {
     _targetHrAlerting = false;
     _targetHrAudio = prefService.get<bool>(targetHeartRateAudioTag) ?? targetHeartRateAudioDefault;
     if (_targetHrMode != targetHeartRateModeNone && _targetHrAudio) {
-      _hrBeepPeriod = prefService.get<int>(targetHeartRateAudioPeriodIntTag) ??
+      _hrBeepPeriod =
+          prefService.get<int>(targetHeartRateAudioPeriodIntTag) ??
           targetHeartRateAudioPeriodDefault;
     }
 
@@ -898,7 +895,8 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    _hrBasedCalorieCounting = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+    _hrBasedCalorieCounting =
+        prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
         useHeartRateBasedCalorieCountingDefault;
     _showResistanceLevel =
         prefService.get<bool>(showResistanceLevelTag) ?? showResistanceLevelDefault;
@@ -910,7 +908,7 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
     _onStageStatisticsAlternationDuration =
         prefService.get<int>(onStageStatisticsAlternationPeriodTag) ??
-            onStageStatisticsAlternationPeriodDefault;
+        onStageStatisticsAlternationPeriodDefault;
 
     _metricToDataFn = {
       "power": _powerChartData,
@@ -932,12 +930,7 @@ class RecordingState extends State<RecordingScreen> {
       iconColor: _themeManager.getProtagonistColor(),
     );
     _rowConfig = [
-      RowConfiguration(
-        title: "Calories",
-        icon: Icons.whatshot,
-        unit: 'cal',
-        expandable: false,
-      ),
+      RowConfiguration(title: "Calories", icon: Icons.whatshot, unit: 'cal', expandable: false),
       RowConfiguration(
         title: _preferencesSpecs[_powerNIndex].title,
         icon: _preferencesSpecs[_powerNIndex].icon,
@@ -1027,10 +1020,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _optionalValues = [
-      emptyMeasurement,
-      emptyMeasurement,
-    ];
+    _optionalValues = [emptyMeasurement, emptyMeasurement];
 
     _statistics = [
       emptyMeasurement,
@@ -1041,9 +1031,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _optionalStatistics = [
-      emptyMeasurement,
-    ];
+    _optionalStatistics = [emptyMeasurement];
 
     _workoutStats = StatisticsAccumulator(
       si: _si,
@@ -1171,11 +1159,7 @@ class RecordingState extends State<RecordingScreen> {
       SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: Center(
-                child: UploadPortalPickerBottomSheet(activity: _activity!),
-              ),
-            ),
+            Expanded(child: Center(child: UploadPortalPickerBottomSheet(activity: _activity!))),
           ],
         ),
       ),
@@ -1189,8 +1173,11 @@ class RecordingState extends State<RecordingScreen> {
     if (_activity?.id == null || !_instantExport) return;
 
     if (_instantExportLocation.isEmpty) {
-      _instantExportLocation =
-          await pickDirectory(context, instantExportLocationPickerTitle, _instantExportLocation);
+      _instantExportLocation = await pickDirectory(
+        context,
+        instantExportLocationPickerTitle,
+        _instantExportLocation,
+      );
       if (_instantExportLocation.isEmpty) {
         return;
       }
@@ -1229,7 +1216,13 @@ class RecordingState extends State<RecordingScreen> {
       }
     } on Exception catch (e, stack) {
       Logging().logException(
-          _logLevel, tag, "_stopMeasurement", "_fitnessEquipment.stopWorkout()", e, stack);
+        _logLevel,
+        tag,
+        "_stopMeasurement",
+        "_fitnessEquipment.stopWorkout()",
+        e,
+        stack,
+      );
     }
 
     final last = _fitnessEquipment?.lastRecord;
@@ -1243,8 +1236,9 @@ class RecordingState extends State<RecordingScreen> {
 
     if (!_uxDebug) {
       if (_leaderboardFeature && (last?.distance ?? 0.0) > displayEps) {
-        final workoutSummary =
-            _activity!.getWorkoutSummary(_fitnessEquipment?.manufacturerName ?? "Unknown");
+        final workoutSummary = _activity!.getWorkoutSummary(
+          _fitnessEquipment?.manufacturerName ?? "Unknown",
+        );
         _database.writeTxnSync(() {
           _database.workoutSummarys.putSync(workoutSummary);
         });
@@ -1594,15 +1588,27 @@ class RecordingState extends State<RecordingScreen> {
 
     if (background) {
       return _paletteSpec?.bgColorByBin(
-              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+            _zoneIndexes[metricIndex]!,
+            _isLight,
+            _preferencesSpecs[metricIndex],
+          ) ??
           PaletteSpec.bgColorByBinDefault(
-              _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
+            _zoneIndexes[metricIndex]!,
+            _isLight,
+            _preferencesSpecs[metricIndex],
+          );
     }
 
     return _paletteSpec?.fgColorByBin(
-            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]) ??
+          _zoneIndexes[metricIndex]!,
+          _isLight,
+          _preferencesSpecs[metricIndex],
+        ) ??
         PaletteSpec.fgColorByBinDefault(
-            _zoneIndexes[metricIndex]!, _isLight, _preferencesSpecs[metricIndex]);
+          _zoneIndexes[metricIndex]!,
+          _isLight,
+          _preferencesSpecs[metricIndex],
+        );
   }
 
   Tuple2<int, double> _getRank(List<WorkoutSummary> leaderboard) {
@@ -1617,8 +1623,9 @@ class RecordingState extends State<RecordingScreen> {
       // #236 smooth signal of average speeds by average over a rolling window
       averageSpeed = _distance / _elapsed * DeviceDescriptor.ms2kmh;
       if (_averageSpeeds.isEmpty) {
-        _averageSpeeds.addAll(
-            [for (var i = 0; i < averageSpeedSmoothingWindowSizeDefault; ++i) averageSpeed]);
+        _averageSpeeds.addAll([
+          for (var i = 0; i < averageSpeedSmoothingWindowSizeDefault; ++i) averageSpeed,
+        ]);
         _averageSpeedSum = averageSpeed * averageSpeedSmoothingWindowSizeDefault;
       } else {
         _averageSpeeds.add(averageSpeed);
@@ -1706,7 +1713,8 @@ class RecordingState extends State<RecordingScreen> {
         return measurementStyle.apply();
       } else {
         return measurementStyle.apply(
-            color: _getZoneColor(metricIndex: _hrNIndex, background: false));
+          color: _getZoneColor(metricIndex: _hrNIndex, background: false),
+        );
       }
     }
 
@@ -1758,12 +1766,14 @@ class RecordingState extends State<RecordingScreen> {
     final position = _trackCalculator?.trackMarker(distance);
     final isPacer = workoutSummary.isPacer;
     if (position != null) {
-      markers.add(_getTrackMarker(
-        position,
-        isPacer ? pacerColor : markerColor,
-        isPacer ? pacerText : "$rank",
-        false,
-      ));
+      markers.add(
+        _getTrackMarker(
+          position,
+          isPacer ? pacerColor : markerColor,
+          isPacer ? pacerText : "$rank",
+          false,
+        ),
+      );
     }
 
     return isPacer;
@@ -1780,29 +1790,45 @@ class RecordingState extends State<RecordingScreen> {
       final length = leaderboard.length;
       // Preceding dot ahead of the preceding (if any)
       if (rank > 2 && rank - 3 < length) {
-        final isPacer =
-            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 3], rank - 2, markers);
+        final isPacer = _addLeaderboardTrackMarker(
+          0xFF00FF00,
+          leaderboard[rank - 3],
+          rank - 2,
+          markers,
+        );
         wasPacer |= isPacer;
       }
 
       // Preceding dot (chasing directly) if any
       if (rank > 1 && rank - 2 < length) {
-        final isPacer =
-            _addLeaderboardTrackMarker(0xFF00FF00, leaderboard[rank - 2], rank - 1, markers);
+        final isPacer = _addLeaderboardTrackMarker(
+          0xFF00FF00,
+          leaderboard[rank - 2],
+          rank - 1,
+          markers,
+        );
         wasPacer |= isPacer;
       }
 
       // Following dot (following directly) if any
       if (rank - 1 < length) {
-        final isPacer =
-            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank - 1], rank + 1, markers);
+        final isPacer = _addLeaderboardTrackMarker(
+          0xFF0000FF,
+          leaderboard[rank - 1],
+          rank + 1,
+          markers,
+        );
         wasPacer |= isPacer;
       }
 
       // Following dot after the follower (if any)
       if (rank < length) {
-        final isPacer =
-            _addLeaderboardTrackMarker(0xFF0000FF, leaderboard[rank], rank + 2, markers);
+        final isPacer = _addLeaderboardTrackMarker(
+          0xFF0000FF,
+          leaderboard[rank],
+          rank + 2,
+          markers,
+        );
         wasPacer |= isPacer;
       }
     }
@@ -1907,11 +1933,13 @@ class RecordingState extends State<RecordingScreen> {
       }
 
       final distance = leaderboard[rank - 3].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack
-          ? leaderboard[rank - 3].speedString(_si, widget.descriptor.slowPace)
-          : "";
+      final speed =
+          _avgSpeedOnTrack
+              ? leaderboard[rank - 3].speedString(_si, widget.descriptor.slowPace)
+              : "";
       cells.addAll(
-          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 2, distance, speed, true));
+        isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 2, distance, speed, true),
+      );
       rowCount++;
       wasPacer |= isPacer;
     }
@@ -1920,11 +1948,13 @@ class RecordingState extends State<RecordingScreen> {
     if (rank > 1 && rank - 2 < length) {
       final isPacer = leaderboard[rank - 2].isPacer;
       final distance = leaderboard[rank - 2].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack
-          ? leaderboard[rank - 2].speedString(_si, widget.descriptor.slowPace)
-          : "";
+      final speed =
+          _avgSpeedOnTrack
+              ? leaderboard[rank - 2].speedString(_si, widget.descriptor.slowPace)
+              : "";
       cells.addAll(
-          isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 1, distance, speed, true));
+        isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank - 1, distance, speed, true),
+      );
       rowCount++;
       wasPacer |= isPacer;
     }
@@ -1939,7 +1969,11 @@ class RecordingState extends State<RecordingScreen> {
     cells.add(_getLeaderboardInfoTextCell(rankString[1], lead));
     if (_avgSpeedOnTrack) {
       final avgSpeedString = WorkoutSummary.speedStringStatic(
-          _si, _selfAvgSpeed, widget.descriptor.slowPace, widget.sport);
+        _si,
+        _selfAvgSpeed,
+        widget.descriptor.slowPace,
+        widget.sport,
+      );
       cells.add(_getLeaderboardInfoTextCell(avgSpeedString, lead));
     }
 
@@ -1949,12 +1983,13 @@ class RecordingState extends State<RecordingScreen> {
     if (rank - 1 < length) {
       final isPacer = leaderboard[rank - 1].isPacer;
       final distance = leaderboard[rank - 1].distanceAtTime(_elapsed);
-      final speed = _avgSpeedOnTrack
-          ? leaderboard[rank - 1].speedString(_si, widget.descriptor.slowPace)
-          : "";
-      cells.addAll(isPacer
-          ? _getPacerInfoText()
-          : _getLeaderboardInfoText(rank + 1, distance, speed, false));
+      final speed =
+          _avgSpeedOnTrack
+              ? leaderboard[rank - 1].speedString(_si, widget.descriptor.slowPace)
+              : "";
+      cells.addAll(
+        isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank + 1, distance, speed, false),
+      );
       rowCount++;
       wasPacer |= isPacer;
     }
@@ -1965,9 +2000,9 @@ class RecordingState extends State<RecordingScreen> {
       final distance = leaderboard[rank].distanceAtTime(_elapsed);
       final speed =
           _avgSpeedOnTrack ? leaderboard[rank].speedString(_si, widget.descriptor.slowPace) : "";
-      cells.addAll(isPacer
-          ? _getPacerInfoText()
-          : _getLeaderboardInfoText(rank + 2, distance, speed, false));
+      cells.addAll(
+        isPacer ? _getPacerInfoText() : _getLeaderboardInfoText(rank + 2, distance, speed, false),
+      );
       rowCount++;
       wasPacer |= isPacer;
     }
@@ -1978,7 +2013,8 @@ class RecordingState extends State<RecordingScreen> {
       wasPacer = true;
     }
 
-    final innerWidth = _trackCalculator!.trackSize!.width -
+    final innerWidth =
+        _trackCalculator!.trackSize!.width -
         2 * (_trackCalculator!.trackOffset!.dx + _trackCalculator!.trackRadius!);
     const cellHeight = (thick * _markerStyleSmallSizeAdjust / _markerStyleSizeAdjust) * 2;
     final innerHeight = (cellHeight + 1) * rowCount;
@@ -2096,21 +2132,12 @@ class RecordingState extends State<RecordingScreen> {
     if (_mediaSizeMin < eps || (_mediaSizeMin - mediaSizeMin).abs() > eps) {
       _mediaSizeMin = mediaSizeMin;
       _sizeDefault = mediaSizeMin / 8 * _sizeAdjust;
-      _measurementStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: _sizeDefault * 0.75,
-      );
+      _measurementStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault * 0.75);
       _halfWidthNonExpandable = (_mediaSizeMin - max(_sizeDefault / 2, _sizeDefault)) / 2;
       _halfWidthExpandable =
           (_mediaSizeMin - max(_sizeDefault / 2, _sizeDefault * 0.65) - 48.0) / 2;
-      _fullMeasurementStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: _sizeDefault,
-      );
-      _timeStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: _sizeDefault / 1.8,
-      );
+      _fullMeasurementStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault);
+      _timeStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault / 1.8);
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 6);
       _fullUnitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
@@ -2137,17 +2164,20 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    final movingTimeDisplay = _onStageStatisticsType != onStageStatisticsTypeNone
-        ? Duration(seconds: _movingTime ~/ 1000).toDisplay()
-        : "";
-    final elapsedTimeDisplay = _onStageStatisticsType != onStageStatisticsTypeNone
-        ? Duration(seconds: _elapsed).toDisplay()
-        : "";
-    final timeDisplay = _onStageStatisticsType == onStageStatisticsTypeNone
-        ? Duration(
-                seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed)
-            .toDisplay()
-        : "";
+    final movingTimeDisplay =
+        _onStageStatisticsType != onStageStatisticsTypeNone
+            ? Duration(seconds: _movingTime ~/ 1000).toDisplay()
+            : "";
+    final elapsedTimeDisplay =
+        _onStageStatisticsType != onStageStatisticsTypeNone
+            ? Duration(seconds: _elapsed).toDisplay()
+            : "";
+    final timeDisplay =
+        _onStageStatisticsType == onStageStatisticsTypeNone
+            ? Duration(
+              seconds: _timeDisplayMode == timeDisplayModeMoving ? _movingTime ~/ 1000 : _elapsed,
+            ).toDisplay()
+            : "";
 
     final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
     var timeStyle =
@@ -2159,42 +2189,45 @@ class RecordingState extends State<RecordingScreen> {
       timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
     }
 
-    var timeIcon = (_timeDisplayMode == timeDisplayModeHIITMoving &&
-            [WorkoutState.startedMoving, WorkoutState.moving].contains(workoutState))
-        ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
-        : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
+    var timeIcon =
+        (_timeDisplayMode == timeDisplayModeHIITMoving &&
+                [WorkoutState.startedMoving, WorkoutState.moving].contains(workoutState))
+            ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
+            : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
 
-    final timeHeaderRow = _onStageStatisticsType != onStageStatisticsTypeNone
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Spacer(),
-              Text("moving", style: _unitStyle),
-              const Spacer(),
-              Text("elapsed", style: _unitStyle),
-              const Spacer(),
-            ],
-          )
-        : Container();
+    final timeHeaderRow =
+        _onStageStatisticsType != onStageStatisticsTypeNone
+            ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Spacer(),
+                Text("moving", style: _unitStyle),
+                const Spacer(),
+                Text("elapsed", style: _unitStyle),
+                const Spacer(),
+              ],
+            )
+            : Container();
 
     List<Widget> rows = [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: _onStageStatisticsType != onStageStatisticsTypeNone
-            ? [
-                const Spacer(),
-                Text(movingTimeDisplay, style: timeStyle),
-                timeIcon,
-                const Spacer(),
-                Text(elapsedTimeDisplay, style: timeStyle),
-              ]
-            : [
-                timeIcon,
-                Text(timeDisplay, style: timeStyle),
-                SizedBox(width: _sizeDefault / 4),
-              ],
+        children:
+            _onStageStatisticsType != onStageStatisticsTypeNone
+                ? [
+                  const Spacer(),
+                  Text(movingTimeDisplay, style: timeStyle),
+                  timeIcon,
+                  const Spacer(),
+                  Text(elapsedTimeDisplay, style: timeStyle),
+                ]
+                : [
+                  timeIcon,
+                  Text(timeDisplay, style: timeStyle),
+                  SizedBox(width: _sizeDefault / 4),
+                ],
       ),
     ];
 
@@ -2208,8 +2241,9 @@ class RecordingState extends State<RecordingScreen> {
       if (entry.key == _speed0Index &&
           !_stationaryWorkout &&
           (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
-        speedTextStyle =
-            measurementStyle.apply(color: _getSpeedColor(_selfRank, background: false));
+        speedTextStyle = measurementStyle.apply(
+          color: _getSpeedColor(_selfRank, background: false),
+        );
         measurementStyle = speedTextStyle;
       }
 
@@ -2221,7 +2255,8 @@ class RecordingState extends State<RecordingScreen> {
       if ((entry.key == _power0Index && !_stationaryWorkout || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = measurementStyle.apply(
-            color: _getZoneColor(metricIndex: entry.key - 1, background: false));
+          color: _getZoneColor(metricIndex: entry.key - 1, background: false),
+        );
       }
 
       final List<Widget> rowChildren = [];
@@ -2235,13 +2270,7 @@ class RecordingState extends State<RecordingScreen> {
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
-            child: Center(
-              child: Text(
-                entry.value.unit,
-                maxLines: 2,
-                style: _fullUnitStyle,
-              ),
-            ),
+            child: Center(child: Text(entry.value.unit, maxLines: 2, style: _fullUnitStyle)),
           ),
         ]);
       } else {
@@ -2251,9 +2280,7 @@ class RecordingState extends State<RecordingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(_values[entry.key], style: measurementStyle),
-              ],
+              children: [Text(_values[entry.key], style: measurementStyle)],
             ),
           ),
           Column(
@@ -2261,13 +2288,7 @@ class RecordingState extends State<RecordingScreen> {
               _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
               SizedBox(
                 width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
-                child: Center(
-                  child: Text(
-                    entry.value.unit,
-                    maxLines: 2,
-                    style: _unitStyle,
-                  ),
-                ),
+                child: Center(child: Text(entry.value.unit, maxLines: 2, style: _unitStyle)),
               ),
             ],
           ),
@@ -2276,28 +2297,31 @@ class RecordingState extends State<RecordingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(_statistics[entry.key], style: measurementStyle),
-              ],
+              children: [Text(_statistics[entry.key], style: measurementStyle)],
             ),
           ),
         ]);
       }
 
-      rows.add(Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: rowChildren,
-      ));
+      rows.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: rowChildren,
+        ),
+      );
     }
 
-    final statString = ([onStageStatisticsTypeAverage, onStageStatisticsTypeNone]
-                .contains(_onStageStatisticsType) ||
-            _onStageStatisticsType == onStageStatisticsTypeAlternating &&
-                _elapsed % (_onStageStatisticsAlternationDuration * 2) <
-                    _onStageStatisticsAlternationDuration)
-        ? "average"
-        : "maximum";
+    final statString =
+        ([
+                  onStageStatisticsTypeAverage,
+                  onStageStatisticsTypeNone,
+                ].contains(_onStageStatisticsType) ||
+                _onStageStatisticsType == onStageStatisticsTypeAlternating &&
+                    _elapsed % (_onStageStatisticsAlternationDuration * 2) <
+                        _onStageStatisticsAlternationDuration)
+            ? "average"
+            : "maximum";
     final statHeaderRow = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -2337,10 +2361,10 @@ class RecordingState extends State<RecordingScreen> {
               ),
               margin: const EdgeInsets.all(0),
               series: _resistanceChartData(),
-              onChartTouchInteractionDown: (arg) =>
-                  _onChartTouchInteractionDown(_resistanceIndex, arg.position, true),
-              onChartTouchInteractionUp: (arg) =>
-                  _onChartTouchInteractionUp(_resistanceIndex, arg.position, true),
+              onChartTouchInteractionDown:
+                  (arg) => _onChartTouchInteractionDown(_resistanceIndex, arg.position, true),
+              onChartTouchInteractionUp:
+                  (arg) => _onChartTouchInteractionUp(_resistanceIndex, arg.position, true),
             ),
           ),
         );
@@ -2375,10 +2399,10 @@ class RecordingState extends State<RecordingScreen> {
             ),
             margin: const EdgeInsets.all(0),
             series: _metricToDataFn[entry.value.metric]!(),
-            onChartTouchInteractionDown: (arg) =>
-                _onChartTouchInteractionDown(entry.key, arg.position, false),
-            onChartTouchInteractionUp: (arg) =>
-                _onChartTouchInteractionUp(entry.key, arg.position, false),
+            onChartTouchInteractionDown:
+                (arg) => _onChartTouchInteractionDown(entry.key, arg.position, false),
+            onChartTouchInteractionUp:
+                (arg) => _onChartTouchInteractionUp(entry.key, arg.position, false),
           ),
         );
 
@@ -2426,23 +2450,20 @@ class RecordingState extends State<RecordingScreen> {
 
           if (_rankInfoOnTrack || _showPacer) {
             markers.add(
-              Center(
-                child: _infoForLeaderboard(_leaderboard, _selfRank, _selfRankString),
-              ),
+              Center(child: _infoForLeaderboard(_leaderboard, _selfRank, _selfRankString)),
             );
           }
 
           // Add red circle around the athlete marker to distinguish
           markers.add(_getTrackMarker(markerPosition, selfMarkerColor, "", false));
-          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toARGB32;
+          selfMarkerColor = _getSpeedColor(_selfRank, background: true).toARGB32();
         } else if (_displayLapCounter) {
-          markers.add(Center(
-            child: Text("Lap $_lapCount", style: _measurementStyle),
-          ));
+          markers.add(Center(child: Text("Lap $_lapCount", style: _measurementStyle)));
         }
 
-        markers.add(_getTrackMarker(
-            markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization));
+        markers.add(
+          _getTrackMarker(markerPosition, selfMarkerColor, selfMarkerText, _rankTrackVisualization),
+        );
       }
 
       if (_trackCalculator != null) {
@@ -2464,73 +2485,69 @@ class RecordingState extends State<RecordingScreen> {
     List<Widget> columnTwo =
         _onStageStatisticsType != onStageStatisticsTypeNone ? [statHeaderRow] : [];
 
-    columnOne.addAll([
-      rows[_time1Index],
-      rows[_calories1Index],
-    ]);
+    columnOne.addAll([rows[_time1Index], rows[_calories1Index]]);
 
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
       columnOne.add(statHeaderRow);
     }
 
     if (_showResistanceLevel) {
-      final List<Widget> rowChildren = _onStageStatisticsType == onStageStatisticsTypeNone
-          ? [
-              _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault),
-              const Spacer(),
-              Text(_optionalValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
-              SizedBox(
-                width: _sizeDefault * (_simplerUi ? 2 : 1.3),
-                child: Center(
-                  child: Text("", maxLines: 2, style: _fullUnitStyle),
+      final List<Widget> rowChildren =
+          _onStageStatisticsType == onStageStatisticsTypeNone
+              ? [
+                _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault),
+                const Spacer(),
+                Text(_optionalValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
+                SizedBox(
+                  width: _sizeDefault * (_simplerUi ? 2 : 1.3),
+                  child: Center(child: Text("", maxLines: 2, style: _fullUnitStyle)),
                 ),
-              ),
-            ]
-          : [
-              SizedBox(
-                width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_optionalValues[_resistanceIndex], style: _measurementStyle.apply()),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault / 2),
-                  SizedBox(
-                    width: _sizeDefault * (_simplerUi ? 1 : 0.65),
-                    child: Center(
-                      child: Text("", maxLines: 2, style: _unitStyle),
-                    ),
+              ]
+              : [
+                SizedBox(
+                  width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(_optionalValues[_resistanceIndex], style: _measurementStyle.apply()),
+                    ],
                   ),
-                ],
-              ),
-              SizedBox(
-                width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+                Column(
                   children: [
-                    Text(_optionalStatistics[_resistanceIndex], style: _measurementStyle.apply()),
+                    _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault / 2),
+                    SizedBox(
+                      width: _sizeDefault * (_simplerUi ? 1 : 0.65),
+                      child: Center(child: Text("", maxLines: 2, style: _unitStyle)),
+                    ),
                   ],
                 ),
-              )
-            ];
+                SizedBox(
+                  width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(_optionalStatistics[_resistanceIndex], style: _measurementStyle.apply()),
+                    ],
+                  ),
+                ),
+              ];
 
-      columnOne.add(ExpandablePanel(
-        theme: _expandableThemeData,
-        header: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: rowChildren,
+      columnOne.add(
+        ExpandablePanel(
+          theme: _expandableThemeData,
+          header: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: rowChildren,
+          ),
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_resistanceIndex],
+          controller: _extraRowControllers[_resistanceIndex],
         ),
-        collapsed: Container(),
-        expanded: _simplerUi ? Container() : extras[_resistanceIndex],
-        controller: _extraRowControllers[_resistanceIndex],
-      ));
+      );
     }
 
     if (_stationaryWorkout) {
@@ -2594,9 +2611,7 @@ class RecordingState extends State<RecordingScreen> {
             Text(_optionalValues[_strokeCountIndex], style: _fullMeasurementStyle.apply()),
             SizedBox(
               width: _sizeDefault * 2,
-              child: Center(
-                child: Text("#", style: _fullUnitStyle),
-              ),
+              child: Center(child: Text("#", style: _fullUnitStyle)),
             ),
           ],
         ),
@@ -2607,12 +2622,12 @@ class RecordingState extends State<RecordingScreen> {
       _stationaryWorkout
           ? const Divider()
           : ExpandablePanel(
-              theme: _expandableThemeData,
-              header: rows[_distance1Index],
-              collapsed: Container(),
-              expanded: _simplerUi ? Container() : regularExtras[_distanceNIndex],
-              controller: _rowControllers[_distanceNIndex],
-            ),
+            theme: _expandableThemeData,
+            header: rows[_distance1Index],
+            collapsed: Container(),
+            expanded: _simplerUi ? Container() : regularExtras[_distanceNIndex],
+            controller: _rowControllers[_distanceNIndex],
+          ),
     );
 
     if (_landscape && _twoColumnLayout) {
@@ -2621,29 +2636,28 @@ class RecordingState extends State<RecordingScreen> {
       columnOne.addAll(columnRest);
     }
 
-    final body = _landscape && _twoColumnLayout
-        ? GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: _mediaWidth / _mediaHeight / 2,
-            physics: const NeverScrollableScrollPhysics(),
-            semanticChildCount: 2,
-            children: [
-              ListView(children: columnOne),
-              ListView(children: columnTwo),
-            ],
-          )
-        : ListView(children: columnOne);
+    final body =
+        _landscape && _twoColumnLayout
+            ? GridView.count(
+              crossAxisCount: 2,
+              childAspectRatio: _mediaWidth / _mediaHeight / 2,
+              physics: const NeverScrollableScrollPhysics(),
+              semanticChildCount: 2,
+              children: [ListView(children: columnOne), ListView(children: columnTwo)],
+            )
+            : ListView(children: columnOne);
 
     final List<Widget> menuButtons = [];
     if (_isLocked) {
       for (var i = 0; i < _unlockChoices; ++i) {
-        final button = i == _unlockButtonIndex
-            ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
-                setState(() {
-                  _isLocked = false;
-                });
-              }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
+        final button =
+            i == _unlockButtonIndex
+                ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
+                  setState(() {
+                    _isLocked = false;
+                  });
+                }, _unlockKeys[i])
+                : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
         menuButtons.add(button);
       }
     } else {
@@ -2672,31 +2686,35 @@ class RecordingState extends State<RecordingScreen> {
       ]);
 
       if (_measuring) {
-        menuButtons.add(_themeManager.getGreenFab(Icons.lock_open, () {
-          _unlockButtonIndex = _rng.nextInt(_unlockChoices);
-          _fabKey.currentState?.close();
-          setState(() {
-            _isLocked = true;
-          });
-        }));
-        if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-          menuButtons.add(_themeManager.getBlueFab(Icons.sports_score, () async {
+        menuButtons.add(
+          _themeManager.getGreenFab(Icons.lock_open, () {
+            _unlockButtonIndex = _rng.nextInt(_unlockChoices);
+            _fabKey.currentState?.close();
             setState(() {
-              _onStage = !_onStage;
-              if (!_onStage) {
-                _statistics[_power0Index] = emptyMeasurement;
-                _statistics[_speed0Index] = emptyMeasurement;
-                _statistics[_cadence0Index] = emptyMeasurement;
-                _statistics[_hr0Index] = emptyMeasurement;
-
-                if (_showResistanceLevel) {
-                  _optionalStatistics[_resistanceIndex] = emptyMeasurement;
-                }
-              }
-
-              _workoutStats.reset();
+              _isLocked = true;
             });
-          }));
+          }),
+        );
+        if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+          menuButtons.add(
+            _themeManager.getBlueFab(Icons.sports_score, () async {
+              setState(() {
+                _onStage = !_onStage;
+                if (!_onStage) {
+                  _statistics[_power0Index] = emptyMeasurement;
+                  _statistics[_speed0Index] = emptyMeasurement;
+                  _statistics[_cadence0Index] = emptyMeasurement;
+                  _statistics[_hr0Index] = emptyMeasurement;
+
+                  if (_showResistanceLevel) {
+                    _optionalStatistics[_resistanceIndex] = emptyMeasurement;
+                  }
+                }
+
+                _workoutStats.reset();
+              });
+            }),
+          );
         }
       } else {
         menuButtons.addAll([
@@ -2710,13 +2728,7 @@ class RecordingState extends State<RecordingScreen> {
             Get.bottomSheet(
               const SafeArea(
                 child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: BatteryStatusBottomSheet(),
-                      ),
-                    ),
-                  ],
+                  children: [Expanded(child: Center(child: BatteryStatusBottomSheet()))],
                 ),
               ),
               isScrollControlled: true,
@@ -2735,9 +2747,10 @@ class RecordingState extends State<RecordingScreen> {
                     children: [
                       Expanded(
                         child: Center(
-                          child: _fitnessEquipment?.descriptor?.fourCC == kayakFirstFourCC
-                              ? const KayakFirstBottomSheet()
-                              : const SpinDownBottomSheet(),
+                          child:
+                              _fitnessEquipment?.descriptor?.fourCC == kayakFirstFourCC
+                                  ? const KayakFirstBottomSheet()
+                                  : const SpinDownBottomSheet(),
                         ),
                       ),
                     ],
@@ -2758,13 +2771,7 @@ class RecordingState extends State<RecordingScreen> {
           await Get.bottomSheet(
             const SafeArea(
               child: Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: HeartRateMonitorPairingBottomSheet(),
-                    ),
-                  ),
-                ],
+                children: [Expanded(child: Center(child: HeartRateMonitorPairingBottomSheet()))],
               ),
             ),
             isScrollControlled: true,
@@ -2782,12 +2789,13 @@ class RecordingState extends State<RecordingScreen> {
           }
         }),
         _themeManager.getBlueFab(
-            _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
-            () async {
-          if (!_busy) {
-            await startStopAction();
-          }
-        }),
+          _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
+          () async {
+            if (!_busy) {
+              await startStopAction();
+            }
+          },
+        ),
       ]);
     }
 
@@ -2797,16 +2805,10 @@ class RecordingState extends State<RecordingScreen> {
         onPressed: () async {
           await startStopAction();
         },
-      )
+      ),
     ];
     if (_circuitWorkout && _measuring) {
-      actions.insert(
-        0,
-        IconButton(
-          icon: const Icon(Icons.pause),
-          onPressed: () => Get.back(),
-        ),
-      );
+      actions.insert(0, IconButton(icon: const Icon(Icons.pause), onPressed: () => Get.back()));
     }
 
     return PopScope(
@@ -2860,25 +2862,27 @@ class RecordingState extends State<RecordingScreen> {
           absorbing: _isLocked,
           child: Scaffold(
             appBar: AppBar(
-              title: TextOneLine(
-                widget.device.nonEmptyName,
-                overflow: TextOverflow.ellipsis,
-              ),
-              actions: _busy
-                  ? [
-                      HeartbeatProgressIndicator(
-                        child: IconButton(
-                            icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
-                      )
-                    ]
-                  : actions,
+              title: TextOneLine(widget.device.nonEmptyName, overflow: TextOverflow.ellipsis),
+              actions:
+                  _busy
+                      ? [
+                        HeartbeatProgressIndicator(
+                          child: IconButton(
+                            icon: const Icon(Icons.hourglass_empty),
+                            onPressed: () => {},
+                          ),
+                        ),
+                      ]
+                      : actions,
             ),
             body: body,
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
             floatingActionButton: FabCircularMenuPlus(
               key: _fabKey,
-              fabOpenIcon: Icon(_isLocked ? Icons.lock : Icons.menu,
-                  color: _themeManager.getAntagonistColor()),
+              fabOpenIcon: Icon(
+                _isLocked ? Icons.lock : Icons.menu,
+                color: _themeManager.getAntagonistColor(),
+              ),
               fabOpenColor: _themeManager.getBlueColor(),
               fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
               fabCloseColor: _themeManager.getBlueColor(),

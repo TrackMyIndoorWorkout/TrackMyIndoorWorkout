@@ -81,18 +81,16 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   Color _chartTextColor = Colors.black;
   Color _chartAvgColor = Colors.orange;
   ExpandableThemeData _expandableThemeData = const ExpandableThemeData(iconColor: Colors.black);
-  TextStyle _chartLabelStyle = const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 11,
-  );
+  TextStyle _chartLabelStyle = const TextStyle(fontFamily: fontFamily, fontSize: 11);
 
   Future<void> extraInit(BasePrefService prefService) async {
     _allRecords = await DbUtils().getRecords(widget.activity.id);
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;
       if (_allRecords.length < _pointCount) {
-        _sampledRecords =
-            _allRecords.map((r) => DisplayRecord.fromRecord(r)).toList(growable: false);
+        _sampledRecords = _allRecords
+            .map((r) => DisplayRecord.fromRecord(r))
+            .toList(growable: false);
       } else {
         final nth = _allRecords.length / _pointCount;
         _sampledRecords = List.generate(
@@ -154,9 +152,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
-            .map(
-              (entry) => HistogramData(index: entry.key, upper: entry.value),
-            )
+            .map((entry) => HistogramData(index: entry.key, upper: entry.value))
             .toList(growable: false);
         _tileConfigurations["power"] = tileConfig;
       }
@@ -183,9 +179,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
-            .map(
-              (entry) => HistogramData(index: entry.key, upper: entry.value),
-            )
+            .map((entry) => HistogramData(index: entry.key, upper: entry.value))
             .toList(growable: false);
         _tileConfigurations["speed"] = tileConfig;
       }
@@ -212,9 +206,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
-            .map(
-              (entry) => HistogramData(index: entry.key, upper: entry.value),
-            )
+            .map((entry) => HistogramData(index: entry.key, upper: entry.value))
             .toList(growable: false);
         _tileConfigurations["cadence"] = tileConfig;
       }
@@ -241,9 +233,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
         tileConfig.histogram = prefSpec.zoneUpper
             .asMap()
             .entries
-            .map(
-              (entry) => HistogramData(index: entry.key, upper: entry.value),
-            )
+            .map((entry) => HistogramData(index: entry.key, upper: entry.value))
             .toList(growable: false);
         _tileConfigurations["hr"] = tileConfig;
       }
@@ -342,7 +332,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _calculateMedian = Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
+    _calculateMedian =
+        Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
         activityDetailsMedianDisplayDefault;
     _showStrokesStridesRevs =
         prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
@@ -526,13 +517,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       _mediaWidth = mediaWidth;
       _sizeDefault = mediaWidth / 7 * _sizeAdjust;
       _sizeDefault2 = _sizeDefault / 1.5;
-      _measurementStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: _sizeDefault,
-      );
-      _textStyle = TextStyle(
-        fontSize: _sizeDefault2,
-      );
+      _measurementStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault);
+      _textStyle = TextStyle(fontSize: _sizeDefault2);
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
@@ -565,7 +551,10 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     if (widget.activity.movingTime ~/ 1000 < widget.activity.elapsed) {
       header.addAll([
         ActivityDetailUnitRow(
-            themeManager: _themeManager, unitText: "(Moving Time)", unitStyle: _unitStyle),
+          themeManager: _themeManager,
+          unitText: "(Moving Time)",
+          unitStyle: _unitStyle,
+        ),
         ActivityDetailRowFitHorizontal(
           themeManager: _themeManager,
           icon: Icons.timer,
@@ -576,7 +565,10 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           unitStyle: null,
         ),
         ActivityDetailUnitRow(
-            themeManager: _themeManager, unitText: "(Total Time)", unitStyle: _unitStyle),
+          themeManager: _themeManager,
+          unitText: "(Total Time)",
+          unitStyle: _unitStyle,
+        ),
       ]);
     }
 
@@ -630,10 +622,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
           ]);
         },
       ),
-      IconButton(
-        icon: const Icon(Icons.help),
-        onPressed: () => Get.to(() => const AboutScreen()),
-      ),
+      IconButton(icon: const Icon(Icons.help), onPressed: () => Get.to(() => const AboutScreen())),
       IconButton(
         icon: const Icon(Icons.build),
         onPressed: () {
@@ -677,55 +666,47 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                 Get.close(1);
               },
             ),
-            cancel: TextButton(
-              child: const Text("No"),
-              onPressed: () => Get.close(1),
-            ),
+            cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
           );
         },
       ),
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: appBarActions,
-      ),
-      body: !_initialized
-          ? const Text('Initializing...')
-          : CustomListView(
-              key: Key("CLV$_editCount"),
-              paginationMode: PaginationMode.offset,
-              initialOffset: 0,
-              loadingBuilder: CustomListLoading.defaultBuilder,
-              header: Card(
-                elevation: 6,
-                child: Column(children: header),
+      appBar: AppBar(title: Text(title), actions: appBarActions),
+      body:
+          !_initialized
+              ? const Text('Initializing...')
+              : CustomListView(
+                key: Key("CLV$_editCount"),
+                paginationMode: PaginationMode.offset,
+                initialOffset: 0,
+                loadingBuilder: CustomListLoading.defaultBuilder,
+                header: Card(elevation: 6, child: Column(children: header)),
+                adapter: StaticListAdapter(data: _tiles),
+                itemBuilder: (context, index, item) {
+                  return ActivityDetailGraphs(
+                    item: item,
+                    index: index,
+                    size: widget.size,
+                    expandableThemeData: _expandableThemeData,
+                    textStyle: _textStyle,
+                    measurementStyle: _measurementStyle,
+                    unitStyle: _unitStyle,
+                    chartLabelStyle: _chartLabelStyle,
+                    chartTextColor: _chartTextColor,
+                    tileConfiguration: _tileConfigurations[item]!,
+                    preferencesSpec: _preferencesSpecs[index],
+                    si: _si,
+                    sport: widget.activity.sport,
+                    isLight: _isLight,
+                    sizeDefault: _sizeDefault2,
+                    paletteSpec: _paletteSpec!,
+                    themeManager: _themeManager,
+                    displayMedian: _calculateMedian,
+                  );
+                },
               ),
-              adapter: StaticListAdapter(data: _tiles),
-              itemBuilder: (context, index, item) {
-                return ActivityDetailGraphs(
-                  item: item,
-                  index: index,
-                  size: widget.size,
-                  expandableThemeData: _expandableThemeData,
-                  textStyle: _textStyle,
-                  measurementStyle: _measurementStyle,
-                  unitStyle: _unitStyle,
-                  chartLabelStyle: _chartLabelStyle,
-                  chartTextColor: _chartTextColor,
-                  tileConfiguration: _tileConfigurations[item]!,
-                  preferencesSpec: _preferencesSpecs[index],
-                  si: _si,
-                  sport: widget.activity.sport,
-                  isLight: _isLight,
-                  sizeDefault: _sizeDefault2,
-                  paletteSpec: _paletteSpec!,
-                  themeManager: _themeManager,
-                  displayMedian: _calculateMedian,
-                );
-              },
-            ),
     );
   }
 }

@@ -233,7 +233,8 @@ class Activity {
   }
 
   String getTitle(bool moderated) {
-    String title = Get.find<BasePrefService>().get<String>(activityUploadTitleTag) ??
+    String title =
+        Get.find<BasePrefService>().get<String>(activityUploadTitleTag) ??
         activityUploadTitleDefault;
     if (title.isEmpty) {
       title = activityUploadTitleDefault;
@@ -243,7 +244,8 @@ class Activity {
   }
 
   String getDescription(bool moderated) {
-    String description = Get.find<BasePrefService>().get<String>(activityUploadDescriptionTag) ??
+    String description =
+        Get.find<BasePrefService>().get<String>(activityUploadDescriptionTag) ??
         activityUploadDescriptionDefault;
     if (description.isEmpty) {
       description = activityUploadDescriptionDefault;
@@ -253,8 +255,9 @@ class Activity {
   }
 
   String getFileNameStub() {
-    return substituteTemplate("Activity_{date}_{time}.", false)
-        .replaceAll('/', '-')
-        .replaceAll(':', '-');
+    return substituteTemplate(
+      "Activity_{date}_{time}.",
+      false,
+    ).replaceAll('/', '-').replaceAll(':', '-');
   }
 }

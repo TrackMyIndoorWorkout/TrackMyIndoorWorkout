@@ -53,11 +53,13 @@ void main() {
   group('slowSpeeds and pacerSpeeds returns expected speed for sport', () {
     for (var sportEntry in speedSport2Sport.entries) {
       final sportTo = speedSport2Sport[sportEntry.value];
-      test("sportFrom: ${sportEntry.key}, sportTo1: ${sportEntry.value}, sportTo2 $sportTo",
-          () async {
-        expect(SpeedSpec.slowSpeeds[sportEntry.key], slowSpeedDefaults[sportTo]);
-        expect(SpeedSpec.pacerSpeeds[sportEntry.key], pacerSpeedDefaults[sportTo]);
-      });
+      test(
+        "sportFrom: ${sportEntry.key}, sportTo1: ${sportEntry.value}, sportTo2 $sportTo",
+        () async {
+          expect(SpeedSpec.slowSpeeds[sportEntry.key], slowSpeedDefaults[sportTo]);
+          expect(SpeedSpec.pacerSpeeds[sportEntry.key], pacerSpeedDefaults[sportTo]);
+        },
+      );
     }
   });
 }

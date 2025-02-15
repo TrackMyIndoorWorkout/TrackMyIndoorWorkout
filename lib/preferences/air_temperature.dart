@@ -5,6 +5,7 @@ const airTemperatureDefault = 15;
 const airDensityDefault = 1.226;
 const airTemperatureMax = 35;
 const airTemperatureDivisions = (airTemperatureMax - airTemperatureMin) ~/ 5;
-const airTemperatureDescription = "Used for power -> speed calculations, "
+const airTemperatureDescription =
+    "Used for power -> speed calculations, "
     "directly affects air density and thus drag force. The lower the temperature "
     "the higher the density and the drag force is.";

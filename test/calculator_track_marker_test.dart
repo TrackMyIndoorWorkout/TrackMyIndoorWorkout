@@ -7,6 +7,7 @@ import 'package:track_my_indoor_exercise/track/constants.dart';
 import 'package:track_my_indoor_exercise/track/track_descriptor.dart';
 import 'package:track_my_indoor_exercise/track/track_kind.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
 import 'utils.dart';
 
 void main() {
@@ -33,7 +34,9 @@ void main() {
         final marker = calculator.trackMarker(0)!;
 
         expect(
-            marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, eps));
+          marker.dx,
+          closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, eps),
+        );
         expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, eps));
       });
     }
@@ -61,7 +64,9 @@ void main() {
         final marker = calculator.trackMarker(laps * track.length)!;
 
         expect(
-            marker.dx, closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, eps));
+          marker.dx,
+          closeTo(thick + calculator.trackOffset!.dx + calculator.trackRadius!, eps),
+        );
         expect(marker.dy, closeTo(size.height - thick - calculator.trackOffset!.dy, eps));
       });
     }
@@ -125,8 +130,10 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
 
-        expect(marker.dx,
-            closeTo(size.width - (thick + calculator.trackOffset!.dx + r) + sin(rad) * r, eps));
+        expect(
+          marker.dx,
+          closeTo(size.width - (thick + calculator.trackOffset!.dx + r) + sin(rad) * r, eps),
+        );
         expect(marker.dy, closeTo(r + thick + calculator.trackOffset!.dy + cos(rad) * r, eps));
       });
     }
@@ -158,8 +165,10 @@ void main() {
       test("${track.radiusBoost} $lengthFactor $laps $distance", () async {
         final marker = calculator.trackMarker(distance)!;
 
-        expect(marker.dx,
-            closeTo(size.width - (thick + calculator.trackOffset!.dx + r) - displacement, eps));
+        expect(
+          marker.dx,
+          closeTo(size.width - (thick + calculator.trackOffset!.dx + r) - displacement, eps),
+        );
         expect(marker.dy, closeTo(thick + calculator.trackOffset!.dy, eps));
       });
     }

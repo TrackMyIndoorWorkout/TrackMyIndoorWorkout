@@ -33,11 +33,7 @@ class ThemeManager {
   }
 
   Icon getDeleteIcon(double size) {
-    return Icon(
-      Icons.delete,
-      color: isDark() ? Colors.amberAccent : Colors.redAccent,
-      size: size,
-    );
+    return Icon(Icons.delete, color: isDark() ? Colors.amberAccent : Colors.redAccent, size: size);
   }
 
   Color getHeaderColor() {
@@ -127,28 +123,11 @@ class ThemeManager {
   }
 
   Widget getIconFab(Color color, IconData icon, VoidCallback? onPressed) {
-    return _getFabCore(
-      getAntagonistColor(),
-      color,
-      Icon(icon),
-      onPressed,
-      null,
-    );
+    return _getFabCore(getAntagonistColor(), color, Icon(icon), onPressed, null);
   }
 
-  Widget getIconFabWKey(
-    Color color,
-    IconData icon,
-    VoidCallback? onPressed,
-    GlobalKey? key,
-  ) {
-    return _getFabCore(
-      getAntagonistColor(),
-      color,
-      Icon(icon),
-      onPressed,
-      key,
-    );
+  Widget getIconFabWKey(Color color, IconData icon, VoidCallback? onPressed, GlobalKey? key) {
+    return _getFabCore(getAntagonistColor(), color, Icon(icon), onPressed, key);
   }
 
   Widget getBlueFab(IconData icon, VoidCallback? onPressed) {
@@ -172,8 +151,10 @@ class ThemeManager {
   }
 
   Widget getRankIcon(int rank) {
-    final textStyle =
-        Get.textTheme.headlineMedium!.apply(fontFamily: fontFamily, color: Colors.black);
+    final textStyle = Get.textTheme.headlineMedium!.apply(
+      fontFamily: fontFamily,
+      color: Colors.black,
+    );
     return _getFabCore(
       Colors.black,
       getYellowColor(),
@@ -188,10 +169,7 @@ class ThemeManager {
   }
 
   Widget getAboutFab() {
-    return getHelpFab(
-      Icons.help,
-      () => Get.to(() => const AboutScreen()),
-    );
+    return getHelpFab(Icons.help, () => Get.to(() => const AboutScreen()));
   }
 
   Widget getTutorialFab(VoidCallback? onPressed) {
@@ -199,10 +177,7 @@ class ThemeManager {
   }
 
   TextStyle boldStyle(TextStyle style, {double fontSizeFactor = 1.0}) {
-    return style.apply(
-      fontSizeFactor: fontSizeFactor,
-      fontWeightDelta: 3,
-    );
+    return style.apply(fontSizeFactor: fontSizeFactor, fontWeightDelta: 3);
   }
 
   Color getAverageChartColor() {

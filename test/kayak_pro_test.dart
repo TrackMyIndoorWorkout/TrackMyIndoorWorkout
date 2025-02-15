@@ -116,7 +116,7 @@ void main() {
           1,
           maxByte,
           106,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 105.0,
@@ -153,7 +153,7 @@ void main() {
           1,
           maxByte,
           45,
-          1
+          1,
         ],
         record: RecordWithSport(
           distance: 246.0,

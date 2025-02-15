@@ -7,12 +7,6 @@ import 'package:pref/pref.dart';
 import '../utils/color_ex.dart';
 import 'metric_spec.dart';
 
-extension ColorEx on Color {
-  String toRawString() {
-    return toARGB32.toRadixString(16).padLeft(8, '0');
-  }
-}
-
 class PaletteSpec {
   static final Map<int, List<Color>> lightBgPaletteDefaults = {
     7: [
@@ -78,21 +72,8 @@ class PaletteSpec {
       Colors.red,
       Colors.purple,
     ],
-    6: [
-      Colors.indigo,
-      Colors.cyan,
-      Colors.green,
-      Colors.orange,
-      Colors.red,
-      Colors.purple,
-    ],
-    5: [
-      Colors.indigo,
-      Colors.cyan,
-      Colors.green,
-      Colors.orange,
-      Colors.red,
-    ],
+    6: [Colors.indigo, Colors.cyan, Colors.green, Colors.orange, Colors.red, Colors.purple],
+    5: [Colors.indigo, Colors.cyan, Colors.green, Colors.orange, Colors.red],
   };
 
   static final Map<int, List<Color>> darkFgPaletteDefaults = {

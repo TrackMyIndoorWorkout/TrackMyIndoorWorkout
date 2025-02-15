@@ -4,12 +4,14 @@ const workoutModeDescription = "Select Workout Mode.";
 const workoutModeDefault = workoutModeIndividual;
 const workoutModeIndividual = "individual";
 const workoutModeIndividualTitle = "Individual";
-const workoutModeIndividualDescription = "Normal, regular, independent workouts "
+const workoutModeIndividualDescription =
+    "Normal, regular, independent workouts "
     "(default). When navigating away from the recording screen (top left arrow icon) "
     "a warning is displayed. Navigating away means the workout is finished and concluded.";
 const workoutModeCircuit = "circuit";
 const workoutModeCircuitTitle = "Circuit Training / Bootcamp";
-const workoutModeCircuitDescription = "When navigating back (top left arrow icon) "
+const workoutModeCircuitDescription =
+    "When navigating back (top left arrow icon) "
     "from the recording screen the workout is not finished. The athlete can pick "
     "another machine, start a parallel / simultaneous workout on it and then later "
     "resume workout on the original machine. Any number of machines can be included. "

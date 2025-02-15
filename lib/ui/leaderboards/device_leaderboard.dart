@@ -53,8 +53,10 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _textStyle = Get.textTheme.headlineSmall!
-        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
+    _textStyle = Get.textTheme.headlineSmall!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(),
+    );
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
@@ -91,10 +93,7 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
                   Get.close(1);
                 },
               ),
-              cancel: TextButton(
-                child: const Text("No"),
-                onPressed: () => Get.close(1),
-              ),
+              cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
             );
           },
         ),
@@ -113,13 +112,14 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.workoutSummarys
-                .filter()
-                .deviceIdEqualTo(widget.device.item2)
-                .sortBySpeedDesc()
-                .offset(page * limit)
-                .limit(limit)
-                .findAll();
+            final data =
+                await _database.workoutSummarys
+                    .filter()
+                    .deviceIdEqualTo(widget.device.item2)
+                    .sortBySpeedDesc()
+                    .offset(page * limit)
+                    .limit(limit)
+                    .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -127,16 +127,11 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
           return Column(
             children: [
               Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: () => state.loadMore(), child: const Text('Retry')),
             ],
           );
         },
-        empty: const Center(
-          child: Text('No entries found'),
-        ),
+        empty: const Center(child: Text('No entries found')),
         itemBuilder: (context, index, item) {
           final workoutSummary = item as WorkoutSummary;
           final dateString = DateFormat.yMd().format(workoutSummary.start);

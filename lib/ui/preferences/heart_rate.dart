@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
@@ -74,7 +75,8 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
         max: heartRateUpperLimitMax,
       ),
       PrefLabel(
-          title: Text(heartRateLimitingMethod, style: Get.textTheme.headlineSmall!, maxLines: 3)),
+        title: Text(heartRateLimitingMethod, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
       const PrefRadio<String>(
         title: Text(heartRateLimitingWriteZeroDescription),
         value: heartRateLimitingWriteZero,

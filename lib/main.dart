@@ -27,47 +27,49 @@ import 'utils/init_preferences.dart';
 import 'utils/logging.dart';
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-    final byteData = await rootBundle.load('assets/timezones_10y.tzf');
-    tz.initializeDatabase(byteData.buffer.asUint8List());
+      final byteData = await rootBundle.load('assets/timezones_10y.tzf');
+      tz.initializeDatabase(byteData.buffer.asUint8List());
 
-    final prefService = await initPreferences();
-    String dbLocation = prefService.get<String>(databaseLocationTag) ?? databaseLocationDefault;
-    if (dbLocation.isEmpty) {
-      final dbDirectory = await getApplicationDocumentsDirectory();
-      dbLocation = dbDirectory.path;
-    }
+      final prefService = await initPreferences();
+      String dbLocation = prefService.get<String>(databaseLocationTag) ?? databaseLocationDefault;
+      if (dbLocation.isEmpty) {
+        final dbDirectory = await getApplicationDocumentsDirectory();
+        dbLocation = dbDirectory.path;
+      }
 
-    final isar = await Isar.open([
-      ActivitySchema,
-      CalorieTuneSchema,
-      DeviceUsageSchema,
-      LogEntrySchema,
-      PowerTuneSchema,
-      RecordSchema,
-      WorkoutSummarySchema,
-    ], directory: dbLocation);
-    Get.put<Isar>(isar, permanent: true);
+      final isar = await Isar.open([
+        ActivitySchema,
+        CalorieTuneSchema,
+        DeviceUsageSchema,
+        LogEntrySchema,
+        PowerTuneSchema,
+        RecordSchema,
+        WorkoutSummarySchema,
+      ], directory: dbLocation);
+      Get.put<Isar>(isar, permanent: true);
 
-    final companyRegistry = CompanyRegistry();
-    await companyRegistry.loadCompanyIdentifiers();
-    Get.put<CompanyRegistry>(companyRegistry, permanent: true);
+      final companyRegistry = CompanyRegistry();
+      await companyRegistry.loadCompanyIdentifiers();
+      Get.put<CompanyRegistry>(companyRegistry, permanent: true);
 
-    Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
-    Get.put<AddressNames>(AddressNames(), permanent: true);
-    Get.put<ProgressState>(ProgressState(), permanent: true);
+      Get.put<AdvertisementCache>(AdvertisementCache(), permanent: true);
+      Get.put<AddressNames>(AddressNames(), permanent: true);
+      Get.put<ProgressState>(ProgressState(), permanent: true);
 
-    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-      Get.put<PackageInfo>(packageInfo, permanent: true);
-      Logging().logVersion(packageInfo);
-    });
+      PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+        Get.put<PackageInfo>(packageInfo, permanent: true);
+        Logging().logVersion(packageInfo);
+      });
 
-    runApp(TrackMyIndoorExerciseApp(prefService: prefService));
-  },
-      (error, stack) => error is Exception
-          ? Logging().logException(
+      runApp(TrackMyIndoorExerciseApp(prefService: prefService));
+    },
+    (error, stack) =>
+        error is Exception
+            ? Logging().logException(
               Get.isRegistered<BasePrefService>()
                   ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
                   : logLevelDefault,
@@ -75,22 +77,26 @@ void main() async {
               "runZonedGuarded",
               "pacman",
               error,
-              stack)
-          : (error is Error
-              ? Logging().log(
+              stack,
+            )
+            : (error is Error
+                ? Logging().log(
                   Get.isRegistered<BasePrefService>()
                       ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
                       : logLevelDefault,
                   logLevelError,
                   "MAIN",
                   "runZonedGuarded pacman",
-                  "$error; ${error.stackTrace}; $stack")
-              : Logging().log(
+                  "$error; ${error.stackTrace}; $stack",
+                )
+                : Logging().log(
                   Get.isRegistered<BasePrefService>()
                       ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
                       : logLevelDefault,
                   logLevelError,
                   "MAIN",
                   "runZonedGuarded pacman",
-                  error.toString())));
+                  error.toString(),
+                )),
+  );
 }

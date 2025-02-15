@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/metric_spec.dart';
 import '../../preferences/speed_spec.dart';
 import '../../utils/constants.dart';
@@ -20,8 +21,10 @@ class MeasurementZonesPreferencesScreen extends StatelessWidget with Preferences
   bool isMonotoneIncreasingList(String zonesSpecStr) {
     if (!intListRule.hasMatch(zonesSpecStr)) return false;
 
-    List<double?> numberList =
-        zonesSpecStr.split(',').map((zs) => double.tryParse(zs)).toList(growable: false);
+    List<double?> numberList = zonesSpecStr
+        .split(',')
+        .map((zs) => double.tryParse(zs))
+        .toList(growable: false);
 
     for (int i = 0; i < numberList.length - 1; i++) {
       if (numberList[i] == null || numberList[i + 1] == null) return false;
@@ -39,7 +42,8 @@ class MeasurementZonesPreferencesScreen extends StatelessWidget with Preferences
     for (var prefSpec in MetricSpec.preferencesSpecs) {
       zonePreferences.addAll([
         PrefText(
-          label: sport +
+          label:
+              sport +
               MetricSpec.thresholdCapital +
               (prefSpec.metric == "speed" ? prefSpec.kmhTitle : prefSpec.fullTitle),
           pref: prefSpec.thresholdTag(sport),
@@ -121,9 +125,6 @@ class MeasurementZonesPreferencesScreen extends StatelessWidget with Preferences
       ),
     ]);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: PrefPage(children: zonePreferences),
-    );
+    return Scaffold(appBar: AppBar(title: Text(title)), body: PrefPage(children: zonePreferences));
   }
 }

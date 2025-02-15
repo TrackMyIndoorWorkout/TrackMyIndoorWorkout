@@ -5,6 +5,7 @@ import 'package:track_my_indoor_exercise/track/calculator.dart';
 import 'package:track_my_indoor_exercise/track/track_descriptor.dart';
 import 'package:track_my_indoor_exercise/track/track_kind.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
 import 'utils.dart';
 
 void main() {
@@ -22,13 +23,15 @@ void main() {
       )..lengthFactor = lengthFactor;
       final calculator = TrackCalculator(track: track);
 
-      test("${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor",
-          () {
-        final marker = calculator.gpsCoordinates(0);
+      test(
+        "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor",
+        () {
+          final marker = calculator.gpsCoordinates(0);
 
-        expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, eps));
-        expect(marker.dy, closeTo(track.center.dy + track.laneHalf * track.verticalMeter, eps));
-      });
+          expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, eps));
+          expect(marker.dy, closeTo(track.center.dy + track.laneHalf * track.verticalMeter, eps));
+        },
+      );
     }
   });
 
@@ -49,13 +52,14 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       test(
-          "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () async {
-        final marker = calculator.gpsCoordinates(distance);
+        "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
+        () async {
+          final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, eps));
-        expect(marker.dy, closeTo(track.center.dy + track.laneHalf * track.verticalMeter, eps));
-      });
+          expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, eps));
+          expect(marker.dy, closeTo(track.center.dy + track.laneHalf * track.verticalMeter, eps));
+        },
+      );
     }
   });
 
@@ -78,14 +82,17 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       test(
-          "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () async {
-        final marker = calculator.gpsCoordinates(distance);
+        "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
+        () async {
+          final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, eps));
-        expect(marker.dy,
-            closeTo(track.center.dy + (track.laneLength / 2 - d) * track.verticalMeter, eps));
-      });
+          expect(marker.dx, closeTo(track.center.dx - track.radius * track.horizontalMeter, eps));
+          expect(
+            marker.dy,
+            closeTo(track.center.dy + (track.laneLength / 2 - d) * track.verticalMeter, eps),
+          );
+        },
+      );
     }
   });
 
@@ -109,19 +116,24 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       test(
-          "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () async {
-        final marker = calculator.gpsCoordinates(distance);
+        "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
+        () async {
+          final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx,
-            closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, eps));
-        expect(
+          expect(
+            marker.dx,
+            closeTo(track.center.dx - cos(rad) * track.radius * track.horizontalMeter, eps),
+          );
+          expect(
             marker.dy,
             closeTo(
-                track.center.dy -
-                    (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
-                eps));
-      });
+              track.center.dy -
+                  (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
+              eps,
+            ),
+          );
+        },
+      );
     }
   });
 
@@ -145,16 +157,20 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       test(
-          "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () async {
-        final marker = calculator.gpsCoordinates(distance);
+        "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
+        () async {
+          final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx, closeTo(track.center.dx + track.radius * track.horizontalMeter, eps));
-        expect(
+          expect(marker.dx, closeTo(track.center.dx + track.radius * track.horizontalMeter, eps));
+          expect(
             marker.dy,
-            closeTo(track.center.dy + (displacement - track.laneLength / 2) * track.verticalMeter,
-                eps));
-      });
+            closeTo(
+              track.center.dy + (displacement - track.laneLength / 2) * track.verticalMeter,
+              eps,
+            ),
+          );
+        },
+      );
     }
   });
 
@@ -179,19 +195,24 @@ void main() {
       final calculator = TrackCalculator(track: track);
 
       test(
-          "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
-          () async {
-        final marker = calculator.gpsCoordinates(distance);
+        "${track.radiusBoost} ${track.horizontalMeter} ${track.verticalMeter} $lengthFactor $laps $distance",
+        () async {
+          final marker = calculator.gpsCoordinates(distance);
 
-        expect(marker.dx,
-            closeTo(track.center.dx + cos(rad) * track.radius * track.horizontalMeter, eps));
-        expect(
+          expect(
+            marker.dx,
+            closeTo(track.center.dx + cos(rad) * track.radius * track.horizontalMeter, eps),
+          );
+          expect(
             marker.dy,
             closeTo(
-                track.center.dy +
-                    (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
-                eps));
-      });
+              track.center.dy +
+                  (track.laneLength / 2 + sin(rad) * track.radius) * track.verticalMeter,
+              eps,
+            ),
+          );
+        },
+      );
     }
   });
 
@@ -274,10 +295,12 @@ void main() {
         final sdy = (straightMarkerA.dy - straightMarkerB.dy).abs();
         expect(sdx, closeTo(0.0, eps));
 
-        final chicaneMarkerA =
-            calculator.gpsCoordinates((track.laneLength + track.halfCircle / 2 - 0.1).toDouble());
-        final chicaneMarkerB =
-            calculator.gpsCoordinates((track.laneLength + track.halfCircle / 2 + 0.1).toDouble());
+        final chicaneMarkerA = calculator.gpsCoordinates(
+          (track.laneLength + track.halfCircle / 2 - 0.1).toDouble(),
+        );
+        final chicaneMarkerB = calculator.gpsCoordinates(
+          (track.laneLength + track.halfCircle / 2 + 0.1).toDouble(),
+        );
         final cdx = (chicaneMarkerA.dx - chicaneMarkerB.dx).abs();
         final cdy = chicaneMarkerA.dy - chicaneMarkerB.dy;
 

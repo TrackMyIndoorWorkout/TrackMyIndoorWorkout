@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../utils/theme_manager.dart';
 
 class ExportFormatPickerBottomSheet extends StatefulWidget {
@@ -60,8 +61,10 @@ class ExportFormatPickerBottomSheetState extends State<ExportFormatPickerBottomS
                         _formatIndex = e.key;
                       });
                     },
-                    child: Text(e.value,
-                        style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle),
+                    child: Text(
+                      e.value,
+                      style: _formatIndex == e.key ? _selectedTextStyle : _largerTextStyle,
+                    ),
                   ),
                 ],
               ),

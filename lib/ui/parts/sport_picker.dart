@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../utils/display.dart';
 import '../../utils/theme_manager.dart';
 
@@ -10,11 +11,7 @@ class SportPickerBottomSheet extends StatefulWidget {
   final List<String> sportChoices;
   final String initialSport;
 
-  const SportPickerBottomSheet({
-    super.key,
-    required this.sportChoices,
-    required this.initialSport,
-  });
+  const SportPickerBottomSheet({super.key, required this.sportChoices, required this.initialSport});
 
   @override
   SportPickerBottomSheetState createState() => SportPickerBottomSheetState();
@@ -66,7 +63,9 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                       });
                     },
                     icon: _themeManager.getBlueIcon(
-                        getSportIcon(e.value), _largerTextStyle.fontSize!),
+                      getSportIcon(e.value),
+                      _largerTextStyle.fontSize!,
+                    ),
                     label: TextOneLine(
                       e.value,
                       style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle,

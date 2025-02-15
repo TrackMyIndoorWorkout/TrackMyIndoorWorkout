@@ -119,7 +119,11 @@ class Record {
   }
 
   void cumulativeDistanceEnforcement(
-      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    Record lastRecord,
+    int logLevel,
+    bool enableAsserts,
+    bool force,
+  ) {
     if (lastRecord.distance != null) {
       if (distance != null) {
         if (!testing && kDebugMode && enableAsserts) {
@@ -146,7 +150,11 @@ class Record {
   }
 
   void cumulativeElapsedTimeEnforcement(
-      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    Record lastRecord,
+    int logLevel,
+    bool enableAsserts,
+    bool force,
+  ) {
     if (lastRecord.elapsed != null) {
       if (elapsed != null) {
         if (!testing && kDebugMode && enableAsserts) {
@@ -193,7 +201,11 @@ class Record {
   }
 
   void cumulativeCaloriesEnforcement(
-      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    Record lastRecord,
+    int logLevel,
+    bool enableAsserts,
+    bool force,
+  ) {
     if (lastRecord.calories != null) {
       if (calories != null) {
         if (!testing && kDebugMode && enableAsserts) {
@@ -220,7 +232,11 @@ class Record {
   }
 
   void cumulativeStrokeCountEnforcement(
-      Record lastRecord, int logLevel, bool enableAsserts, bool force) {
+    Record lastRecord,
+    int logLevel,
+    bool enableAsserts,
+    bool force,
+  ) {
     if (lastRecord.strokeCount != null) {
       if (strokeCount != null) {
         if (!testing && kDebugMode && enableAsserts) {
@@ -254,8 +270,13 @@ class Record {
 
       if (distance! < 0.0) {
         if (logLevel >= logLevelError) {
-          Logging().log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
-              "negative distance $distance");
+          Logging().log(
+            logLevel,
+            logLevelError,
+            tag,
+            "nonNegativeEnforcement",
+            "negative distance $distance",
+          );
         }
 
         distance = 0.0;
@@ -270,7 +291,12 @@ class Record {
       if (elapsed! < 0) {
         if (logLevel >= logLevelError) {
           Logging().log(
-              logLevel, logLevelError, tag, "nonNegativeEnforcement", "negative elapsed $elapsed");
+            logLevel,
+            logLevelError,
+            tag,
+            "nonNegativeEnforcement",
+            "negative elapsed $elapsed",
+          );
         }
 
         elapsed = 0;
@@ -283,8 +309,13 @@ class Record {
 
     if (movingTime < 0) {
       if (logLevel >= logLevelError) {
-        Logging().log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
-            "negative movingTime $movingTime");
+        Logging().log(
+          logLevel,
+          logLevelError,
+          tag,
+          "nonNegativeEnforcement",
+          "negative movingTime $movingTime",
+        );
       }
 
       movingTime = 0;
@@ -297,8 +328,13 @@ class Record {
 
       if (calories! < 0) {
         if (logLevel >= logLevelError) {
-          Logging().log(logLevel, logLevelError, tag, "nonNegativeEnforcement",
-              "negative calories $calories");
+          Logging().log(
+            logLevel,
+            logLevelError,
+            tag,
+            "nonNegativeEnforcement",
+            "negative calories $calories",
+          );
         }
 
         calories = 0;
@@ -444,11 +480,8 @@ class RecordWithSport extends Record {
     super.resistance,
     super.preciseCadence,
     super.strokeCount,
-  })  : assert(sport != null),
-        super(
-          id: id ?? Isar.autoIncrement,
-          activityId: activityId ?? Isar.minId,
-        );
+  }) : assert(sport != null),
+       super(id: id ?? Isar.autoIncrement, activityId: activityId ?? Isar.minId);
 
   static RecordWithSport getZero(String sport) {
     return RecordWithSport(
@@ -471,11 +504,12 @@ class RecordWithSport extends Record {
   }
 
   static RecordWithSport getRandom(String sport, Random random) {
-    final spd = sport == ActivityType.run
-        ? 4.0 + random.nextDouble() * 12.0
-        : (sport == ActivityType.ride
-            ? 30.0 + random.nextDouble() * 20.0
-            : 2.0 + random.nextDouble() * 10.0);
+    final spd =
+        sport == ActivityType.run
+            ? 4.0 + random.nextDouble() * 12.0
+            : (sport == ActivityType.ride
+                ? 30.0 + random.nextDouble() * 20.0
+                : 2.0 + random.nextDouble() * 10.0);
     final cadence = 30.0 + random.nextDouble() * 100.0;
     return RecordWithSport(
       timeStamp: DateTime.now(),
@@ -669,7 +703,8 @@ class RecordWithSport extends Record {
 
     if (clone.elapsedMillis != null &&
         (continuationRecord.elapsedMillis != null || continuationRecord.elapsed != null)) {
-      clone.elapsedMillis = clone.elapsedMillis! +
+      clone.elapsedMillis =
+          clone.elapsedMillis! +
           (continuationRecord.elapsedMillis != null
               ? continuationRecord.elapsedMillis!
               : continuationRecord.elapsed! * 1000);

@@ -9,8 +9,9 @@ Future<bool> isBluetoothOn() async {
   var blueState = FlutterBluePlus.adapterStateNow;
   if (blueState == BluetoothAdapterState.unknown) {
     blueState = await FlutterBluePlus.adapterState.first.timeout(
-        const Duration(milliseconds: dataMapExpiry),
-        onTimeout: () => BluetoothAdapterState.off);
+      const Duration(milliseconds: dataMapExpiry),
+      onTimeout: () => BluetoothAdapterState.off,
+    );
   }
 
   return blueState == BluetoothAdapterState.on;
@@ -27,10 +28,7 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
         await Get.defaultDialog(
           title: "Bluetooth Error",
           middleText: "Device doesn't seem to support Bluetooth",
-          confirm: TextButton(
-            child: const Text("Dismiss"),
-            onPressed: () => Get.close(1),
-          ),
+          confirm: TextButton(child: const Text("Dismiss"), onPressed: () => Get.close(1)),
         );
       }
 
@@ -41,14 +39,8 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
       final tryEnable = await Get.defaultDialog(
         title: "Bluetooth Needed",
         middleText: "Try enable Bluetooth?",
-        confirm: TextButton(
-          child: const Text("Yes"),
-          onPressed: () => Get.back(result: true),
-        ),
-        cancel: TextButton(
-          child: const Text("No"),
-          onPressed: () => Get.back(result: false),
-        ),
+        confirm: TextButton(child: const Text("Yes"), onPressed: () => Get.back(result: true)),
+        cancel: TextButton(child: const Text("No"), onPressed: () => Get.back(result: false)),
       );
 
       if (!tryEnable) {
@@ -62,8 +54,14 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
 
     return await isBluetoothOn();
   } on Exception catch (e, stack) {
-    Logging()
-        .logException(logLevel, "BLUETOOTH", "bluetoothCheck", "turd in the punchbowl", e, stack);
+    Logging().logException(
+      logLevel,
+      "BLUETOOTH",
+      "bluetoothCheck",
+      "turd in the punchbowl",
+      e,
+      stack,
+    );
     return false;
   }
 }

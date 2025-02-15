@@ -30,7 +30,8 @@ class MetricSpec {
   static const coloringByZoneTitle = "Coloring by Zone";
   static const coloringByZoneDescriptionPart1 = "Color the ";
   static const coloringByZoneDescriptionPart2 = " Measurement based on the Zone";
-  static const zoneIndexDisplayExtraNote = "These settings are for non cumulative metrics. "
+  static const zoneIndexDisplayExtraNote =
+      "These settings are for non cumulative metrics. "
       "For extra HR zone display feature check out '$targetHrShortTitle' configuration. "
       "For extra speed feedback check out leaderboard rank settings.";
   static const zoneIndexDisplayDefault = false;
@@ -283,10 +284,13 @@ class MetricSpec {
     }
 
     final zonesSpecStr = prefService.get<String>(zonesTag(sport))!;
-    zonePercents =
-        zonesSpecStr.split(',').map((zs) => int.tryParse(zs) ?? 0).toList(growable: false);
-    zoneBounds =
-        zonePercents.map((z) => decimalRound(z / 100.0 * threshold)).toList(growable: false);
+    zonePercents = zonesSpecStr
+        .split(',')
+        .map((zs) => int.tryParse(zs) ?? 0)
+        .toList(growable: false);
+    zoneBounds = zonePercents
+        .map((z) => decimalRound(z / 100.0 * threshold))
+        .toList(growable: false);
     indexDisplay = prefService.get<bool>(zoneIndexTag) ?? indexDisplayDefault;
     coloringByZone = prefService.get<bool>(coloringByZoneTag) ?? coloringByZoneDefault;
   }
@@ -315,19 +319,21 @@ class MetricSpec {
     zoneLower.insert(0, decimalRound(minVal));
     zoneUpper.add(decimalRound(maxVal));
     plotBands.clear();
-    plotBands.addAll(List.generate(
-      binCount,
-      (i) => charts.PlotBand(
-        isVisible: true,
-        start: zoneLower[i],
-        end: zoneUpper[i],
-        color: paletteSpec.bgColorByBin(i, isLight, this),
-        text: "${zoneLower[i]} - ${zoneUpper[i]}",
-        textStyle: bandTextStyle,
-        horizontalTextAlignment: charts.TextAnchor.start,
-        verticalTextAlignment: charts.TextAnchor.end,
+    plotBands.addAll(
+      List.generate(
+        binCount,
+        (i) => charts.PlotBand(
+          isVisible: true,
+          start: zoneLower[i],
+          end: zoneUpper[i],
+          color: paletteSpec.bgColorByBin(i, isLight, this),
+          text: "${zoneLower[i]} - ${zoneUpper[i]}",
+          textStyle: bandTextStyle,
+          horizontalTextAlignment: charts.TextAnchor.start,
+          verticalTextAlignment: charts.TextAnchor.end,
+        ),
       ),
-    ));
+    );
   }
 
   int get binCount => zonePercents.length + 1;
@@ -359,18 +365,11 @@ class MetricSpec {
   }
 
   static List<RowConfiguration> getRowConfigurations([String sport = ActivityType.ride]) {
-    var rowConfigs = preferencesSpecs
-        .map((p) => RowConfiguration(
-              title: p.title,
-              icon: p.icon,
-              unit: p.unit,
-            ))
-        .toList();
-    rowConfigs.add(RowConfiguration(
-      title: "Distance",
-      icon: Icons.add_road,
-      unit: "m",
-    ));
+    var rowConfigs =
+        preferencesSpecs
+            .map((p) => RowConfiguration(title: p.title, icon: p.icon, unit: p.unit))
+            .toList();
+    rowConfigs.add(RowConfiguration(title: "Distance", icon: Icons.add_road, unit: "m"));
 
     return rowConfigs;
   }

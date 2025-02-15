@@ -5,11 +5,7 @@ class WriteSupportParameters {
   final int division;
   final int numberBytes;
 
-  WriteSupportParameters(
-    List<int> data, {
-    this.division = 1,
-    this.numberBytes = 2,
-  }) {
+  WriteSupportParameters(List<int> data, {this.division = 1, this.numberBytes = 2}) {
     if (numberBytes == 1) {
       minimum = data[0] / division;
       maximum = data[1] / division;

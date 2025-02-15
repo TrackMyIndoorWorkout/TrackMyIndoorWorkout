@@ -66,7 +66,7 @@ void main() {
           1,
           4,
           89,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 611.0,
@@ -111,7 +111,7 @@ void main() {
           0,
           1,
           119,
-          0
+          0,
         ],
         record: RecordWithSport(
           distance: 781.0,

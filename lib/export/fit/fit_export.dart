@@ -18,10 +18,7 @@ import 'fit_header.dart';
 
 class FitExport extends ActivityExport {
   FitExport()
-      : super(
-          nonCompressedFileExtension: 'fit',
-          nonCompressedMimeType: 'application/octet-stream',
-        );
+    : super(nonCompressedFileExtension: 'fit', nonCompressedMimeType: 'application/octet-stream');
 
   @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {
@@ -55,11 +52,7 @@ class FitExport extends ActivityExport {
       localMessageType++;
 
       // 4. Session
-      final session = FitSession(
-        localMessageType,
-        exportModel.altitude,
-        exportModel.exportTarget,
-      );
+      final session = FitSession(localMessageType, exportModel.altitude, exportModel.exportTarget);
       body.output.addAll(session.binarySerialize());
       body.output.addAll(session.serializeData(exportModel));
       localMessageType++;
@@ -105,28 +98,22 @@ class FitExport extends ActivityExport {
       // 2. Event
       final event = FitEvent(localMessageType);
       body.output.addAll(event.binarySerialize());
-      body.output
-          .addAll(event.serializeData(Tuple2<bool, ExportRecord>(true, exportModel.records.first)));
-      body.output
-          .addAll(event.serializeData(Tuple2<bool, ExportRecord>(false, exportModel.records.last)));
+      body.output.addAll(
+        event.serializeData(Tuple2<bool, ExportRecord>(true, exportModel.records.first)),
+      );
+      body.output.addAll(
+        event.serializeData(Tuple2<bool, ExportRecord>(false, exportModel.records.last)),
+      );
       localMessageType++;
 
       // 3. Lap
-      final lap = FitLap(
-        localMessageType,
-        exportModel.altitude,
-        exportModel.exportTarget,
-      );
+      final lap = FitLap(localMessageType, exportModel.altitude, exportModel.exportTarget);
       body.output.addAll(lap.binarySerialize());
       body.output.addAll(lap.serializeData(exportModel));
       localMessageType++;
 
       // 4. Session
-      final session = FitSession(
-        localMessageType,
-        exportModel.altitude,
-        exportModel.exportTarget,
-      );
+      final session = FitSession(localMessageType, exportModel.altitude, exportModel.exportTarget);
       body.output.addAll(session.binarySerialize());
       body.output.addAll(session.serializeData(exportModel));
       localMessageType++;

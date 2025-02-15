@@ -8,15 +8,15 @@ import 'indoor_bike_device_descriptor.dart';
 
 class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitnessMixin {
   LifeFitnessBikeDescriptor()
-      : super(
-          fourCC: lifeFitnessBikeFourCC,
-          vendorName: LifeFitnessMixin.lfManufacturer,
-          modelName: "${LifeFitnessMixin.lfManufacturer} Bike",
-          manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
-          manufacturerFitId: stravaFitId,
-          model: "${LifeFitnessMixin.lfManufacturer} Bike",
-          doNotReadManufacturerName: true,
-        );
+    : super(
+        fourCC: lifeFitnessBikeFourCC,
+        vendorName: LifeFitnessMixin.lfManufacturer,
+        modelName: "${LifeFitnessMixin.lfManufacturer} Bike",
+        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        manufacturerFitId: stravaFitId,
+        model: "${LifeFitnessMixin.lfManufacturer} Bike",
+        doNotReadManufacturerName: true,
+      );
 
   @override
   LifeFitnessBikeDescriptor clone() => LifeFitnessBikeDescriptor();
@@ -85,7 +85,10 @@ class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitn
 
   @override
   Future<void> prePumpConfiguration(
-      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    List<BluetoothService> svcs,
+    Athlete athlete,
+    int logLvl,
+  ) async {
     await prePumpConfig(svcs, athlete, logLvl);
   }
 
