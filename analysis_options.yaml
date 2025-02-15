@@ -5,6 +5,9 @@ include: package:flutter_lints/flutter.yaml
 linter:
   rules:
 
+formatter:
+  page_width: 100
+
 analyzer:
   exclude:
     - /**.g.dart
