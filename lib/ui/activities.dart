@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -9,8 +10,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
-import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tuple/tuple.dart';
 
 import '../export/activity_export.dart';
@@ -190,13 +192,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             ExportTarget.regular,
           );
           final fileName = activity.getFileNameStub() + exporter.fileExtension(false);
-          ShareFilesAndScreenshotWidgets().shareFile(
-            activity.getTitle(false),
-            fileName,
-            Uint8List.fromList(fileBytes),
-            exporter.mimeType(false),
-            text: 'Share a ride on ${activity.deviceName}',
-          );
+          final Directory tempDir = await getTemporaryDirectory();
+          final workoutFilePath = "${tempDir.path}/$fileName";
+          final workoutFile = await File(workoutFilePath).writeAsBytes(fileBytes, flush: true);
+          Share.shareXFiles([XFile(workoutFile.path)], text: activity.getTitle(false));
         },
       ),
       IconButton(

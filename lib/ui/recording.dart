@@ -1193,7 +1193,7 @@ class RecordingState extends State<RecordingScreen> {
     );
     final fileName = _activity!.getFileNameStub() + exporter.fileExtension(false);
     String fileFullPath = p.join(_instantExportLocation, fileName);
-    await File(fileFullPath).writeAsBytes(fileBytes);
+    await File(fileFullPath).writeAsBytes(fileBytes, flush: true);
   }
 
   _stopMeasurement(bool quick) async {
