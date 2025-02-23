@@ -32,6 +32,7 @@ build/
 /build/
 /android/app/debug/
 /android/app/release/
+/android/app/.cxx/
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
