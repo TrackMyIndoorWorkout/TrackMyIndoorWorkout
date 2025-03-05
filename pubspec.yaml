@@ -13,12 +13,12 @@ dependency_overrides:
   analyzer: ^7.3.0 # isar community
 
 dependencies:
-  app_links: ^6.3.3
+  app_links: ^6.4.0
   assorted_layout_widgets: ^11.0.0
-  audioplayers: ^6.1.2
+  audioplayers: ^6.2.0
   collection: ^1.19.1
   datetime_picker_formfield_new: ^2.1.0
-  device_info_plus: ^11.3.0
+  device_info_plus: ^11.3.3
   edit_distance: ^0.5.0-nullsafety.0
   email_validator: ^3.0.0
   expandable: ^5.0.1
@@ -48,7 +48,7 @@ dependencies:
   listview_utils_plus: ^0.0.4
   loading_overlay: ^0.4.2
   number_selector: ^1.0.7
-  package_info_plus: ^8.2.1
+  package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
   pref: ^2.8.0
@@ -58,7 +58,7 @@ dependencies:
   receive_sharing_intent: ^1.8.1
   share_plus: ^10.1.4
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^28.2.5+1
+  syncfusion_flutter_charts: ^28.2.9
   timezone: ^0.10.0
   tuple: ^2.0.2
   url_launcher: ^6.3.1
