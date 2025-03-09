@@ -122,7 +122,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
   bool _blockFTMSFeatureRead = blockFTMSFeatureReadDefault;
-  bool _blockManufacturerNameRead = blockManufacturerNameReadDefault;
+  bool blockManufacturerNameReading = blockManufacturerNameReadDefault;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;
 
@@ -795,7 +795,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       deviceInfo?.characteristics,
       manufacturerNameUuid,
     );
-    if (nameCharacteristic == null || _blockManufacturerNameRead) {
+    if (nameCharacteristic == null || blockManufacturerNameReading) {
       return null;
     }
 
@@ -1416,7 +1416,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _extendTuning = prefService.get<bool>(extendTuningTag) ?? extendTuningDefault;
     _blockFTMSFeatureRead =
         testing || (prefService.get<bool>(blockFTMSFeatureReadTag) ?? blockFTMSFeatureReadDefault);
-    _blockManufacturerNameRead =
+    blockManufacturerNameReading =
         testing ||
         (prefService.get<bool>(blockManufacturerNameReadTag) ?? blockManufacturerNameReadDefault);
     _blockSignalStartStop =

@@ -59,6 +59,7 @@ main() {
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
       equipment.connected = true;
 
       expect(await equipment.discover(), true);
@@ -76,6 +77,7 @@ main() {
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
       equipment.connected = true;
 
       expect(await equipment.discover(), false);
@@ -90,6 +92,7 @@ main() {
       ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final equipment = FitnessEquipment(descriptor: null, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
       equipment.connected = true;
 
       expect(await equipment.discover(), false);
