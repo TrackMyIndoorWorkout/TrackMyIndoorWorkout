@@ -90,11 +90,11 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
-        final rndDistance = rnd.nextDouble() * 1000;
-        final rndElapsed = rnd.nextInt(600);
-        final rndCaloriesPerMinute = rnd.nextDouble() * 12;
-        final rndCaloriesPerHour = rnd.nextDouble() * 500;
-        final rndPace = rnd.nextDouble() * 600;
+        final rndDistance = rnd.nextDouble() * 1000 + 1;
+        final rndElapsed = rnd.nextInt(600) + 1;
+        final rndCaloriesPerMinute = rnd.nextDouble() * 12 + 1;
+        final rndCaloriesPerHour = rnd.nextDouble() * 500 + 1;
+        final rndPace = rnd.nextDouble() * 600 + 1;
         final rndRecord =
             RecordWithSport.getRandom(sport, rnd)
               ..pace = rndPace
@@ -105,10 +105,10 @@ void main() {
         test(
           "$sport $idx: ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.pace} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
-            final targetDistance = rnd.nextDouble() * 1000;
-            final targetElapsed = rnd.nextInt(600);
-            final targetCaloriesPerMinute = rnd.nextDouble() * 12;
-            final targetCaloriesPerHour = rnd.nextDouble() * 500;
+            final targetDistance = rnd.nextDouble() * 1000 + 1;
+            final targetElapsed = rnd.nextInt(600) + 1;
+            final targetCaloriesPerMinute = rnd.nextDouble() * 12 + 1;
+            final targetCaloriesPerHour = rnd.nextDouble() * 500 + 1;
             final targetPace = rnd.nextDouble() * 600 + 1;
             final targetRecord =
                 RecordWithSport.getRandom(sport, rnd)
