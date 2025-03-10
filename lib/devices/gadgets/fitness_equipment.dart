@@ -24,6 +24,7 @@ import '../../preferences/ftms_data_threshold.dart';
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
+import '../../preferences/heart_rate_monitor_workout.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
@@ -101,6 +102,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double _hrmCalorieFactor = 1.0;
   bool _useHrmReportedCalories = useHrMonitorReportedCaloriesDefault;
   bool useHrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
+  bool _heartRateMonitorWorkout = heartRateMonitorWorkoutDefault;
   bool _heartRateMonitorPriority = heartRateMonitorPriorityDefault;
   int _ftmsDataThreshold = ftmsDataThresholdDefault;
   Activity? _activity;
@@ -937,7 +939,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
     // State Machine for #231 and #235
     // (intelligent start and elapsed time tracking)
-    bool isNotMoving = stub.isNotMoving();
+    bool isNotMoving = stub.isNotMoving() && !_heartRateMonitorWorkout;
     if (logLevel >= logLevelInfo) {
       Logging().log(
         logLevel,
@@ -1410,6 +1412,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         useHeartRateBasedCalorieCountingDefault;
     _heartRateMonitorPriority =
         prefService.get<bool>(heartRateMonitorPriorityTag) ?? heartRateMonitorPriorityDefault;
+    _heartRateMonitorWorkout =
+        prefService.get<bool>(heartRateMonitorWorkoutTag) ?? heartRateMonitorWorkoutDefault;
     athlete = Athlete.fromPreferences(prefService);
     useHrBasedCalorieCounting &=
         (athlete.weight > athleteBodyWeightMin && athlete.age > athleteAgeMin);

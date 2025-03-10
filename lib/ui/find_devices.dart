@@ -15,6 +15,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/hrm.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -38,6 +39,7 @@ import '../persistence/db_utils.dart';
 import '../persistence/device_usage.dart';
 import '../preferences/auto_connect.dart';
 import '../preferences/device_filtering.dart';
+import '../preferences/heart_rate_monitor_workout.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/last_equipment_id.dart';
 import '../preferences/log_level.dart';
@@ -86,6 +88,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
   bool _paddlingWithCyclingSensors = paddlingWithCyclingSensorsDefault;
   String _treadmillRscOnlyMode = treadmillRscOnlyModeDefault;
   bool _stationaryWorkout = stationaryWorkoutDefault;
+  bool _heartRateMonitorWorkout = heartRateMonitorWorkoutDefault;
   bool _isScanning = false;
   final List<BluetoothDevice> _scannedDevices = [];
   final StreamController<List<ScanResult>> _scanStreamController = StreamController.broadcast();
@@ -146,6 +149,8 @@ class FindDevicesState extends State<FindDevicesScreen> {
     _treadmillRscOnlyMode =
         prefService.get<String>(treadmillRscOnlyModeTag) ?? treadmillRscOnlyModeDefault;
     _stationaryWorkout = prefService.get<bool>(stationaryWorkoutTag) ?? stationaryWorkoutDefault;
+    _heartRateMonitorWorkout =
+        prefService.get<bool>(heartRateMonitorWorkoutTag) ?? heartRateMonitorWorkoutDefault;
     _filterDevices = prefService.get<bool>(deviceFilteringTag) ?? deviceFilteringDefault;
     _logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
     _twoColumnLayout = prefService.get<bool>(twoColumnLayoutTag) ?? twoColumnLayoutDefault;
@@ -463,7 +468,7 @@ class FindDevicesState extends State<FindDevicesScreen> {
             .sortByTimeDesc()
             .findFirst();
 
-    // Step 2. Try to infer from if it has proprietary Precor service
+    // Step 2. Try to infer from if it has proprietary service
     // Or other dedicated workarounds
     if (descriptor == null) {
       if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
@@ -487,6 +492,9 @@ class FindDevicesState extends State<FindDevicesScreen> {
           } else {
             descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
           }
+        } else if (advertisementDigest.serviceUuids.contains(heartRateServiceUuid) &&
+            _heartRateMonitorWorkout) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(heartRateMonitorFourCC);
         }
       } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
         if (advertisementDigest.machineType == MachineType.treadmill) {
@@ -906,8 +914,26 @@ class FindDevicesState extends State<FindDevicesScreen> {
                         style: _subtitleStyle,
                       ),
                       trailing: _themeManager.getGreenFab(Icons.favorite, () async {
-                        if (await _heartRateMonitor?.device?.connectionState.first ==
-                            BluetoothConnectionState.connected) {
+                        final hrmConnectionState =
+                            await _heartRateMonitor?.device?.connectionState.first;
+                        if (_heartRateMonitorWorkout) {
+                          if (_heartRateMonitor != null &&
+                              _heartRateMonitor!.device != null &&
+                              hrmConnectionState != null) {
+                            goToRecording(_heartRateMonitor!.device!, hrmConnectionState, true);
+                          } else {
+                            Get.snackbar("Info", "HRM or BLE device or state is null");
+
+                            Logging().log(
+                              _logLevel,
+                              logLevelWarning,
+                              tag,
+                              "HRM connection error",
+                              "HRM or BLE device or state is null",
+                            );
+                          }
+                        }
+                        if (hrmConnectionState == BluetoothConnectionState.connected) {
                           Get.snackbar("Info", "HRM Already connected");
 
                           Logging().log(

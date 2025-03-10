@@ -12,6 +12,7 @@ const stagesCyclingFitId = 69;
 const strydFitId = 95;
 const technogymFitId = 111;
 const johnsonHealthTechId = 122;
+const polarElectroOyId = 123;
 const precorFitId = 266;
 const stravaFitId = 265;
 
@@ -135,7 +136,7 @@ Map<int, String> fitManufacturer = {
   120: 'inpeak',
   121: 'kinetic',
   johnsonHealthTechId: 'johnson health tech',
-  123: 'polar electro',
+  polarElectroOyId: 'polar electro',
   124: 'seesense',
   255: 'development',
   257: 'healthandlife',

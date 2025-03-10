@@ -10,7 +10,7 @@ void main() {
   group('deviceNamePrefixes binds as expected', () {
     for (final fourCC in allFourCC) {
       test(fourCC, () async {
-        final hasPrefixes = fourCC != kayakFirstFourCC;
+        final hasPrefixes = ![kayakFirstFourCC, heartRateMonitorFourCC].contains(fourCC);
         final hasPostfixes = [
           concept2RowerFourCC,
           concept2SkiFourCC,

@@ -37,6 +37,7 @@ import '../preferences/generic.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../preferences/heart_rate_monitor_priority.dart';
+import '../preferences/heart_rate_monitor_workout.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
@@ -144,6 +145,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     heartRateGapWorkaroundTag: heartRateGapWorkaroundDefault,
     heartRateLimitingMethodTag: heartRateLimitingMethodDefault,
     heartRateMonitorPriorityTag: heartRateMonitorPriorityDefault,
+    heartRateMonitorWorkoutTag: heartRateMonitorWorkoutDefault,
     heartRateUpperLimitIntTag: heartRateUpperLimitDefault,
     instantExportTag: instantExportDefault,
     instantExportLocationTag: instantExportLocationDefault,

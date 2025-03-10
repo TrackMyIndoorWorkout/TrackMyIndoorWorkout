@@ -8,6 +8,7 @@ import 'device_descriptors/cross_trainer_device_descriptor.dart';
 import 'device_descriptors/cycling_power_meter_descriptor.dart';
 import 'device_descriptors/cycling_speed_and_cadence_descriptor.dart';
 import 'device_descriptors/device_descriptor.dart';
+import 'device_descriptors/heart_rate_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
 import 'device_descriptors/kayak_first_descriptor.dart';
 import 'device_descriptors/life_fitness_bike_descriptor.dart';
@@ -186,6 +187,16 @@ class DeviceFactory {
     );
   }
 
+  static HeartRateSensorDescriptor getHeartRateSensor() {
+    return HeartRateSensorDescriptor(
+      vendorName: "Polar Electro Oy",
+      modelName: "Verity Sense",
+      manufacturerNamePart: "Unknown",
+      manufacturerFitId: polarElectroOyId,
+      model: "Verity Sense",
+    );
+  }
+
   static RowerDeviceDescriptor getKayaPro() {
     return RowerDeviceDescriptor(
       sport: deviceSportDescriptors[kayakProGenesisPortFourCC]!.defaultSport,
@@ -353,6 +364,8 @@ class DeviceFactory {
         return DeviceFactory.getGenericFTMSSwimmer();
       case genericFTMSTreadmillFourCC:
         return DeviceFactory.getGenericFTMSTreadmill();
+      case heartRateMonitorFourCC:
+        return DeviceFactory.getHeartRateSensor();
       case kayakFirstFourCC:
         return KayakFirstDescriptor();
       case kayakProGenesisPortFourCC:
@@ -438,6 +451,9 @@ class DeviceFactory {
         break;
       case ActivityType.nordicSki:
         fourCC = concept2SkiFourCC;
+        break;
+      case ActivityType.workout:
+        fourCC = concept2BikeFourCC;
         break;
     }
 

@@ -17,6 +17,7 @@ const genericFTMSStairClimberFourCC = "GSrC";
 const genericFTMSStepClimberFourCC = "GSpC";
 const genericFTMSSwimFourCC = "GSwi";
 const genericFTMSTreadmillFourCC = "GRun";
+const heartRateMonitorFourCC = "HRMT";
 const kayakFirstFourCC = "K1st";
 const kayakProGenesisPortFourCC = "KPro";
 const lifeFitnessBikeFourCC = "LFBk";
@@ -61,6 +62,7 @@ List<String> allFourCC = [
   genericFTMSStepClimberFourCC,
   genericFTMSSwimFourCC,
   genericFTMSTreadmillFourCC,
+  heartRateMonitorFourCC,
   kayakFirstFourCC,
   kayakProGenesisPortFourCC,
   lifeFitnessBikeFourCC,
@@ -188,6 +190,7 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   ),
   genericFTMSSwimFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Swim"]),
   genericFTMSTreadmillFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Treadmill"]),
+  heartRateMonitorFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
   lifeFitnessBikeFourCC: DeviceIdentifierHelperEntry(
@@ -294,6 +297,7 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   ),
   genericFTMSSwimFourCC: SportDescriptor(defaultSport: ActivityType.swim, isMultiSport: false),
   genericFTMSTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
+  heartRateMonitorFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
   kayakProGenesisPortFourCC: SportDescriptor(
     defaultSport: ActivityType.kayaking,

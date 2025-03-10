@@ -5,6 +5,7 @@ import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
+import '../gatt/hrm.dart';
 import 'data_handler.dart';
 
 enum DeviceCategory { smartDevice, antPlusDevice, primarySensor, secondarySensor }
@@ -72,6 +73,7 @@ abstract class DeviceDescriptor extends DataHandler {
 
   String get fullName => '$vendorName $modelName';
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
+  bool get isHeartRateMonitor => dataServiceId == heartRateServiceUuid;
 
   void stopWorkout();
 

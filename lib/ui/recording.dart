@@ -35,6 +35,7 @@ import '../preferences/app_debug_mode.dart';
 import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/distance_resolution.dart';
+import '../preferences/heart_rate_monitor_workout.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
@@ -229,6 +230,7 @@ class RecordingState extends State<RecordingScreen> {
   int _hrBeepPeriod = targetHeartRateAudioPeriodDefault;
   bool _targetHrAudio = targetHeartRateAudioDefault;
   bool _targetHrAlerting = false;
+  bool _heartRateMonitorWorkout = heartRateMonitorWorkoutDefault;
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _showResistanceLevel = showResistanceLevelDefault;
   bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
@@ -716,6 +718,10 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<String> _initializeHeartRateMonitor(bool checkBluetooth) async {
+    if (_heartRateMonitorWorkout || (_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false)) {
+      return "";
+    }
+
     if (checkBluetooth && !(await bluetoothCheck(true, _logLevel))) {
       return "";
     }
@@ -898,6 +904,8 @@ class RecordingState extends State<RecordingScreen> {
     _hrBasedCalorieCounting =
         prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
         useHeartRateBasedCalorieCountingDefault;
+    _heartRateMonitorWorkout =
+        prefService.get<bool>(heartRateMonitorWorkoutTag) ?? heartRateMonitorWorkoutDefault;
     _showResistanceLevel =
         prefService.get<bool>(showResistanceLevelTag) ?? showResistanceLevelDefault;
     _showStrokesStridesRevs =
@@ -1033,6 +1041,8 @@ class RecordingState extends State<RecordingScreen> {
 
     _optionalStatistics = [emptyMeasurement];
 
+    final calculateCadences =
+        !_heartRateMonitorWorkout && (_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
     _workoutStats = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
@@ -1040,8 +1050,8 @@ class RecordingState extends State<RecordingScreen> {
       calculateMaxPower: !_stationaryWorkout,
       calculateAvgSpeed: !_stationaryWorkout,
       calculateMaxSpeed: !_stationaryWorkout,
-      calculateAvgCadence: true,
-      calculateMaxCadence: true,
+      calculateAvgCadence: calculateCadences,
+      calculateMaxCadence: calculateCadences,
       calculateAvgHeartRate: true,
       calculateMaxHeartRate: true,
       calculateAvgResistance: _showResistanceLevel,
@@ -2766,28 +2776,34 @@ class RecordingState extends State<RecordingScreen> {
         ]);
       }
 
-      menuButtons.addAll([
-        _themeManager.getBlueFab(Icons.favorite, () async {
-          await Get.bottomSheet(
-            const SafeArea(
-              child: Column(
-                children: [Expanded(child: Center(child: HeartRateMonitorPairingBottomSheet()))],
+      if (!_heartRateMonitorWorkout &&
+          !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false)) {
+        menuButtons.add(
+          _themeManager.getBlueFab(Icons.favorite, () async {
+            await Get.bottomSheet(
+              const SafeArea(
+                child: Column(
+                  children: [Expanded(child: Center(child: HeartRateMonitorPairingBottomSheet()))],
+                ),
               ),
-            ),
-            isScrollControlled: true,
-            ignoreSafeArea: false,
-            isDismissible: false,
-            enableDrag: false,
-          );
-          String hrmId = await _initializeHeartRateMonitor(true);
-          if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-            _activity!.hrmId = hrmId;
-            _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
-            _database.writeTxnSync(() {
-              _database.activitys.putSync(_activity!);
-            });
-          }
-        }),
+              isScrollControlled: true,
+              ignoreSafeArea: false,
+              isDismissible: false,
+              enableDrag: false,
+            );
+            String hrmId = await _initializeHeartRateMonitor(true);
+            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+              _activity!.hrmId = hrmId;
+              _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+              _database.writeTxnSync(() {
+                _database.activitys.putSync(_activity!);
+              });
+            }
+          }),
+        );
+      }
+
+      menuButtons.add(
         _themeManager.getBlueFab(
           _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
           () async {
@@ -2796,7 +2812,7 @@ class RecordingState extends State<RecordingScreen> {
             }
           },
         ),
-      ]);
+      );
     }
 
     final actions = [
@@ -2807,6 +2823,7 @@ class RecordingState extends State<RecordingScreen> {
         },
       ),
     ];
+
     if (_circuitWorkout && _measuring) {
       actions.insert(0, IconButton(icon: const Icon(Icons.pause), onPressed: () => Get.back()));
     }
