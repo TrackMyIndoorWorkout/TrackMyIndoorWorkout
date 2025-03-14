@@ -36,7 +36,7 @@ jobs:
           echo 'const googleFitClientId = "a";' >> lib/secret.dart
           echo 'const googleFitSecret = "a";' >> lib/secret.dart
       - name: Format files
-        run: dart format --line-length 100 --set-exit-if-changed .
+        run: dart format --set-exit-if-changed .
       - name: Analyze files
         run: flutter analyze .
       - name: Run the tests
