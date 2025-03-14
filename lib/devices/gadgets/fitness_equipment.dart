@@ -901,6 +901,28 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     return record;
   }
 
+  bool optionallyCalculateSpeed(RecordWithSport stub) {
+    if (stub.speed == null && (stub.power ?? 0) > eps) {
+      // When cycling supplement speed from power if missing
+      // via https://www.gribble.org/cycling/power_v_speed.html
+      stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
+      return true;
+    }
+
+    return false;
+  }
+
+  bool optionallyCalculateDistance(RecordWithSport stub, double dT) {
+    if ((stub.speed ?? 0.0) > 0 && dT > eps) {
+      // Speed possibly already has powerFactor effect
+      double dD = (stub.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
+      stub.distance = stub.distance! + dD;
+      return true;
+    }
+
+    return false;
+  }
+
   RecordWithSport processRecord(RecordWithSport stub, [bool idle = false]) {
     final now = DateTime.now();
     if (logLevel >= logLevelInfo) {
@@ -1082,21 +1104,15 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return pausedRecord(stub);
     }
 
-    if (!hasSpeedReporting && isMoving && stub.speed == null && (stub.power ?? 0) > eps) {
-      // When cycling supplement speed from power if missing
-      // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.speed = velocityForPowerCardano(stub.power!) * DeviceDescriptor.ms2kmh;
+    if (!hasSpeedReporting && isMoving) {
+      optionallyCalculateSpeed(stub);
     }
 
     final dTMillis = elapsedMillis - (lastRecord.elapsedMillis ?? 0);
     final dT = dTMillis / 1000.0;
     if ((stub.distance ?? 0.0) < eps) {
       stub.distance = (lastRecord.distance ?? 0.0);
-      if ((stub.speed ?? 0.0) > 0 && dT > eps) {
-        // Speed possibly already has powerFactor effect
-        double dD = (stub.speed ?? 0.0) * DeviceDescriptor.kmh2ms * dT;
-        stub.distance = stub.distance! + dD;
-      }
+      optionallyCalculateDistance(stub, dT);
     }
 
     // #235
@@ -1224,6 +1240,12 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
 
         if (stub.power != null) {
           stub.power = (stub.power! * _powerFactor).round();
+        }
+
+        if (!hasSpeedReporting && isMoving) {
+          if (optionallyCalculateSpeed(stub)) {
+            optionallyCalculateDistance(stub, dT);
+          }
         }
       }
 
