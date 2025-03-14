@@ -513,12 +513,12 @@ class RecordWithSport extends Record {
     final cadence = 30.0 + random.nextDouble() * 100.0;
     return RecordWithSport(
       timeStamp: DateTime.now(),
-      calories: random.nextInt(1500),
+      calories: 1 + random.nextInt(1500),
       power: 50 + random.nextInt(500),
       speed: spd,
       cadence: cadence.toInt(),
       heartRate: 60 + random.nextInt(120),
-      resistance: random.nextInt(100),
+      resistance: 1 + random.nextInt(100),
       preciseCadence: cadence,
       sport: sport,
     );
