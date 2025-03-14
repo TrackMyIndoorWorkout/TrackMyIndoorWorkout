@@ -187,13 +187,13 @@ class DeviceFactory {
     );
   }
 
-  static HeartRateSensorDescriptor getHeartRateSensor() {
+  static HeartRateSensorDescriptor getGenericHeartRateMonitor() {
     return HeartRateSensorDescriptor(
-      vendorName: "Polar Electro Oy",
-      modelName: "Verity Sense",
+      vendorName: "Unknown",
+      modelName: "Generic Heart Rate Monitor",
       manufacturerNamePart: "Unknown",
-      manufacturerFitId: polarElectroOyId,
-      model: "Verity Sense",
+      manufacturerFitId: stravaFitId,
+      model: "Generic Heart Rate Monitor",
     );
   }
 
@@ -365,7 +365,7 @@ class DeviceFactory {
       case genericFTMSTreadmillFourCC:
         return DeviceFactory.getGenericFTMSTreadmill();
       case heartRateMonitorFourCC:
-        return DeviceFactory.getHeartRateSensor();
+        return DeviceFactory.getGenericHeartRateMonitor();
       case kayakFirstFourCC:
         return KayakFirstDescriptor();
       case kayakProGenesisPortFourCC:
