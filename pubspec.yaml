@@ -15,7 +15,7 @@ dependency_overrides:
 dependencies:
   app_links: ^6.4.0
   assorted_layout_widgets: ^11.0.0
-  audioplayers: ^6.3.0
+  audioplayers: ^6.4.0
   collection: ^1.19.1
   datetime_picker_formfield_new: ^2.1.0
   device_info_plus: ^11.3.3
@@ -23,7 +23,7 @@ dependencies:
   email_validator: ^3.0.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.3
-  file_picker: ^9.0.2
+  file_picker: ^9.1.0
   flex_color_scheme: ^8.1.1
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.35.3
@@ -58,7 +58,7 @@ dependencies:
   receive_sharing_intent: ^1.8.1
   share_plus: ^10.1.4
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^28.2.9
+  syncfusion_flutter_charts: ^28.2.11
   timezone: ^0.10.0
   tuple: ^2.0.2
   url_launcher: ^6.3.1
