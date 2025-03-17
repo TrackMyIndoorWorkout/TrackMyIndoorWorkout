@@ -644,6 +644,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                     prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
                 await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
 
+                // await DbUtils().deleteRecords(widget.activity, 652536, 653360);
+
                 // await DbUtils().offsetActivity(widget.activity, 1440);
 
                 // await DbUtils().splitActivity(widget.activity, 29, 87);

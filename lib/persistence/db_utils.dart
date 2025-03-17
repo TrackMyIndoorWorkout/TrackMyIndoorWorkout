@@ -431,4 +431,20 @@ class DbUtils with PowerSpeedMixin {
 
     return true;
   }
+
+  Future<int> deleteRecords(Activity activity, int minRecordId, int maxRecordId) async {
+    var numDeleted = 0;
+    database.writeTxn(() async {
+      numDeleted =
+          await database.records
+              .where()
+              .filter()
+              .activityIdEqualTo(activity.id)
+              .and()
+              .idBetween(minRecordId, maxRecordId)
+              .deleteAll();
+    });
+
+    return numDeleted;
+  }
 }
