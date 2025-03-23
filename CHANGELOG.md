@@ -1,3 +1,9 @@
+## 2.0.161
+* Heart Rate Monitor only workout (with possible Calorie -> Watt -> speed + distance)
+* Accept only CSV extensions for activity import
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
 ## 2.0.160
 * Being able to pick Track My Indoor Workout as an "Open With" target app for workout CSVs to import
 * File import permission changes for newer Android versions
