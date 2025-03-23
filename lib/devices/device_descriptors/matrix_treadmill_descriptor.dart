@@ -4,14 +4,14 @@ import 'treadmill_device_descriptor.dart';
 
 class MatrixTreadmillDescriptor extends TreadmillDeviceDescriptor {
   MatrixTreadmillDescriptor()
-      : super(
-          fourCC: matrixTreadmillFourCC,
-          vendorName: "Matrix",
-          modelName: "Matrix Treadmill",
-          manufacturerNamePart: "CTM",
-          manufacturerFitId: johnsonHealthTechId,
-          model: "Matrix Treadmill",
-        );
+    : super(
+        fourCC: matrixTreadmillFourCC,
+        vendorName: "Matrix",
+        modelName: "Matrix Treadmill",
+        manufacturerNamePart: "CTM",
+        manufacturerFitId: johnsonHealthTechId,
+        model: "Matrix Treadmill",
+      );
 
   @override
   MatrixTreadmillDescriptor clone() => MatrixTreadmillDescriptor();

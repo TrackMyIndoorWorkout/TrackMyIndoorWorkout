@@ -1,7 +1,8 @@
 import 'package:tuple/tuple.dart';
 
 const kayakFirstDisplay = "Kayak First Display Config.:";
-const kayakFirstDisplayDescription = "Choices: "
+const kayakFirstDisplayDescription =
+    "Choices: "
     "0. Elapsed time, 2. Total distance (*), "
     "3. Avg. speed (*), 4. Inst. speed, "
     "5. Avg. stroke rate, 6. Inst. stroke rate, "

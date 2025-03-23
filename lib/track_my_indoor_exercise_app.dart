@@ -66,13 +66,16 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
         widget.prefService.get<bool>(leaderboardFeatureTag) ?? leaderboardFeatureDefault;
 
     // Listen to media sharing coming from outside the app while the app is in the memory.
-    _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _importActivities(value);
-      });
-    }, onError: (err) {
-      debugPrint("getIntentDataStream error: $err");
-    });
+    _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen(
+      (value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await _importActivities(value);
+        });
+      },
+      onError: (err) {
+        debugPrint("getIntentDataStream error: $err");
+      },
+    );
 
     // Get the media sharing coming from outside the app while the app is closed.
     ReceiveSharingIntent.instance.getInitialMedia().then((value) {
@@ -96,7 +99,8 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
       service: widget.prefService,
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        showPerformanceOverlay: widget.prefService.get<bool>(showPerformanceOverlayTag) ??
+        showPerformanceOverlay:
+            widget.prefService.get<bool>(showPerformanceOverlayTag) ??
             showPerformanceOverlayDefault,
         color: _themeManager!.getHeaderColor(),
         theme: FlexThemeData.light(

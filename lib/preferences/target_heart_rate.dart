@@ -59,7 +59,8 @@ const targetHeartRateAudioPeriodIntTag = targetHeartRateAudioPeriodTag + intTagP
 const targetHeartRateAudioPeriodMin = 0;
 const targetHeartRateAudioPeriodDefault = 0;
 const targetHeartRateAudioPeriodMax = 10;
-const targetHeartRateAudioPeriodDescription = "0 or 1: no periodicity. Larger than 1 seconds: "
+const targetHeartRateAudioPeriodDescription =
+    "0 or 1: no periodicity. Larger than 1 seconds: "
     "the selected sound effect will play with the periodicity until the HR is back in range.";
 
 const targetHeartRateSoundEffect = "Target Heart Rate Out of Range Sound Effect:";

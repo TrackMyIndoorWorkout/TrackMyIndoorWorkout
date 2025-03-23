@@ -638,7 +638,8 @@ class TrackManager {
       final timeOffset = timeZoneOffset(timeZoneName) + 5; // 5 is to break a tie
       final timeZoneDiffSortedEntries = trackMaps.keys
           .map<Tuple2<int, String>>(
-              (tzName) => Tuple2<int, String>((timeZoneOffset(tzName) - timeOffset).abs(), tzName))
+            (tzName) => Tuple2<int, String>((timeZoneOffset(tzName) - timeOffset).abs(), tzName),
+          )
           .sortedByCompare((tp) => tp.item1, (int t1, int t2) => t1.compareTo(t2))
           .toList(growable: false);
 

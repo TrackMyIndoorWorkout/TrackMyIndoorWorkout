@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
-import '../../utils/color_ex.dart';
 import '../parts/color_picker.dart';
 
 class PrefColor extends StatelessWidget {
@@ -36,11 +35,9 @@ class PrefColor extends StatelessWidget {
       onChange: (colorValue) => onChange?.call(Color(colorValue ?? initialValue)),
       disabled: disabled,
       onTap: _onTap,
-      builder: (context, colorValue) => Container(
-        color: Color(colorValue ?? initialValue),
-        width: 40,
-        height: 30,
-      ),
+      builder:
+          (context, colorValue) =>
+              Container(color: Color(colorValue ?? initialValue), width: 40, height: 30),
     );
   }
 
@@ -50,11 +47,7 @@ class PrefColor extends StatelessWidget {
       SafeArea(
         child: Column(
           children: [
-            Expanded(
-              child: Center(
-                child: ColorPickerBottomSheet(color: Color(starterValue)),
-              ),
-            ),
+            Expanded(child: Center(child: ColorPickerBottomSheet(color: Color(starterValue)))),
           ],
         ),
       ),
@@ -63,6 +56,6 @@ class PrefColor extends StatelessWidget {
       enableDrag: false,
     );
 
-    return pickedColor?.toARGB32 ?? starterValue;
+    return pickedColor?.toARGB32() ?? starterValue;
   }
 }

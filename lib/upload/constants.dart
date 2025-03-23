@@ -24,7 +24,12 @@ class PortalChoiceDescriptor {
   final double heightMultiplier;
 
   PortalChoiceDescriptor(
-      this.name, this.iconName, this.logoName, this.color, this.heightMultiplier);
+    this.name,
+    this.iconName,
+    this.logoName,
+    this.color,
+    this.heightMultiplier,
+  );
 
   Widget getSvg(bool icon, double baseHeight) {
     return SvgPicture.asset(

@@ -25,10 +25,7 @@ class ActivityDetailHeaderRowBase extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          themeManager.getBlueIcon(icon, iconSize),
-          widget,
-        ],
+        children: [themeManager.getBlueIcon(icon, iconSize), widget],
       ),
     );
   }

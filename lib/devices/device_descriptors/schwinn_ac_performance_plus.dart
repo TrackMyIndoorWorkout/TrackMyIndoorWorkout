@@ -13,19 +13,19 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
   static const double extraCalorieFactor = 3.9;
 
   SchwinnACPerformancePlus()
-      : super(
-          sport: deviceSportDescriptors[schwinnACPerfPlusFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[schwinnACPerfPlusFourCC]!.isMultiSport,
-          fourCC: schwinnACPerfPlusFourCC,
-          vendorName: "Schwinn",
-          modelName: "AC Performance Plus",
-          manufacturerNamePart: "Schwinn",
-          manufacturerFitId: stravaFitId,
-          model: "Schwinn AC Perf+",
-          deviceCategory: DeviceCategory.antPlusDevice,
-          tag: "SCHWINN_AC_PERF+",
-          canMeasureCalories: true, // #258 avoid over inflation
-        );
+    : super(
+        sport: deviceSportDescriptors[schwinnACPerfPlusFourCC]!.defaultSport,
+        isMultiSport: deviceSportDescriptors[schwinnACPerfPlusFourCC]!.isMultiSport,
+        fourCC: schwinnACPerfPlusFourCC,
+        vendorName: "Schwinn",
+        modelName: "AC Performance Plus",
+        manufacturerNamePart: "Schwinn",
+        manufacturerFitId: stravaFitId,
+        model: "Schwinn AC Perf+",
+        deviceCategory: DeviceCategory.antPlusDevice,
+        tag: "SCHWINN_AC_PERF+",
+        canMeasureCalories: true, // #258 avoid over inflation
+      );
 
   @override
   SchwinnACPerformancePlus clone() => SchwinnACPerformancePlus();
@@ -64,8 +64,12 @@ class SchwinnACPerformancePlus extends DeviceDescriptor {
 
   @override
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 }

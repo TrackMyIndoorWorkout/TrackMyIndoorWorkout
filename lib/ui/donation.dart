@@ -66,9 +66,7 @@ class DonationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Donation"),
-      ),
+      appBar: AppBar(title: const Text("Donation")),
       body: ListView(
         children: [
           getListTile(
@@ -90,12 +88,7 @@ class DonationScreen extends StatelessWidget {
             "https://venmo.com/code?user_id=2114670181744640341&created=1670822626",
             "&printed=true",
           ),
-          getListTile(
-            "CashApp",
-            "cash-app",
-            "https://cash.app/\$CsabaToth",
-            "?qr=1",
-          ),
+          getListTile("CashApp", "cash-app", "https://cash.app/\$CsabaToth", "?qr=1"),
           getListTile(
             "Zelle",
             "zelle-logo",

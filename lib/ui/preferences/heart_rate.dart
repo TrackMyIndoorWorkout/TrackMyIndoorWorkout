@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/heart_rate_gap_workaround.dart';
 import '../../preferences/heart_rate_limiting.dart';
 import '../../preferences/heart_rate_monitor_priority.dart';
+import '../../preferences/heart_rate_monitor_workout.dart';
 import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/use_hr_monitor_reported_calories.dart';
 import 'pref_integer.dart';
@@ -19,6 +21,11 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
   Widget build(BuildContext context) {
     List<Widget> heartRatePreferences = [
       const PrefTitle(title: Text("Tuning")),
+      const PrefCheckbox(
+        title: Text(heartRateMonitorWorkout),
+        subtitle: Text(heartRateMonitorWorkoutDescription),
+        pref: heartRateMonitorWorkoutTag,
+      ),
       const PrefCheckbox(
         title: Text(heartRateMonitorPriority),
         subtitle: Text(heartRateMonitorPriorityDescription),
@@ -74,7 +81,8 @@ class HeartRatePreferencesScreen extends StatelessWidget with PreferencesScreenM
         max: heartRateUpperLimitMax,
       ),
       PrefLabel(
-          title: Text(heartRateLimitingMethod, style: Get.textTheme.headlineSmall!, maxLines: 3)),
+        title: Text(heartRateLimitingMethod, style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
       const PrefRadio<String>(
         title: Text(heartRateLimitingWriteZeroDescription),
         value: heartRateLimitingWriteZero,

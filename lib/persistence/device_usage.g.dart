@@ -17,36 +17,12 @@ const DeviceUsageSchema = CollectionSchema(
   name: r'DeviceUsage',
   id: -2444862006341119883,
   properties: {
-    r'mac': PropertySchema(
-      id: 0,
-      name: r'mac',
-      type: IsarType.string,
-    ),
-    r'manufacturer': PropertySchema(
-      id: 1,
-      name: r'manufacturer',
-      type: IsarType.string,
-    ),
-    r'manufacturerName': PropertySchema(
-      id: 2,
-      name: r'manufacturerName',
-      type: IsarType.string,
-    ),
-    r'name': PropertySchema(
-      id: 3,
-      name: r'name',
-      type: IsarType.string,
-    ),
-    r'sport': PropertySchema(
-      id: 4,
-      name: r'sport',
-      type: IsarType.string,
-    ),
-    r'time': PropertySchema(
-      id: 5,
-      name: r'time',
-      type: IsarType.dateTime,
-    )
+    r'mac': PropertySchema(id: 0, name: r'mac', type: IsarType.string),
+    r'manufacturer': PropertySchema(id: 1, name: r'manufacturer', type: IsarType.string),
+    r'manufacturerName': PropertySchema(id: 2, name: r'manufacturerName', type: IsarType.string),
+    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
+    r'sport': PropertySchema(id: 4, name: r'sport', type: IsarType.string),
+    r'time': PropertySchema(id: 5, name: r'time', type: IsarType.dateTime),
   },
   estimateSize: _deviceUsageEstimateSize,
   serialize: _deviceUsageSerialize,
@@ -59,40 +35,22 @@ const DeviceUsageSchema = CollectionSchema(
       name: r'mac',
       unique: false,
       replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'mac',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
+      properties: [IndexPropertySchema(name: r'mac', type: IndexType.hash, caseSensitive: true)],
     ),
     r'name': IndexSchema(
       id: 879695947855722453,
       name: r'name',
       unique: false,
       replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'name',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
+      properties: [IndexPropertySchema(name: r'name', type: IndexType.hash, caseSensitive: true)],
     ),
     r'time': IndexSchema(
       id: -2250472054110640942,
       name: r'time',
       unique: false,
       replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'time',
-          type: IndexType.value,
-          caseSensitive: false,
-        )
-      ],
-    )
+      properties: [IndexPropertySchema(name: r'time', type: IndexType.value, caseSensitive: false)],
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -198,9 +156,7 @@ extension DeviceUsageQueryWhereSort on QueryBuilder<DeviceUsage, DeviceUsage, QW
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhere> anyTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'time'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'time'));
     });
   }
 }
@@ -208,10 +164,7 @@ extension DeviceUsageQueryWhereSort on QueryBuilder<DeviceUsage, DeviceUsage, QW
 extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhereClause> {
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
@@ -219,39 +172,31 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
       } else {
         return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
       }
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
+      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
+      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
     });
   }
 
@@ -262,21 +207,20 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> macEqualTo(String mac) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'mac',
-        value: [mac],
-      ));
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
     });
   }
 
@@ -284,42 +228,47 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'mac',
-              lower: [],
-              upper: [mac],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'mac',
-              lower: [mac],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [],
+                upper: [mac],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [mac],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'mac',
-              lower: [mac],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'mac',
-              lower: [],
-              upper: [mac],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [mac],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [],
+                upper: [mac],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> nameEqualTo(String name) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'name',
-        value: [name],
-      ));
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'name', value: [name]));
     });
   }
 
@@ -327,42 +276,47 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [],
-              upper: [name],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [name],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [name],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'name',
-              lower: [],
-              upper: [name],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> timeEqualTo(DateTime time) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'time',
-        value: [time],
-      ));
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'time', value: [time]));
     });
   }
 
@@ -370,32 +324,40 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'time',
-              lower: [],
-              upper: [time],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'time',
-              lower: [time],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'time',
+                lower: [],
+                upper: [time],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'time',
+                lower: [time],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'time',
-              lower: [time],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'time',
-              lower: [],
-              upper: [time],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'time',
+                lower: [time],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'time',
+                lower: [],
+                upper: [time],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -405,12 +367,14 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'time',
-        lower: [time],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'time',
+          lower: [time],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
@@ -419,12 +383,14 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'time',
-        lower: [],
-        upper: [time],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'time',
+          lower: [],
+          upper: [time],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
@@ -435,13 +401,15 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'time',
-        lower: [lowerTime],
-        includeLower: includeLower,
-        upper: [upperTime],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'time',
+          lower: [lowerTime],
+          includeLower: includeLower,
+          upper: [upperTime],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -449,10 +417,7 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
 extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilterCondition> {
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
     });
   }
 
@@ -461,11 +426,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'id', value: value),
+      );
     });
   }
 
@@ -474,11 +437,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'id', value: value),
+      );
     });
   }
 
@@ -489,13 +450,15 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -504,11 +467,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'mac',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'mac', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -518,12 +479,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'mac',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'mac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -533,12 +496,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'mac',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'mac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -550,14 +515,16 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'mac',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'mac',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -566,11 +533,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'mac',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(property: r'mac', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -579,51 +544,43 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'mac',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(property: r'mac', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> macContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> macContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'mac',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(property: r'mac', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> macMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> macMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'mac',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(property: r'mac', wildcard: pattern, caseSensitive: caseSensitive),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> macIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'mac',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'mac', value: ''));
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> macIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'mac',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'mac', value: ''));
     });
   }
 
@@ -632,11 +589,13 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -646,12 +605,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -661,12 +622,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -678,14 +641,16 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'manufacturer',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'manufacturer',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -694,11 +659,13 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -707,67 +674,73 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'manufacturer',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'manufacturer',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'manufacturer',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'manufacturer',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'manufacturer',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'manufacturer', value: ''),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'manufacturer',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'manufacturer', value: ''),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerNameIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'manufacturerName',
-      ));
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'manufacturerName'));
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerNameIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'manufacturerName',
-      ));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'manufacturerName'),
+      );
     });
   }
 
@@ -776,11 +749,13 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'manufacturerName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'manufacturerName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -790,12 +765,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'manufacturerName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'manufacturerName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -805,12 +782,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'manufacturerName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'manufacturerName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -822,14 +801,16 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'manufacturerName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'manufacturerName',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -838,11 +819,13 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'manufacturerName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'manufacturerName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -851,53 +834,59 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'manufacturerName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'manufacturerName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerNameContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'manufacturerName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'manufacturerName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerNameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'manufacturerName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'manufacturerName',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'manufacturerName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'manufacturerName', value: ''),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> manufacturerNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'manufacturerName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'manufacturerName', value: ''),
+      );
     });
   }
 
@@ -906,11 +895,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -920,12 +907,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -935,12 +924,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -952,14 +943,16 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'name',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -968,11 +961,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(property: r'name', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -981,51 +972,43 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(property: r'name', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> nameContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> nameContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(property: r'name', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> nameMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> nameMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'name',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(property: r'name', wildcard: pattern, caseSensitive: caseSensitive),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'name', value: ''));
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'name',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'name', value: ''));
     });
   }
 
@@ -1034,11 +1017,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -1048,12 +1029,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'sport',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1063,12 +1046,14 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'sport',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1080,14 +1065,16 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'sport',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'sport',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1096,11 +1083,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
@@ -1109,60 +1094,53 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> sportContains(String value,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> sportContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'sport',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(property: r'sport', value: value, caseSensitive: caseSensitive),
+      );
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> sportMatches(String pattern,
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> sportMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'sport',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'sport',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> sportIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sport',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'sport', value: ''));
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> sportIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'sport',
-        value: '',
-      ));
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'sport', value: ''));
     });
   }
 
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterFilterCondition> timeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'time',
-        value: value,
-      ));
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'time', value: value));
     });
   }
 
@@ -1171,11 +1149,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'time',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(include: include, property: r'time', value: value),
+      );
     });
   }
 
@@ -1184,11 +1160,9 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'time',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(include: include, property: r'time', value: value),
+      );
     });
   }
 
@@ -1199,13 +1173,15 @@ extension DeviceUsageQueryFilter on QueryBuilder<DeviceUsage, DeviceUsage, QFilt
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'time',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'time',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -1381,15 +1357,17 @@ extension DeviceUsageQueryWhereDistinct on QueryBuilder<DeviceUsage, DeviceUsage
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> distinctByManufacturer(
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> distinctByManufacturer({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'manufacturer', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> distinctByManufacturerName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<DeviceUsage, DeviceUsage, QDistinct> distinctByManufacturerName({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'manufacturerName', caseSensitive: caseSensitive);
     });

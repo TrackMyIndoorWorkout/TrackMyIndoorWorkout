@@ -29,15 +29,22 @@ void main() {
       const FtmsTestPair(machineTypes: [MachineType.stairClimber], expected: false),
       const FtmsTestPair(machineTypes: [MachineType.multiFtms], expected: false),
       const FtmsTestPair(
-          machineTypes: [MachineType.indoorBike, MachineType.treadmill, MachineType.crossTrainer],
-          expected: true),
+        machineTypes: [MachineType.indoorBike, MachineType.treadmill, MachineType.crossTrainer],
+        expected: true,
+      ),
       const FtmsTestPair(
-          machineTypes: [MachineType.stepClimber, MachineType.stairClimber], expected: true),
+        machineTypes: [MachineType.stepClimber, MachineType.stairClimber],
+        expected: true,
+      ),
       const FtmsTestPair(machineTypes: [MachineType.rower, MachineType.treadmill], expected: true),
       const FtmsTestPair(
-          machineTypes: [MachineType.notFitnessMachine, MachineType.treadmill], expected: false),
+        machineTypes: [MachineType.notFitnessMachine, MachineType.treadmill],
+        expected: false,
+      ),
       const FtmsTestPair(
-          machineTypes: [MachineType.multiFtms, MachineType.treadmill], expected: false),
+        machineTypes: [MachineType.multiFtms, MachineType.treadmill],
+        expected: false,
+      ),
     ]) {
       test("${testPair.machineTypes} -> ${testPair.expected}", () async {
         final advertisementDigest = AdvertisementDigest(

@@ -507,14 +507,17 @@ class CSVImporter with PowerSpeedMixin {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
       final factors = await DbUtils().getFactors(deviceId);
       fourCC = device.fourCC;
-      deviceName = deviceNamePrefixes.containsKey(fourCC)
-          ? deviceNamePrefixes[fourCC]?.deviceNamePrefixes[0] ?? notAvailable
-          : notAvailable;
+      deviceName =
+          deviceNamePrefixes.containsKey(fourCC)
+              ? deviceNamePrefixes[fourCC]?.deviceNamePrefixes[0] ?? notAvailable
+              : notAvailable;
       sport = device.sport;
-      calorieFactor = factors.item2 *
+      calorieFactor =
+          factors.item2 *
           (device.canMeasureCalories ? 1.0 : DeviceDescriptor.powerCalorieFactorDefault);
       hrCalorieFactor = factors.item3;
-      hrBasedCalories = prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
+      hrBasedCalories =
+          prefService.get<bool>(useHeartRateBasedCalorieCountingTag) ??
           useHeartRateBasedCalorieCountingDefault;
       powerFactor = factors.item1;
       if (start == null) {
@@ -681,7 +684,8 @@ class CSVImporter with PowerSpeedMixin {
       useHrBasedCalorieCounting &= (weight > athleteBodyWeightMin && age > athleteAgeMin);
 
       while (_linePointer < _lines.length) {
-        WorkoutRow row = nextRow ??
+        WorkoutRow row =
+            nextRow ??
             WorkoutRow(
               rowString: _lines[_linePointer],
               lastHeartRate: lastHeartRate,
@@ -742,12 +746,14 @@ class CSVImporter with PowerSpeedMixin {
           distance += dDistance;
           double dEnergy = 0.0;
           if (useHrBasedCalorieCounting && row.heartRate > 0) {
-            dEnergy = hrBasedCaloriesPerMinute(row.heartRate, weight, age, isMale, vo2Max) *
+            dEnergy =
+                hrBasedCaloriesPerMinute(row.heartRate, weight, age, isMale, vo2Max) *
                 milliSecondsPerRecord /
                 (1000 * 60) *
                 hrCalorieFactor;
           } else {
-            dEnergy = power *
+            dEnergy =
+                power *
                 milliSecondsPerRecord /
                 1000 *
                 jToKCal *

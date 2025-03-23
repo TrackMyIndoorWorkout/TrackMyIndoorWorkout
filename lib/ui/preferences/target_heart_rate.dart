@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/audio_volume.dart';
 import '../../preferences/metric_spec.dart';
 import '../../preferences/sound_effects.dart';
@@ -53,7 +54,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         divisions: targetHeartRateUpperBpmMax - targetHeartRateLowerBpmMin,
         direction: Axis.vertical,
         onChange: (num value) {
-          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
+          final upperLimit =
+              PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
               targetHeartRateUpperBpmDefault;
           if (value >= upperLimit) {
             setState(() {
@@ -71,7 +73,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
             return;
           }
 
-          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
+          final upperLimit =
+              PrefService.of(context).get<int>(targetHeartRateUpperBpmIntTag) ??
               targetHeartRateUpperBpmDefault;
           if (value >= upperLimit) {
             setState(() {
@@ -90,7 +93,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         divisions: targetHeartRateUpperBpmMax - targetHeartRateLowerBpmMin,
         direction: Axis.vertical,
         onChange: (num value) {
-          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
+          final lowerLimit =
+              PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
               targetHeartRateLowerBpmDefault;
           if (value <= lowerLimit) {
             setState(() {
@@ -108,7 +112,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
             return;
           }
 
-          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
+          final lowerLimit =
+              PrefService.of(context).get<int>(targetHeartRateLowerBpmIntTag) ??
               targetHeartRateLowerBpmDefault;
           if (value <= lowerLimit) {
             setState(() {
@@ -127,7 +132,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         divisions: targetHeartRateUpperZoneMax - targetHeartRateLowerZoneMin,
         direction: Axis.vertical,
         onChange: (num value) {
-          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
+          final upperLimit =
+              PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
               targetHeartRateUpperZoneDefault;
           if (value > upperLimit) {
             setState(() {
@@ -145,7 +151,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
             return;
           }
 
-          final upperLimit = PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
+          final upperLimit =
+              PrefService.of(context).get<int>(targetHeartRateUpperZoneIntTag) ??
               targetHeartRateUpperZoneDefault;
           if (value > upperLimit) {
             setState(() {
@@ -164,7 +171,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         divisions: targetHeartRateUpperZoneMax - targetHeartRateLowerZoneMin,
         direction: Axis.vertical,
         onChange: (num value) {
-          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
+          final lowerLimit =
+              PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
               targetHeartRateLowerZoneDefault;
           if (value < lowerLimit) {
             setState(() {
@@ -182,7 +190,8 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
             return;
           }
 
-          final lowerLimit = PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
+          final lowerLimit =
+              PrefService.of(context).get<int>(targetHeartRateLowerZoneIntTag) ??
               targetHeartRateLowerZoneDefault;
           if (value < lowerLimit) {
             setState(() {
@@ -250,11 +259,7 @@ class TargetHrPreferencesScreenState extends State<TargetHrPreferencesScreen> {
         divisions: audioVolumeDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: audioVolumeIntTag,
-        min: audioVolumeMin,
-        max: audioVolumeMax,
-      ),
+      const PrefInteger(pref: audioVolumeIntTag, min: audioVolumeMin, max: audioVolumeMax),
     ];
 
     return Scaffold(

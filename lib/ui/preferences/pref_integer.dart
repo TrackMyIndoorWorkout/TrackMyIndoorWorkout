@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:pref/pref.dart';
+
 import '../../utils/theme_manager.dart';
 
 class PrefInteger extends StatefulWidget {
@@ -51,20 +52,21 @@ class PrefIntegerState extends State<PrefInteger> {
       subtitle: widget.subtitle,
       onChange: widget.onChange,
       disabled: widget.disabled,
-      builder: (context, value, onChange) => NumberSelector(
-        current: value ?? 0,
-        min: widget.min,
-        max: widget.max,
-        showMinMax: true,
-        showSuffix: false,
-        hasBorder: true,
-        borderColor: borderColor,
-        hasDividers: true,
-        dividerColor: borderColor,
-        backgroundColor: backgroundColor,
-        iconColor: iconColor,
-        onUpdate: onChange,
-      ),
+      builder:
+          (context, value, onChange) => NumberSelector(
+            current: value ?? 0,
+            min: widget.min,
+            max: widget.max,
+            showMinMax: true,
+            showSuffix: false,
+            hasBorder: true,
+            borderColor: borderColor,
+            hasDividers: true,
+            dividerColor: borderColor,
+            backgroundColor: backgroundColor,
+            iconColor: iconColor,
+            onUpdate: onChange,
+          ),
     );
   }
 }

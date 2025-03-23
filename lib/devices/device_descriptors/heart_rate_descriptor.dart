@@ -6,37 +6,50 @@ import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/guid_ex.dart';
 import '../../utils/logging.dart';
+import '../device_fourcc.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gadgets/heart_rate_monitor.dart';
 import '../gatt/hrm.dart';
 import 'device_descriptor.dart';
 
-abstract class CyclingSensorDescriptor extends DeviceDescriptor {
-  final String serviceUuid;
-  final String characteristicUuid;
-  ComplexSensor? sensor;
+class HeartRateSensorDescriptor extends DeviceDescriptor {
+  late HeartRateMonitor? sensor;
 
-  CyclingSensorDescriptor({
-    required super.fourCC,
+  HeartRateSensorDescriptor({
     required super.vendorName,
     required super.modelName,
     required super.manufacturerNamePart,
     required super.manufacturerFitId,
     required super.model,
-    required super.deviceCategory,
     super.tag,
-    required this.serviceUuid,
-    required this.characteristicUuid,
-    super.flagByteSize,
   }) : super(
+         fourCC: heartRateMonitorFourCC,
          sport: ActivityType.ride,
          isMultiSport: false,
-         dataServiceId: serviceUuid,
-         dataCharacteristicId: characteristicUuid,
+         deviceCategory: DeviceCategory.primarySensor,
+         dataServiceId: heartRateServiceUuid,
+         dataCharacteristicId: heartRateMeasurementUuid,
          controlCharacteristicId: "",
          listenOnControl: false,
          hasFeatureFlags: true,
-       );
+         flagByteSize: 1,
+       ) {
+    sensor = null;
+  }
+
+  @override
+  HeartRateSensorDescriptor clone() => HeartRateSensorDescriptor(
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+  )..sensor = sensor;
+
+  @override
+  ComplexSensor? getSensor(BluetoothDevice device) {
+    return HeartRateMonitor(device);
+  }
 
   @override
   bool isDataProcessable(List<int> data) {
@@ -86,17 +99,7 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     BluetoothDevice device,
     List<BluetoothService> services,
   ) {
-    // TODO: ask the user whether they prefer to pair the HRM to the console or not. We assume yes now.
-    final requiredService = services.firstWhereOrNull(
-      (service) => service.serviceUuid.uuidString() == heartRateServiceUuid,
-    );
-    if (requiredService == null) {
-      return [];
-    }
-
-    final additionalSensor = HeartRateMonitor(device);
-    additionalSensor.services = services;
-    return [additionalSensor];
+    return [];
   }
 
   @override
@@ -117,13 +120,13 @@ abstract class CyclingSensorDescriptor extends DeviceDescriptor {
     }
 
     final requiredService = services.firstWhereOrNull(
-      (service) => service.serviceUuid.uuidString() == serviceUuid,
+      (service) => service.serviceUuid.uuidString() == dataServiceId,
     );
     if (requiredService == null) {
       return;
     }
 
-    sensor = getSensor(device);
+    sensor = getSensor(device) as HeartRateMonitor;
     sensor!.services = services;
   }
 }

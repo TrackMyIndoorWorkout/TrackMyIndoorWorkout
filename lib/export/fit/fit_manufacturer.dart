@@ -1,4 +1,5 @@
 import 'package:edit_distance/edit_distance.dart';
+
 import '../../devices/device_descriptors/matrix_treadmill_descriptor.dart';
 import 'fit_base_type.dart';
 
@@ -11,6 +12,7 @@ const stagesCyclingFitId = 69;
 const strydFitId = 95;
 const technogymFitId = 111;
 const johnsonHealthTechId = 122;
+const polarElectroOyId = 123;
 const precorFitId = 266;
 const stravaFitId = 265;
 
@@ -134,7 +136,7 @@ Map<int, String> fitManufacturer = {
   120: 'inpeak',
   121: 'kinetic',
   johnsonHealthTechId: 'johnson health tech',
-  123: 'polar electro',
+  polarElectroOyId: 'polar electro',
   124: 'seesense',
   255: 'development',
   257: 'healthandlife',
@@ -192,12 +194,14 @@ int getFitManufacturer(String manufacturer) {
   JaroWinkler jaroWinkler = JaroWinkler();
   final manufacturerLower = manufacturer.toLowerCase();
   for (var manufacturerEntry in fitManufacturer.entries) {
-    final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
-        ? manufacturerLower
-        : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
-    final entryCropped = manufacturerEntry.value.length <= manufacturerCropped.length
-        ? manufacturerEntry.value
-        : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
+    final manufacturerCropped =
+        manufacturerLower.length <= manufacturerEntry.value.length
+            ? manufacturerLower
+            : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
+    final entryCropped =
+        manufacturerEntry.value.length <= manufacturerCropped.length
+            ? manufacturerEntry.value
+            : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
     final distance = jaroWinkler.normalizedDistance(manufacturerCropped, entryCropped);
     if (distance < bestDistance) {
       bestDistance = distance;

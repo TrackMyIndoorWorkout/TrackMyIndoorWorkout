@@ -34,34 +34,30 @@ class TrackCalculator {
       );
       trackOffset = offset;
 
-      trackStroke = Paint()
-        ..color = const Color(0xff777777)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2 * thick
-        ..isAntiAlias = true;
+      trackStroke =
+          Paint()
+            ..color = const Color(0xff777777)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2 * thick
+            ..isAntiAlias = true;
 
       final leftHalfCircleRect = Rect.fromCircle(
-        center: Offset(
-          thick + offset.dx + r,
-          thick + offset.dy + r,
-        ),
+        center: Offset(thick + offset.dx + r, thick + offset.dy + r),
         radius: r,
       );
 
       final rightHalfCircleRect = Rect.fromCircle(
-        center: Offset(
-          size.width - (thick + offset.dx + r),
-          thick + offset.dy + r,
-        ),
+        center: Offset(size.width - (thick + offset.dx + r), thick + offset.dy + r),
         radius: r,
       );
 
-      trackPath = Path()
-        ..moveTo(thick + offset.dx + r, thick + offset.dy)
-        ..lineTo(size.width - (thick + offset.dx + r), thick + offset.dy)
-        ..arcTo(rightHalfCircleRect, 1.5 * pi, pi, true)
-        ..lineTo(thick + offset.dx + r, thick + offset.dy + 2 * r)
-        ..arcTo(leftHalfCircleRect, 0.5 * pi, pi, true);
+      trackPath =
+          Path()
+            ..moveTo(thick + offset.dx + r, thick + offset.dy)
+            ..lineTo(size.width - (thick + offset.dx + r), thick + offset.dy)
+            ..arcTo(rightHalfCircleRect, 1.5 * pi, pi, true)
+            ..lineTo(thick + offset.dx + r, thick + offset.dy + 2 * r)
+            ..arcTo(leftHalfCircleRect, 0.5 * pi, pi, true);
     }
   }
 
@@ -77,10 +73,7 @@ class TrackCalculator {
     if (d <= track.laneLength) {
       // bottom straight
       final displacement = d * r / track.radius;
-      return Offset(
-        thick + offset.dx + r + displacement,
-        trackSize!.height - thick - offset.dy,
-      );
+      return Offset(thick + offset.dx + r + displacement, trackSize!.height - thick - offset.dy);
     } else if (d <= trackLen / 2) {
       // right half circle
       final rad = (d - track.laneLength) / track.halfCircle * pi;
@@ -91,17 +84,11 @@ class TrackCalculator {
     } else if (d <= trackLen / 2 + track.laneLength) {
       // top straight
       final displacement = (d - trackLen / 2) * r / track.radius;
-      return Offset(
-        trackSize!.width - (thick + offset.dx + r) - displacement,
-        thick + offset.dy,
-      );
+      return Offset(trackSize!.width - (thick + offset.dx + r) - displacement, thick + offset.dy);
     } else {
       // left half circle
       final rad = (trackLen - d) / track.halfCircle * pi;
-      return Offset(
-        (1 - sin(rad)) * r + thick + offset.dx,
-        (cos(rad) + 1) * r + thick + offset.dy,
-      );
+      return Offset((1 - sin(rad)) * r + thick + offset.dx, (cos(rad) + 1) * r + thick + offset.dy);
     }
   }
 
@@ -112,31 +99,19 @@ class TrackCalculator {
     var c = const Offset(0, 0); // Relative to GPS track center, not GPS scaled
     if (d <= track.laneLength) {
       // left straight
-      c = Offset(
-        -track.radius,
-        track.laneHalf - d,
-      );
+      c = Offset(-track.radius, track.laneHalf - d);
     } else if (d <= trackLen / 2) {
       // top half circle
       final rad = (d - track.laneLength) / track.halfCircle * pi;
-      c = Offset(
-        -cos(rad) * track.radius,
-        -track.laneHalf - sin(rad) * track.radius,
-      );
+      c = Offset(-cos(rad) * track.radius, -track.laneHalf - sin(rad) * track.radius);
     } else if (d <= trackLen / 2 + track.laneLength) {
       // right straight
       final displacement = (d - trackLen / 2);
-      c = Offset(
-        track.radius,
-        -track.laneHalf + displacement,
-      );
+      c = Offset(track.radius, -track.laneHalf + displacement);
     } else {
       // bottom half circle
       final rad = (d - trackLen / 2 - track.laneLength) / track.halfCircle * pi;
-      c = Offset(
-        cos(rad) * track.radius,
-        track.laneHalf + sin(rad) * track.radius,
-      );
+      c = Offset(cos(rad) * track.radius, track.laneHalf + sin(rad) * track.radius);
     }
 
     // lon, lat order!
@@ -184,8 +159,9 @@ class TrackCalculator {
 
     while ((lambda - lambdaP).abs() > 1e-12 && --iterationLimit > 0) {
       double sinLambda = sin(lambda), cosLambda = cos(lambda);
-      sinSigma =
-          sqrt(pow(cosU2 * sinLambda, 2) + pow(cosU1 * sinU2 - sinU1 * cosU2 * cosLambda, 2));
+      sinSigma = sqrt(
+        pow(cosU2 * sinLambda, 2) + pow(cosU1 * sinU2 - sinU1 * cosU2 * cosLambda, 2),
+      );
       if (sinSigma == 0) return 0; // co-incident points
       cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
       sigma = atan2(sinSigma, cosSigma);
@@ -195,7 +171,8 @@ class TrackCalculator {
       if (cos2SigmaM.isNaN) cos2SigmaM = 0; // equatorial line: cosSqAlpha=0 (§6)
       double C = f / 16 * cosSqAlpha * (4 + f * (4 - 3 * cosSqAlpha));
       lambdaP = lambda;
-      lambda = L +
+      lambda =
+          L +
           (1 - C) *
               f *
               sinAlpha *
@@ -208,7 +185,8 @@ class TrackCalculator {
     double uSq = cosSqAlpha * (pow(a, 2) - pow(b, 2)) / pow(b, 2);
     double A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
     double B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
-    double deltaSigma = B *
+    double deltaSigma =
+        B *
         sinSigma *
         (cos2SigmaM +
             B /

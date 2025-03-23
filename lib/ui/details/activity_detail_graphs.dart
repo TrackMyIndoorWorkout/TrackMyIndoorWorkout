@@ -130,61 +130,63 @@ class ActivityDetailGraphs extends StatelessWidget {
         theme: expandableThemeData,
         header: Column(children: cardHeaderRows),
         collapsed: Container(),
-        expanded: Column(children: [
-          item == "speed" && sport != ActivityType.ride
-              ? TextOneLine(
+        expanded: Column(
+          children: [
+            item == "speed" && sport != ActivityType.ride
+                ? TextOneLine(
                   "Speed ${si ? 'km' : 'mi'}/h",
                   style: textStyle,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                 )
-              : Container(),
-          SizedBox(
-            width: size.width,
-            height: size.height / 2,
-            child: charts.SfCartesianChart(
-              primaryXAxis: charts.DateTimeAxis(
-                labelStyle: chartLabelStyle,
-                axisLine: charts.AxisLine(color: chartTextColor),
-                majorTickLines: charts.MajorTickLines(color: chartTextColor),
-                minorTickLines: charts.MinorTickLines(color: chartTextColor),
-                majorGridLines: charts.MajorGridLines(color: chartTextColor),
-                minorGridLines: charts.MinorGridLines(color: chartTextColor),
+                : Container(),
+            SizedBox(
+              width: size.width,
+              height: size.height / 2,
+              child: charts.SfCartesianChart(
+                primaryXAxis: charts.DateTimeAxis(
+                  labelStyle: chartLabelStyle,
+                  axisLine: charts.AxisLine(color: chartTextColor),
+                  majorTickLines: charts.MajorTickLines(color: chartTextColor),
+                  minorTickLines: charts.MinorTickLines(color: chartTextColor),
+                  majorGridLines: charts.MajorGridLines(color: chartTextColor),
+                  minorGridLines: charts.MinorGridLines(color: chartTextColor),
+                ),
+                primaryYAxis: charts.NumericAxis(
+                  plotBands: preferencesSpec.plotBands,
+                  labelStyle: chartLabelStyle,
+                  axisLine: charts.AxisLine(color: chartTextColor),
+                  majorTickLines: charts.MajorTickLines(color: chartTextColor),
+                  minorTickLines: charts.MinorTickLines(color: chartTextColor),
+                  majorGridLines: charts.MajorGridLines(color: chartTextColor),
+                  minorGridLines: charts.MinorGridLines(color: chartTextColor),
+                ),
+                margin: const EdgeInsets.all(0),
+                series: tileConfiguration.dataFn(),
+                zoomPanBehavior: zoomPanBehavior,
+                trackballBehavior: trackballBehavior,
               ),
-              primaryYAxis: charts.NumericAxis(
-                plotBands: preferencesSpec.plotBands,
-                labelStyle: chartLabelStyle,
-                axisLine: charts.AxisLine(color: chartTextColor),
-                majorTickLines: charts.MajorTickLines(color: chartTextColor),
-                minorTickLines: charts.MinorTickLines(color: chartTextColor),
-                majorGridLines: charts.MajorGridLines(color: chartTextColor),
-                minorGridLines: charts.MinorGridLines(color: chartTextColor),
+            ),
+            const Divider(height: 20, thickness: 2),
+            TextOneLine(
+              tileConfiguration.histogramTitle,
+              style: textStyle,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+            SizedBox(
+              width: size.width,
+              height: size.height / 3,
+              child: charts.SfCircularChart(
+                margin: const EdgeInsets.all(0),
+                legend: const charts.Legend(isVisible: true, textStyle: pieChartLabelStyle),
+                series: tileConfiguration.histogramFn!(),
+                palette: paletteSpec.getPiePalette(isLight, preferencesSpec),
+                tooltipBehavior: tooltipBehavior,
               ),
-              margin: const EdgeInsets.all(0),
-              series: tileConfiguration.dataFn(),
-              zoomPanBehavior: zoomPanBehavior,
-              trackballBehavior: trackballBehavior,
             ),
-          ),
-          const Divider(height: 20, thickness: 2),
-          TextOneLine(
-            tileConfiguration.histogramTitle,
-            style: textStyle,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(
-            width: size.width,
-            height: size.height / 3,
-            child: charts.SfCircularChart(
-              margin: const EdgeInsets.all(0),
-              legend: const charts.Legend(isVisible: true, textStyle: pieChartLabelStyle),
-              series: tileConfiguration.histogramFn!(),
-              palette: paletteSpec.getPiePalette(isLight, preferencesSpec),
-              tooltipBehavior: tooltipBehavior,
-            ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

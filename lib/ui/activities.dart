@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -9,8 +10,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
-import 'package:share_files_and_screenshot_widgets/share_files_and_screenshot_widgets.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tuple/tuple.dart';
 
 import '../export/activity_export.dart';
@@ -103,9 +105,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     _timeDisplayMode = prefService.get<String>(timeDisplayModeTag) ?? timeDisplayModeDefault;
     _uploadDisplayMode = prefService.get<String>(uploadDisplayModeTag) ?? uploadDisplayModeDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
-    _machineNameInHeader = prefService.get<bool>(activityListMachineNameInHeaderTag) ??
+    _machineNameInHeader =
+        prefService.get<bool>(activityListMachineNameInHeaderTag) ??
         activityListMachineNameInHeaderDefault;
-    _bluetoothAddressInHeader = prefService.get<bool>(activityListBluetoothAddressInHeaderTag) ??
+    _bluetoothAddressInHeader =
+        prefService.get<bool>(activityListBluetoothAddressInHeaderTag) ??
         activityListBluetoothAddressInHeaderDefault;
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
     final sizeAdjustInt =
@@ -150,11 +154,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             SafeArea(
               child: Column(
                 children: [
-                  Expanded(
-                    child: Center(
-                      child: UploadPortalPickerBottomSheet(activity: activity),
-                    ),
-                  ),
+                  Expanded(child: Center(child: UploadPortalPickerBottomSheet(activity: activity))),
                 ],
               ),
             ),
@@ -171,13 +171,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           final formatPick = await Get.bottomSheet(
             const SafeArea(
               child: Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: ExportFormatPickerBottomSheet(),
-                    ),
-                  ),
-                ],
+                children: [Expanded(child: Center(child: ExportFormatPickerBottomSheet()))],
               ),
             ),
             isScrollControlled: true,
@@ -198,13 +192,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             ExportTarget.regular,
           );
           final fileName = activity.getFileNameStub() + exporter.fileExtension(false);
-          ShareFilesAndScreenshotWidgets().shareFile(
-            activity.getTitle(false),
-            fileName,
-            Uint8List.fromList(fileBytes),
-            exporter.mimeType(false),
-            text: 'Share a ride on ${activity.deviceName}',
-          );
+          final Directory tempDir = await getTemporaryDirectory();
+          final workoutFilePath = "${tempDir.path}/$fileName";
+          final workoutFile = await File(workoutFilePath).writeAsBytes(fileBytes, flush: true);
+          Share.shareXFiles([XFile(workoutFile.path)], text: activity.getTitle(false));
         },
       ),
       IconButton(
@@ -248,11 +239,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             SafeArea(
               child: Column(
                 children: [
-                  Expanded(
-                    child: Center(
-                      child: CalorieOverrideBottomSheet(activity: activity),
-                    ),
-                  ),
+                  Expanded(child: Center(child: CalorieOverrideBottomSheet(activity: activity))),
                 ],
               ),
             ),
@@ -326,10 +313,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 Get.close(1);
               },
             ),
-            cancel: TextButton(
-              child: const Text("No"),
-              onPressed: () => Get.close(1),
-            ),
+            cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
           );
         },
       ),
@@ -337,17 +321,16 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       IconButton(
         icon: _themeManager.getActionIcon(Icons.chevron_right, size),
         iconSize: size,
-        onPressed: () async => await Get.to(
-            () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size)),
+        onPressed:
+            () async => await Get.to(
+              () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size),
+            ),
       ),
     ]);
 
     return FitHorizontally(
       shrinkLimit: shrinkLimit,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: actionsRow,
-      ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: actionsRow),
     );
   }
 
@@ -375,17 +358,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       _sizeDefault = _mediaWidth! / 7 * _sizeAdjust;
       _sizeDefault2 = _sizeDefault / 1.5;
 
-      _measurementStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: _sizeDefault,
-      );
-      _textStyle = TextStyle(
-        fontSize: _sizeDefault2,
-      );
-      _headerStyle = TextStyle(
-        fontFamily: fontFamily,
-        fontSize: _sizeDefault2,
-      );
+      _measurementStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault);
+      _textStyle = TextStyle(fontSize: _sizeDefault2);
+      _headerStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault2);
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
@@ -396,13 +371,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         final formatPick = await Get.bottomSheet(
           const SafeArea(
             child: Column(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: ImportFormatPickerBottomSheet(),
-                  ),
-                ),
-              ],
+              children: [Expanded(child: Center(child: ImportFormatPickerBottomSheet()))],
             ),
           ),
           isScrollControlled: true,
@@ -414,10 +383,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           return;
         }
 
-        await Get.to(() => ImportForm(migration: formatPick == "Migration"))
-            ?.whenComplete(() => setState(() {
-                  _editCount++;
-                }));
+        await Get.to(() => ImportForm(migration: formatPick == "Migration"))?.whenComplete(
+          () => setState(() {
+            _editCount++;
+          }),
+        );
       }),
       _themeManager.getBlueFab(Icons.collections_bookmark, () async {
         await Get.to(() => const DeviceUsagesScreen());
@@ -436,13 +406,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           Get.bottomSheet(
             const SafeArea(
               child: Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: LeaderBoardTypeBottomSheet(),
-                    ),
-                  ),
-                ],
+                children: [Expanded(child: Center(child: LeaderBoardTypeBottomSheet()))],
               ),
             ),
             isScrollControlled: true,
@@ -476,12 +440,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.activitys
-                .where()
-                .sortByStartDesc()
-                .offset(page * limit)
-                .limit(limit)
-                .findAll();
+            final data =
+                await _database.activitys
+                    .where()
+                    .sortByStartDesc()
+                    .offset(page * limit)
+                    .limit(limit)
+                    .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -489,10 +454,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           return Column(
             children: [
               Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: () => state.loadMore(), child: const Text('Retry')),
             ],
           );
         },
@@ -594,9 +556,10 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               themeManager: _themeManager,
               icon: Icons.timer,
               iconSize: _sizeDefault,
-              text: _timeDisplayMode == timeDisplayModeElapsed
-                  ? activity.elapsedString
-                  : activity.movingTimeString,
+              text:
+                  _timeDisplayMode == timeDisplayModeElapsed
+                      ? activity.elapsedString
+                      : activity.movingTimeString,
               textStyle: _measurementStyle,
             ),
             ActivityDetailRowWithUnit(
@@ -635,11 +598,11 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 contentPadding: const EdgeInsets.symmetric(horizontal: 1.0),
                 minLeadingWidth: 0,
                 horizontalTitleGap: 0,
-                onTap: () =>
-                    Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
-                title: Column(
-                  children: body,
-                ),
+                onTap:
+                    () => Get.to(
+                      () => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size),
+                    ),
+                title: Column(children: body),
               ),
             ),
           );

@@ -10,18 +10,27 @@ void main() {
   group('deviceNamePrefixes binds as expected', () {
     for (final fourCC in allFourCC) {
       test(fourCC, () async {
-        final hasPrefixes = fourCC != kayakFirstFourCC;
-        final hasPostfixes =
-            [concept2RowerFourCC, concept2SkiFourCC, concept2BikeFourCC].contains(fourCC);
+        final hasPrefixes = ![kayakFirstFourCC, heartRateMonitorFourCC].contains(fourCC);
+        final hasPostfixes = [
+          concept2RowerFourCC,
+          concept2SkiFourCC,
+          concept2BikeFourCC,
+        ].contains(fourCC);
         final deviceIdentifierHelperEntry = deviceNamePrefixes[fourCC];
         if (fourCC != mPowerImportDeviceId) {
           expect(deviceIdentifierHelperEntry, isNotNull);
-          expect(deviceIdentifierHelperEntry!.deviceNamePrefixes.length,
-              deviceIdentifierHelperEntry.deviceNameLoweredPrefixes.length);
-          expect(deviceIdentifierHelperEntry.deviceNamePostfix.length,
-              deviceIdentifierHelperEntry.deviceNameLoweredPostfix.length);
-          expect(deviceIdentifierHelperEntry.manufacturerNamePrefix.length,
-              deviceIdentifierHelperEntry.manufacturerNameLoweredPrefix.length);
+          expect(
+            deviceIdentifierHelperEntry!.deviceNamePrefixes.length,
+            deviceIdentifierHelperEntry.deviceNameLoweredPrefixes.length,
+          );
+          expect(
+            deviceIdentifierHelperEntry.deviceNamePostfix.length,
+            deviceIdentifierHelperEntry.deviceNameLoweredPostfix.length,
+          );
+          expect(
+            deviceIdentifierHelperEntry.manufacturerNamePrefix.length,
+            deviceIdentifierHelperEntry.manufacturerNameLoweredPrefix.length,
+          );
           expect(deviceIdentifierHelperEntry.deviceNamePrefixes.isNotEmpty, hasPrefixes);
           expect(deviceIdentifierHelperEntry.deviceNamePostfix.isNotEmpty, hasPostfixes);
         } else {

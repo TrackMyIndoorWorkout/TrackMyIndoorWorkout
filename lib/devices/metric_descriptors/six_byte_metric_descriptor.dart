@@ -12,7 +12,8 @@ class SixByteMetricDescriptor extends MetricDescriptor {
   @override
   double? getMeasurementValue(List<int> data) {
     final dir = lsb < msb ? 1 : -1;
-    final value = data[lsb] +
+    final value =
+        data[lsb] +
         maxUint8 *
             (data[lsb + dir] +
                 maxUint8 *

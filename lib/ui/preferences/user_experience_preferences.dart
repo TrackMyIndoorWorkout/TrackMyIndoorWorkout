@@ -80,11 +80,7 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
         divisions: scanDurationDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: scanDurationTag,
-        min: scanDurationMin,
-        max: scanDurationMax,
-      ),
+      const PrefInteger(pref: scanDurationTag, min: scanDurationMin, max: scanDurationMax),
       const PrefCheckbox(
         title: Text(instantScan),
         subtitle: Text(instantScanDescription),

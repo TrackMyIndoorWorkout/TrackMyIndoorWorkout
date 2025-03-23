@@ -104,33 +104,33 @@ class PalettePickerBottomSheetState extends State<PalettePickerBottomSheet> {
             }),
             const SizedBox(width: 30, height: 10),
             _themeManager.getBlueFab(
-                Icons.format_color_reset,
-                () => Get.defaultDialog(
-                      title: 'Reset all colors to default!',
-                      middleText: 'Are you sure?',
-                      confirm: TextButton(
-                        child: const Text("Yes"),
-                        onPressed: () async {
-                          final prefService = Get.find<BasePrefService>();
-                          for (final lightOrDark in [false, true]) {
-                            for (final fgOrBg in [false, true]) {
-                              for (final paletteSize in [5, 6, 7]) {
-                                final tag =
-                                    PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
-                                final str = PaletteSpec.getDefaultPaletteString(
-                                    lightOrDark, fgOrBg, paletteSize);
-                                await prefService.set<String>(tag, str);
-                              }
-                            }
-                          }
-                          Get.close(1);
-                        },
-                      ),
-                      cancel: TextButton(
-                        child: const Text("No"),
-                        onPressed: () => Get.close(1),
-                      ),
-                    )),
+              Icons.format_color_reset,
+              () => Get.defaultDialog(
+                title: 'Reset all colors to default!',
+                middleText: 'Are you sure?',
+                confirm: TextButton(
+                  child: const Text("Yes"),
+                  onPressed: () async {
+                    final prefService = Get.find<BasePrefService>();
+                    for (final lightOrDark in [false, true]) {
+                      for (final fgOrBg in [false, true]) {
+                        for (final paletteSize in [5, 6, 7]) {
+                          final tag = PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize);
+                          final str = PaletteSpec.getDefaultPaletteString(
+                            lightOrDark,
+                            fgOrBg,
+                            paletteSize,
+                          );
+                          await prefService.set<String>(tag, str);
+                        }
+                      }
+                    }
+                    Get.close(1);
+                  },
+                ),
+                cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
+              ),
+            ),
             const SizedBox(width: 30, height: 10),
             _themeManager.getGreenFab(Icons.arrow_forward, () => Get.back(result: _zoneCount)),
           ],

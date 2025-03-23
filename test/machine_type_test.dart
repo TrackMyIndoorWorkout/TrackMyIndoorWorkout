@@ -31,11 +31,17 @@ void main() {
       const MachineSportTestPair(machineType: MachineType.treadmill, sport: ActivityType.run),
       const MachineSportTestPair(machineType: MachineType.rower, sport: ActivityType.rowing),
       const MachineSportTestPair(
-          machineType: MachineType.crossTrainer, sport: ActivityType.elliptical),
+        machineType: MachineType.crossTrainer,
+        sport: ActivityType.elliptical,
+      ),
       const MachineSportTestPair(
-          machineType: MachineType.stepClimber, sport: ActivityType.stairStepper),
+        machineType: MachineType.stepClimber,
+        sport: ActivityType.stairStepper,
+      ),
       const MachineSportTestPair(
-          machineType: MachineType.stairClimber, sport: ActivityType.rockClimbing),
+        machineType: MachineType.stairClimber,
+        sport: ActivityType.rockClimbing,
+      ),
       const MachineSportTestPair(machineType: MachineType.heartRateMonitor, sport: ""),
       const MachineSportTestPair(machineType: MachineType.multiFtms, sport: ""),
     ]) {
@@ -51,7 +57,9 @@ void main() {
       const MachineSportIconPair(machineType: MachineType.treadmill, icon: Icons.directions_run),
       const MachineSportIconPair(machineType: MachineType.rower, icon: Icons.rowing),
       const MachineSportIconPair(
-          machineType: MachineType.crossTrainer, icon: Icons.downhill_skiing),
+        machineType: MachineType.crossTrainer,
+        icon: Icons.downhill_skiing,
+      ),
       const MachineSportIconPair(machineType: MachineType.stepClimber, icon: Icons.stairs),
       const MachineSportIconPair(machineType: MachineType.stairClimber, icon: Icons.stairs),
       const MachineSportIconPair(machineType: MachineType.heartRateMonitor, icon: Icons.favorite),

@@ -33,8 +33,11 @@ class HeartRateMonitor extends ComplexSensor {
       flag ~/= 4;
       // Energy Expended Status
       if (flag % 2 == 1) {
-        caloriesMetric =
-            ShortMetricDescriptor(lsb: expectedLength, msb: expectedLength + 1, divider: calToJ);
+        caloriesMetric = ShortMetricDescriptor(
+          lsb: expectedLength,
+          msb: expectedLength + 1,
+          divider: calToJ,
+        );
         expectedLength += 2; // 16 bit, kJ
       }
 

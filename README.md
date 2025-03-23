@@ -42,7 +42,7 @@ With certain data persistence or testing Mock changes you may need code regenera
 1. Set the `analyzer` version to `6.11.0` in the developer dependencies of the `pubspec.yaml` and comment out the override at the top.
 2. `pub get`
 3. `dart run build_runner build --delete-conflicting-outputs`
-4. Don't forget to re-run `dart format --line-length 100 .` after that.
+4. Don't forget to re-run `dart format .` after that.
 5. Set back the original `analyzer` version within the `drveloper` dependencies to match the override version, and remove the comments from the version override.
 6. `pub get`
 

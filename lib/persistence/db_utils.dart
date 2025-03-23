@@ -106,7 +106,8 @@ class DbUtils with PowerSpeedMixin {
       record.distance = distance;
 
       // Recalculate calories
-      double dCal = power *
+      double dCal =
+          power *
           dTime *
           jToCal *
           activity.calorieFactor *
@@ -195,12 +196,13 @@ class DbUtils with PowerSpeedMixin {
   }
 
   Future<double> powerFactor(String deviceId) async {
-    final powerTune = await database.powerTunes
-        .where()
-        .filter()
-        .macEqualTo(deviceId)
-        .sortByTimeDesc()
-        .findFirst();
+    final powerTune =
+        await database.powerTunes
+            .where()
+            .filter()
+            .macEqualTo(deviceId)
+            .sortByTimeDesc()
+            .findFirst();
     return powerTune?.powerFactor ?? 1.0;
   }
 
@@ -306,16 +308,17 @@ class DbUtils with PowerSpeedMixin {
   }
 
   Future<void> getAddressNameDictionary(AddressNames addressNames) async {
-    for (var activity in await database.activitys
-        .where()
-        .filter()
-        .deviceNameIsNotEmpty()
-        .and()
-        .deviceIdIsNotEmpty()
-        .and()
-        .not()
-        .deviceNameEqualTo(unnamedDevice)
-        .findAll()) {
+    for (var activity
+        in await database.activitys
+            .where()
+            .filter()
+            .deviceNameIsNotEmpty()
+            .and()
+            .deviceIdIsNotEmpty()
+            .and()
+            .not()
+            .deviceNameEqualTo(unnamedDevice)
+            .findAll()) {
       addressNames.addAddressName(activity.deviceId, activity.deviceName);
     }
   }
@@ -427,5 +430,21 @@ class DbUtils with PowerSpeedMixin {
     recalculateCumulative(target, true);
 
     return true;
+  }
+
+  Future<int> deleteRecords(Activity activity, int minRecordId, int maxRecordId) async {
+    var numDeleted = 0;
+    database.writeTxn(() async {
+      numDeleted =
+          await database.records
+              .where()
+              .filter()
+              .activityIdEqualTo(activity.id)
+              .and()
+              .idBetween(minRecordId, maxRecordId)
+              .deleteAll();
+    });
+
+    return numDeleted;
   }
 }

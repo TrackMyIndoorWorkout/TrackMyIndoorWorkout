@@ -21,33 +21,33 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
   static const distanceLsbByteIndex = 3;
 
   Concept2Erg(String defaultSport, bool isMultiSport, String fourCC)
-      : super(
-          sport: defaultSport,
-          isMultiSport: isMultiSport,
-          fourCC: fourCC,
-          vendorName: "Concept2",
-          modelName: "PM5",
-          manufacturerNamePart: "Concept2",
-          manufacturerFitId: concept2FitId,
-          model: "PM5",
-          tag: "CONCEPT2",
-          dataServiceId: c2ErgPrimaryServiceUuid,
-          dataCharacteristicId: c2ErgGeneralStatusUuid,
-          listenOnControl: false,
-          flagByteSize: 1,
-          distanceMetric: ThreeByteMetricDescriptor(
-            lsb: distanceLsbByteIndex,
-            msb: distanceLsbByteIndex + 2,
-            divider: 10.0,
-          ),
-        );
+    : super(
+        sport: defaultSport,
+        isMultiSport: isMultiSport,
+        fourCC: fourCC,
+        vendorName: "Concept2",
+        modelName: "PM5",
+        manufacturerNamePart: "Concept2",
+        manufacturerFitId: concept2FitId,
+        model: "PM5",
+        tag: "CONCEPT2",
+        dataServiceId: c2ErgPrimaryServiceUuid,
+        dataCharacteristicId: c2ErgGeneralStatusUuid,
+        listenOnControl: false,
+        flagByteSize: 1,
+        distanceMetric: ThreeByteMetricDescriptor(
+          lsb: distanceLsbByteIndex,
+          msb: distanceLsbByteIndex + 2,
+          divider: 10.0,
+        ),
+      );
 
   @override
   Concept2Erg clone() => Concept2Erg(
-        deviceSportDescriptors[concept2ErgFourCC]!.defaultSport,
-        deviceSportDescriptors[concept2ErgFourCC]!.isMultiSport,
-        concept2ErgFourCC,
-      );
+    deviceSportDescriptors[concept2ErgFourCC]!.defaultSport,
+    deviceSportDescriptors[concept2ErgFourCC]!.isMultiSport,
+    concept2ErgFourCC,
+  );
 
   @override
   bool isDataProcessable(List<int> data) {
@@ -61,10 +61,7 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
 
   @override
   RecordWithSport? stubRecord(List<int> data) {
-    return RecordWithSport(
-      distance: getDistance(data),
-      sport: sport,
-    );
+    return RecordWithSport(distance: getDistance(data), sport: sport);
   }
 
   @override
@@ -72,9 +69,12 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
 
   @override
   List<ComplexSensor> getAdditionalSensors(
-      BluetoothDevice device, List<BluetoothService> services) {
-    final requiredService = services
-        .firstWhereOrNull((service) => service.serviceUuid.uuidString() == c2ErgPrimaryServiceUuid);
+    BluetoothDevice device,
+    List<BluetoothService> services,
+  ) {
+    final requiredService = services.firstWhereOrNull(
+      (service) => service.serviceUuid.uuidString() == c2ErgPrimaryServiceUuid,
+    );
     if (requiredService == null) {
       return [];
     }
@@ -82,7 +82,8 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
     List<ComplexSensor> additionalSensors = [];
 
     final requiredCharacteristic1 = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus1.characteristicUuid);
+      (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus1.characteristicUuid,
+    );
     if (requiredCharacteristic1 != null) {
       final additionalSensor = C2AdditionalStatus1(device);
       additionalSensor.services = services;
@@ -90,7 +91,8 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
     }
 
     final requiredCharacteristic2 = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus2.characteristicUuid);
+      (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStatus2.characteristicUuid,
+    );
     if (requiredCharacteristic2 != null) {
       final additionalSensor = C2AdditionalStatus2(device);
       additionalSensor.services = services;
@@ -98,7 +100,8 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
     }
 
     final requiredCharacteristic3 = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStrokeData.characteristicUuid);
+      (ch) => ch.characteristicUuid.uuidString() == C2AdditionalStrokeData.characteristicUuid,
+    );
     if (requiredCharacteristic3 != null) {
       final additionalSensor = C2AdditionalStrokeData(device);
       additionalSensor.services = services;
@@ -110,8 +113,12 @@ class Concept2Erg extends FixedLayoutDeviceDescriptor {
 
   @override
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     Logging().log(logLevel, logLevelError, tag, "executeControlOperation", "Not implemented!");
   }
 }

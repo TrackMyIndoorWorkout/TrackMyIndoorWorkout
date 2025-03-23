@@ -69,11 +69,7 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         divisions: athleteAgeDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: athleteAgeTag,
-        min: athleteAgeMin,
-        max: athleteAgeMax,
-      ),
+      const PrefInteger(pref: athleteAgeTag, min: athleteAgeMin, max: athleteAgeMax),
       PrefLabel(
         title: Text(athleteGender, style: Get.textTheme.headlineSmall!, maxLines: 3),
         subtitle: const Text(athleteGenderDescription),
@@ -99,11 +95,7 @@ class AthletePreferencesScreen extends StatelessWidget with PreferencesScreenMix
         divisions: athleteVO2MaxDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: athleteVO2MaxTag,
-        min: athleteVO2MaxMin,
-        max: athleteVO2MaxMax,
-      ),
+      const PrefInteger(pref: athleteVO2MaxTag, min: athleteVO2MaxMin, max: athleteVO2MaxMax),
       const PrefLabel(title: Divider(height: 1)),
       PrefLabel(
         title: Text(athleteLifeFitness, style: Get.textTheme.headlineSmall!, maxLines: 3),

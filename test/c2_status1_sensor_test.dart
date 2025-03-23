@@ -49,8 +49,9 @@ void main() {
       test("$sum", () async {
         final status1 = C2AdditionalStatus1(MockBluetoothDevice());
 
-        final canProcess =
-            status1.canMeasurementProcessed(testData.sublist(0, testData.length - 2));
+        final canProcess = status1.canMeasurementProcessed(
+          testData.sublist(0, testData.length - 2),
+        );
 
         expect(canProcess, false);
       });
@@ -59,12 +60,14 @@ void main() {
 
   group('C2 Status 1 Sensor interprets data properly', () {
     for (final testData in sampleData) {
-      final speed = (testData[C2AdditionalStatus1.speedLsbByteIndex] +
+      final speed =
+          (testData[C2AdditionalStatus1.speedLsbByteIndex] +
               256 * testData[C2AdditionalStatus1.speedLsbByteIndex + 1]) /
           1000.0 *
           DeviceDescriptor.ms2kmh;
       final hr = testData[C2AdditionalStatus1.heartRateByteIndex];
-      final pace = (testData[C2AdditionalStatus1.paceLsbByteIndex] +
+      final pace =
+          (testData[C2AdditionalStatus1.paceLsbByteIndex] +
               256 * testData[C2AdditionalStatus1.paceLsbByteIndex + 1]) /
           100.0;
       final expectedRecord = RecordWithSport(

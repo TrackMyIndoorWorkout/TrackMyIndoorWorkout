@@ -14,7 +14,7 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 // but we discard that
 const sampleData = [
   [3, 92, 3, 161, 130, 0, 246, 9, 0, 0],
-  [3, 185, 1, 133, 94, 0, 13, 12, 0, 0]
+  [3, 185, 1, 133, 94, 0, 13, 12, 0, 0],
 ];
 
 class MockBluetoothDevice extends Mock implements BluetoothDevice {}

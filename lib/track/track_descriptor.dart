@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:flutter/painting.dart';
 
 import '../utils/constants.dart';
@@ -37,8 +38,8 @@ class TrackDescriptor {
   }
 
   factory TrackDescriptor.forDisplay(String sport) => TrackDescriptor(
-        name: "ForDisplay",
-        kind: getTrackKindForSport(sport).first,
-        radiusBoost: trackPaintingRadiusBoost,
-      );
+    name: "ForDisplay",
+    kind: getTrackKindForSport(sport).first,
+    radiusBoost: trackPaintingRadiusBoost,
+  );
 }

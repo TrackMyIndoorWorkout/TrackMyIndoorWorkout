@@ -21,10 +21,11 @@ main() {
   });
 
   group('discover', () {
-    BluetoothService createMockBluetoothService(
-        {required String serviceUid,
-        required String characteristicUid,
-        List<int> characteristicData = const []}) {
+    BluetoothService createMockBluetoothService({
+      required String serviceUid,
+      required String characteristicUid,
+      List<int> characteristicData = const [],
+    }) {
       final serviceMock = MockBluetoothService();
       final mockCharacteristic = MockBluetoothCharacteristic();
       final mockServiceGuid = Guid(serviceUid);
@@ -36,26 +37,29 @@ main() {
       return serviceMock;
     }
 
-    BluetoothService createMockFtmsService(
-            {String serviceUid = '00001826-0000-1000-8000-00805f9b34fb',
-            String characteristicUid = '00002ad2-0000-1000-8000-00805f9b34fb'}) =>
-        createMockBluetoothService(serviceUid: serviceUid, characteristicUid: characteristicUid);
+    BluetoothService createMockFtmsService({
+      String serviceUid = '00001826-0000-1000-8000-00805f9b34fb',
+      String characteristicUid = '00002ad2-0000-1000-8000-00805f9b34fb',
+    }) => createMockBluetoothService(serviceUid: serviceUid, characteristicUid: characteristicUid);
 
     BluetoothService createMockDeviceInfoService({required String manufacturerName}) =>
         createMockBluetoothService(
-            serviceUid: '0000180a-0000-1000-8000-00805f9b34fb',
-            characteristicUid: '00002a29-0000-1000-8000-00805f9b34fb',
-            characteristicData: manufacturerName.codeUnits);
+          serviceUid: '0000180a-0000-1000-8000-00805f9b34fb',
+          characteristicUid: '00002a29-0000-1000-8000-00805f9b34fb',
+          characteristicData: manufacturerName.codeUnits,
+        );
 
     test('ignores case in manufacturer check', () async {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(() => mockDevice.discoverServices(subscribeToServicesChanged: false))
-          .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
+      when(
+        () => mockDevice.discoverServices(subscribeToServicesChanged: false),
+      ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
       equipment.connected = true;
 
       expect(await equipment.discover(), true);
@@ -67,11 +71,13 @@ main() {
       const anotherUid = '00000000-0000-1000-8000-00805f9b34fb';
       final mockFtmsService = createMockFtmsService(characteristicUid: anotherUid);
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(() => mockDevice.discoverServices(subscribeToServicesChanged: false))
-          .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
+      when(
+        () => mockDevice.discoverServices(subscribeToServicesChanged: false),
+      ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
       equipment.connected = true;
 
       expect(await equipment.discover(), false);
@@ -81,10 +87,12 @@ main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      when(() => mockDevice.discoverServices(subscribeToServicesChanged: false))
-          .thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
+      when(
+        () => mockDevice.discoverServices(subscribeToServicesChanged: false),
+      ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
 
       final equipment = FitnessEquipment(descriptor: null, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
       equipment.connected = true;
 
       expect(await equipment.discover(), false);
@@ -96,10 +104,7 @@ main() {
     getRandomInts(smallRepetition, 255, rnd).forEach((flag) {
       test('$flag', () async {
         final descriptor = DeviceFactory.getCSCBasedBike();
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
 
         final selector = equipment.keySelector([flag]);
 
@@ -114,10 +119,7 @@ main() {
       final flagMsb = rnd.nextInt(255);
       test('[$flagLsb, $flagMsb]', () async {
         final descriptor = DeviceFactory.getPowerMeterBasedBike();
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
 
         final selector = equipment.keySelector([flagLsb, flagMsb]);
 
@@ -133,10 +135,7 @@ main() {
       final flagMsb = rnd.nextInt(255);
       test('[$flagLsb, $flagMid, $flagMsb]', () async {
         final descriptor = DeviceFactory.getGenericFTMSCrossTrainer();
-        final equipment = FitnessEquipment(
-          descriptor: descriptor,
-          device: MockBluetoothDevice(),
-        );
+        final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
 
         final selector = equipment.keySelector([flagLsb, flagMid, flagMsb]);
 

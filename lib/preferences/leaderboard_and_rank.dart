@@ -20,7 +20,8 @@ const rankingForSportOldDefault = false;
 const rankingForSportOrDevice = "Rank For Sport or Device";
 const rankingForSportOrDeviceTag = "ranking_for_sport_or_device";
 const rankingForSportOrDeviceDefault = true;
-const rankingForSportOrDeviceDescription = "On: Ranking based on all devices for the sport. "
+const rankingForSportOrDeviceDescription =
+    "On: Ranking based on all devices for the sport. "
     "Off: Ranking based on the particular machine only. "
     "This affects both the ribbon type and the track visualization.";
 

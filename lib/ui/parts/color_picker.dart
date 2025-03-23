@@ -5,7 +5,6 @@ import 'package:flutter_circle_color_picker/flutter_circle_color_picker.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../utils/color_ex.dart';
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 import 'legend_dialog.dart';
@@ -31,8 +30,8 @@ class ColorPickerBottomSheetState extends State<ColorPickerBottomSheet> {
   void initState() {
     super.initState();
     _controller = CircleColorPickerController(initialColor: widget.color);
-    _color = Color(widget.color.toARGB32);
-    _initialColor = Color(widget.color.toARGB32);
+    _color = Color(widget.color.toARGB32());
+    _initialColor = Color(widget.color.toARGB32());
     _textStyle = Get.textTheme.headlineSmall!.apply(
       fontFamily: fontFamily,
       color: _themeManager.getProtagonistColor(),

@@ -79,14 +79,16 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final distinctByDeviceWorkoutSummaries = await _database.workoutSummarys
-                    .where()
-                    .sortByStartDesc()
-                    .distinctByDeviceId()
-                    .findAll();
-                final devices = distinctByDeviceWorkoutSummaries
-                    .map((w) => Tuple3(w.deviceName, w.deviceId, w.sport))
-                    .toList();
+                final distinctByDeviceWorkoutSummaries =
+                    await _database.workoutSummarys
+                        .where()
+                        .sortByStartDesc()
+                        .distinctByDeviceId()
+                        .findAll();
+                final devices =
+                    distinctByDeviceWorkoutSummaries
+                        .map((w) => Tuple3(w.deviceName, w.deviceId, w.sport))
+                        .toList();
                 if (devices.isEmpty) {
                   Get.snackbar("Warning", "No devices found");
                 } else if (devices.length > 1) {

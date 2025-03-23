@@ -56,18 +56,13 @@ class ImportFormState extends State<ImportForm> {
     final uploadType = widget.migration ? 'Workout Migration' : 'MPower Workout';
     final csvType = widget.migration ? "Migration" : "MPower";
     return Scaffold(
-      appBar: AppBar(
-        title: Text('$uploadType Import'),
-      ),
+      appBar: AppBar(title: Text('$uploadType Import')),
       body: LoadingOverlay(
         isLoading: _isLoading,
         progressIndicator: SizedBox(
           height: _sizeDefault * 2,
           width: _sizeDefault * 2,
-          child: CircularProgressIndicator(
-            strokeWidth: _sizeDefault,
-            value: _progressValue,
-          ),
+          child: CircularProgressIndicator(strokeWidth: _sizeDefault, value: _progressValue),
         ),
         child: Form(
           key: _formKey,
@@ -80,12 +75,12 @@ class ImportFormState extends State<ImportForm> {
                   labelText: '$csvType CSV File URL',
                   hintText: 'Paste the CSV file URL',
                   suffixIcon: ElevatedButton(
-                    child: const Text(
-                      '⋯',
-                      style: TextStyle(fontSize: 30),
-                    ),
+                    child: const Text('⋯', style: TextStyle(fontSize: 30)),
                     onPressed: () async {
-                      final result = await FilePicker.platform.pickFiles();
+                      final result = await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['csv'],
+                      );
                       if (result != null && result.files.single.path != null) {
                         _textController.text = result.files.single.path!;
                         setState(() {
@@ -102,14 +97,12 @@ class ImportFormState extends State<ImportForm> {
                   }
                   return null;
                 },
-                onChanged: (value) => setState(() {
-                  _filePath = value;
-                }),
+                onChanged:
+                    (value) => setState(() {
+                      _filePath = value;
+                    }),
               ),
-              Visibility(
-                visible: !widget.migration,
-                child: const SizedBox(height: 24),
-              ),
+              Visibility(visible: !widget.migration, child: const SizedBox(height: 24)),
               Visibility(
                 visible: !widget.migration,
                 child: DateTimeField(
@@ -144,9 +137,10 @@ class ImportFormState extends State<ImportForm> {
                     }
                     return null;
                   },
-                  onChanged: (value) => setState(() {
-                    _activityDateTime = value;
-                  }),
+                  onChanged:
+                      (value) => setState(() {
+                        _activityDateTime = value;
+                      }),
                 ),
               ),
               const SizedBox(height: 24),
@@ -185,8 +179,9 @@ class ImportFormState extends State<ImportForm> {
                               Get.snackbar("Success", "Workout imported!");
                               if (_leaderboardFeature) {
                                 final deviceDescriptor = activity.deviceDescriptor();
-                                final workoutSummary = activity
-                                    .getWorkoutSummary(deviceDescriptor.manufacturerNamePart);
+                                final workoutSummary = activity.getWorkoutSummary(
+                                  deviceDescriptor.manufacturerNamePart,
+                                );
                                 final database = Get.find<Isar>();
                                 database.writeTxnSync(() {
                                   database.workoutSummarys.putSync(workoutSummary);
@@ -194,7 +189,9 @@ class ImportFormState extends State<ImportForm> {
                               }
                             } else {
                               Get.snackbar(
-                                  "Failure", "Problem while importing: ${importer.message}");
+                                "Failure",
+                                "Problem while importing: ${importer.message}",
+                              );
                             }
                           } on Exception catch (e, stack) {
                             setState(() {
@@ -202,8 +199,14 @@ class ImportFormState extends State<ImportForm> {
                             });
                             final prefService = Get.find<BasePrefService>();
                             final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
-                            Logging().logException(logLevel, "IMPORT_FORM", "onPressed",
-                                "error during import", e, stack);
+                            Logging().logException(
+                              logLevel,
+                              "IMPORT_FORM",
+                              "onPressed",
+                              "error during import",
+                              e,
+                              stack,
+                            );
                             Get.snackbar("Error", "Import unsuccessful: $e");
                           }
                         } else {

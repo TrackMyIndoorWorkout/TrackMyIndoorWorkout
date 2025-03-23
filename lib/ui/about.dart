@@ -57,22 +57,21 @@ class AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final List<Widget> actions = [];
     if (kDebugMode) {
-      actions.add(IconButton(
-        icon: const Icon(Icons.build),
-        onPressed: () async {
-          // final database = Get.find<Isar>();
-          // await database.writeTxn(() async {
-          //   await database.clear();
-          // });
-        },
-      ));
+      actions.add(
+        IconButton(
+          icon: const Icon(Icons.build),
+          onPressed: () async {
+            // final database = Get.find<Isar>();
+            // await database.writeTxn(() async {
+            //   await database.clear();
+            // });
+          },
+        ),
+      );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AboutScreen.shortTitle),
-        actions: actions,
-      ),
+      appBar: AppBar(title: Text(AboutScreen.shortTitle), actions: actions),
       body: ListView(
         shrinkWrap: true,
         children: [
@@ -95,42 +94,42 @@ class AboutScreenState extends State<AboutScreen> {
                 Get.to(() => const DonationScreen());
               },
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
   Widget _buttonWithLink({required String buttonText, required String linkUrl}) => Center(
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.open_in_new),
-          label: Text(buttonText),
-          onPressed: () async {
-            if (await canLaunchUrlString(linkUrl)) {
-              launchUrlString(linkUrl);
-            } else {
-              Get.snackbar("Attention", "Cannot open URL");
-            }
-          },
-        ),
-      );
+    child: ElevatedButton.icon(
+      icon: const Icon(Icons.open_in_new),
+      label: Text(buttonText),
+      onPressed: () async {
+        if (await canLaunchUrlString(linkUrl)) {
+          launchUrlString(linkUrl);
+        } else {
+          Get.snackbar("Attention", "Cannot open URL");
+        }
+      },
+    ),
+  );
 
   List<Widget> _valueWithTitleCore({required String title, required String value}) => [
-        Text(
-          title,
-          style: _fieldStyle,
-          maxLines: 10,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          value,
-          style: _valueStyle,
-          maxLines: 10,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-        ),
-      ];
+    Text(
+      title,
+      style: _fieldStyle,
+      maxLines: 10,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+    ),
+    Text(
+      value,
+      style: _valueStyle,
+      maxLines: 10,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
+    ),
+  ];
 
   List<Widget> _valueWithTitle({
     required String title,
@@ -139,10 +138,11 @@ class AboutScreenState extends State<AboutScreen> {
   }) =>
       oneLine
           ? [
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: _valueWithTitleCore(title: title, value: value)),
-            ]
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: _valueWithTitleCore(title: title, value: value),
+            ),
+          ]
           : _valueWithTitleCore(title: title, value: value);
 }

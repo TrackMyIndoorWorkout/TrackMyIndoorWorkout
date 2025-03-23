@@ -4,10 +4,7 @@ class HistogramData {
   int count = 0;
   int percent = 0;
 
-  HistogramData({
-    required this.index,
-    required this.upper,
-  });
+  HistogramData({required this.index, required this.upper});
 
   void increment() {
     count++;

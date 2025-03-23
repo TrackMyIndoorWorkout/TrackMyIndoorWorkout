@@ -10,9 +10,5 @@ class ActivityDetailRowWithUnit extends ActivityDetailRowBase {
     required super.textStyle,
     required super.unitText,
     super.unitStyle,
-  }) : super(
-          spacer: true,
-          forceOneLine: false,
-          fitHorizontally: true,
-        );
+  }) : super(spacer: true, forceOneLine: false, fitHorizontally: true);
 }

@@ -25,11 +25,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     super.canMeasureCalories = true,
     super.doNotReadManufacturerName = false,
   }) : super(
-          deviceCategory: DeviceCategory.smartDevice,
-          tag: "FTMS",
-          controlCharacteristicId: fitnessMachineControlPointUuid,
-          statusCharacteristicId: fitnessMachineStatusUuid,
-        );
+         deviceCategory: DeviceCategory.smartDevice,
+         tag: "FTMS",
+         controlCharacteristicId: fitnessMachineControlPointUuid,
+         statusCharacteristicId: fitnessMachineStatusUuid,
+       );
 
   @override
   bool isDataProcessable(List<int> data) {
@@ -76,8 +76,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processCadenceFlag(int flag, {divider = 2.0, inverse = false}) {
     if (flag % 2 == (inverse ? 0 : 1)) {
       // UInt16, revolutions / minute with 0.5 resolution
-      cadenceMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
+      cadenceMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: divider,
+      );
       byteCounter += 2;
     }
 
@@ -97,8 +100,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processResistanceFlag(int flag, {divider = 1.0}) {
     if (flag % 2 == 1) {
       // SInt16
-      resistanceMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
+      resistanceMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: divider,
+      );
       byteCounter += 2;
     }
 
@@ -133,10 +139,7 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         );
         // Energy / minute UInt8
         byteCounter += 2;
-        caloriesPerMinuteMetric = ByteMetricDescriptor(
-          lsb: byteCounter,
-          optional: true,
-        );
+        caloriesPerMinuteMetric = ByteMetricDescriptor(lsb: byteCounter, optional: true);
         byteCounter++;
       }
     }
@@ -180,8 +183,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       // UInt16: Floors
       byteCounter += skipBytes;
       // UInt16: Step Count
-      strokeCountMetric =
-          ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: divider);
+      strokeCountMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: divider,
+      );
       byteCounter += 2;
     }
 
@@ -190,8 +196,12 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
 
   @override
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     if (!(await isBluetoothOn())) {
       return;
     }
@@ -210,7 +220,13 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       // Response could be picked up in the subscription listener
     } on Exception catch (e, stack) {
       Logging().logException(
-          logLevel, "FTMS", "executeControlOperation", "controlPoint.write", e, stack);
+        logLevel,
+        "FTMS",
+        "executeControlOperation",
+        "controlPoint.write",
+        e,
+        stack,
+      );
     }
   }
 }

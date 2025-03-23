@@ -25,10 +25,7 @@ abstract class FixedLayoutDeviceDescriptor extends DeviceDescriptor {
     super.powerMetric,
     super.cadenceMetric,
     super.distanceMetric,
-  }) : super(
-          deviceCategory: DeviceCategory.smartDevice,
-          hasFeatureFlags: false,
-        );
+  }) : super(deviceCategory: DeviceCategory.smartDevice, hasFeatureFlags: false);
 
   @override
   void processFlag(int flag, int dataLength) {

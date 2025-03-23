@@ -9,10 +9,10 @@ class ActivityDetailRowOneLine extends ActivityDetailRowBase {
     required super.text,
     required super.textStyle,
   }) : super(
-          unitText: "",
-          unitStyle: null,
-          spacer: false,
-          forceOneLine: true,
-          fitHorizontally: false,
-        );
+         unitText: "",
+         unitStyle: null,
+         spacer: false,
+         forceOneLine: true,
+         fitHorizontally: false,
+       );
 }

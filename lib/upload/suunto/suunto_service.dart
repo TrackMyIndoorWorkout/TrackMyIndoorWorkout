@@ -7,11 +7,7 @@ import '../upload_service.dart';
 import 'suunto.dart';
 
 class SuuntoService implements UploadService {
-  final Suunto _suunto = Suunto(
-    suuntoClientId,
-    suuntoSecret,
-    suuntoSubscriptionPrimaryKey,
-  );
+  final Suunto _suunto = Suunto(suuntoClientId, suuntoSecret, suuntoSubscriptionPrimaryKey);
 
   @override
   Future<bool> login() async {

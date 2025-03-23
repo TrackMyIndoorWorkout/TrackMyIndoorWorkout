@@ -101,10 +101,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
                   Get.close(1);
                 },
               ),
-              cancel: TextButton(
-                child: const Text("No"),
-                onPressed: () => Get.close(1),
-              ),
+              cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
             );
           },
         ),
@@ -123,12 +120,13 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.powerTunes
-                .where()
-                .sortByTimeDesc()
-                .offset(page * limit)
-                .limit(limit)
-                .findAll();
+            final data =
+                await _database.powerTunes
+                    .where()
+                    .sortByTimeDesc()
+                    .offset(page * limit)
+                    .limit(limit)
+                    .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -136,16 +134,11 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
           return Column(
             children: [
               Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: () => state.loadMore(), child: const Text('Retry')),
             ],
           );
         },
-        empty: const Center(
-          child: Text('No tunes found'),
-        ),
+        empty: const Center(child: Text('No tunes found')),
         itemBuilder: (context, _, item) {
           final powerTune = item as PowerTune;
           final dateString = DateFormat.yMd().format(powerTune.time);
@@ -181,10 +174,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.calendar_today, _sizeDefault),
-                        Text(
-                          dateString,
-                          style: _textStyle,
-                        ),
+                        Text(dateString, style: _textStyle),
                       ],
                     ),
                     Row(
@@ -192,10 +182,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
-                        Text(
-                          timeString,
-                          style: _textStyle,
-                        ),
+                        Text(timeString, style: _textStyle),
                       ],
                     ),
                     _actionButtonRow(powerTune, _sizeDefault),

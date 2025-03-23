@@ -32,9 +32,7 @@ class ActivityDetailRowBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> row = [
-      themeManager.getBlueIcon(icon, iconSize),
-    ];
+    List<Widget> row = [themeManager.getBlueIcon(icon, iconSize)];
 
     if (spacer) {
       row.add(const Spacer());
@@ -52,23 +50,13 @@ class ActivityDetailRowBase extends StatelessWidget {
         ),
       );
     } else if (fitHorizontally) {
-      row.add(
-        FitHorizontally(
-          shrinkLimit: shrinkLimit,
-          child: Text(text, style: textStyle),
-        ),
-      );
+      row.add(FitHorizontally(shrinkLimit: shrinkLimit, child: Text(text, style: textStyle)));
     } else {
       row.add(Text(text, style: textStyle));
     }
 
     if (unitStyle != null && unitText.isNotEmpty) {
-      row.add(
-        SizedBox(
-          width: iconSize,
-          child: Text(unitText, style: unitStyle),
-        ),
-      );
+      row.add(SizedBox(width: iconSize, child: Text(unitText, style: unitStyle)));
     }
 
     return FitHorizontally(

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tuple/tuple.dart';
 import 'package:track_my_indoor_exercise/utils/preferences.dart';
+import 'package:tuple/tuple.dart';
 
 class TestPair {
   final String addresses;
@@ -45,20 +45,25 @@ void main() {
       const TestPair(addresses: " 1.2.3.4", expected: []),
       const TestPair(addresses: "1.2.3.4:55", expected: [Tuple2<String, int>("1.2.3.4", 55)]),
       const TestPair(
-          addresses: "1.2.3.4:55,6.7.8.9:100",
-          expected: [Tuple2<String, int>("1.2.3.4", 55), Tuple2<String, int>("6.7.8.9", 100)]),
+        addresses: "1.2.3.4:55,6.7.8.9:100",
+        expected: [Tuple2<String, int>("1.2.3.4", 55), Tuple2<String, int>("6.7.8.9", 100)],
+      ),
       const TestPair(
-          addresses: "1.2.3.4:55,0.0.0.0,6.7.8.9:100",
-          expected: [Tuple2<String, int>("1.2.3.4", 55), Tuple2<String, int>("6.7.8.9", 100)]),
+        addresses: "1.2.3.4:55,0.0.0.0,6.7.8.9:100",
+        expected: [Tuple2<String, int>("1.2.3.4", 55), Tuple2<String, int>("6.7.8.9", 100)],
+      ),
       const TestPair(
-          addresses: "1.2.3.4:55,2.3.4.5:100000,6.7.8.9:100",
-          expected: [Tuple2<String, int>("1.2.3.4", 55), Tuple2<String, int>("6.7.8.9", 100)]),
+        addresses: "1.2.3.4:55,2.3.4.5:100000,6.7.8.9:100",
+        expected: [Tuple2<String, int>("1.2.3.4", 55), Tuple2<String, int>("6.7.8.9", 100)],
+      ),
       const TestPair(
-          addresses: "1:2:3::4:55,2:3:4::5:100000,6:7:8::9:100",
-          expected: [Tuple2<String, int>("1:2:3::4", 55), Tuple2<String, int>("6:7:8::9", 100)]),
+        addresses: "1:2:3::4:55,2:3:4::5:100000,6:7:8::9:100",
+        expected: [Tuple2<String, int>("1:2:3::4", 55), Tuple2<String, int>("6:7:8::9", 100)],
+      ),
       const TestPair(
-          addresses: "[1:2:3::4]:55,[2:3:4::5]:100000,[6:7:8::9]:100",
-          expected: [Tuple2<String, int>("1:2:3::4", 55), Tuple2<String, int>("6:7:8::9", 100)]),
+        addresses: "[1:2:3::4]:55,[2:3:4::5]:100000,[6:7:8::9]:100",
+        expected: [Tuple2<String, int>("1:2:3::4", 55), Tuple2<String, int>("6:7:8::9", 100)],
+      ),
     ]) {
       test("${testPair.addresses} -> ${testPair.expected}", () async {
         final list = parseNetworkAddresses(testPair.addresses, false);

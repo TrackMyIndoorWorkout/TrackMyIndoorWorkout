@@ -5,16 +5,16 @@ import 'rower_device_descriptor.dart';
 
 class MrCaptainDescriptor extends RowerDeviceDescriptor {
   MrCaptainDescriptor()
-      : super(
-          sport: deviceSportDescriptors[mrCaptainRowerFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[mrCaptainRowerFourCC]!.isMultiSport,
-          fourCC: mrCaptainRowerFourCC,
-          vendorName: "Mr Captain",
-          modelName: "Rower",
-          manufacturerNamePart: "XG",
-          manufacturerFitId: stravaFitId,
-          model: "000000",
-        );
+    : super(
+        sport: deviceSportDescriptors[mrCaptainRowerFourCC]!.defaultSport,
+        isMultiSport: deviceSportDescriptors[mrCaptainRowerFourCC]!.isMultiSport,
+        fourCC: mrCaptainRowerFourCC,
+        vendorName: "Mr Captain",
+        modelName: "Rower",
+        manufacturerNamePart: "XG",
+        manufacturerFitId: stravaFitId,
+        model: "000000",
+      );
 
   @override
   MrCaptainDescriptor clone() => MrCaptainDescriptor();

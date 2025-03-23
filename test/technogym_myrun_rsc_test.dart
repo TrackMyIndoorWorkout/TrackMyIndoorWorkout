@@ -40,7 +40,8 @@ void main() {
       TestPair(
         data: sampleData,
         record: RecordWithSport(
-          distance: (((sampleData[7] * 256 + sampleData[6]) * 256 + sampleData[5]) * 256 +
+          distance:
+              (((sampleData[7] * 256 + sampleData[6]) * 256 + sampleData[5]) * 256 +
                   sampleData[4]) /
               10.0,
           elapsed: null,

@@ -1,11 +1,6 @@
 import '../utils/constants.dart';
 
-enum TrackKind {
-  forRun,
-  forRide,
-  forLand,
-  forWater,
-}
+enum TrackKind { forRun, forRide, forLand, forWater }
 
 Map<String, List<TrackKind>> trackKindSportMap = {
   ActivityType.ride: [TrackKind.forRide, TrackKind.forLand],

@@ -31,7 +31,8 @@ class JsonAggregates {
   int heartRateMax;
   int heartRateAvg;
 
-  String toJson() => '{"elapsed_time_total": $elapsedTimeTotal,'
+  String toJson() =>
+      '{"elapsed_time_total": $elapsedTimeTotal,'
       '"distance_total": ${distanceTotal.toStringAsFixed(2)},'
       '"speed_min": ${speedMin.toStringAsFixed(2)},'
       '"speed_max": ${speedMax.toStringAsFixed(2)},'

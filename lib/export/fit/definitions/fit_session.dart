@@ -20,7 +20,7 @@ class FitSession extends FitDefinitionMessage {
   final int exportTarget;
 
   FitSession(localMessageType, this.altitude, this.exportTarget)
-      : super(localMessageType, FitMessage.session) {
+    : super(localMessageType, FitMessage.session) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Session end time
       FitField(0, FitBaseTypes.enumType), // Event

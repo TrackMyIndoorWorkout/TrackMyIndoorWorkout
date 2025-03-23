@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/instant_upload.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../preferences/upload_display_mode.dart';
@@ -86,9 +87,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
         subtitle: Text(trainingPeaksUploadPublicDescription),
         pref: trainingPeaksUploadPublicTag,
       ),
-      PrefLabel(
-        title: Text(uploadDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
-      ),
+      PrefLabel(title: Text(uploadDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3)),
       const PrefRadio<String>(
         title: Text(uploadDisplayModeNoneTitle),
         subtitle: Text(uploadDisplayModeNoneDescription),
@@ -114,36 +113,36 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
 
     integrationPreferences.addAll(
       getPortalChoices(true, _themeManager).asMap().entries.map(
-            (e) => PrefButton(
-              child: GestureDetector(
-                onTap: () async {
-                  await toggleIntegration(e.value.name);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      (integrationStates[e.value.name] ?? false) ? Icons.link : Icons.link_off,
-                      size: _largerTextStyle.fontSize! * 1.5,
-                      color: _themeManager.getProtagonistColor(),
-                    ),
-                    SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.white,
-                      ),
-                      height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
-                      width: mediaWidth - 130,
-                      padding: const EdgeInsets.all(5),
-                      child: e.value.getSvg(false, _largerTextStyle.fontSize!),
-                    ),
-                  ],
+        (e) => PrefButton(
+          child: GestureDetector(
+            onTap: () async {
+              await toggleIntegration(e.value.name);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  (integrationStates[e.value.name] ?? false) ? Icons.link : Icons.link_off,
+                  size: _largerTextStyle.fontSize! * 1.5,
+                  color: _themeManager.getProtagonistColor(),
                 ),
-              ),
+                SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.white,
+                  ),
+                  height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                  width: mediaWidth - 130,
+                  padding: const EdgeInsets.all(5),
+                  child: e.value.getSvg(false, _largerTextStyle.fontSize!),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
     );
 
     return Scaffold(

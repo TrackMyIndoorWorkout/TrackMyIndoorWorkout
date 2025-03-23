@@ -8,10 +8,7 @@ import 'under_armour_sport.dart';
 
 class JsonExport extends ActivityExport {
   JsonExport()
-      : super(
-          nonCompressedFileExtension: 'json',
-          nonCompressedMimeType: 'application/json',
-        );
+    : super(nonCompressedFileExtension: 'json', nonCompressedMimeType: 'application/json');
 
   @override
   Future<List<int>> getFileCore(ExportModel exportModel) async {

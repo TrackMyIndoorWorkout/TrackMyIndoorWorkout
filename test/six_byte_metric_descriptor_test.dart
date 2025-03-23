@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/metric_descriptors/six_byte_metric_descriptor.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
 import 'utils.dart';
 
 void main() {
@@ -26,7 +27,11 @@ void main() {
 
       test("$divider -> $expected", () async {
         final desc = SixByteMetricDescriptor(
-            lsb: lsbLocation, msb: msbLocation, divider: divider, optional: true);
+          lsb: lsbLocation,
+          msb: msbLocation,
+          divider: divider,
+          optional: true,
+        );
 
         expect(desc.getMeasurementValue(data), null);
       });
@@ -44,34 +49,40 @@ void main() {
       final dir = larger ? 1 : -1;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
-      final expected = (optional &&
-              data[lsbLocation] == maxByte &&
-              data[lsbLocation + dir] == maxByte &&
-              data[lsbLocation + 2 * dir] == maxByte &&
-              data[msbLocation - 2 * dir] == maxByte &&
-              data[msbLocation - dir] == maxByte &&
-              data[msbLocation] == maxByte)
-          ? 0
-          : (data[lsbLocation] +
-                  maxUint8 *
-                      (data[lsbLocation + dir] +
-                          maxUint8 *
-                              (data[lsbLocation + 2 * dir] +
-                                  maxUint8 *
-                                      (data[msbLocation - 2 * dir] +
-                                          maxUint8 *
-                                              (data[msbLocation - dir] +
-                                                  maxUint8 * data[msbLocation]))))) /
-              divider;
+      final expected =
+          (optional &&
+                  data[lsbLocation] == maxByte &&
+                  data[lsbLocation + dir] == maxByte &&
+                  data[lsbLocation + 2 * dir] == maxByte &&
+                  data[msbLocation - 2 * dir] == maxByte &&
+                  data[msbLocation - dir] == maxByte &&
+                  data[msbLocation] == maxByte)
+              ? 0
+              : (data[lsbLocation] +
+                      maxUint8 *
+                          (data[lsbLocation + dir] +
+                              maxUint8 *
+                                  (data[lsbLocation + 2 * dir] +
+                                      maxUint8 *
+                                          (data[msbLocation - 2 * dir] +
+                                              maxUint8 *
+                                                  (data[msbLocation - dir] +
+                                                      maxUint8 * data[msbLocation]))))) /
+                  divider;
 
       test(
-          "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[lsbLocation + 2 * dir]}, ${data[msbLocation - 2 * dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
-          () async {
-        final desc = SixByteMetricDescriptor(
-            lsb: lsbLocation, msb: msbLocation, divider: divider, optional: optional);
+        "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[lsbLocation + 2 * dir]}, ${data[msbLocation - 2 * dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
+        () async {
+          final desc = SixByteMetricDescriptor(
+            lsb: lsbLocation,
+            msb: msbLocation,
+            divider: divider,
+            optional: optional,
+          );
 
-        expect(desc.getMeasurementValue(data), closeTo(expected, eps));
-      });
+          expect(desc.getMeasurementValue(data), closeTo(expected, eps));
+        },
+      );
     }
   });
 }

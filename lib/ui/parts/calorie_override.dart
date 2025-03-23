@@ -77,14 +77,15 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<Isar>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
-              final calorieTune = await database.calorieTunes
-                  .where()
-                  .filter()
-                  .macEqualTo(widget.deviceId)
-                  .and()
-                  .hrBasedEqualTo(widget.hrBased)
-                  .sortByTimeDesc()
-                  .findFirst();
+              final calorieTune =
+                  await database.calorieTunes
+                      .where()
+                      .filter()
+                      .macEqualTo(widget.deviceId)
+                      .and()
+                      .hrBasedEqualTo(widget.hrBased)
+                      .sortByTimeDesc()
+                      .findFirst();
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
                 database.writeTxnSync(() {

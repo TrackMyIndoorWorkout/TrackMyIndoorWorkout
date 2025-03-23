@@ -50,12 +50,7 @@ mixin Auth {
   }
 
   /// Save the token and the expiry date
-  Future<void> _saveToken(
-    String? token,
-    String? refreshToken,
-    int? expire,
-    String? scope,
-  ) async {
+  Future<void> _saveToken(String? token, String? refreshToken, int? expire, String? scope) async {
     final prefService = Get.find<BasePrefService>();
     await prefService.set<String>(stravaAccessTokenTag, token ?? '');
     await prefService.set<String>(stravaRefreshTokenTag, refreshToken ?? '');
@@ -97,10 +92,13 @@ mixin Auth {
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000);
-      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
+      final details =
+          '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
-      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} '
-          '${localToken.scope} expires: $details');
+      debugPrint(
+        'stored token ${localToken.accessToken} ${localToken.expiresAt} '
+        '${localToken.scope} expires: $details',
+      );
     }
 
     return localToken;
@@ -108,15 +106,12 @@ mixin Auth {
 
   /// Get the code from Strava server
   ///
-  Future<void> _getStravaCode(
-    String clientID,
-    String scope,
-    String prompt,
-  ) async {
+  Future<void> _getStravaCode(String clientID, String scope, String prompt) async {
     debugPrint('Entering getStravaCode');
     String redirectUrl = kIsWeb ? appUrl : redirectUrlMobile;
 
-    final params = '?client_id=$clientID&redirect_uri=$redirectUrl'
+    final params =
+        '?client_id=$clientID&redirect_uri=$redirectUrl'
         '&response_type=code&approval_prompt=$prompt&scope=$scope';
 
     final reqAuth = authorizationEndpoint + params;
@@ -141,36 +136,39 @@ mixin Auth {
       debugPrint('Running on iOS or Android');
 
       // Attach a listener to the stream
-      sub = AppLinks().uriLinkStream.listen((Uri? uri) {
-        if (uri == null) {
-          debugPrint('Subscription was null');
-          sub?.cancel();
-        } else {
-          // Parse the link and warn the user, if it is not correct
-          debugPrint('Got a link!! $uri');
-          if (uri.scheme.compareTo('${redirectUrlScheme}_$clientID') != 0) {
-            debugPrint('This is not the good scheme ${uri.scheme}');
+      sub = AppLinks().uriLinkStream.listen(
+        (Uri? uri) {
+          if (uri == null) {
+            debugPrint('Subscription was null');
+            sub?.cancel();
+          } else {
+            // Parse the link and warn the user, if it is not correct
+            debugPrint('Got a link!! $uri');
+            if (uri.scheme.compareTo('${redirectUrlScheme}_$clientID') != 0) {
+              debugPrint('This is not the good scheme ${uri.scheme}');
+            }
+            final code = uri.queryParameters["code"] ?? notAvailable;
+            final error = uri.queryParameters["error"];
+
+            debugPrint('code $code, error $error');
+
+            closeInAppWebView();
+            onCodeReceived.add(code);
+
+            debugPrint('Got the new code: $code');
+
+            sub?.cancel();
           }
-          final code = uri.queryParameters["code"] ?? notAvailable;
-          final error = uri.queryParameters["error"];
-
-          debugPrint('code $code, error $error');
-
-          closeInAppWebView();
-          onCodeReceived.add(code);
-
-          debugPrint('Got the new code: $code');
-
+        },
+        onError: (err) {
+          // Handle exception by warning the user their action did not succeed
+          debugPrint('Found an error $err');
           sub?.cancel();
-        }
-      }, onError: (err) {
-        // Handle exception by warning the user their action did not succeed
-        debugPrint('Found an error $err');
-        sub?.cancel();
-      });
+        },
+      );
     }
 
-/****
+    /****
     if (Platform.isIOS) {
       // Launch small http server to collect the answer from Strava
       //------------------------------------------------------------
@@ -221,12 +219,7 @@ mixin Auth {
   ///
   /// Do/show the Strava login if the scope has been changed since last storage of the token
   /// return true if no problem in authentication has been found
-  Future<bool> oauth(
-    String clientId,
-    String scope,
-    String secret,
-    String prompt,
-  ) async {
+  Future<bool> oauth(String clientId, String scope, String secret, String prompt) async {
     debugPrint('Welcome to Strava OAuth');
     bool isAuthOk = false;
 
@@ -239,15 +232,20 @@ mixin Auth {
 
     bool storedBefore = token != null && token.isNotEmpty && token != "null";
     if (storedBefore) {
-      debugPrint('token has been stored before! '
-          '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
+      debugPrint(
+        'token has been stored before! '
+        '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}',
+      );
     }
 
     // Use the refresh token to get a new access token
     if (isExpired && storedBefore) {
       // token != null || token != "null"
-      RefreshAnswer refreshAnswer =
-          await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
+      RefreshAnswer refreshAnswer = await _getNewAccessToken(
+        clientId,
+        secret,
+        tokenStored.refreshToken ?? "0",
+      );
       // Update with new values if HTTP status code is 200
       if (refreshAnswer.fault != null &&
           refreshAnswer.fault!.statusCode >= 200 &&
@@ -314,7 +312,8 @@ mixin Auth {
   ) async {
     var returnToken = RefreshAnswer();
 
-    final params = '?client_id=$clientID&client_secret=$secret'
+    final params =
+        '?client_id=$clientID&client_secret=$secret'
         '&grant_type=refresh_token&refresh_token=$refreshToken';
     final urlRefresh = tokenEndpoint + params;
 
@@ -337,11 +336,7 @@ mixin Auth {
     return returnToken;
   }
 
-  Future<StravaToken> _getStravaToken(
-    String clientID,
-    String secret,
-    String code,
-  ) async {
+  Future<StravaToken> _getStravaToken(String clientID, String secret, String code) async {
     var answer = StravaToken();
 
     debugPrint('Entering getStravaToken!!');
@@ -377,8 +372,10 @@ mixin Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(StravaToken token) {
-    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
-        ' exp. time: ${token.expiresAt}');
+    debugPrint(
+      ' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
+      ' exp. time: ${token.expiresAt}',
+    );
 
     // when it is the first run or after a deAuthorize
     if (token.expiresAt == null) {

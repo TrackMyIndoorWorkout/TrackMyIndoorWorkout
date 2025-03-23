@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/enforced_time_zone.dart';
 import '../../preferences/stage_mode.dart';
 import '../../preferences/time_display_mode.dart';
@@ -46,9 +47,7 @@ class WorkoutPreferencesScreenState extends State<WorkoutPreferencesScreen> {
             .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
             .toList(growable: false),
       ),
-      PrefLabel(
-        title: Text(workoutMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
-      ),
+      PrefLabel(title: Text(workoutMode, style: Get.textTheme.headlineSmall!, maxLines: 3)),
       const PrefRadio<String>(
         title: Text(workoutModeIndividualTitle),
         subtitle: Text(workoutModeIndividualDescription),
@@ -61,9 +60,7 @@ class WorkoutPreferencesScreenState extends State<WorkoutPreferencesScreen> {
         value: workoutModeCircuit,
         pref: workoutModeTag,
       ),
-      PrefLabel(
-        title: Text(timeDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3),
-      ),
+      PrefLabel(title: Text(timeDisplayMode, style: Get.textTheme.headlineSmall!, maxLines: 3)),
       const PrefRadio<String>(
         title: Text(timeDisplayModeElapsedTitle),
         subtitle: Text(timeDisplayModeElapsedDescription),

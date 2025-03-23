@@ -14,23 +14,23 @@ class StairClimberDeviceDescriptor extends FitnessMachineDescriptor {
     super.heartRateByteIndex,
     super.doNotReadManufacturerName,
   }) : super(
-          sport: deviceSportDescriptors[genericFTMSStairClimberFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[genericFTMSStairClimberFourCC]!.isMultiSport,
-          dataServiceId: fitnessMachineUuid,
-          dataCharacteristicId: stairClimberUuid,
-          flagByteSize: 2,
-        );
+         sport: deviceSportDescriptors[genericFTMSStairClimberFourCC]!.defaultSport,
+         isMultiSport: deviceSportDescriptors[genericFTMSStairClimberFourCC]!.isMultiSport,
+         dataServiceId: fitnessMachineUuid,
+         dataCharacteristicId: stairClimberUuid,
+         flagByteSize: 2,
+       );
 
   @override
   StairClimberDeviceDescriptor clone() => StairClimberDeviceDescriptor(
-        fourCC: fourCC,
-        vendorName: vendorName,
-        modelName: modelName,
-        manufacturerNamePart: manufacturerNamePart,
-        manufacturerFitId: manufacturerFitId,
-        model: model,
-        heartRateByteIndex: heartRateByteIndex,
-      );
+    fourCC: fourCC,
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+    heartRateByteIndex: heartRateByteIndex,
+  );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.stair_climber_data.xml
   @override

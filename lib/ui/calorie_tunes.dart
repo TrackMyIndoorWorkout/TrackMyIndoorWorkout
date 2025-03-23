@@ -60,9 +60,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                 child: Column(
                   children: [
                     Expanded(
-                      child: Center(
-                        child: CalorieFactorTuneBottomSheet(calorieTune: calorieTune),
-                      ),
+                      child: Center(child: CalorieFactorTuneBottomSheet(calorieTune: calorieTune)),
                     ),
                   ],
                 ),
@@ -98,10 +96,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                   Get.close(1);
                 },
               ),
-              cancel: TextButton(
-                child: const Text("No"),
-                onPressed: () => Get.close(1),
-              ),
+              cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
             );
           },
         ),
@@ -120,12 +115,13 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.calorieTunes
-                .where()
-                .sortByTimeDesc()
-                .offset(page * limit)
-                .limit(limit)
-                .findAll();
+            final data =
+                await _database.calorieTunes
+                    .where()
+                    .sortByTimeDesc()
+                    .offset(page * limit)
+                    .limit(limit)
+                    .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -133,16 +129,11 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
           return Column(
             children: [
               Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: () => state.loadMore(), child: const Text('Retry')),
             ],
           );
         },
-        empty: const Center(
-          child: Text('No tunes found'),
-        ),
+        empty: const Center(child: Text('No tunes found')),
         itemBuilder: (context, _, item) {
           final calorieTune = item as CalorieTune;
           final dateString = DateFormat.yMd().format(calorieTune.time);

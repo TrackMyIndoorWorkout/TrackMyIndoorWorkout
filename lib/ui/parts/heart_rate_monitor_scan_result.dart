@@ -49,7 +49,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
           style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
           overflow: TextOverflow.ellipsis,
         ),
-        Text(deviceIdString, style: dataStyle)
+        Text(deviceIdString, style: dataStyle),
       ],
     );
   }
@@ -64,10 +64,7 @@ class HeartRateMonitorScanResultTile extends StatelessWidget {
 
     return ExpansionTile(
       title: _buildTitle(themeManager, captionStyle, secondaryStyle),
-      leading: Text(
-        result.rssi.toString(),
-        style: captionStyle.apply(fontFamily: fontFamily),
-      ),
+      leading: Text(result.rssi.toString(), style: captionStyle.apply(fontFamily: fontFamily)),
       trailing: themeManager.getIconFab(
         (heartRateMonitor?.device?.remoteId.str ?? notAvailable) == result.device.remoteId.str
             ? themeManager.getGreenColor()

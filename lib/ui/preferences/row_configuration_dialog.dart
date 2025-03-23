@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/measurement_ui_state.dart';
 import '../../preferences/metric_spec.dart';
 import '../../utils/theme_manager.dart';
@@ -52,23 +53,24 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
       children.addAll(
         List<Widget>.generate(
           3,
-          (index) => rowIndex < 4
-              ? Transform.scale(
-                  scale: 2,
-                  child: Radio<int>(
-                    value: index,
-                    groupValue: _expandedHeights[rowIndex],
-                    onChanged: (int? value) {
-                      if (value == null) return;
+          (index) =>
+              rowIndex < 4
+                  ? Transform.scale(
+                    scale: 2,
+                    child: Radio<int>(
+                      value: index,
+                      groupValue: _expandedHeights[rowIndex],
+                      onChanged: (int? value) {
+                        if (value == null) return;
 
-                      setState(() {
-                        _expandedHeights[rowIndex] = index;
-                        applyDetailSizes(_expandedHeights);
-                      });
-                    },
-                  ),
-                )
-              : Container(),
+                        setState(() {
+                          _expandedHeights[rowIndex] = index;
+                          applyDetailSizes(_expandedHeights);
+                        });
+                      },
+                    ),
+                  )
+                  : Container(),
         ),
       );
 
@@ -97,13 +99,7 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
         crossAxisCount: 5,
         shrinkWrap: true,
         childAspectRatio: 1.0,
-        children: children
-            .map(
-              (w) => GridTile(
-                child: Center(child: w),
-              ),
-            )
-            .toList(growable: false),
+        children: children.map((w) => GridTile(child: Center(child: w))).toList(growable: false),
       ),
     );
   }

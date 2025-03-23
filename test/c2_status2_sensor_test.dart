@@ -47,8 +47,9 @@ void main() {
       test("$sum", () async {
         final status2 = C2AdditionalStatus2(MockBluetoothDevice());
 
-        final canProcess =
-            status2.canMeasurementProcessed(testData.sublist(0, testData.length - 2));
+        final canProcess = status2.canMeasurementProcessed(
+          testData.sublist(0, testData.length - 2),
+        );
 
         expect(canProcess, false);
       });
@@ -57,7 +58,8 @@ void main() {
 
   group('C2 Status 1 Sensor interprets data properly', () {
     for (final testData in sampleData) {
-      final calories = testData[C2AdditionalStatus2.caloriesLsbByteIndex] +
+      final calories =
+          testData[C2AdditionalStatus2.caloriesLsbByteIndex] +
           256 * testData[C2AdditionalStatus2.caloriesLsbByteIndex + 1];
       final expectedRecord = RecordWithSport(
         distance: null,

@@ -102,22 +102,19 @@ Future<bool> hasInternetConnection() async {
     for (final addressTuple in addressTuples) {
       checkOptions.add(
         InternetCheckOption(
-          uri: Uri(
-            scheme: "http",
-            host: addressTuple.item1,
-            port: addressTuple.item2,
-          ),
+          uri: Uri(scheme: "http", host: addressTuple.item1, port: addressTuple.item2),
         ),
       );
     }
   }
 
-  var connectionChecker = checkOptions.isEmpty
-      ? InternetConnection()
-      : InternetConnection.createInstance(
-          customCheckOptions: checkOptions,
-          useDefaultOptions: false,
-        );
+  var connectionChecker =
+      checkOptions.isEmpty
+          ? InternetConnection()
+          : InternetConnection.createInstance(
+            customCheckOptions: checkOptions,
+            useDefaultOptions: false,
+          );
 
   return await connectionChecker.hasInternetAccess;
 }

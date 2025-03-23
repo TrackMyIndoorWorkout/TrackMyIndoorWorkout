@@ -15,13 +15,12 @@ Future<void> legendDialog(List<Tuple2<IconData, String>> legendItems) async {
       child: ListView(
         shrinkWrap: true,
         children: legendItems
-            .map((i) => ListTile(
-                  leading: Icon(i.item1),
-                  title: TextOneLine(
-                    i.item2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ))
+            .map(
+              (i) => ListTile(
+                leading: Icon(i.item1),
+                title: TextOneLine(i.item2, overflow: TextOverflow.ellipsis),
+              ),
+            )
             .toList(growable: false),
       ),
     ),

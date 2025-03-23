@@ -58,8 +58,14 @@ mixin Upload {
     request.headers.addAll(header);
 
     final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
-    request.files.add(http.MultipartFile.fromBytes('file', fileContent,
-        filename: fileName, contentType: MediaType("application", "x-gzip")));
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        fileContent,
+        filename: fileName,
+        contentType: MediaType("application", "x-gzip"),
+      ),
+    );
     debugPrint(request.toString());
 
     final streamedResponse = await request.send();

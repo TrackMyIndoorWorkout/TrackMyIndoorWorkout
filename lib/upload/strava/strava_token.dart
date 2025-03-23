@@ -60,10 +60,11 @@ class RefreshAnswer {
   factory RefreshAnswer.fromJson(Map<String, dynamic> json) => RefreshAnswer.fromMap(json);
 
   static RefreshAnswer fromMap(Map<String, dynamic> map) {
-    RefreshAnswer model = RefreshAnswer()
-      ..accessToken = map['access_token']
-      ..refreshToken = map['refresh_token']
-      ..expiresAt = map['expires_at'];
+    RefreshAnswer model =
+        RefreshAnswer()
+          ..accessToken = map['access_token']
+          ..refreshToken = map['refresh_token']
+          ..expiresAt = map['expires_at'];
 
     return model;
   }

@@ -292,11 +292,7 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       final si = rnd.nextBool();
-      final accu = StatisticsAccumulator(
-        si: si,
-        sport: sport,
-        calculateAvgHeartRate: true,
-      );
+      final accu = StatisticsAccumulator(si: si, sport: sport, calculateAvgHeartRate: true);
       var count = rnd.nextInt(99) + 1;
       int sum = 0;
       getRandomInts(count, 100, rnd).forEach((number) {
@@ -624,13 +620,15 @@ void main() {
       int minHr = minInit;
       final hrs = getRandomInts(count, 100, rnd);
       List<int>.generate(count, (index) {
-        accu.processRecord(RecordWithSport(
-          power: powers[index],
-          speed: speeds[index],
-          cadence: cadences[index],
-          heartRate: hrs[index],
-          sport: sport,
-        ));
+        accu.processRecord(
+          RecordWithSport(
+            power: powers[index],
+            speed: speeds[index],
+            cadence: cadences[index],
+            heartRate: hrs[index],
+            sport: sport,
+          ),
+        );
         powerSum += powers[index];
         if (powers[index] > 0) {
           powerCount++;
@@ -657,43 +655,45 @@ void main() {
         }
         return index;
       });
-      test("$count ($sport) -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",
-          () async {
-        expect(accu.si, si);
-        expect(accu.sport, sport);
-        expect(accu.calculateAvgPower, true);
-        expect(accu.calculateMaxPower, true);
-        expect(accu.calculateMinPower, true);
-        expect(accu.calculateAvgSpeed, true);
-        expect(accu.calculateMaxSpeed, true);
-        expect(accu.calculateMinSpeed, true);
-        expect(accu.calculateAvgCadence, true);
-        expect(accu.calculateMaxCadence, true);
-        expect(accu.calculateMinCadence, true);
-        expect(accu.calculateAvgHeartRate, true);
-        expect(accu.calculateMaxHeartRate, true);
-        expect(accu.calculateMinHeartRate, true);
-        expect(accu.powerSum, powerSum);
-        expect(accu.powerCount, powerCount);
-        expect(accu.maxPower, maxPower);
-        expect(accu.minPower, minPower);
-        expect(accu.speedSum, speedSum);
-        expect(accu.speedCount, speedCount);
-        expect(accu.maxSpeed, maxSpeed);
-        expect(accu.minSpeed, minSpeed);
-        expect(accu.heartRateSum, hrSum);
-        expect(accu.heartRateCount, hrCount);
-        expect(accu.maxHeartRate, maxHr);
-        expect(accu.minHeartRate, minHr);
-        expect(accu.cadenceSum, cadenceSum);
-        expect(accu.cadenceCount, cadenceCount);
-        expect(accu.maxCadence, maxCadence);
-        expect(accu.minCadence, minCadence);
-        expect(accu.avgPower, powerCount > 0 ? powerSum / powerCount : 0);
-        expect(accu.avgSpeed, speedCount > 0 ? speedSum / speedCount : 0);
-        expect(accu.avgHeartRate, hrCount > 0 ? hrSum ~/ hrCount : 0);
-        expect(accu.avgCadence, cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);
-      });
+      test(
+        "$count ($sport) -> $powerSum, $maxPower, $minPower, $speedSum, $maxSpeed, $minSpeed",
+        () async {
+          expect(accu.si, si);
+          expect(accu.sport, sport);
+          expect(accu.calculateAvgPower, true);
+          expect(accu.calculateMaxPower, true);
+          expect(accu.calculateMinPower, true);
+          expect(accu.calculateAvgSpeed, true);
+          expect(accu.calculateMaxSpeed, true);
+          expect(accu.calculateMinSpeed, true);
+          expect(accu.calculateAvgCadence, true);
+          expect(accu.calculateMaxCadence, true);
+          expect(accu.calculateMinCadence, true);
+          expect(accu.calculateAvgHeartRate, true);
+          expect(accu.calculateMaxHeartRate, true);
+          expect(accu.calculateMinHeartRate, true);
+          expect(accu.powerSum, powerSum);
+          expect(accu.powerCount, powerCount);
+          expect(accu.maxPower, maxPower);
+          expect(accu.minPower, minPower);
+          expect(accu.speedSum, speedSum);
+          expect(accu.speedCount, speedCount);
+          expect(accu.maxSpeed, maxSpeed);
+          expect(accu.minSpeed, minSpeed);
+          expect(accu.heartRateSum, hrSum);
+          expect(accu.heartRateCount, hrCount);
+          expect(accu.maxHeartRate, maxHr);
+          expect(accu.minHeartRate, minHr);
+          expect(accu.cadenceSum, cadenceSum);
+          expect(accu.cadenceCount, cadenceCount);
+          expect(accu.maxCadence, maxCadence);
+          expect(accu.minCadence, minCadence);
+          expect(accu.avgPower, powerCount > 0 ? powerSum / powerCount : 0);
+          expect(accu.avgSpeed, speedCount > 0 ? speedSum / speedCount : 0);
+          expect(accu.avgHeartRate, hrCount > 0 ? hrSum ~/ hrCount : 0);
+          expect(accu.avgCadence, cadenceCount > 0 ? cadenceSum ~/ cadenceCount : 0);
+        },
+      );
     }
   });
 }

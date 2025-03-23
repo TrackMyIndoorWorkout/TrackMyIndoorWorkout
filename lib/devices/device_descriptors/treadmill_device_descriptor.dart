@@ -25,22 +25,22 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     super.heartRateByteIndex,
     super.doNotReadManufacturerName,
   }) : super(
-          sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,
-          dataServiceId: fitnessMachineUuid,
-          dataCharacteristicId: treadmillUuid,
-        );
+         sport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.defaultSport,
+         isMultiSport: deviceSportDescriptors[genericFTMSTreadmillFourCC]!.isMultiSport,
+         dataServiceId: fitnessMachineUuid,
+         dataCharacteristicId: treadmillUuid,
+       );
 
   @override
   TreadmillDeviceDescriptor clone() => TreadmillDeviceDescriptor(
-        fourCC: fourCC,
-        vendorName: vendorName,
-        modelName: modelName,
-        manufacturerNamePart: manufacturerNamePart,
-        manufacturerFitId: manufacturerFitId,
-        model: model,
-        heartRateByteIndex: heartRateByteIndex,
-      );
+    fourCC: fourCC,
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+    heartRateByteIndex: heartRateByteIndex,
+  );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.treadmill_data.xml
   @override
@@ -94,9 +94,12 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
 
   @override
   List<ComplexSensor> getAdditionalSensors(
-      BluetoothDevice device, List<BluetoothService> services) {
+    BluetoothDevice device,
+    List<BluetoothService> services,
+  ) {
     final rscService = services.firstWhereOrNull(
-        (service) => service.serviceUuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid);
+      (service) => service.serviceUuid.uuidString() == RunningSpeedAndCadenceSensor.serviceUuid,
+    );
     if (rscService == null) {
       return [];
     }

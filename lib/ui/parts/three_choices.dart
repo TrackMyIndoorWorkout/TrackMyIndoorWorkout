@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -72,25 +73,24 @@ class ThreeChoicesBottomSheetState extends State<ThreeChoicesBottomSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(widget.title, style: _largerTextStyle, textAlign: TextAlign.center),
-          ],
+          children: [Text(widget.title, style: _largerTextStyle, textAlign: TextAlign.center)],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
         margin: const EdgeInsets.all(10.0),
-        child: widget.verticalActions
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: actions,
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: actions,
-              ),
+        child:
+            widget.verticalActions
+                ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: actions,
+                )
+                : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: actions,
+                ),
       ),
     );
   }

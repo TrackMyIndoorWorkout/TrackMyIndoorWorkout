@@ -8,22 +8,25 @@ import 'cross_trainer_device_descriptor.dart';
 
 class LifeFitnessEllipticalDescriptor extends CrossTrainerDeviceDescriptor with LifeFitnessMixin {
   LifeFitnessEllipticalDescriptor()
-      : super(
-          fourCC: lifeFitnessEllipticalFourCC,
-          vendorName: LifeFitnessMixin.lfManufacturer,
-          modelName: "${LifeFitnessMixin.lfManufacturer} Elliptical",
-          manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
-          manufacturerFitId: stravaFitId,
-          model: "${LifeFitnessMixin.lfManufacturer} Elliptical",
-          doNotReadManufacturerName: true,
-        );
+    : super(
+        fourCC: lifeFitnessEllipticalFourCC,
+        vendorName: LifeFitnessMixin.lfManufacturer,
+        modelName: "${LifeFitnessMixin.lfManufacturer} Elliptical",
+        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        manufacturerFitId: stravaFitId,
+        model: "${LifeFitnessMixin.lfManufacturer} Elliptical",
+        doNotReadManufacturerName: true,
+      );
 
   @override
   LifeFitnessEllipticalDescriptor clone() => LifeFitnessEllipticalDescriptor();
 
   @override
   Future<void> prePumpConfiguration(
-      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    List<BluetoothService> svcs,
+    Athlete athlete,
+    int logLvl,
+  ) async {
     await prePumpConfig(svcs, athlete, logLvl);
   }
 

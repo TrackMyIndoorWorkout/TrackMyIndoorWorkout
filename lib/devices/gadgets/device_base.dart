@@ -128,11 +128,13 @@ abstract class DeviceBase {
 
     characteristicId = newCharacteristicId;
     if (characteristicId.isNotEmpty) {
-      characteristic = service!.characteristics
-          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == characteristicId);
+      characteristic = service!.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == characteristicId,
+      );
     } else {
       characteristic = service!.characteristics.firstWhereOrNull(
-          (ch) => ftmsSportCharacteristics.contains(ch.characteristicUuid.uuidString()));
+        (ch) => ftmsSportCharacteristics.contains(ch.characteristicUuid.uuidString()),
+      );
       characteristicId = characteristic?.characteristicUuid.uuidString() ?? "";
     }
 
@@ -145,13 +147,15 @@ abstract class DeviceBase {
     }
 
     if (controlPoint == null && controlCharacteristicId.isNotEmpty) {
-      controlPoint = service!.characteristics
-          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == controlCharacteristicId);
+      controlPoint = service!.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == controlCharacteristicId,
+      );
     }
 
     if (status == null && statusCharacteristicId.isNotEmpty) {
-      status = service!.characteristics
-          .firstWhereOrNull((ch) => ch.characteristicUuid.uuidString() == statusCharacteristicId);
+      status = service!.characteristics.firstWhereOrNull(
+        (ch) => ch.characteristicUuid.uuidString() == statusCharacteristicId,
+      );
     }
 
     if (listenOnControl && !controlNotification && controlPoint != null) {
@@ -159,41 +163,57 @@ abstract class DeviceBase {
         controlNotification = await controlPoint?.setNotifyValue(true) ?? false;
       } on Exception catch (e, stack) {
         Logging().logException(
-            logLevel, tag, "connectToControlPoint", "controlPoint.setNotifyValue(true)", e, stack);
+          logLevel,
+          tag,
+          "connectToControlPoint",
+          "controlPoint.setNotifyValue(true)",
+          e,
+          stack,
+        );
       }
 
       controlPointSubscription = controlPoint?.lastValueStream
           .throttleTime(
-        const Duration(milliseconds: ftmsStatusThreshold),
-        leading: false,
-        trailing: true,
-      )
+            const Duration(milliseconds: ftmsStatusThreshold),
+            leading: false,
+            trailing: true,
+          )
           .listen((controlResponse) async {
-        if (logLevel >= logLevelInfo) {
-          Logging().log(logLevel, logLevelInfo, tag,
-              "connectToControlPoint controlPointSubscription", controlResponse.toString());
-        }
+            if (logLevel >= logLevelInfo) {
+              Logging().log(
+                logLevel,
+                logLevelInfo,
+                tag,
+                "connectToControlPoint controlPointSubscription",
+                controlResponse.toString(),
+              );
+            }
 
-        if (controlResponse.length >= 3 &&
-            controlResponse[0] == controlOpcode &&
-            controlResponse[2] == successResponse) {
-          String logMessage = "Unknown success";
-          switch (controlResponse[1]) {
-            case requestControl:
-              gotControl = true;
-              logMessage = "Got control!";
-              break;
-            case startOrResumeControl:
-              logMessage = "Started!";
-              break;
-            case stopOrPauseControl:
-              logMessage = "Stopped!";
-              break;
-          }
-          Logging().log(logLevel, logLevelInfo, tag,
-              "connectToControlPoint controlPointSubscription", logMessage);
-        }
-      });
+            if (controlResponse.length >= 3 &&
+                controlResponse[0] == controlOpcode &&
+                controlResponse[2] == successResponse) {
+              String logMessage = "Unknown success";
+              switch (controlResponse[1]) {
+                case requestControl:
+                  gotControl = true;
+                  logMessage = "Got control!";
+                  break;
+                case startOrResumeControl:
+                  logMessage = "Started!";
+                  break;
+                case stopOrPauseControl:
+                  logMessage = "Stopped!";
+                  break;
+              }
+              Logging().log(
+                logLevel,
+                logLevelInfo,
+                tag,
+                "connectToControlPoint controlPointSubscription",
+                logMessage,
+              );
+            }
+          });
     }
   }
 
@@ -301,7 +321,13 @@ abstract class DeviceBase {
         await characteristic?.setNotifyValue(false);
       } on Exception catch (e, stack) {
         Logging().logException(
-            logLevel, tag, "detach", "characteristic.setNotifyValue(false)", e, stack);
+          logLevel,
+          tag,
+          "detach",
+          "characteristic.setNotifyValue(false)",
+          e,
+          stack,
+        );
       }
 
       attached = false;
@@ -342,8 +368,10 @@ abstract class DeviceBase {
       return -1;
     }
 
-    final batteryLevel =
-        BluetoothDeviceEx.filterCharacteristic(batteryService.characteristics, batteryLevelUuid);
+    final batteryLevel = BluetoothDeviceEx.filterCharacteristic(
+      batteryService.characteristics,
+      batteryLevelUuid,
+    );
     if (batteryLevel == null) {
       return -1;
     }
@@ -385,7 +413,9 @@ abstract class DeviceBase {
     }
 
     final cscFeatures = BluetoothDeviceEx.filterCharacteristic(
-        cscService.characteristics, cyclingCadenceFeaturesUuid);
+      cscService.characteristics,
+      cyclingCadenceFeaturesUuid,
+    );
     if (cscFeatures == null) {
       return DeviceCategory.smartDevice;
     }
@@ -412,8 +442,14 @@ abstract class DeviceBase {
     try {
       return await _cscSensorTypeCore();
     } on Exception catch (e, stack) {
-      Logging()
-          .logException(logLevel, tag, "cscSensorType", "_cscSensorTypeCore call catch", e, stack);
+      Logging().logException(
+        logLevel,
+        tag,
+        "cscSensorType",
+        "_cscSensorTypeCore call catch",
+        e,
+        stack,
+      );
       return DeviceCategory.smartDevice;
     }
   }
@@ -461,8 +497,14 @@ abstract class DeviceBase {
       final commandCrLf = command.contains("\n") ? command : "$command\r\n";
       await characteristic?.write(utf8.encode(commandCrLf));
     } on Exception catch (e, stack) {
-      Logging()
-          .logException(logLevel, tag, "sendKayakFirstCommand", "characteristic.write", e, stack);
+      Logging().logException(
+        logLevel,
+        tag,
+        "sendKayakFirstCommand",
+        "characteristic.write",
+        e,
+        stack,
+      );
       return -1;
     }
 

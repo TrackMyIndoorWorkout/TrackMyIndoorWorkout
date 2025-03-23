@@ -1,6 +1,7 @@
 const athleteGender = "Gender";
 const athleteGenderTag = "athlete_gender";
-const athleteGenderDescription = "(The gender classification for the purpose of "
+const athleteGenderDescription =
+    "(The gender classification for the purpose of "
     "heart rate based calorie calculation equations)";
 const athleteGenderMale = "male";
 const athleteGenderMaleDescription = "Male";

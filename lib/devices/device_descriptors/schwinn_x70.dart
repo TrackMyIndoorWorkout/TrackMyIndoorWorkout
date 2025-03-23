@@ -53,7 +53,7 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
     [0.0517, 1.8361, -13.777],
     [0.0467, 2.9273, -35.908],
     [0.0429, 4.1821, -50.141],
-    [0.0652, 3.6670, -46.863]
+    [0.0652, 3.6670, -46.863],
   ];
   late double lastTime;
   late double lastCalories;
@@ -62,24 +62,24 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   RecordWithSport? lastRecord;
 
   SchwinnX70()
-      : super(
-          sport: deviceSportDescriptors[schwinnX70BikeFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[schwinnX70BikeFourCC]!.isMultiSport,
-          fourCC: schwinnX70BikeFourCC,
-          vendorName: "Schwinn",
-          modelName: "SCHWINN 170/270",
-          manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
-          manufacturerFitId: nautilusFitId,
-          model: "",
-          tag: "SCH_X70",
-          dataServiceId: schwinnX70ServiceUuid,
-          dataCharacteristicId: schwinnX70MeasurementUuid,
-          controlCharacteristicId: schwinnX70ControlUuid,
-          listenOnControl: false,
-          timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
-          caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
-          cadenceMetric: ShortMetricDescriptor(lsb: 4, msb: 5, divider: 1.0),
-        ) {
+    : super(
+        sport: deviceSportDescriptors[schwinnX70BikeFourCC]!.defaultSport,
+        isMultiSport: deviceSportDescriptors[schwinnX70BikeFourCC]!.isMultiSport,
+        fourCC: schwinnX70BikeFourCC,
+        vendorName: "Schwinn",
+        modelName: "SCHWINN 170/270",
+        manufacturerNamePart: "Nautilus", // "SCHWINN 170/270"
+        manufacturerFitId: nautilusFitId,
+        model: "",
+        tag: "SCH_X70",
+        dataServiceId: schwinnX70ServiceUuid,
+        dataCharacteristicId: schwinnX70MeasurementUuid,
+        controlCharacteristicId: schwinnX70ControlUuid,
+        listenOnControl: false,
+        timeMetric: ShortMetricDescriptor(lsb: 8, msb: 9, divider: 1.0),
+        caloriesMetric: SixByteMetricDescriptor(lsb: 10, msb: 15, divider: 1.0),
+        cadenceMetric: ShortMetricDescriptor(lsb: 4, msb: 5, divider: 1.0),
+      ) {
     resistanceMetric = ByteMetricDescriptor(lsb: 16);
     initCadence(64, maxUint16);
     initPower2SpeedConstants();
@@ -118,7 +118,8 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
   // https://github.com/ursoft/ANT_Libraries/blob/e122c007f5e1935a9b11c05e601a71f2992bad45/ANT_DLL/WROOM_esp32/WROOM_esp32.ino#L525
   double powerFromCadenceResistance(int cadence, int resistance) {
     final int idx = (resistance - 1) % 25;
-    final double power = resistancePowerCoeffs[idx][0] * cadence * cadence +
+    final double power =
+        resistancePowerCoeffs[idx][0] * cadence * cadence +
         resistancePowerCoeffs[idx][1] * cadence +
         resistancePowerCoeffs[idx][2];
     return max(power, 0.0);
@@ -186,8 +187,12 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
 
   @override
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     if (!(await isBluetoothOn())) {
       return;
     }
@@ -200,35 +205,45 @@ class SchwinnX70 extends FixedLayoutDeviceDescriptor with CadenceMixin, PowerSpe
       return;
     }
 
-    if (opCode == requestControl /* startOrResumeControl */) {
+    if (opCode == requestControl /* startOrResumeControl */ ) {
       List<int> startHrStreamCommand = [
         0x05 /* length */,
         0x03 /* seq-с ceiling */,
         0xD9 /* crc = sum to 0 */,
         0x00,
-        0x1F /* command */
+        0x1F /* command */,
       ];
 
       try {
         await controlPoint.write(startHrStreamCommand);
       } on Exception catch (e, stack) {
-        Logging()
-            .logException(logLevel, tag, "executeControlOperation", "controlPoint.write", e, stack);
+        Logging().logException(
+          logLevel,
+          tag,
+          "executeControlOperation",
+          "controlPoint.write",
+          e,
+          stack,
+        );
       }
     }
   }
 
   @override
   List<ComplexSensor> getAdditionalSensors(
-      BluetoothDevice device, List<BluetoothService> services) {
+    BluetoothDevice device,
+    List<BluetoothService> services,
+  ) {
     final requiredService = services.firstWhereOrNull(
-        (service) => service.serviceUuid.uuidString() == SchwinnX70HrSensor.serviceUuid);
+      (service) => service.serviceUuid.uuidString() == SchwinnX70HrSensor.serviceUuid,
+    );
     if (requiredService == null) {
       return [];
     }
 
     final requiredCharacteristic = requiredService.characteristics.firstWhereOrNull(
-        (ch) => ch.characteristicUuid.uuidString() == SchwinnX70HrSensor.characteristicUuid);
+      (ch) => ch.characteristicUuid.uuidString() == SchwinnX70HrSensor.characteristicUuid,
+    );
     if (requiredCharacteristic == null) {
       return [];
     }

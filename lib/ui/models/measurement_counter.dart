@@ -28,10 +28,7 @@ class MeasurementCounter {
 
   double slowPace = eps;
 
-  MeasurementCounter({
-    required this.si,
-    required this.sport,
-  }) {
+  MeasurementCounter({required this.si, required this.sport}) {
     if (sport != ActivityType.ride) {
       final slowSpeed = SpeedSpec.slowSpeeds[SportSpec.sport2Sport(sport)] ?? eps;
       slowPace = speedOrPace(slowSpeed, si, sport);

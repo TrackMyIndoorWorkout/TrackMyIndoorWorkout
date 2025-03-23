@@ -76,12 +76,14 @@ class DataPreferencesScreenState extends State<DataPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
-          final uploadDescription =
-              PrefService.of(context).get<String>(activityUploadDescriptionTag);
+          final uploadDescription = PrefService.of(
+            context,
+          ).get<String>(activityUploadDescriptionTag);
           if (uploadDescription != activityUploadDescriptionDefault) {
             setState(() {
-              PrefService.of(context)
-                  .set(activityUploadDescriptionTag, activityUploadDescriptionDefault);
+              PrefService.of(
+                context,
+              ).set(activityUploadDescriptionTag, activityUploadDescriptionDefault);
               _uploadDescriptionEdit++;
             });
           }
@@ -132,10 +134,12 @@ class DataPreferencesScreenState extends State<DataPreferencesScreen> {
       ),
       PrefButton(
         title: const Text("Empty workout after connection loss workaround"),
-        subtitle: const Text("Sometimes in case of data connection loss the auto-stopped and "
-            "auto-closed workouts could show all 0s. That's a bug and the data "
-            "is still there under the hood. Use the button bellow to fix those "
-            "activities."),
+        subtitle: const Text(
+          "Sometimes in case of data connection loss the auto-stopped and "
+          "auto-closed workouts could show all 0s. That's a bug and the data "
+          "is still there under the hood. Use the button bellow to fix those "
+          "activities.",
+        ),
         onTap: () async {
           final dbUtils = DbUtils();
           final unfinished = await dbUtils.unfinishedActivities();
@@ -199,11 +203,7 @@ class DataPreferencesScreenState extends State<DataPreferencesScreen> {
         divisions: audioVolumeDivisions,
         direction: Axis.vertical,
       ),
-      const PrefInteger(
-        pref: audioVolumeIntTag,
-        min: audioVolumeMin,
-        max: audioVolumeMax,
-      ),
+      const PrefInteger(pref: audioVolumeIntTag, min: audioVolumeMin, max: audioVolumeMax),
       const PrefCheckbox(
         title: Text(cadenceGapWorkaround),
         subtitle: Text(cadenceGapWorkaroundDescription),

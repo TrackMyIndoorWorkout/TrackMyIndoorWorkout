@@ -14,23 +14,23 @@ class CrossTrainerDeviceDescriptor extends FitnessMachineDescriptor {
     super.heartRateByteIndex,
     super.doNotReadManufacturerName,
   }) : super(
-          sport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.isMultiSport,
-          dataServiceId: fitnessMachineUuid,
-          dataCharacteristicId: crossTrainerUuid,
-          flagByteSize: 3,
-        );
+         sport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.defaultSport,
+         isMultiSport: deviceSportDescriptors[genericFTMSCrossTrainerFourCC]!.isMultiSport,
+         dataServiceId: fitnessMachineUuid,
+         dataCharacteristicId: crossTrainerUuid,
+         flagByteSize: 3,
+       );
 
   @override
   CrossTrainerDeviceDescriptor clone() => CrossTrainerDeviceDescriptor(
-        fourCC: fourCC,
-        vendorName: vendorName,
-        modelName: modelName,
-        manufacturerNamePart: manufacturerNamePart,
-        manufacturerFitId: manufacturerFitId,
-        model: model,
-        heartRateByteIndex: heartRateByteIndex,
-      );
+    fourCC: fourCC,
+    vendorName: vendorName,
+    modelName: modelName,
+    manufacturerNamePart: manufacturerNamePart,
+    manufacturerFitId: manufacturerFitId,
+    model: model,
+    heartRateByteIndex: heartRateByteIndex,
+  );
 
   // https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.cross_trainer_data.xml
   @override

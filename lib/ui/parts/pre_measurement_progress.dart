@@ -76,10 +76,7 @@ class PreMeasurementProgressState extends State<PreMeasurementProgress> {
         progressIndicator: SizedBox(
           height: _sizeDefault * 2,
           width: _sizeDefault * 2,
-          child: CircularProgressIndicator(
-            strokeWidth: _sizeDefault,
-            value: _progressValue,
-          ),
+          child: CircularProgressIndicator(strokeWidth: _sizeDefault, value: _progressValue),
         ),
         child: Text(widget.phase, style: _textStyle),
       ),
@@ -92,9 +89,7 @@ Future<dynamic> progressBottomSheet(String phase, int hundredTime) {
     Column(
       children: [
         Expanded(
-          child: Center(
-            child: PreMeasurementProgress(phase: phase, hundredTime: hundredTime),
-          ),
+          child: Center(child: PreMeasurementProgress(phase: phase, hundredTime: hundredTime)),
         ),
       ],
     ),

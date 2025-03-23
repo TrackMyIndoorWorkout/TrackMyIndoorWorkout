@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:number_selector/number_selector.dart';
 import 'package:pref/pref.dart';
+
 import '../../devices/device_descriptors/kayak_first_descriptor.dart';
 import '../../devices/gadgets/device_base.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
@@ -136,42 +137,46 @@ class KayakFirstBottomSheetState extends State<KayakFirstBottomSheet> {
     ];
 
     kayakFirstDisplaySlots.forEachIndexed((index, element) {
-      listItems.add(Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(element.item1),
-          DropdownButton<int>(
-            value: _slotChoices[index],
-            icon: const Icon(Icons.arrow_downward),
-            onChanged: (int? value) {
-              if (value != null) {
-                setState(() {
-                  _slotChoices[index] = value;
-                });
-              }
-            },
-            items: getKayakFirstDisplayChoices(),
-          ),
-        ],
-      ));
+      listItems.add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(element.item1),
+            DropdownButton<int>(
+              value: _slotChoices[index],
+              icon: const Icon(Icons.arrow_downward),
+              onChanged: (int? value) {
+                if (value != null) {
+                  setState(() {
+                    _slotChoices[index] = value;
+                  });
+                }
+              },
+              items: getKayakFirstDisplayChoices(),
+            ),
+          ],
+        ),
+      );
     });
 
-    listItems.add(ElevatedButton(
-      onPressed: () async {
-        if (_fitnessEquipment == null) {
-          return;
-        }
+    listItems.add(
+      ElevatedButton(
+        onPressed: () async {
+          if (_fitnessEquipment == null) {
+            return;
+          }
 
-        kayakFirstDisplaySlots.forEachIndexed((index, element) {
-          _prefService.set<int>(element.item2, _slotChoices[index]);
-        });
+          kayakFirstDisplaySlots.forEachIndexed((index, element) {
+            _prefService.set<int>(element.item2, _slotChoices[index]);
+          });
 
-        final kayakFirst = _fitnessEquipment!.descriptor as KayakFirstDescriptor;
-        final controlPoint = _fitnessEquipment!.getControlPoint()!;
-        await kayakFirst.configureDisplay(controlPoint, _logLevel);
-      },
-      child: const Text("Apply Display"),
-    ));
+          final kayakFirst = _fitnessEquipment!.descriptor as KayakFirstDescriptor;
+          final controlPoint = _fitnessEquipment!.getControlPoint()!;
+          await kayakFirst.configureDisplay(controlPoint, _logLevel);
+        },
+        child: const Text("Apply Display"),
+      ),
+    );
 
     return Scaffold(
       body: ListView(children: listItems),

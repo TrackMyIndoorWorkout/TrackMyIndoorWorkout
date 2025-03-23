@@ -51,12 +51,7 @@ mixin Auth {
   }
 
   /// Save the token and the expiry date
-  Future<void> _saveToken(
-    String? token,
-    String? refreshToken,
-    int? expire,
-    String? scope,
-  ) async {
+  Future<void> _saveToken(String? token, String? refreshToken, int? expire, String? scope) async {
     final prefService = Get.find<BasePrefService>();
     await prefService.set<String>(trainingPeaksAccessTokenTag, token ?? '');
     await prefService.set<String>(trainingPeaksRefreshTokenTag, refreshToken ?? '');
@@ -84,7 +79,11 @@ mixin Auth {
 
       // load the data into Get
       await registerToken(
-          localToken.accessToken, localToken.refreshToken, localToken.expiresAt, localToken.scope);
+        localToken.accessToken,
+        localToken.refreshToken,
+        localToken.expiresAt,
+        localToken.scope,
+      );
     } catch (error) {
       debugPrint('Error while retrieving the token');
       localToken.accessToken = null;
@@ -94,10 +93,13 @@ mixin Auth {
 
     if (localToken.expiresAt != null) {
       final dateExpired = DateTime.fromMillisecondsSinceEpoch(localToken.expiresAt! * 1000);
-      final details = '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
+      final details =
+          '${dateExpired.day.toString()}/${dateExpired.month.toString()} '
           '${dateExpired.hour.toString()} hours';
-      debugPrint('stored token ${localToken.accessToken} ${localToken.expiresAt} '
-          '${localToken.scope} expires: $details');
+      debugPrint(
+        'stored token ${localToken.accessToken} ${localToken.expiresAt} '
+        '${localToken.scope} expires: $details',
+      );
     }
 
     return localToken;
@@ -119,33 +121,36 @@ mixin Auth {
     debugPrint('Running on iOS or Android');
 
     // Attach a listener to the stream
-    sub = AppLinks().uriLinkStream.listen((Uri? uri) {
-      if (uri == null) {
-        debugPrint('Subscription was null');
-        sub?.cancel();
-      } else {
-        // Parse the link and warn the user, if it is not correct
-        debugPrint('Got a link!! $uri');
-        if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
-          debugPrint('This is not the good scheme ${uri.scheme}');
+    sub = AppLinks().uriLinkStream.listen(
+      (Uri? uri) {
+        if (uri == null) {
+          debugPrint('Subscription was null');
+          sub?.cancel();
+        } else {
+          // Parse the link and warn the user, if it is not correct
+          debugPrint('Got a link!! $uri');
+          if (uri.scheme.compareTo('${redirectUrlScheme}_$clientId') != 0) {
+            debugPrint('This is not the good scheme ${uri.scheme}');
+          }
+          final code = uri.queryParameters["code"] ?? notAvailable;
+          final error = uri.queryParameters["error"];
+
+          debugPrint('code $code, error $error');
+
+          closeInAppWebView();
+          onCodeReceived.add(code);
+
+          debugPrint('Got the new code: $code');
+
+          sub?.cancel();
         }
-        final code = uri.queryParameters["code"] ?? notAvailable;
-        final error = uri.queryParameters["error"];
-
-        debugPrint('code $code, error $error');
-
-        closeInAppWebView();
-        onCodeReceived.add(code);
-
-        debugPrint('Got the new code: $code');
-
+      },
+      onError: (err) {
+        // Handle exception by warning the user their action did not succeed
+        debugPrint('Found an error $err');
         sub?.cancel();
-      }
-    }, onError: (err) {
-      // Handle exception by warning the user their action did not succeed
-      debugPrint('Found an error $err');
-      sub?.cancel();
-    });
+      },
+    );
   }
 
   Future<bool> hasValidToken() async {
@@ -180,14 +185,19 @@ mixin Auth {
 
     bool storedBefore = token != null && token.isNotEmpty && token != "null";
     if (storedBefore) {
-      debugPrint('token has been stored before! '
-          '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}');
+      debugPrint(
+        'token has been stored before! '
+        '${tokenStored.accessToken}  exp. ${tokenStored.expiresAt}',
+      );
     }
 
     // Use the refresh token to get a new access token
     if (isExpired && storedBefore) {
-      RefreshAnswer refreshAnswer =
-          await _getNewAccessToken(clientId, secret, tokenStored.refreshToken ?? "0");
+      RefreshAnswer refreshAnswer = await _getNewAccessToken(
+        clientId,
+        secret,
+        tokenStored.refreshToken ?? "0",
+      );
       // Update with new values if HTTP status code is 200
       if (refreshAnswer.statusCode != null &&
           refreshAnswer.statusCode! >= 200 &&
@@ -257,10 +267,7 @@ mixin Auth {
 
     final refreshResponse = await http.post(
       Uri.parse(tokenRefreshUrl),
-      headers: {
-        "Accept": "application/json",
-        "Api-Key": clientId,
-      },
+      headers: {"Accept": "application/json", "Api-Key": clientId},
       body: {
         "grant_type": "refresh_token",
         "client_id": clientId,
@@ -299,10 +306,7 @@ mixin Auth {
 
     final tokenResponse = await http.post(
       Uri.parse(tokenRequestUrl),
-      headers: {
-        "Accept": "application/json",
-        "Api-Key": clientId,
-      },
+      headers: {"Accept": "application/json", "Api-Key": clientId},
       body: {
         "grant_type": "authorization_code",
         "client_id": clientId,
@@ -335,8 +339,10 @@ mixin Auth {
   ///
   /// including when there is no token yet
   bool _isTokenExpired(TrainingPeaksToken token) {
-    debugPrint(' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
-        ' exp. time: ${token.expiresAt}');
+    debugPrint(
+      ' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
+      ' exp. time: ${token.expiresAt}',
+    );
 
     // when it is the first run or after a deAuthorize
     if (token.expiresAt == null) {
@@ -356,9 +362,10 @@ mixin Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<bool> deAuthorize() async {
-    final token = Get.isRegistered<TrainingPeaksToken>()
-        ? Get.find<TrainingPeaksToken>()
-        : await _getStoredToken();
+    final token =
+        Get.isRegistered<TrainingPeaksToken>()
+            ? Get.find<TrainingPeaksToken>()
+            : await _getStoredToken();
     final header = token.getAuthorizationHeader();
     // If header is "empty"
     if (header.containsKey('88')) {

@@ -66,41 +66,41 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     configurationByte + separator * 256,
     displayConfigurationByte + separator * 256,
     dataStreamFlag + separator * 256,
-    startStopByte + separator * 256
+    startStopByte + separator * 256,
   ];
   ListQueue<int> responses = ListQueue<int>();
   List<int> currentResponses = [];
   bool initializedConsole = false;
 
   KayakFirstDescriptor()
-      : super(
-          sport: deviceSportDescriptors[kayakFirstFourCC]!.defaultSport,
-          isMultiSport: deviceSportDescriptors[kayakFirstFourCC]!.isMultiSport,
-          fourCC: kayakFirstFourCC,
-          vendorName: "Kayak First",
-          modelName: "Kayak First Ergometer",
-          manufacturerNamePart: "Manufacturer Name",
-          manufacturerFitId: stravaFitId,
-          model: "Model",
-          deviceCategory: DeviceCategory.smartDevice,
-          tag: "KAYAK_FIRST_DESCRIPTOR",
-          isPolling: true,
-          fragmentedPackets: true,
-          dataServiceId: kayakFirstServiceUuid,
-          dataCharacteristicId: kayakFirstAllAroundUuid,
-          controlCharacteristicId: "",
-          statusCharacteristicId: "",
-          listenOnControl: false,
-          hasFeatureFlags: true,
-          flagByteSize: 2,
-          heartRateByteIndex: -1,
-          timeMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
-          caloriesMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
-          speedMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
-          powerMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
-          cadenceMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
-          distanceMetric: ThreeByteMetricDescriptor(lsb: 0, msb: 0), // dummy
-        ) {
+    : super(
+        sport: deviceSportDescriptors[kayakFirstFourCC]!.defaultSport,
+        isMultiSport: deviceSportDescriptors[kayakFirstFourCC]!.isMultiSport,
+        fourCC: kayakFirstFourCC,
+        vendorName: "Kayak First",
+        modelName: "Kayak First Ergometer",
+        manufacturerNamePart: "Manufacturer Name",
+        manufacturerFitId: stravaFitId,
+        model: "Model",
+        deviceCategory: DeviceCategory.smartDevice,
+        tag: "KAYAK_FIRST_DESCRIPTOR",
+        isPolling: true,
+        fragmentedPackets: true,
+        dataServiceId: kayakFirstServiceUuid,
+        dataCharacteristicId: kayakFirstAllAroundUuid,
+        controlCharacteristicId: "",
+        statusCharacteristicId: "",
+        listenOnControl: false,
+        hasFeatureFlags: true,
+        flagByteSize: 2,
+        heartRateByteIndex: -1,
+        timeMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
+        caloriesMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
+        speedMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
+        powerMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
+        cadenceMetric: ShortMetricDescriptor(lsb: 0, msb: 0), // dummy
+        distanceMetric: ThreeByteMetricDescriptor(lsb: 0, msb: 0), // dummy
+      ) {
     responses.add(separator);
   }
 
@@ -165,7 +165,10 @@ class KayakFirstDescriptor extends DeviceDescriptor {
   void stopWorkout() {}
 
   Future<bool> _executeControlOperationCore(
-      BluetoothCharacteristic controlPoint, String command, int logLevel) async {
+    BluetoothCharacteristic controlPoint,
+    String command,
+    int logLevel,
+  ) async {
     if (!command.endsWith(crLf)) {
       command += crLf;
     }
@@ -185,7 +188,13 @@ class KayakFirstDescriptor extends DeviceDescriptor {
       } on Exception catch (e, stack) {
         retryCount += 1;
         Logging().logException(
-            logLevel, tag, "_executeControlOperationCore", "controlPoint.write", e, stack);
+          logLevel,
+          tag,
+          "_executeControlOperationCore",
+          "controlPoint.write",
+          e,
+          stack,
+        );
         await Future.delayed(responseWatchDelay);
       }
     }
@@ -195,8 +204,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
 
   @override
   Future<bool> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo}) async {
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  }) async {
     Logging().log(logLevel, logLevelInfo, tag, "executeControlOperation", "$opCode");
 
     if (controlPoint == null || opCode == requestControl) {
@@ -285,8 +298,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     currentResponses.clear();
     while (!seenIt && iterationCount < maxWaitIterations) {
       await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-      seenIt = await _waitForResponse(resetByte, commandExtraLongDelayMs, logLevel, true)
-          .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+      seenIt = await _waitForResponse(
+        resetByte,
+        commandExtraLongDelayMs,
+        logLevel,
+        true,
+      ).timeout(responseWatchTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }
@@ -301,8 +318,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     progressBottomSheet("Initializing 2...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await executeControlOperation(controlPoint, blockSignalStartStop, logLevel, resetControl);
-      seenIt = await _waitForResponse(resetByte, commandExtraLongDelayMs, logLevel, true)
-          .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+      seenIt = await _waitForResponse(
+        resetByte,
+        commandExtraLongDelayMs,
+        logLevel,
+        true,
+      ).timeout(responseWatchTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }
@@ -317,8 +338,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     progressBottomSheet("Handshake...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await handshake(controlPoint, false, logLevel);
-      seenIt = await _waitForResponse(handshakeByte, commandExtraLongDelayMs, logLevel, true)
-          .timeout(responseWatchTimeoutGuard, onTimeout: () => false);
+      seenIt = await _waitForResponse(
+        handshakeByte,
+        commandExtraLongDelayMs,
+        logLevel,
+        true,
+      ).timeout(responseWatchTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }
@@ -333,9 +358,12 @@ class KayakFirstDescriptor extends DeviceDescriptor {
     progressBottomSheet("Configuration...", progressBarCompletionTime);
     while (!seenIt && iterationCount < maxWaitIterations) {
       await configureDisplay(controlPoint, logLevel);
-      seenIt =
-          await _waitForResponse(displayConfigurationByte, commandExtraLongDelayMs, logLevel, true)
-              .timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
+      seenIt = await _waitForResponse(
+        displayConfigurationByte,
+        commandExtraLongDelayMs,
+        logLevel,
+        true,
+      ).timeout(commandExtraLongTimeoutGuard, onTimeout: () => false);
       await Future.delayed(commandLongDelay);
       iterationCount++;
     }

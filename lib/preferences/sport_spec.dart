@@ -9,7 +9,7 @@ class SportSpec {
     ActivityType.swim,
     ActivityType.elliptical,
     ActivityType.stairStepper,
-    ActivityType.rockClimbing
+    ActivityType.rockClimbing,
   ];
 
   static String sport2Sport(String sport) {

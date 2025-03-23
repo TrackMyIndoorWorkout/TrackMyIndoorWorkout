@@ -5,14 +5,10 @@ import '../../preferences/log_level.dart';
 import '../../utils/logging.dart';
 import '../gadgets/complex_sensor.dart';
 import '../gatt/ftms.dart';
+import '../gatt/hrm.dart';
 import 'data_handler.dart';
 
-enum DeviceCategory {
-  smartDevice,
-  antPlusDevice,
-  primarySensor,
-  secondarySensor,
-}
+enum DeviceCategory { smartDevice, antPlusDevice, primarySensor, secondarySensor }
 
 abstract class DeviceDescriptor extends DataHandler {
   static const double ms2kmh = 3.6;
@@ -77,19 +73,26 @@ abstract class DeviceDescriptor extends DataHandler {
 
   String get fullName => '$vendorName $modelName';
   bool get isFitnessMachine => dataServiceId == fitnessMachineUuid;
+  bool get isHeartRateMonitor => dataServiceId == heartRateServiceUuid;
 
   void stopWorkout();
 
   Future<void> executeControlOperation(
-      BluetoothCharacteristic? controlPoint, bool blockSignalStartStop, int logLevel, int opCode,
-      {int? controlInfo});
+    BluetoothCharacteristic? controlPoint,
+    bool blockSignalStartStop,
+    int logLevel,
+    int opCode, {
+    int? controlInfo,
+  });
 
   ComplexSensor? getSensor(BluetoothDevice device) {
     return null;
   }
 
   List<ComplexSensor> getAdditionalSensors(
-      BluetoothDevice device, List<BluetoothService> services) {
+    BluetoothDevice device,
+    List<BluetoothService> services,
+  ) {
     return [];
   }
 
@@ -108,7 +111,10 @@ abstract class DeviceDescriptor extends DataHandler {
   /// Perform extra operations after a successful connect,
   /// service + characteristics discovery, attach but before setNotifyValue(true)
   Future<void> prePumpConfiguration(
-      List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
+    List<BluetoothService> svcs,
+    Athlete athlete,
+    int logLvl,
+  ) async {
     Logging().log(logLvl, logLevelInfo, tag, "prePumpConfiguration", "Not implemented!");
   }
 

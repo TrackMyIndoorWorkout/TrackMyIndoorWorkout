@@ -52,8 +52,10 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
     _si = Get.find<BasePrefService>().get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
-    _textStyle = Get.textTheme.headlineSmall!
-        .apply(fontFamily: fontFamily, color: _themeManager.getProtagonistColor());
+    _textStyle = Get.textTheme.headlineSmall!.apply(
+      fontFamily: fontFamily,
+      color: _themeManager.getProtagonistColor(),
+    );
     _sizeDefault = _textStyle.fontSize!;
     _textStyle2 = _themeManager.getBlueTextStyle(_sizeDefault);
     _expandableThemeData = ExpandableThemeData(iconColor: _themeManager.getProtagonistColor());
@@ -90,10 +92,7 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
                   Get.close(1);
                 },
               ),
-              cancel: TextButton(
-                child: const Text("No"),
-                onPressed: () => Get.close(1),
-              ),
+              cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
             );
           },
         ),
@@ -112,13 +111,14 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data = await _database.workoutSummarys
-                .filter()
-                .sportEqualTo(widget.sport)
-                .sortBySpeedDesc()
-                .offset(page * limit)
-                .limit(limit)
-                .findAll();
+            final data =
+                await _database.workoutSummarys
+                    .filter()
+                    .sportEqualTo(widget.sport)
+                    .sortBySpeedDesc()
+                    .offset(page * limit)
+                    .limit(limit)
+                    .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -126,16 +126,11 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
           return Column(
             children: [
               Text(error.toString()),
-              ElevatedButton(
-                onPressed: () => state.loadMore(),
-                child: const Text('Retry'),
-              ),
+              ElevatedButton(onPressed: () => state.loadMore(), child: const Text('Retry')),
             ],
           );
         },
-        empty: const Center(
-          child: Text('No entries found'),
-        ),
+        empty: const Center(child: Text('No entries found')),
         itemBuilder: (context, index, item) {
           final workoutSummary = item as WorkoutSummary;
           final dateString = DateFormat.yMd().format(workoutSummary.start);
