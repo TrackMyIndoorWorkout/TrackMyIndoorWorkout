@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
-import 'package:track_my_indoor_exercise/ui/parts/legend_dialog.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../persistence/activity.dart';
@@ -31,6 +30,7 @@ import '../models/display_record.dart';
 import '../models/histogram_data.dart';
 import '../models/measurement_counter.dart';
 import '../models/tile_configuration.dart';
+import '../parts/legend_dialog.dart';
 import 'activity_detail_graphs.dart';
 import 'activity_detail_row_fit_horizontal.dart';
 import 'activity_detail_row_w_unit.dart';
