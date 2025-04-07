@@ -1,3 +1,6 @@
+## 2.0.162
+* Bug fix: cadence stats (avg / max) were not displaying during recording
+
 ## 2.0.161
 * Heart Rate Monitor only workout (with possible Calorie -> Watt -> speed + distance)
 * Accept only CSV extensions for activity import
