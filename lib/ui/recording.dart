@@ -1042,7 +1042,7 @@ class RecordingState extends State<RecordingScreen> {
     _optionalStatistics = [emptyMeasurement];
 
     final calculateCadences =
-        !_heartRateMonitorWorkout && (_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
+        !_heartRateMonitorWorkout && !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
     _workoutStats = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
