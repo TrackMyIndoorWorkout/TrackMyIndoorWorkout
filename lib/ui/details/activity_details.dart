@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
-import 'package:track_my_indoor_exercise/ui/parts/legend_dialog.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../persistence/activity.dart';
@@ -20,6 +19,7 @@ import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/recalculate_more.dart';
 import '../../preferences/show_strokes_strides_revs.dart';
+import '../../preferences/simpler_ui.dart';
 import '../../preferences/unit_system.dart';
 import '../../utils/constants.dart';
 import '../../utils/display.dart';
@@ -31,6 +31,7 @@ import '../models/display_record.dart';
 import '../models/histogram_data.dart';
 import '../models/measurement_counter.dart';
 import '../models/tile_configuration.dart';
+import '../parts/legend_dialog.dart';
 import 'activity_detail_graphs.dart';
 import 'activity_detail_row_fit_horizontal.dart';
 import 'activity_detail_row_w_unit.dart';
@@ -59,6 +60,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   final List<String> _selectedValues = [];
   bool _si = unitSystemDefault;
   bool _highRes = distanceResolutionDefault;
+  bool _simplerUi = simplerUiSlowDefault;
   bool _calculateMedian = activityDetailsMedianDisplayDefault;
   bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
   List<MetricSpec> _preferencesSpecs = [];
@@ -87,7 +89,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     _allRecords = await DbUtils().getRecords(widget.activity.id);
     setState(() {
       _pointCount = widget.size.width.toInt() - 20;
-      if (_allRecords.length < _pointCount) {
+      if (_allRecords.length < _pointCount || !_simplerUi) {
         _sampledRecords = _allRecords
             .map((r) => DisplayRecord.fromRecord(r))
             .toList(growable: false);
@@ -332,6 +334,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     _si = prefService.get<bool>(unitSystemTag) ?? unitSystemDefault;
     _highRes =
         Get.find<BasePrefService>().get<bool>(distanceResolutionTag) ?? distanceResolutionDefault;
+    _simplerUi = prefService.get<bool>(simplerUiTag) ?? simplerUiSlowDefault;
     _calculateMedian =
         Get.find<BasePrefService>().get<bool>(activityDetailsMedianDisplayTag) ??
         activityDetailsMedianDisplayDefault;

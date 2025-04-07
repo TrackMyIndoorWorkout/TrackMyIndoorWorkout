@@ -15,7 +15,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:track_my_indoor_exercise/devices/gatt/hrm.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -30,6 +29,7 @@ import '../devices/gatt/appearance.dart';
 import '../devices/gatt/concept2.dart';
 import '../devices/gatt/csc.dart';
 import '../devices/gatt/ftms.dart';
+import '../devices/gatt/hrm.dart';
 import '../devices/gatt/kayak_first.dart';
 import '../devices/gatt/power_meter.dart';
 import '../devices/gatt/precor.dart';

@@ -1042,7 +1042,7 @@ class RecordingState extends State<RecordingScreen> {
     _optionalStatistics = [emptyMeasurement];
 
     final calculateCadences =
-        !_heartRateMonitorWorkout && (_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
+        !_heartRateMonitorWorkout && !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
     _workoutStats = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
@@ -1061,14 +1061,14 @@ class RecordingState extends State<RecordingScreen> {
       si: _si,
       sport: widget.sport,
       calculateAvgPower: false,
-      calculateMaxPower: _onStageStatisticsType != onStageStatisticsTypeNone,
-      calculateMinPower: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMaxPower: !_stationaryWorkout && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinPower: !_stationaryWorkout && _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateAvgSpeed: false,
-      calculateMaxSpeed: _onStageStatisticsType != onStageStatisticsTypeNone,
-      calculateMinSpeed: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMaxSpeed: !_stationaryWorkout && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinSpeed: !_stationaryWorkout && _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateAvgCadence: false,
-      calculateMaxCadence: _onStageStatisticsType != onStageStatisticsTypeNone,
-      calculateMinCadence: _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMaxCadence: calculateCadences && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinCadence: calculateCadences && _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateAvgHeartRate: false,
       calculateMaxHeartRate: _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateMinHeartRate: _onStageStatisticsType != onStageStatisticsTypeNone,
