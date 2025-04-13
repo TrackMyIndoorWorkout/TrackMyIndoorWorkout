@@ -23,8 +23,8 @@ dependencies:
   email_validator: ^3.0.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.3
-  file_picker: ^9.2.1
-  flex_color_scheme: ^8.1.1
+  file_picker: ^10.1.2
+  flex_color_scheme: ^8.2.0
   flutter_archive: ^6.0.3
   flutter_blue_plus: ^1.35.3
   flutter_circle_color_picker: ^0.3.0
@@ -58,12 +58,12 @@ dependencies:
   receive_sharing_intent: ^1.8.1
   share_plus: ^10.1.4
   string_validator: ^1.1.0
-  syncfusion_flutter_charts: ^28.2.12
+  syncfusion_flutter_charts: ^29.1.37+1
   timezone: ^0.10.0
   tuple: ^2.0.2
   url_launcher: ^6.3.1
   vector_math: ^2.1.4
-  wakelock_plus: ^1.2.10
+  wakelock_plus: ^1.2.11
   flutter:
     sdk: flutter
 
