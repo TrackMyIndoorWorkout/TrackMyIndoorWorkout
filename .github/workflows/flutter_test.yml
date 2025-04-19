@@ -35,6 +35,10 @@ jobs:
           echo 'const trainingPeaksClientId = "a";' >> lib/secret.dart
           echo 'const googleFitClientId = "a";' >> lib/secret.dart
           echo 'const googleFitSecret = "a";' >> lib/secret.dart
+          echo 'const galaxyStoreClientId = "a";' >> lib/secret.dart
+          echo 'const galaxyStoreSecret = "a";' >> lib/secret.dart
+          echo 'const fitBitSecret = "a";' >> lib/secret.dart
+          echo 'const fitBitClientId = "a";' >> lib/secret.dart
       - name: Format files
         run: dart format --set-exit-if-changed .
       - name: Analyze files
