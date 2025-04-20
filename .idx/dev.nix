@@ -1,6 +1,4 @@
 {pkgs}: {
-  # comment
-  channel = "stable";
   packages = [
     pkgs.jdk17
     pkgs.unzip

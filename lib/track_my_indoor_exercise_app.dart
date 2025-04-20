@@ -5,9 +5,11 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar/isar.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pref/pref.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
+import 'i18n/strings.g.dart';
 import 'import/csv_importer.dart';
 import 'persistence/workout_summary.dart';
 import 'preferences/leaderboard_and_rank.dart';
@@ -114,6 +116,9 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
           swapLegacyOnMaterial3: true,
         ),
         themeMode: _themeManager!.getThemeMode(),
+        locale: TranslationProvider.of(context).flutterLocale,
+        supportedLocales: AppLocaleUtils.supportedLocales,
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         home: const FindDevicesScreen(),
       ),
     );

@@ -57,6 +57,7 @@ import '../preferences/palette_spec.dart';
 import '../preferences/recalculate_more.dart';
 import '../preferences/revolution_sliding_window.dart';
 import '../preferences/scan_duration.dart';
+import '../preferences/selected_locale.dart';
 import '../preferences/sensor_data_threshold.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_performance_overlay.dart';
@@ -171,6 +172,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     recalculateMoreTag: recalculateMoreDefault,
     revolutionSlidingWindowTag: revolutionSlidingWindowDefault,
     scanDurationTag: scanDurationDefault,
+    selectedLocaleTag: selectedLocaleDefault,
     sensorDataThresholdTag: sensorDataThresholdDefault,
     simplerUiTag: await getSimplerUiDefault(),
     showPacerTag: showPacerDefault,

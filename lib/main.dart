@@ -10,6 +10,7 @@ import 'package:pref/pref.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'devices/company_registry.dart';
+import 'i18n/strings.g.dart';
 import 'persistence/activity.dart';
 import 'persistence/calorie_tune.dart';
 import 'persistence/device_usage.dart';
@@ -19,6 +20,7 @@ import 'persistence/record.dart';
 import 'persistence/workout_summary.dart';
 import 'preferences/database_location.dart';
 import 'preferences/log_level.dart';
+import 'preferences/selected_locale.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'ui/models/progress_state.dart';
@@ -65,7 +67,10 @@ void main() async {
         Logging().logVersion(packageInfo);
       });
 
-      runApp(TrackMyIndoorExerciseApp(prefService: prefService));
+      String storedLocale = prefService.get<String>(selectedLocaleTag) ?? selectedLocaleDefault;
+      LocaleSettings.setLocaleRaw(storedLocale);
+
+      runApp(TranslationProvider(child: TrackMyIndoorExerciseApp(prefService: prefService)));
     },
     (error, stack) =>
         error is Exception

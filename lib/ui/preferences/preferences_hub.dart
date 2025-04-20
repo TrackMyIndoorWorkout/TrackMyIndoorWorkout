@@ -7,6 +7,7 @@ import '../../upload/constants.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
+import '../../i18n/strings.g.dart' as translations;
 import 'athlete.dart';
 import 'data.dart';
 import 'equipment.dart';
@@ -92,8 +93,9 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
         )
         .toList(growable: false);
 
+    final t = translations.Translations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Preferences')),
+      appBar: AppBar(title: Text(t.preferences.title)),
       body: ListView(children: screens),
     );
   }

@@ -1,0 +1,132 @@
+{
+  "common": {
+    "appName": "Track My Indoor Exercise",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "error": "An unexpected error occurred.",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "theme": {
+      "title": "Appearance",
+      "description": "Choose the application theme.",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System Default"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "enable": "Enable Notifications",
+      "description": "Allow the app to send you notifications.",
+      "sound": {
+         "title": "Notification Sound",
+         "select": "Select Notification Sound",
+         "current": "Current sound: {soundName}",
+         "options": {
+            "defaultSound": "Default Sound",
+            "silent": "Silent"
+         }
+      }
+    },
+    "data": {
+      "title": "Data Management",
+      "export": {
+        "title": "Export Data",
+        "description": "Export your workout data to a file.",
+        "button": "Export Data",
+        "inProgress": "Exporting data...",
+        "success": "Data exported successfully to {path}",
+        "error": "Failed to export data."
+      },
+      "importData": {
+         "title": "Import Data",
+         "description": "Import workout data from a file.",
+         "button": "Import Data",
+         "selectFile": "Select file to import",
+         "inProgress": "Importing data...",
+         "success": "Data imported successfully.",
+         "error": "Failed to import data."
+      },
+      "clearCache": {
+        "title": "Clear Cache",
+        "description": "Clear temporary application data.",
+        "button": "Clear Cache",
+        "inProgress": "Clearing cache...",
+        "success": "Cache cleared successfully.",
+        "error": "Failed to clear cache.",
+        "confirmDialog": {
+           "title": "Confirm Clear Cache",
+           "message": "Are you sure you want to clear the application cache? This cannot be undone."
+        }
+      }
+    },
+    "about": {
+      "title": "About",
+      "version": "Version {version}",
+      "updates": {
+         "button": "Check for Updates",
+         "checking": "Checking for updates...",
+         "upToDate": "App is up to date.",
+         "available": "New version available: {newVersion}"
+      },
+      "rate": "Rate App",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "licenses": "Open Source Licenses"
+    },
+    "units": {
+       "title": "Units",
+       "description": "Choose measurement units.",
+       "distance": {
+          "title": "Distance Unit",
+          "options": {
+             "kilometers": "Kilometers (km)",
+             "miles": "Miles (mi)"
+          }
+       },
+       "speed": {
+          "title": "Speed Unit",
+          "options": {
+             "kmh": "Kilometers per hour (km/h)",
+             "mph": "Miles per hour (mph)"
+          }
+       }
+    }
+  },
+  "workout": {
+    "start": "Start Workout",
+    "stop": "Stop Workout",
+    "pause": "Pause",
+    "resume": "Resume",
+    "lap": "Lap {count}",
+    "duration": "Duration",
+    "distance": "Distance",
+    "speed": "Speed",
+    "calories": "Calories",
+    "noDevice": "No device connected.",
+    "searchingDevice": "Searching for device..."
+  },
+  "history": {
+    "title": "Workout History",
+    "empty": "No workouts recorded yet.",
+    "deleteConfirmation": {
+      "title": "Delete Workout?",
+      "message": "Are you sure you want to delete this workout? This action cannot be undone."
+    }
+  },
+  "sharing": {
+    "shareWorkout": "Share Workout",
+    "shareSuccess": "Workout shared successfully.",
+    "shareError": "Failed to share workout."
+  }
+}
