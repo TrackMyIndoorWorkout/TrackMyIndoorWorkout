@@ -177,7 +177,7 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.access_time_filled, _sizeDefault),
                         Text(timeString, style: _textStyle),
                       ],
                     ),

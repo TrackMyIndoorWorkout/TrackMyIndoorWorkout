@@ -477,7 +477,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             ),
             ActivityDetailHeaderTextRow(
               themeManager: _themeManager,
-              icon: Icons.watch,
+              icon: Icons.access_time_filled,
               iconSize: _sizeDefault2,
               text: timeString,
               textStyle: _headerStyle,
