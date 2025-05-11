@@ -338,8 +338,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     legendDialog([
       const Tuple2<IconData, String>(Icons.file_upload, "Import Workout"),
       const Tuple2<IconData, String>(Icons.collections_bookmark, "Device Usages"),
-      const Tuple2<IconData, String>(Icons.bolt, "Power Tunes"),
-      const Tuple2<IconData, String>(Icons.whatshot, "Calorie Tunes"),
+      const Tuple2<IconData, String>(Icons.bolt, "Power & Tunes"),
+      const Tuple2<IconData, String>(Icons.whatshot, "Calorie & Tunes"),
       const Tuple2<IconData, String>(Icons.leaderboard, "Leaderboards"),
       const Tuple2<IconData, String>(Icons.help, "About"),
       const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
@@ -347,6 +347,18 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       const Tuple2<IconData, String>(Icons.file_download, "Download Workout"),
       const Tuple2<IconData, String>(Icons.delete, "Delete Workout"),
       const Tuple2<IconData, String>(Icons.chevron_right, "Workout Details"),
+      const Tuple2<IconData, String>(Icons.calendar_today, "Activity Date"),
+      const Tuple2<IconData, String>(Icons.access_time_filled, "Activity Time"),
+      const Tuple2<IconData, String>(Icons.timer, "Activity Duration"),
+      const Tuple2<IconData, String>(Icons.add_road, "Activity Distance"),
+      const Tuple2<IconData, String>(Icons.numbers, "Bluetooth ID"),
+      const Tuple2<IconData, String>(Icons.directions_bike, "Bike Sport"),
+      const Tuple2<IconData, String>(Icons.directions_run, "Run Sport"),
+      const Tuple2<IconData, String>(Icons.kayaking, "Kayak / Canoe Sport"),
+      const Tuple2<IconData, String>(Icons.rowing, "Rowing Sport"),
+      const Tuple2<IconData, String>(Icons.waves, "Swimming Sport"),
+      const Tuple2<IconData, String>(Icons.downhill_skiing, "Elliptical / Nordic Ski Sport"),
+      const Tuple2<IconData, String>(Icons.stairs, "Stair Stepper / Climber Sport"),
     ]);
   }
 
