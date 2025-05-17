@@ -11,6 +11,10 @@ laundry drying racks.
 
 For more details please see [the application's website](https://trackmyindoorworkout.github.io).
 
+## Technical Architecture and Design
+
+DeepWiki: https://deepwiki.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/
+
 ## Contribution Rules
 
 * The project works on the Flutter stable channel. (For a good while it was on the beta channel
