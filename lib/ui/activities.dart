@@ -197,7 +197,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           final Directory tempDir = await getTemporaryDirectory();
           final workoutFilePath = "${tempDir.path}/$fileName";
           final workoutFile = await File(workoutFilePath).writeAsBytes(fileBytes, flush: true);
-          Share.shareXFiles([XFile(workoutFile.path)], text: activity.getTitle(false));
+          SharePlus.instance.share(
+            ShareParams(files: [XFile(workoutFile.path)], text: activity.getTitle(false)),
+          );
         },
       ),
       IconButton(

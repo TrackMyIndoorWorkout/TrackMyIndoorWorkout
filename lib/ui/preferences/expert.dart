@@ -197,8 +197,16 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           }
 
           final title = "Debug Logs ${DateTimeEx.isoDateTime}";
-          final result = await Share.shareXFiles([XFile(zipFile.path)], text: title);
-          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
+          final result = await SharePlus.instance.share(
+            ShareParams(files: [XFile(zipFile.path)], text: title),
+          );
+          Logging().log(
+            logLevel,
+            logLevelInfo,
+            logTag,
+            "SharePlus.instance.share",
+            "${result.status}",
+          );
         },
         child: const Text("Export Logs..."),
       ),
@@ -281,8 +289,16 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return;
           }
 
-          final result = await Share.shareXFiles([XFile(zipFilePath)], text: "Exported DB");
-          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
+          final result = await SharePlus.instance.share(
+            ShareParams(files: [XFile(zipFilePath)], text: "Exported DB"),
+          );
+          Logging().log(
+            logLevel,
+            logLevelInfo,
+            logTag,
+            "SharePlus.instance.share",
+            "${result.status}",
+          );
         },
         child: const Text(dataExport),
       ),
