@@ -130,13 +130,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.deviceUsages
-                    .where()
-                    .sortByTimeDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.deviceUsages
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

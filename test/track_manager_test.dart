@@ -13,10 +13,9 @@ void main() {
       final timeZone = timeZoneTracks.key;
       for (final track in timeZoneTracks.value.values) {
         test("$timeZone ${track.kind} ${track.lengthFactor}", () async {
-          final expectedLengthFactor =
-              track.kind == TrackKind.forWater
-                  ? fiveHundredMTrackLengthFactor
-                  : fourHundredMTrackLengthFactor;
+          final expectedLengthFactor = track.kind == TrackKind.forWater
+              ? fiveHundredMTrackLengthFactor
+              : fourHundredMTrackLengthFactor;
           expect(track.lengthFactor, expectedLengthFactor);
         });
       }

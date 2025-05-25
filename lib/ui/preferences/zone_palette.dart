@@ -49,7 +49,11 @@ class ZonePalettePreferencesScreenState extends State<ZonePalettePreferencesScre
     final Color? newColor = await Get.bottomSheet(
       SafeArea(
         child: Column(
-          children: [Expanded(child: Center(child: ColorPickerBottomSheet(color: color)))],
+          children: [
+            Expanded(
+              child: Center(child: ColorPickerBottomSheet(color: color)),
+            ),
+          ],
         ),
       ),
       isScrollControlled: true,

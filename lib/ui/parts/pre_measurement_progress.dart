@@ -89,7 +89,9 @@ Future<dynamic> progressBottomSheet(String phase, int hundredTime) {
     Column(
       children: [
         Expanded(
-          child: Center(child: PreMeasurementProgress(phase: phase, hundredTime: hundredTime)),
+          child: Center(
+            child: PreMeasurementProgress(phase: phase, hundredTime: hundredTime),
+          ),
         ),
       ],
     ),

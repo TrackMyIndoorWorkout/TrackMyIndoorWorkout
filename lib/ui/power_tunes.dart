@@ -120,13 +120,12 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.powerTunes
-                    .where()
-                    .sortByTimeDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.powerTunes
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

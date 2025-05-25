@@ -196,13 +196,12 @@ class DbUtils with PowerSpeedMixin {
   }
 
   Future<double> powerFactor(String deviceId) async {
-    final powerTune =
-        await database.powerTunes
-            .where()
-            .filter()
-            .macEqualTo(deviceId)
-            .sortByTimeDesc()
-            .findFirst();
+    final powerTune = await database.powerTunes
+        .where()
+        .filter()
+        .macEqualTo(deviceId)
+        .sortByTimeDesc()
+        .findFirst();
     return powerTune?.powerFactor ?? 1.0;
   }
 
@@ -435,14 +434,13 @@ class DbUtils with PowerSpeedMixin {
   Future<int> deleteRecords(Activity activity, int minRecordId, int maxRecordId) async {
     var numDeleted = 0;
     database.writeTxn(() async {
-      numDeleted =
-          await database.records
-              .where()
-              .filter()
-              .activityIdEqualTo(activity.id)
-              .and()
-              .idBetween(minRecordId, maxRecordId)
-              .deleteAll();
+      numDeleted = await database.records
+          .where()
+          .filter()
+          .activityIdEqualTo(activity.id)
+          .and()
+          .idBetween(minRecordId, maxRecordId)
+          .deleteAll();
     });
 
     return numDeleted;

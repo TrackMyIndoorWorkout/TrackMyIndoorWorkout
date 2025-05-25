@@ -60,10 +60,9 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     final statusCode = await uploadService.upload(widget.activity, _calculateGps);
     final finalResult =
         statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
-    final resultMessage =
-        finalResult
-            ? "Activity ${widget.activity.id} submitted successfully"
-            : "Activity ${widget.activity.id} upload failure";
+    final resultMessage = finalResult
+        ? "Activity ${widget.activity.id} submitted successfully"
+        : "Activity ${widget.activity.id} upload failure";
     Get.snackbar("Upload", resultMessage);
 
     setState(() {
@@ -84,13 +83,13 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     List<Widget> choiceRows = [
       uploadInProgress
           ? Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(semanticsLabel: "Progress indicator"),
-              JumpingText("Uploading...", style: _largerTextStyle),
-            ],
-          )
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(semanticsLabel: "Progress indicator"),
+                JumpingText("Uploading...", style: _largerTextStyle),
+              ],
+            )
           : Text("Integrations:", style: _largerTextStyle, textAlign: TextAlign.center),
     ];
     choiceRows.addAll(
@@ -116,10 +115,9 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                       Icon(
                         (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
                         size: _largerTextStyle.fontSize! * 1.5,
-                        color:
-                            (uploadStates[e.value.name] ?? false)
-                                ? _themeManager.getGreenColor()
-                                : _themeManager.getProtagonistColor(),
+                        color: (uploadStates[e.value.name] ?? false)
+                            ? _themeManager.getGreenColor()
+                            : _themeManager.getProtagonistColor(),
                       ),
                       SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
                       Container(
@@ -137,23 +135,22 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
                 ),
                 (uploadStates[e.value.name] ?? false)
                     ? IconButton(
-                      icon: Icon(
-                        Icons.open_in_new,
-                        size: _largerTextStyle.fontSize! * 1.5,
-                        color:
-                            widget.activity.isSpecificWorkoutUrl(e.value.name)
-                                ? _themeManager.getProtagonistColor()
-                                : _themeManager.getGreyColor(),
-                      ),
-                      onPressed: () async {
-                        final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                        if (await canLaunchUrlString(workoutUrl)) {
-                          launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
-                        } else {
-                          Get.snackbar("Attention", "Cannot open URL");
-                        }
-                      },
-                    )
+                        icon: Icon(
+                          Icons.open_in_new,
+                          size: _largerTextStyle.fontSize! * 1.5,
+                          color: widget.activity.isSpecificWorkoutUrl(e.value.name)
+                              ? _themeManager.getProtagonistColor()
+                              : _themeManager.getGreyColor(),
+                        ),
+                        onPressed: () async {
+                          final workoutUrl = widget.activity.workoutUrl(e.value.name);
+                          if (await canLaunchUrlString(workoutUrl)) {
+                            launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
+                          } else {
+                            Get.snackbar("Attention", "Cannot open URL");
+                          }
+                        },
+                      )
                     : Container(),
               ],
             ),

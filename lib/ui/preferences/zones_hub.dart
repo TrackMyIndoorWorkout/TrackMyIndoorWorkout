@@ -39,29 +39,28 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final items =
-        SportSpec.sportPrefixes.map((sport) {
-          return Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.all(5.0),
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => MeasurementZonesPreferencesScreen(sport)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextOneLine(
-                    sport,
-                    style: _textStyle,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Icon(Icons.chevron_right, size: _sizeDefault),
-                ],
+    final items = SportSpec.sportPrefixes.map((sport) {
+      return Container(
+        padding: const EdgeInsets.all(5.0),
+        margin: const EdgeInsets.all(5.0),
+        child: ElevatedButton(
+          onPressed: () => Get.to(() => MeasurementZonesPreferencesScreen(sport)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextOneLine(
+                sport,
+                style: _textStyle,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          );
-        }).toList();
+              Icon(Icons.chevron_right, size: _sizeDefault),
+            ],
+          ),
+        ),
+      );
+    }).toList();
 
     items.addAll([
       Container(

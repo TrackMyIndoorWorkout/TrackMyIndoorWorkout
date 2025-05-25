@@ -15,11 +15,13 @@ abstract class FitSerializable {
       if (length == 1) {
         number = signed ? FitBaseTypes.sint8Type.invalidValue : FitBaseTypes.uint8Type.invalidValue;
       } else if (length == 2) {
-        number =
-            signed ? FitBaseTypes.sint16Type.invalidValue : FitBaseTypes.uint16Type.invalidValue;
+        number = signed
+            ? FitBaseTypes.sint16Type.invalidValue
+            : FitBaseTypes.uint16Type.invalidValue;
       } else if (length == 4) {
-        number =
-            signed ? FitBaseTypes.sint32Type.invalidValue : FitBaseTypes.uint32Type.invalidValue;
+        number = signed
+            ? FitBaseTypes.sint32Type.invalidValue
+            : FitBaseTypes.uint32Type.invalidValue;
       } else {
         number = 0;
       }

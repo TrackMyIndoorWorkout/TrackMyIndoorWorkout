@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/devices/metric_descriptors/byte_metric_descriptor.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
 import 'utils.dart';
 
 void main() {
@@ -32,8 +33,9 @@ void main() {
       final lsbLocation = rnd.nextInt(len);
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
-      final expected =
-          optional && data[lsbLocation] == maxUint8 - 1 ? null : data[lsbLocation] / divider;
+      final expected = optional && data[lsbLocation] == maxUint8 - 1
+          ? null
+          : data[lsbLocation] / divider;
 
       test("$lsbLocation ${data[lsbLocation]} / $divider -> $expected", () async {
         final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: optional);

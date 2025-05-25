@@ -43,10 +43,9 @@ void main() {
       final msbLocation = larger ? lsbLocation + 1 : lsbLocation - 1;
       final divider = rnd.nextDouble() * 1024;
       final optional = rnd.nextBool();
-      final expected =
-          (optional && data[lsbLocation] == maxByte && data[msbLocation] == maxByte)
-              ? 0
-              : (data[lsbLocation] + data[msbLocation] * maxUint8) / divider;
+      final expected = (optional && data[lsbLocation] == maxByte && data[msbLocation] == maxByte)
+          ? 0
+          : (data[lsbLocation] + data[msbLocation] * maxUint8) / divider;
 
       test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () async {
         final desc = ShortMetricDescriptor(

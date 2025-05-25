@@ -97,10 +97,9 @@ class ImportFormState extends State<ImportForm> {
                   }
                   return null;
                 },
-                onChanged:
-                    (value) => setState(() {
-                      _filePath = value;
-                    }),
+                onChanged: (value) => setState(() {
+                  _filePath = value;
+                }),
               ),
               Visibility(visible: !widget.migration, child: const SizedBox(height: 24)),
               Visibility(
@@ -137,10 +136,9 @@ class ImportFormState extends State<ImportForm> {
                     }
                     return null;
                   },
-                  onChanged:
-                      (value) => setState(() {
-                        _activityDateTime = value;
-                      }),
+                  onChanged: (value) => setState(() {
+                    _activityDateTime = value;
+                  }),
                 ),
               ),
               const SizedBox(height: 24),

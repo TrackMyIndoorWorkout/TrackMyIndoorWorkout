@@ -111,14 +111,13 @@ class SportLeaderboardScreenState extends State<SportLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.workoutSummarys
-                    .filter()
-                    .sportEqualTo(widget.sport)
-                    .sortBySpeedDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.workoutSummarys
+                .filter()
+                .sportEqualTo(widget.sport)
+                .sortBySpeedDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

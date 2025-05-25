@@ -16,10 +16,9 @@ void main() {
       test(
         "${deviceDescriptor.fourCC} (${deviceDescriptor.manufacturerNamePart}) -> ${deviceDescriptor.manufacturerFitId}",
         () async {
-          final manufacturerFitId =
-              deviceDescriptor.fourCC != virtufitUltimatePro2FourCC
-                  ? getFitManufacturer(deviceDescriptor.manufacturerNamePart)
-                  : wahooFitnessFitId;
+          final manufacturerFitId = deviceDescriptor.fourCC != virtufitUltimatePro2FourCC
+              ? getFitManufacturer(deviceDescriptor.manufacturerNamePart)
+              : wahooFitnessFitId;
           expect(manufacturerFitId, deviceDescriptor.manufacturerFitId);
         },
       );

@@ -50,24 +50,23 @@ void main() {
   });
 
   test('StatisticsAccumulator reset resets all values', () async {
-    final accu =
-        StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.ride)
-          ..powerSum = 42
-          ..powerCount = 42
-          ..maxPower = 42
-          ..minPower = 42
-          ..speedSum = 42.0
-          ..speedCount = 42
-          ..maxSpeed = 42.0
-          ..minSpeed = 42.0
-          ..heartRateSum = 42
-          ..heartRateCount = 42
-          ..maxHeartRate = 42
-          ..minHeartRate = 42
-          ..cadenceSum = 42
-          ..cadenceCount = 42
-          ..maxCadence = 42
-          ..minCadence = 42;
+    final accu = StatisticsAccumulator(si: Random().nextBool(), sport: ActivityType.ride)
+      ..powerSum = 42
+      ..powerCount = 42
+      ..maxPower = 42
+      ..minPower = 42
+      ..speedSum = 42.0
+      ..speedCount = 42
+      ..maxSpeed = 42.0
+      ..minSpeed = 42.0
+      ..heartRateSum = 42
+      ..heartRateCount = 42
+      ..maxHeartRate = 42
+      ..minHeartRate = 42
+      ..cadenceSum = 42
+      ..cadenceCount = 42
+      ..maxCadence = 42
+      ..minCadence = 42;
 
     accu.reset();
 

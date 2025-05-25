@@ -34,12 +34,11 @@ class TrackCalculator {
       );
       trackOffset = offset;
 
-      trackStroke =
-          Paint()
-            ..color = const Color(0xff777777)
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 2 * thick
-            ..isAntiAlias = true;
+      trackStroke = Paint()
+        ..color = const Color(0xff777777)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2 * thick
+        ..isAntiAlias = true;
 
       final leftHalfCircleRect = Rect.fromCircle(
         center: Offset(thick + offset.dx + r, thick + offset.dy + r),
@@ -51,13 +50,12 @@ class TrackCalculator {
         radius: r,
       );
 
-      trackPath =
-          Path()
-            ..moveTo(thick + offset.dx + r, thick + offset.dy)
-            ..lineTo(size.width - (thick + offset.dx + r), thick + offset.dy)
-            ..arcTo(rightHalfCircleRect, 1.5 * pi, pi, true)
-            ..lineTo(thick + offset.dx + r, thick + offset.dy + 2 * r)
-            ..arcTo(leftHalfCircleRect, 0.5 * pi, pi, true);
+      trackPath = Path()
+        ..moveTo(thick + offset.dx + r, thick + offset.dy)
+        ..lineTo(size.width - (thick + offset.dx + r), thick + offset.dy)
+        ..arcTo(rightHalfCircleRect, 1.5 * pi, pi, true)
+        ..lineTo(thick + offset.dx + r, thick + offset.dy + 2 * r)
+        ..arcTo(leftHalfCircleRect, 0.5 * pi, pi, true);
     }
   }
 

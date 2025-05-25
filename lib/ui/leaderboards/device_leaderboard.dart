@@ -112,14 +112,13 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.workoutSummarys
-                    .filter()
-                    .deviceIdEqualTo(widget.device.item2)
-                    .sortBySpeedDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.workoutSummarys
+                .filter()
+                .deviceIdEqualTo(widget.device.item2)
+                .sortBySpeedDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),

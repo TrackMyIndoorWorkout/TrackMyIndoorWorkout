@@ -190,12 +190,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return null;
     }
 
-    final merged =
-        values.length == 1
-            ? values.first
-            : values
-                .skip(1)
-                .fold<RecordWithSport>(values.first, (prev, element) => prev.mergeBest(element));
+    final merged = values.length == 1
+        ? values.first
+        : values
+              .skip(1)
+              .fold<RecordWithSport>(values.first, (prev, element) => prev.mergeBest(element));
     if (logLevel >= logLevelInfo) {
       Logging().log(logLevel, logLevelInfo, tag, "mergedToYield", "merged $merged");
     }
@@ -471,8 +470,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       // Present as an additional sensor
       // Remove from additional sensor list, because the lifecycle
       // spans beyond the FitnessMachine (so we should prevent detach)
-      _additionalSensors =
-          _additionalSensors.where((sensor) => sensor.device?.remoteId.str != hrmId).toList();
+      _additionalSensors = _additionalSensors
+          .where((sensor) => sensor.device?.remoteId.str != hrmId)
+          .toList();
     }
   }
 
@@ -488,10 +488,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (hadDetach) {
-      _additionalSensors =
-          _additionalSensors
-              .where((sensor) => sensor.device?.remoteId.str == device?.remoteId.str)
-              .toList();
+      _additionalSensors = _additionalSensors
+          .where((sensor) => sensor.device?.remoteId.str == device?.remoteId.str)
+          .toList();
     }
 
     if (descriptor != null && device != null) {
@@ -1274,8 +1273,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         stub.speed! > displayEps) {
       // When cycling supplement power from speed if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.power =
-          (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport) * _powerFactor).round();
+      stub.power = (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport) * _powerFactor)
+          .round();
     }
 
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||

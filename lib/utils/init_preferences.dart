@@ -231,11 +231,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     for (final fgOrBg in [false, true]) {
       for (final paletteSize in [5, 6, 7]) {
         prefDefaults.addAll({
-          PaletteSpec.getPaletteTag(
-            lightOrDark,
-            fgOrBg,
-            paletteSize,
-          ): PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize),
+          PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize):
+              PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize),
         });
       }
     }

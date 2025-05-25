@@ -194,14 +194,12 @@ int getFitManufacturer(String manufacturer) {
   JaroWinkler jaroWinkler = JaroWinkler();
   final manufacturerLower = manufacturer.toLowerCase();
   for (var manufacturerEntry in fitManufacturer.entries) {
-    final manufacturerCropped =
-        manufacturerLower.length <= manufacturerEntry.value.length
-            ? manufacturerLower
-            : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
-    final entryCropped =
-        manufacturerEntry.value.length <= manufacturerCropped.length
-            ? manufacturerEntry.value
-            : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
+    final manufacturerCropped = manufacturerLower.length <= manufacturerEntry.value.length
+        ? manufacturerLower
+        : manufacturerLower.substring(0, manufacturerEntry.value.length - 1);
+    final entryCropped = manufacturerEntry.value.length <= manufacturerCropped.length
+        ? manufacturerEntry.value
+        : manufacturerEntry.value.substring(0, manufacturerCropped.length - 1);
     final distance = jaroWinkler.normalizedDistance(manufacturerCropped, entryCropped);
     if (distance < bestDistance) {
       bestDistance = distance;

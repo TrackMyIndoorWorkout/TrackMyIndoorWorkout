@@ -365,10 +365,9 @@ class MetricSpec {
   }
 
   static List<RowConfiguration> getRowConfigurations([String sport = ActivityType.ride]) {
-    var rowConfigs =
-        preferencesSpecs
-            .map((p) => RowConfiguration(title: p.title, icon: p.icon, unit: p.unit))
-            .toList();
+    var rowConfigs = preferencesSpecs
+        .map((p) => RowConfiguration(title: p.title, icon: p.icon, unit: p.unit))
+        .toList();
     rowConfigs.add(RowConfiguration(title: "Distance", icon: Icons.add_road, unit: "m"));
 
     return rowConfigs;

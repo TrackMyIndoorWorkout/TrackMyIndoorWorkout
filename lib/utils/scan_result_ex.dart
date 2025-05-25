@@ -72,12 +72,11 @@ extension ScanResultEx on ScanResult {
 
   List<String> get serviceUuids => advertisementData.uuids;
 
-  String get nonEmptyName =>
-      device.platformName.isNotEmpty
-          ? device.platformName
-          : (advertisementData.advName.isNotEmpty
-              ? advertisementData.advName
-              : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
+  String get nonEmptyName => device.platformName.isNotEmpty
+      ? device.platformName
+      : (advertisementData.advName.isNotEmpty
+            ? advertisementData.advName
+            : Get.find<AddressNames>().getAddressName(device.remoteId.str, device.platformName));
 
   bool hasService(String serviceId) {
     return serviceUuids.contains(serviceId);

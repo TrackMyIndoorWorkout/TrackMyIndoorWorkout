@@ -154,7 +154,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             SafeArea(
               child: Column(
                 children: [
-                  Expanded(child: Center(child: UploadPortalPickerBottomSheet(activity: activity))),
+                  Expanded(
+                    child: Center(child: UploadPortalPickerBottomSheet(activity: activity)),
+                  ),
                 ],
               ),
             ),
@@ -239,7 +241,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             SafeArea(
               child: Column(
                 children: [
-                  Expanded(child: Center(child: CalorieOverrideBottomSheet(activity: activity))),
+                  Expanded(
+                    child: Center(child: CalorieOverrideBottomSheet(activity: activity)),
+                  ),
                 ],
               ),
             ),
@@ -321,10 +325,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       IconButton(
         icon: _themeManager.getActionIcon(Icons.chevron_right, size),
         iconSize: size,
-        onPressed:
-            () async => await Get.to(
-              () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size),
-            ),
+        onPressed: () async => await Get.to(
+          () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size),
+        ),
       ),
     ]);
 
@@ -452,13 +455,12 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.activitys
-                    .where()
-                    .sortByStartDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.activitys
+                .where()
+                .sortByStartDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -568,10 +570,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               themeManager: _themeManager,
               icon: Icons.timer,
               iconSize: _sizeDefault,
-              text:
-                  _timeDisplayMode == timeDisplayModeElapsed
-                      ? activity.elapsedString
-                      : activity.movingTimeString,
+              text: _timeDisplayMode == timeDisplayModeElapsed
+                  ? activity.elapsedString
+                  : activity.movingTimeString,
               textStyle: _measurementStyle,
             ),
             ActivityDetailRowWithUnit(
@@ -610,10 +611,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 contentPadding: const EdgeInsets.symmetric(horizontal: 1.0),
                 minLeadingWidth: 0,
                 horizontalTitleGap: 0,
-                onTap:
-                    () => Get.to(
-                      () => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size),
-                    ),
+                onTap: () =>
+                    Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(children: body),
               ),
             ),

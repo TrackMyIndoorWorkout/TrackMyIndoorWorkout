@@ -33,8 +33,9 @@ class TrackDescriptor {
     this.altitude = 0.0,
   }) {
     this.center = center ?? const Offset(0, 0);
-    lengthFactor =
-        kind == TrackKind.forWater ? fiveHundredMTrackLengthFactor : fourHundredMTrackLengthFactor;
+    lengthFactor = kind == TrackKind.forWater
+        ? fiveHundredMTrackLengthFactor
+        : fourHundredMTrackLengthFactor;
   }
 
   factory TrackDescriptor.forDisplay(String sport) => TrackDescriptor(

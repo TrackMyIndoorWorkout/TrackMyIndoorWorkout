@@ -316,12 +316,11 @@ class SpinnerInputState extends State<SpinnerInput> with TickerProviderStateMixi
                     onPressed: () {
                       FocusScope.of(context).requestFocus(FocusNode());
                       try {
-                        double value =
-                            widget.numberFormat != null
-                                ? widget.numberFormat!
-                                    .parse(textEditingController?.text ?? "0")
-                                    .toDouble()
-                                : double.parse(textEditingController?.text ?? "0");
+                        double value = widget.numberFormat != null
+                            ? widget.numberFormat!
+                                  .parse(textEditingController?.text ?? "0")
+                                  .toDouble()
+                            : double.parse(textEditingController?.text ?? "0");
                         if (value <= widget.maxValue && value >= widget.minValue) {
                           setState(() {
                             if (widget.onChange != null) {

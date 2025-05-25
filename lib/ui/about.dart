@@ -135,14 +135,13 @@ class AboutScreenState extends State<AboutScreen> {
     required String title,
     required String value,
     bool oneLine = false,
-  }) =>
-      oneLine
-          ? [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: _valueWithTitleCore(title: title, value: value),
-            ),
-          ]
-          : _valueWithTitleCore(title: title, value: value);
+  }) => oneLine
+      ? [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: _valueWithTitleCore(title: title, value: value),
+          ),
+        ]
+      : _valueWithTitleCore(title: title, value: value);
 }

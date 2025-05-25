@@ -47,13 +47,12 @@ void main() {
       final optional = rnd.nextBool();
       final expected =
           (optional &&
-                  data[lsbLocation] == maxByte &&
-                  data[midLocation] == maxByte &&
-                  data[msbLocation] == maxByte)
-              ? 0
-              : (data[lsbLocation] +
-                      maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
-                  divider;
+              data[lsbLocation] == maxByte &&
+              data[midLocation] == maxByte &&
+              data[msbLocation] == maxByte)
+          ? 0
+          : (data[lsbLocation] + maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
+                divider;
 
       test(
         "(${data[lsbLocation]}, ${data[midLocation]}, ${data[msbLocation]}) / $divider -> $expected",

@@ -79,11 +79,10 @@ void main() {
     await initPrefServiceForTest();
     final descriptor = DeviceFactory.getSchwinnIcBike();
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
-    equipment.continuationRecord =
-        RecordWithSport.getRandom(descriptor.sport, rnd)
-          ..distance = rnd.nextDouble() + 100
-          ..elapsed = rnd.nextInt(1000) + 60
-          ..calories = rnd.nextInt(1000) + 10;
+    equipment.continuationRecord = RecordWithSport.getRandom(descriptor.sport, rnd)
+      ..distance = rnd.nextDouble() + 100
+      ..elapsed = rnd.nextInt(1000) + 60
+      ..calories = rnd.nextInt(1000) + 10;
 
     equipment.startWorkout();
 
@@ -97,11 +96,10 @@ void main() {
     await initPrefServiceForTest();
     final descriptor = DeviceFactory.getKayaPro();
     final equipment = FitnessEquipment(descriptor: descriptor, device: MockBluetoothDevice());
-    equipment.continuationRecord =
-        RecordWithSport.getRandom(descriptor.sport, rnd)
-          ..distance = rnd.nextDouble() + 100
-          ..elapsed = rnd.nextInt(1000) + 60
-          ..calories = rnd.nextInt(1000) + 10;
+    equipment.continuationRecord = RecordWithSport.getRandom(descriptor.sport, rnd)
+      ..distance = rnd.nextDouble() + 100
+      ..elapsed = rnd.nextInt(1000) + 60
+      ..calories = rnd.nextInt(1000) + 10;
 
     equipment.startWorkout();
 

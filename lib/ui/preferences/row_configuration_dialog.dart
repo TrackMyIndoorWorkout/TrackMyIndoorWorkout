@@ -53,24 +53,23 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
       children.addAll(
         List<Widget>.generate(
           3,
-          (index) =>
-              rowIndex < 4
-                  ? Transform.scale(
-                    scale: 2,
-                    child: Radio<int>(
-                      value: index,
-                      groupValue: _expandedHeights[rowIndex],
-                      onChanged: (int? value) {
-                        if (value == null) return;
+          (index) => rowIndex < 4
+              ? Transform.scale(
+                  scale: 2,
+                  child: Radio<int>(
+                    value: index,
+                    groupValue: _expandedHeights[rowIndex],
+                    onChanged: (int? value) {
+                      if (value == null) return;
 
-                        setState(() {
-                          _expandedHeights[rowIndex] = index;
-                          applyDetailSizes(_expandedHeights);
-                        });
-                      },
-                    ),
-                  )
-                  : Container(),
+                      setState(() {
+                        _expandedHeights[rowIndex] = index;
+                        applyDetailSizes(_expandedHeights);
+                      });
+                    },
+                  ),
+                )
+              : Container(),
         ),
       );
 

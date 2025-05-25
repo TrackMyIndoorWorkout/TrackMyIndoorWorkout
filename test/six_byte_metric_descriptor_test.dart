@@ -51,24 +51,24 @@ void main() {
       final optional = rnd.nextBool();
       final expected =
           (optional &&
-                  data[lsbLocation] == maxByte &&
-                  data[lsbLocation + dir] == maxByte &&
-                  data[lsbLocation + 2 * dir] == maxByte &&
-                  data[msbLocation - 2 * dir] == maxByte &&
-                  data[msbLocation - dir] == maxByte &&
-                  data[msbLocation] == maxByte)
-              ? 0
-              : (data[lsbLocation] +
-                      maxUint8 *
-                          (data[lsbLocation + dir] +
-                              maxUint8 *
-                                  (data[lsbLocation + 2 * dir] +
-                                      maxUint8 *
-                                          (data[msbLocation - 2 * dir] +
-                                              maxUint8 *
-                                                  (data[msbLocation - dir] +
-                                                      maxUint8 * data[msbLocation]))))) /
-                  divider;
+              data[lsbLocation] == maxByte &&
+              data[lsbLocation + dir] == maxByte &&
+              data[lsbLocation + 2 * dir] == maxByte &&
+              data[msbLocation - 2 * dir] == maxByte &&
+              data[msbLocation - dir] == maxByte &&
+              data[msbLocation] == maxByte)
+          ? 0
+          : (data[lsbLocation] +
+                    maxUint8 *
+                        (data[lsbLocation + dir] +
+                            maxUint8 *
+                                (data[lsbLocation + 2 * dir] +
+                                    maxUint8 *
+                                        (data[msbLocation - 2 * dir] +
+                                            maxUint8 *
+                                                (data[msbLocation - dir] +
+                                                    maxUint8 * data[msbLocation]))))) /
+                divider;
 
       test(
         "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[lsbLocation + 2 * dir]}, ${data[msbLocation - 2 * dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",

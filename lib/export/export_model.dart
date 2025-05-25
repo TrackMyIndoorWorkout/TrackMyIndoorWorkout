@@ -63,8 +63,9 @@ class ExportModel {
       if (activity.elapsed == 0 &&
           lastRecord.record.timeStamp != null &&
           firstRecord.record.timeStamp != null) {
-        activity.elapsed =
-            lastRecord.record.timeStamp!.difference(firstRecord.record.timeStamp!).inSeconds;
+        activity.elapsed = lastRecord.record.timeStamp!
+            .difference(firstRecord.record.timeStamp!)
+            .inSeconds;
       }
 
       if (activity.distance < eps && (lastRecord.record.distance ?? 0.0) > eps) {
