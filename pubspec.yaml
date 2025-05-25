@@ -10,7 +10,7 @@ environment:
   flutter: ">=3.32.0"
 
 dependency_overrides:
-  analyzer: ^7.4.1 # isar community
+  analyzer: ^7.4.5 # isar community
 
 dependencies:
   app_links: ^6.4.0
@@ -68,7 +68,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  analyzer: ^7.3.0
+  analyzer: ^7.4.5
   build_runner: ^2.4.15
   flutter_driver:
     sdk: flutter
