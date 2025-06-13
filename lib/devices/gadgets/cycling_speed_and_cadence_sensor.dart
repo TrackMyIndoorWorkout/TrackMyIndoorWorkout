@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/csc.dart';
@@ -23,7 +25,8 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
   MetricDescriptor? crankRevolutionMetric;
   MetricDescriptor? crankRevolutionTime;
 
-  CyclingSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device) {
+  CyclingSpeedAndCadenceSensor(BluetoothDevice device)
+    : super(serviceUuid, characteristicUuid, device) {
     initCadence(64, maxUint16);
     wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(64, maxUint32);

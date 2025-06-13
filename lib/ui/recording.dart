@@ -1157,7 +1157,7 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
-  _activityUpload(bool onlyWhenAuthenticated) async {
+  Future<void> _activityUpload(bool onlyWhenAuthenticated) async {
     if (_activity == null) return;
 
     if (!await hasInternetConnection()) {
@@ -1181,7 +1181,7 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  _activityExport() async {
+  Future<void> _activityExport() async {
     if (_activity?.id == null || !_instantExport) return;
 
     if (_instantExportLocation.isEmpty) {
@@ -1208,7 +1208,7 @@ class RecordingState extends State<RecordingScreen> {
     await File(fileFullPath).writeAsBytes(fileBytes, flush: true);
   }
 
-  _stopMeasurement(bool quick) async {
+  Future<void> _stopMeasurement(bool quick) async {
     _fitnessEquipment?.measuring = false;
     if (!_measuring || _activity == null) return;
 
@@ -1593,7 +1593,7 @@ class RecordingState extends State<RecordingScreen> {
     return series;
   }
 
-  Color _getZoneColor({required metricIndex, required bool background}) {
+  Color _getZoneColor(int metricIndex, bool background) {
     if (_zoneIndexes[metricIndex] == null) {
       return background ? Colors.transparent : _themeManager.getProtagonistColor();
     }
@@ -1677,7 +1677,7 @@ class RecordingState extends State<RecordingScreen> {
   Color _getSpeedColor(int selfRank, {required bool background}) {
     if (!_leaderboardFeature || selfRank == 0) {
       if (_zoneIndexes[_speedNIndex] != null) {
-        return _getZoneColor(metricIndex: _speedNIndex, background: background);
+        return _getZoneColor(_speedNIndex, background);
       } else {
         return background ? Colors.transparent : _themeManager.getBlueColor();
       }
@@ -1706,7 +1706,7 @@ class RecordingState extends State<RecordingScreen> {
 
   Color _getTargetHrColor(TargetHrState hrState, bool background) {
     if (hrState == TargetHrState.off) {
-      return _getZoneColor(metricIndex: _hrNIndex, background: background);
+      return _getZoneColor(_hrNIndex, background);
     }
 
     if (hrState == TargetHrState.under) {
@@ -1725,7 +1725,7 @@ class RecordingState extends State<RecordingScreen> {
         return measurementStyle.apply();
       } else {
         return measurementStyle.apply(
-          color: _getZoneColor(metricIndex: _hrNIndex, background: false),
+          color: _getZoneColor(_hrNIndex, false),
         );
       }
     }
@@ -2259,7 +2259,7 @@ class RecordingState extends State<RecordingScreen> {
       if ((entry.key == _power0Index && !_stationaryWorkout || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
         measurementStyle = measurementStyle.apply(
-          color: _getZoneColor(metricIndex: entry.key - 1, background: false),
+          color: _getZoneColor(entry.key - 1, false),
         );
       }
 
@@ -2564,7 +2564,7 @@ class RecordingState extends State<RecordingScreen> {
     } else {
       columnOne.addAll([
         ColoredBox(
-          color: _getZoneColor(metricIndex: _powerNIndex, background: true),
+          color: _getZoneColor(_powerNIndex, true),
           child: ExpandablePanel(
             theme: _expandableThemeData,
             header: rows[_power1Index],
@@ -2588,7 +2588,7 @@ class RecordingState extends State<RecordingScreen> {
 
     List<Widget> columnRest = [
       ColoredBox(
-        color: _getZoneColor(metricIndex: _cadenceNIndex, background: true),
+        color: _getZoneColor(_cadenceNIndex, true),
         child: ExpandablePanel(
           theme: _expandableThemeData,
           header: rows[_cadence1Index],

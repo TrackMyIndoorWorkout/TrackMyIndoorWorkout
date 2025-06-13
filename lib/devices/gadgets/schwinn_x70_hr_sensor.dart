@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/schwinn_x70.dart';
@@ -12,7 +14,7 @@ class SchwinnX70HrSensor extends ComplexSensor {
   static const dataMarkerByteValue = 0x5a;
   static const heartRateByteIndex = 16;
 
-  SchwinnX70HrSensor(device) : super(serviceUuid, characteristicUuid, device);
+  SchwinnX70HrSensor(BluetoothDevice device) : super(serviceUuid, characteristicUuid, device);
 
   @override
   void processFlag(int flag) {}

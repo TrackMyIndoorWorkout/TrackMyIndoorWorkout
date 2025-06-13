@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/hrm.dart';
@@ -11,7 +13,7 @@ class HeartRateMonitor extends ComplexSensor {
   MetricDescriptor? caloriesMetric;
   bool hasRRIntervals = false;
 
-  HeartRateMonitor(device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
+  HeartRateMonitor(BluetoothDevice device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
   @override
   void processFlag(int flag) {

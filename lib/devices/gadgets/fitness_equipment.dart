@@ -567,7 +567,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     readConfiguration();
   }
 
-  Future<bool> connectOnDemand({identify = false}) async {
+  Future<bool> connectOnDemand({bool identify = false}) async {
     await connect();
 
     final success = await discover(identify: identify);
@@ -841,7 +841,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   @visibleForTesting
-  void setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, extendTuning) {
+  void setFactors(
+    double powerFactor,
+    double calorieFactor,
+    double hrCalorieFactor,
+    double hrmCalorieFactor,
+    bool extendTuning,
+  ) {
     _powerFactor = powerFactor;
     _calorieFactor = calorieFactor;
     _hrCalorieFactor = hrCalorieFactor;

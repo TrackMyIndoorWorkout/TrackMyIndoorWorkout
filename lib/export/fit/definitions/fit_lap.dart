@@ -19,7 +19,7 @@ class FitLap extends FitDefinitionMessage {
   final double altitude;
   final int exportTarget;
 
-  FitLap(localMessageType, this.altitude, this.exportTarget)
+  FitLap(int localMessageType, this.altitude, this.exportTarget)
     : super(localMessageType, FitMessage.lap) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)

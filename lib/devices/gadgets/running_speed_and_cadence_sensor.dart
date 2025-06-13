@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
@@ -17,7 +19,8 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
   MetricDescriptor? cadenceMetric;
   MetricDescriptor? distanceMetric;
 
-  RunningSpeedAndCadenceSensor(device) : super(serviceUuid, characteristicUuid, device);
+  RunningSpeedAndCadenceSensor(BluetoothDevice device)
+    : super(serviceUuid, characteristicUuid, device);
 
   @override
   void processFlag(int flag) {

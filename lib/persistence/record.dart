@@ -462,8 +462,8 @@ class Record {
 
 class RecordWithSport extends Record {
   RecordWithSport({
-    id,
-    activityId,
+    Id? id,
+    int? activityId,
     super.timeStamp,
     super.distance,
     super.elapsed,

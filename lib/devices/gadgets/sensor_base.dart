@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import 'device_base.dart';
 
 abstract class SensorBase extends DeviceBase {
@@ -5,7 +7,7 @@ abstract class SensorBase extends DeviceBase {
   int expectedLength = 0;
   // Adjusting skewed calories
 
-  SensorBase(serviceId, characteristicId, device)
+  SensorBase(String serviceId, String characteristicId, BluetoothDevice device)
     : super(serviceId: serviceId, characteristicId: characteristicId, device: device);
 
   void initFlag() {

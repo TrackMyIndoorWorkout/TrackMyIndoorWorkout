@@ -15,7 +15,7 @@ class MockBluetoothService extends Mock implements BluetoothService {}
 
 class MockBluetoothCharacteristic extends Mock implements BluetoothCharacteristic {}
 
-main() {
+void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
   });

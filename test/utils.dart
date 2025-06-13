@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/schwinn_ac_performance_plus.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/export/export_model.dart';
+import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
@@ -23,19 +25,19 @@ String getRandomSport() {
 
 class ExportModelForTests extends ExportModel {
   ExportModelForTests({
-    activity,
-    rawData,
-    calculateGps,
-    descriptor,
-    author,
-    name,
-    swVersionMajor,
-    swVersionMinor,
-    buildVersionMajor,
-    buildVersionMinor,
-    langID,
-    partNumber,
-    records,
+    Activity? activity,
+    bool? rawData,
+    bool? calculateGps,
+    DeviceDescriptor? descriptor,
+    String? author,
+    String? name,
+    String? swVersionMajor,
+    String? swVersionMinor,
+    String? buildVersionMajor,
+    String? buildVersionMinor,
+    String? langID,
+    String? partNumber,
+    List<ExportRecord>? records,
   }) : super(
          activity:
              activity ??

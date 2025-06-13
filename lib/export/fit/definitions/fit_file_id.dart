@@ -15,7 +15,7 @@ class FitFileId extends FitDefinitionMessage {
   final int exportTarget;
   final int productTextLength;
 
-  FitFileId(localMessageType, this.exportTarget, this.productTextLength)
+  FitFileId(int localMessageType, this.exportTarget, this.productTextLength)
     : super(localMessageType, FitMessage.fileId) {
     fields = [
       FitField(0, FitBaseTypes.enumType), // type (Activity)

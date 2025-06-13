@@ -24,7 +24,7 @@ mixin CadenceMixin {
   int logLevel = logLevelDefault;
   int sensorDataThreshold = sensorDataThresholdDefault;
 
-  initCadence([eventTimeOverflow, revolutionOverflow]) {
+  void initCadence(int eventTimeOverflow, int revolutionOverflow) {
     this.eventTimeOverflow = eventTimeOverflow;
     this.revolutionOverflow = revolutionOverflow;
 
