@@ -60,69 +60,69 @@ def is_likely_user_facing(s_literal):
     s_literal = s_literal.strip()
     if not s_literal: # Empty or whitespace only strings are not user-facing.
         return False
-    
+
     if len(s_literal) < 2 and s_literal not in ["?", "!", "%", "+", "-", "*", "#", "@", "&", "<", ">", "OK", "No", "Yes", "Go", "Up", "On", "Of"]: # Expanded list of short allowed strings
         return False
-    
+
     if s_literal.startswith("pref_") or s_literal.startswith("key_") or \
        s_literal.startswith("debug_") or s_literal.startswith("log_") or s_literal.startswith("err_") or \
        s_literal.startswith("val_") or s_literal.startswith("id_"):
         return False
     if re.match(r"^[A-Z0-9_]+$", s_literal) and len(s_literal.split('_')) > 1 and s_literal.isupper(): # SCREAMING_SNAKE_CASE
-        return False 
-    
-    if "@" in s_literal and not " " in s_literal and "." in s_literal : 
-         if not s_literal.startswith("@"): 
+        return False
+
+    if "@" in s_literal and not " " in s_literal and "." in s_literal :
+         if not s_literal.startswith("@"):
             return False
     if (s_literal.startswith("http:") or s_literal.startswith("https:")) and " " not in s_literal:
-        return False 
-    
-    if "/" in s_literal and not " " in s_literal and "." in s_literal: 
-         if s_literal.count('/') + s_literal.count('.') > 2 and len(s_literal) > 10: 
-            if not (s_literal.startswith("./") or s_literal.startswith("../")): 
-                 return False 
-    
-    if re.match(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", s_literal): 
-        return False 
-    
+        return False
+
+    if "/" in s_literal and not " " in s_literal and "." in s_literal:
+         if s_literal.count('/') + s_literal.count('.') > 2 and len(s_literal) > 10:
+            if not (s_literal.startswith("./") or s_literal.startswith("../")):
+                 return False
+
+    if re.match(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$", s_literal):
+        return False
+
     if any(kw in s_literal for kw in ["=>", "&&", "||", "dart:", "package:"]) and len(s_literal.split()) > 2 :
         return False
-    if (s_literal.lower().startswith("error:")) or (s_literal.lower().startswith("exception:")): 
-        if len(s_literal.split()) > 2 or ":" in s_literal[s_literal.lower().find("error:")+6:]: 
+    if (s_literal.lower().startswith("error:")) or (s_literal.lower().startswith("exception:")):
+        if len(s_literal.split()) > 2 or ":" in s_literal[s_literal.lower().find("error:")+6:]:
             return False
-    
-    if re.match(r"<[^>]+>", s_literal) and not " " in s_literal and len(s_literal) > 3: 
-        return False
-    
-    if s_literal in ["...", "N/A", "--", "----", "(empty)", "(none)"]: 
-        return True 
 
-    if len(re.findall(r"[(){}\[\];<>|=/\\]", s_literal)) > 3 and len(s_literal) < 30 : 
-        if not any (ui_kw in s_literal.lower() for ui_kw in ['select', 'option', 'setting', 'value', 'field', 'name', 'type', 'date', 'time', 'format', 'unit', 'result', 'code']): 
-            return False 
-            
+    if re.match(r"<[^>]+>", s_literal) and not " " in s_literal and len(s_literal) > 3:
+        return False
+
+    if s_literal in ["...", "N/A", "--", "----", "(empty)", "(none)"]:
+        return True
+
+    if len(re.findall(r"[(){}\[\];<>|=/\\]", s_literal)) > 3 and len(s_literal) < 30 :
+        if not any (ui_kw in s_literal.lower() for ui_kw in ['select', 'option', 'setting', 'value', 'field', 'name', 'type', 'date', 'time', 'format', 'unit', 'result', 'code']):
+            return False
+
     if len(s_literal) > 30 and " " not in s_literal and "_" not in s_literal and "-" not in s_literal:
         has_lower = any('a' <= char <= 'z' for char in s_literal)
         has_upper = any('A' <= char <= 'Z' for char in s_literal)
         if has_lower and has_upper and not any(num_char.isdigit() for num_char in s_literal) : # CamelCase/PascalCase without numbers
             return False
-            
-    if s_literal.endswith((".csv", ".json", ".fit", ".tcx", ".db", ".log", ".tmp", ".bak", ".zip", ".png", ".jpg", ".svg")) and not " " in s_literal: 
+
+    if s_literal.endswith((".csv", ".json", ".fit", ".tcx", ".db", ".log", ".tmp", ".bak", ".zip", ".png", ".jpg", ".svg")) and not " " in s_literal:
         return False
-        
-    if s_literal.isdigit() or (s_literal.startswith("-") and s_literal[1:].isdigit()): 
+
+    if s_literal.isdigit() or (s_literal.startswith("-") and s_literal[1:].isdigit()):
         return False
-    if re.match(r"^[0-9.,:\-]+$",s_literal) and (s_literal.count(".") <= 2 and s_literal.count(",") <= 1 and s_literal.count(":") <= 2 and s_literal.count("-") <=2 ): 
+    if re.match(r"^[0-9.,:\-]+$",s_literal) and (s_literal.count(".") <= 2 and s_literal.count(",") <= 1 and s_literal.count(":") <= 2 and s_literal.count("-") <=2 ):
         if len(s_literal) < 10 or s_literal.count(':') > 0 : # Allow short version-like numbers or time
              pass
-        else: 
+        else:
              return False
-             
+
     return True
 
 def process_string_literal(literal, filepath, line_num):
-    original_literal = literal 
-    
+    original_literal = literal
+
     processed_literal = re.sub(r"\$\{([^}]+)\}", r"{\1}", literal)
     processed_literal = re.sub(r"\$([a-zA-Z_][a-zA-Z0-9_]*)", r"{\1}", processed_literal)
 
@@ -136,19 +136,19 @@ def process_string_literal(literal, filepath, line_num):
                 part = part.strip()
                 if (part.startswith("'") and part.endswith("'")) or \
                    (part.startswith('"') and part.endswith('"')):
-                    new_string_parts.append(part[1:-1]) 
+                    new_string_parts.append(part[1:-1])
                 else:
-                    var_name = re.sub(r"[^a-zA-Z0-9_]", "", part.split('.')[0]) 
-                    if not var_name or var_name.isdigit(): var_name = "value" 
+                    var_name = re.sub(r"[^a-zA-Z0-9_]", "", part.split('.')[0])
+                    if not var_name or var_name.isdigit(): var_name = "value"
                     new_string_parts.append(f"{{{var_name}}}")
-            
+
             final_concat_string = ""
             for i, p_part in enumerate(new_string_parts):
                 final_concat_string += p_part
             processed_literal = final_concat_string
 
     if is_likely_user_facing(processed_literal):
-        if r'\n' in processed_literal: 
+        if r'\n' in processed_literal:
             lines = processed_literal.split(r'\n')
             final_str = r'\n'.join(line.strip() for line in lines)
         else:
@@ -164,7 +164,7 @@ def process_string_literal(literal, filepath, line_num):
         else:
             final_str = ' '.join(original_with_placeholders.split())
         return final_str.strip()
-        
+
     return None
 
 # Main processing loop
@@ -173,10 +173,10 @@ for filepath_short in file_list:
     # However, if file_list.txt was found at "./file_list.txt", then paths in it are relative to "."
     # So, paths in file_list.txt are assumed to be like "lib/..."
     # And the script needs to prepend "/app/" to them to access them in the tool's FS.
-    filepath_full = os.path.join(APP_ROOT, filepath_short) 
+    filepath_full = os.path.join(APP_ROOT, filepath_short)
 
     if filepath_short in EXCLUDED_FILES or filepath_short.endswith(".g.dart"):
-        continue 
+        continue
 
     try:
         with open(filepath_full, "r", encoding="utf-8") as f:
@@ -191,13 +191,13 @@ for filepath_short in file_list:
 
     current_patterns_for_file = PATTERNS
     if filepath_short.startswith("lib/preferences/"):
-        current_patterns_for_file = PATTERNS + PREFERENCE_PATTERNS 
+        current_patterns_for_file = PATTERNS + PREFERENCE_PATTERNS
 
     for line_num, line_content in enumerate(content_lines, 1):
         stripped_line = line_content.strip()
         if stripped_line.startswith("//") or stripped_line.startswith("/*") or stripped_line.endswith("*/") or stripped_line.startswith("*"):
             continue
-        
+
         log_print_pattern = r"\b(print|debugPrint|log\.(?:v|d|i|w|e|wtf|f|s))\s*\("
         if re.search(log_print_pattern, stripped_line):
             is_genuinely_a_log_call = True
@@ -206,13 +206,13 @@ for filepath_short in file_list:
                     for group_idx in range(1, ui_pattern_check.groups + 1):
                         ui_string_content = match_ui.group(group_idx)
                         if ui_string_content and re.search(log_print_pattern, ui_string_content):
-                            is_genuinely_a_log_call = False; break 
+                            is_genuinely_a_log_call = False; break
                     if not is_genuinely_a_log_call: break
                 if not is_genuinely_a_log_call: break
             if is_genuinely_a_log_call:
-                continue 
-        
-        if stripped_line.startswith("assert("): 
+                continue
+
+        if stripped_line.startswith("assert("):
             continue
 
         for pattern in current_patterns_for_file:
@@ -220,12 +220,12 @@ for filepath_short in file_list:
                 for match in pattern.finditer(line_content):
                     for i in range(1, pattern.groups + 1):
                         string_literal_match = match.group(i)
-                        if string_literal_match: 
+                        if string_literal_match:
                             final_string = process_string_literal(string_literal_match, filepath_short, line_num)
-                            if final_string: 
+                            if final_string:
                                 results.append({"string": final_string, "file": filepath_short, "line": line_num})
             except re.error:
-                pass 
+                pass
 
 unique_results_by_location = []
 seen_locations_set = set()
@@ -238,11 +238,11 @@ for item in results:
 final_unique_results_list = []
 seen_strings_set = set()
 for item in unique_results_by_location:
-    normalized_string = item["string"].strip() 
-    if not normalized_string: 
+    normalized_string = item["string"].strip()
+    if not normalized_string:
         continue
-    
-    if normalized_string not in seen_strings_set: 
+
+    if normalized_string not in seen_strings_set:
         final_unique_results_list.append({"string": normalized_string, "file": item["file"], "line": item["line"]})
         seen_strings_set.add(normalized_string)
 
