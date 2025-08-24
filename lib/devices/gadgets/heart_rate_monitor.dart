@@ -13,7 +13,8 @@ class HeartRateMonitor extends ComplexSensor {
   MetricDescriptor? caloriesMetric;
   bool hasRRIntervals = false;
 
-  HeartRateMonitor(BluetoothDevice device) : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
+  HeartRateMonitor(BluetoothDevice device)
+    : super(heartRateServiceUuid, heartRateMeasurementUuid, device);
 
   @override
   void processFlag(int flag) {

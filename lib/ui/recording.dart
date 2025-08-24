@@ -1724,9 +1724,7 @@ class RecordingState extends State<RecordingScreen> {
       if (_zoneIndexes[_hrNIndex] == null) {
         return measurementStyle.apply();
       } else {
-        return measurementStyle.apply(
-          color: _getZoneColor(_hrNIndex, false),
-        );
+        return measurementStyle.apply(color: _getZoneColor(_hrNIndex, false));
       }
     }
 
@@ -2258,9 +2256,7 @@ class RecordingState extends State<RecordingScreen> {
 
       if ((entry.key == _power0Index && !_stationaryWorkout || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
-        measurementStyle = measurementStyle.apply(
-          color: _getZoneColor(entry.key - 1, false),
-        );
+        measurementStyle = measurementStyle.apply(color: _getZoneColor(entry.key - 1, false));
       }
 
       final List<Widget> rowChildren = [];
