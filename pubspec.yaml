@@ -58,7 +58,7 @@ dependencies:
   receive_sharing_intent: ^1.8.1
   share_plus: ^11.1.0
   string_validator: ^1.2.0
-  syncfusion_flutter_charts: ^30.2.6+1
+  syncfusion_flutter_charts: ^30.2.7
   timezone: ^0.10.1
   tuple: ^2.0.2
   url_launcher: ^6.3.2
