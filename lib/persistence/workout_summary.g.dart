@@ -32,6 +32,7 @@ const WorkoutSummarySchema = CollectionSchema(
     r'sport': PropertySchema(id: 12, name: r'sport', type: IsarType.string),
     r'start': PropertySchema(id: 13, name: r'start', type: IsarType.dateTime),
   },
+
   estimateSize: _workoutSummaryEstimateSize,
   serialize: _workoutSummarySerialize,
   deserialize: _workoutSummaryDeserialize,
@@ -50,10 +51,11 @@ const WorkoutSummarySchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _workoutSummaryGetId,
   getLinks: _workoutSummaryGetLinks,
   attach: _workoutSummaryAttach,
-  version: '3.1.8',
+  version: '3.3.0',
 );
 
 int _workoutSummaryEstimateSize(
@@ -363,6 +365,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'calorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -380,6 +383,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'calorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -401,6 +405,7 @@ extension WorkoutSummaryQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -705,6 +710,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'distance',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -722,6 +728,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'distance',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -743,6 +750,7 @@ extension WorkoutSummaryQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -1358,6 +1366,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'powerFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1375,6 +1384,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'powerFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1396,6 +1406,7 @@ extension WorkoutSummaryQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -1424,6 +1435,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'speed',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1441,6 +1453,7 @@ extension WorkoutSummaryQueryFilter
           include: include,
           property: r'speed',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1462,6 +1475,7 @@ extension WorkoutSummaryQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );

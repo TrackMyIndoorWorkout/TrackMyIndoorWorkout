@@ -70,6 +70,7 @@ const ActivitySchema = CollectionSchema(
     ),
     r'uploaded': PropertySchema(id: 31, name: r'uploaded', type: IsarType.bool),
   },
+
   estimateSize: _activityEstimateSize,
   serialize: _activitySerialize,
   deserialize: _activityDeserialize,
@@ -88,10 +89,11 @@ const ActivitySchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _activityGetId,
   getLinks: _activityGetLinks,
   attach: _activityAttach,
-  version: '3.1.8',
+  version: '3.3.0',
 );
 
 int _activityEstimateSize(Activity object, List<int> offsets, Map<Type, List<int>> allOffsets) {
@@ -469,6 +471,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'calorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -486,6 +489,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'calorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -507,6 +511,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -858,6 +863,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'distance',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -875,6 +881,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'distance',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -896,6 +903,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -1310,6 +1318,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'hrCalorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1327,6 +1336,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'hrCalorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1348,6 +1358,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -1376,6 +1387,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'hrmCalorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1393,6 +1405,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'hrmCalorieFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1414,6 +1427,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -1810,6 +1824,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'powerFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1827,6 +1842,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           include: include,
           property: r'powerFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -1848,6 +1864,7 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );

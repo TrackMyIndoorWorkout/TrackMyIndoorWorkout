@@ -24,6 +24,7 @@ const LogEntrySchema = CollectionSchema(
     r'tag': PropertySchema(id: 4, name: r'tag', type: IsarType.string),
     r'timeStamp': PropertySchema(id: 5, name: r'timeStamp', type: IsarType.dateTime),
   },
+
   estimateSize: _logEntryEstimateSize,
   serialize: _logEntrySerialize,
   deserialize: _logEntryDeserialize,
@@ -42,10 +43,11 @@ const LogEntrySchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _logEntryGetId,
   getLinks: _logEntryGetLinks,
   attach: _logEntryAttach,
-  version: '3.1.8',
+  version: '3.3.0',
 );
 
 int _logEntryEstimateSize(LogEntry object, List<int> offsets, Map<Type, List<int>> allOffsets) {

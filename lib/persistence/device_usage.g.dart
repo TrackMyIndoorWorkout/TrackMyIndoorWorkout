@@ -24,12 +24,20 @@ const DeviceUsageSchema = CollectionSchema(
     r'sport': PropertySchema(id: 4, name: r'sport', type: IsarType.string),
     r'time': PropertySchema(id: 5, name: r'time', type: IsarType.dateTime),
   },
+
   estimateSize: _deviceUsageEstimateSize,
   serialize: _deviceUsageSerialize,
   deserialize: _deviceUsageDeserialize,
   deserializeProp: _deviceUsageDeserializeProp,
   idName: r'id',
   indexes: {
+    r'time': IndexSchema(
+      id: -2250472054110640942,
+      name: r'time',
+      unique: false,
+      replace: false,
+      properties: [IndexPropertySchema(name: r'time', type: IndexType.value, caseSensitive: false)],
+    ),
     r'mac': IndexSchema(
       id: 3561895766210558431,
       name: r'mac',
@@ -44,20 +52,14 @@ const DeviceUsageSchema = CollectionSchema(
       replace: false,
       properties: [IndexPropertySchema(name: r'name', type: IndexType.hash, caseSensitive: true)],
     ),
-    r'time': IndexSchema(
-      id: -2250472054110640942,
-      name: r'time',
-      unique: false,
-      replace: false,
-      properties: [IndexPropertySchema(name: r'time', type: IndexType.value, caseSensitive: false)],
-    ),
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _deviceUsageGetId,
   getLinks: _deviceUsageGetLinks,
   attach: _deviceUsageAttach,
-  version: '3.1.8',
+  version: '3.3.0',
 );
 
 int _deviceUsageEstimateSize(
@@ -218,102 +220,6 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
     });
   }
 
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> macEqualTo(String mac) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> macNotEqualTo(String mac) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [],
-                upper: [mac],
-                includeUpper: false,
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [mac],
-                includeLower: false,
-                upper: [],
-              ),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [mac],
-                includeLower: false,
-                upper: [],
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [],
-                upper: [mac],
-                includeUpper: false,
-              ),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> nameEqualTo(String name) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'name', value: [name]));
-    });
-  }
-
-  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> nameNotEqualTo(String name) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'name',
-                lower: [],
-                upper: [name],
-                includeUpper: false,
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'name',
-                lower: [name],
-                includeLower: false,
-                upper: [],
-              ),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'name',
-                lower: [name],
-                includeLower: false,
-                upper: [],
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'name',
-                lower: [],
-                upper: [name],
-                includeUpper: false,
-              ),
-            );
-      }
-    });
-  }
-
   QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> timeEqualTo(DateTime time) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'time', value: [time]));
@@ -410,6 +316,102 @@ extension DeviceUsageQueryWhere on QueryBuilder<DeviceUsage, DeviceUsage, QWhere
           includeUpper: includeUpper,
         ),
       );
+    });
+  }
+
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> macEqualTo(String mac) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
+    });
+  }
+
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> macNotEqualTo(String mac) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [],
+                upper: [mac],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [mac],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [mac],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [],
+                upper: [mac],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> nameEqualTo(String name) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'name', value: [name]));
+    });
+  }
+
+  QueryBuilder<DeviceUsage, DeviceUsage, QAfterWhereClause> nameNotEqualTo(String name) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            );
+      }
     });
   }
 }
