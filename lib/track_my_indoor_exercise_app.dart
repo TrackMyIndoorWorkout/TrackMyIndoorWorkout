@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:pref/pref.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
