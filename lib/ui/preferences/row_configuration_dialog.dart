@@ -58,7 +58,9 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
                   scale: 2,
                   child: Radio<int>(
                     value: index,
+                    // ignore: deprecated_member_use
                     groupValue: _expandedHeights[rowIndex],
+                    // ignore: deprecated_member_use
                     onChanged: (int? value) {
                       if (value == null) return;
 
