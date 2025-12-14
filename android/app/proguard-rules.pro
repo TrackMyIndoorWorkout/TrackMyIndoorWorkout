@@ -42,8 +42,8 @@
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class net.wolverinebeach.flutter_timezone.** { *; }
 -keepclassmembernames class net.wolverinebeach.flutter_timezone.* { *; }
--keep class dev.isar.isar_flutter_libs.** { *; }
--keepclassmembernames class dev.isar.isar_flutter_libs.** { *; }
+-keep class dev.isar.isar_community_flutter_libs.** { *; }
+-keepclassmembernames class dev.isar.isar_community_flutter_libs.** { *; }
 -keep class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keepclassmembernames class dev.fluttercommunity.plus.packageinfo.** { *; }
 -keep class io.flutter.plugins.pathprovider.** { *; }
