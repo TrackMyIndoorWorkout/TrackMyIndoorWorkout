@@ -6,8 +6,8 @@ version: 2.0.162+162
 isar_version: &isar_version ^3.3.0
 
 environment:
-  sdk: ">=3.10.3"
-  flutter: ">=3.38.4"
+  sdk: ">=3.10.4"
+  flutter: ">=3.38.5"
 
 dependencies:
   app_links: ^6.4.1
