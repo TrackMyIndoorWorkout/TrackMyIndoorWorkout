@@ -33,7 +33,7 @@ dependencies:
   group_button: ^5.3.4
   http: ^1.6.0
   http_parser: ^4.1.2
-  internet_connection_checker_plus: ^2.9.1
+  internet_connection_checker_plus: ^2.9.1+1
   intl: ^0.20.2
   is_first_run: ^1.0.0
   isar_community:
