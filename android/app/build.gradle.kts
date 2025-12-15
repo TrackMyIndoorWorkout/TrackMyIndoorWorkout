@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.track_my_indoor_exercise"
+    namespace = "dev.csaba.track_my_indoor_exercise"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.track_my_indoor_exercise"
+        applicationId = "dev.csaba.track_my_indoor_exercise"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
