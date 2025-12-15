@@ -36,13 +36,30 @@ DeepWiki: https://deepwiki.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/
   I'm performing releases that way as well.
   I'm also using [Git Town](https://github.com/git-town/git-town) but currently only for
   [git sync](https://github.com/git-town/git-town/blob/main/documentation/development/branch_hierarchy.md)
-  and I don't employ `git hack` - `git ship` workflow. I'm avoiding squashing commits because
+  and I don't use the `git hack` - `git ship` workflow. I'm avoiding squashing commits because
   I want to preserve detailed commit history to help forensic debugging. But I'm flexible if
   contributions become common and majority wants to change policies.
 
+## Extra build quirks
+
+* Some plugins which have native parts may require the Java version to raise from `1.8` to `17`
+  (there are two types of these variables `JavaVersion.VERSION_17` and `17`,
+  you'd need to edit the build files in the cache).
+* If you don't have you may need to install 28.2.13676358 version of the NDK:
+  1. `cd ${HOME}/{ANDROID_SDK}/cmdline-tools/latest/bin/`
+     (in my case `/home/csaba/Android/Sdk/cmdline-tools/latest/bin/`)
+  2. Verify that you can install this version of NDK: `./sdkmanager --list | grep "ndk;28.2.13676358"`
+  3. Install it: `./sdkmanager "ndk;28.2.13676358"`
+  4. In you `local.properties` if you have NDK directory, reference that:
+     ```
+     sdk.dir=/home/csaba/Android/Sdk
+     ndk.dir=/home/csaba/Android/Sdk/ndk/28.2.13676358
+     ```
+
 ## Code regeneration
 
-With certain data persistence or testing Mock changes you may need code regeneration. It's always good to regen the persistence code after any `isar` version change.
+With certain data persistence or testing Mock changes you may need code regeneration.
+It's always good to regen the persistence code after any `isar` version change.
 1. `dart run build_runner build --delete-conflicting-outputs`
 2. Don't forget to re-run `dart format .` after that.
 
