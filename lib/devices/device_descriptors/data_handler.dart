@@ -25,6 +25,7 @@ abstract class DataHandler {
   MetricDescriptor? caloriesPerMinuteMetric;
   MetricDescriptor? resistanceMetric;
   MetricDescriptor? strokeCountMetric;
+  MetricDescriptor? inclinationMetric;
 
   DataHandler({
     this.tag = "DATA_HANDLER",
@@ -39,6 +40,7 @@ abstract class DataHandler {
     this.distanceMetric,
     this.resistanceMetric,
     this.strokeCountMetric,
+    this.inclinationMetric,
   });
 
   DataHandler clone();
@@ -160,5 +162,6 @@ abstract class DataHandler {
     caloriesPerMinuteMetric = null;
     resistanceMetric = null;
     strokeCountMetric = null;
+    inclinationMetric = null;
   }
 }

@@ -49,7 +49,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
     flag = processSpeedFlag(flag);
     flag = skipFlag(flag); // Average Speed
     flag = processTotalDistanceFlag(flag);
-    flag = skipFlag(flag, size: 4); // Inclination and Ramp Angle
+    flag = processInclinationFlag(flag); // Inclination and Ramp Angle
     flag = skipFlag(flag, size: 4); // Positive and Negative Elevation Gain
     flag = processPaceFlag(flag);
     flag = skipFlag(flag, size: 1); // Average Pace
@@ -86,6 +86,7 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
       caloriesPerHour: getCaloriesPerHour(data),
       caloriesPerMinute: getCaloriesPerMinute(data),
       resistance: getResistance(data)?.toInt(),
+      inclination: getInclination(data),
     );
   }
 
@@ -135,6 +136,10 @@ class TreadmillDeviceDescriptor extends FitnessMachineDescriptor {
   double? getPace(List<int> data) {
     // Run pace is not really a pace (speed reciprocal) but it's km/min
     return paceMetric?.getMeasurementValue(data);
+  }
+
+  double? getInclination(List<int> data) {
+    return inclinationMetric?.getMeasurementValue(data);
   }
 
   @override
