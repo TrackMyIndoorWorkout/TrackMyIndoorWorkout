@@ -50,6 +50,7 @@ import '../preferences/metric_spec.dart';
 import '../preferences/palette_spec.dart';
 import '../preferences/show_pacer.dart';
 import '../preferences/show_resistance_level.dart';
+import '../preferences/show_inclination.dart';
 import '../preferences/show_strokes_strides_revs.dart';
 import '../preferences/simpler_ui.dart';
 import '../preferences/sound_effects.dart';
@@ -143,6 +144,7 @@ class RecordingState extends State<RecordingScreen> {
   // Extra optional measurements
   static const int _resistanceIndex = 0;
   static const int _strokeCountIndex = 1;
+  static const int _inclinationIndex = 2;
 
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
@@ -234,6 +236,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _showResistanceLevel = showResistanceLevelDefault;
   bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
+  bool _showInclination = showInclinationDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
   bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
   List<WorkoutSummary> _leaderboard = [];
@@ -454,6 +457,10 @@ class RecordingState extends State<RecordingScreen> {
                   .toInt()
                   .toString();
             }
+            if (_showInclination) {
+              _optionalStatistics[_inclinationIndex] = (_workoutStats.avgInclination ?? 0.0)
+                  .toStringAsFixed(1);
+            }
           } else {
             if (!_stationaryWorkout) {
               _statistics[_power0Index] = _workoutStats.maxPowerDisplay.toString();
@@ -470,6 +477,10 @@ class RecordingState extends State<RecordingScreen> {
 
             if (_showResistanceLevel) {
               _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
+            }
+            if (_showInclination) {
+              _optionalStatistics[_inclinationIndex] = (_workoutStats.maxInclination ?? 0.0)
+                  .toStringAsFixed(1);
             }
           }
         }
@@ -490,6 +501,11 @@ class RecordingState extends State<RecordingScreen> {
         if (_showStrokesStridesRevs) {
           _optionalValues[_strokeCountIndex] =
               record.strokeCount?.toInt().toString() ?? emptyMeasurement;
+        }
+
+        if (_showInclination) {
+          _optionalValues[_inclinationIndex] =
+              record.inclination?.toStringAsFixed(1) ?? emptyMeasurement;
         }
 
         if (!_stationaryWorkout) {
@@ -690,6 +706,10 @@ class RecordingState extends State<RecordingScreen> {
 
   void _onToggleResistance() {
     _onToggleDetails(_resistanceIndex, true);
+  }
+
+  void _onToggleInclination() {
+    _onToggleDetails(_inclinationIndex, true);
   }
 
   void _onChartTouchInteractionDown(int index, Offset position, bool extra) {
@@ -910,6 +930,8 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<bool>(showResistanceLevelTag) ?? showResistanceLevelDefault;
     _showStrokesStridesRevs =
         prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
+    _showInclination =
+        prefService.get<bool>(showInclinationTag) ?? showInclinationDefault;
 
     _instantOnStage = prefService.get<bool>(instantOnStageTag) ?? instantOnStageDefault;
     _onStageStatisticsType =
@@ -979,6 +1001,18 @@ class RecordingState extends State<RecordingScreen> {
       _extraExpandedHeights.add(0);
     }
 
+    if (_showInclination) {
+      if (_extraExpandedState.isEmpty) {
+        _extraExpandedState = [false];
+      } else {
+        _extraExpandedState.add(false);
+      }
+      ExpandableController rowController = ExpandableController(initialExpanded: false);
+      rowController.addListener(_onToggleInclination);
+      _extraRowControllers.add(rowController);
+      _extraExpandedHeights.add(0);
+    }
+
     final expandedStateStr =
         prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;
     final expandedHeightStr =
@@ -1028,7 +1062,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _optionalValues = [emptyMeasurement, emptyMeasurement];
+    _optionalValues = [emptyMeasurement, emptyMeasurement, emptyMeasurement];
 
     _statistics = [
       emptyMeasurement,
@@ -1039,7 +1073,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _optionalStatistics = [emptyMeasurement];
+    _optionalStatistics = [emptyMeasurement, emptyMeasurement, emptyMeasurement];
 
     final calculateCadences =
         !_heartRateMonitorWorkout && !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
@@ -1056,6 +1090,8 @@ class RecordingState extends State<RecordingScreen> {
       calculateMaxHeartRate: true,
       calculateAvgResistance: _showResistanceLevel,
       calculateMaxResistance: _showResistanceLevel,
+      calculateAvgInclination: _showInclination,
+      calculateMaxInclination: _showInclination,
     );
     _graphStats = StatisticsAccumulator(
       si: _si,
@@ -1077,6 +1113,11 @@ class RecordingState extends State<RecordingScreen> {
           _showResistanceLevel && _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateMinResistance:
           _showResistanceLevel && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateAvgInclination: false,
+      calculateMaxInclination:
+          _showInclination && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinInclination:
+          _showInclination && _onStageStatisticsType != onStageStatisticsTypeNone,
     );
     _zoneIndexes = [null, null, null, null];
 
@@ -1583,6 +1624,70 @@ class RecordingState extends State<RecordingScreen> {
             dataSource: graphMaxData,
             xValueMapper: (DisplayRecord record, _) => record.timeStamp,
             yValueMapper: (DisplayRecord record, _) => record.resistance,
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
+    }
+
+    return series;
+  }
+
+  List<charts.LineSeries<DisplayRecord, DateTime>> _inclinationChartData() {
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: graphData,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+        yValueMapper: (DisplayRecord record, _) => record.inclination,
+        color: _chartTextColor,
+        animationDuration: 0,
+      ),
+    ];
+
+    double minInclinationThreshold = minInit.toDouble();
+    double maxInclinationThreshold = maxInit.toDouble();
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minInclination = _graphStats.minInclination;
+      if (minInclination < minInit.toDouble()) {
+        minInclinationThreshold = minInclination * 0.8;
+      }
+
+      final maxInclination = _graphStats.maxInclination;
+      if (maxInclination > maxInit.toDouble()) {
+        maxInclinationThreshold = maxInclination * 1.2;
+      }
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      final latestAvgInclination = _graphAvgData.last.inclination;
+      if (latestAvgInclination != null &&
+          latestAvgInclination >= minInclinationThreshold &&
+          latestAvgInclination <= maxInclinationThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.inclination,
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      final latestMaxInclination = _graphMaxData.last.inclination;
+      if (latestMaxInclination != null &&
+          latestMaxInclination >= minInclinationThreshold &&
+          latestMaxInclination <= maxInclinationThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.inclination,
             color: _chartMaxColor,
             animationDuration: 0,
           ),
@@ -2370,6 +2475,39 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
+      if (_showInclination) {
+        extras.add(
+          SizedBox(
+            width: measuredSize.width,
+            height: getExpandedHeight(_extraExpandedHeights[_inclinationIndex], measuredSize),
+            child: charts.SfCartesianChart(
+              primaryXAxis: charts.DateTimeAxis(
+                labelStyle: _chartLabelStyle,
+                axisLine: charts.AxisLine(color: _chartTextColor),
+                majorTickLines: charts.MajorTickLines(color: _chartTextColor),
+                minorTickLines: charts.MinorTickLines(color: _chartTextColor),
+                majorGridLines: charts.MajorGridLines(color: _chartTextColor),
+                minorGridLines: charts.MinorTickLines(color: _chartTextColor),
+              ),
+              primaryYAxis: charts.NumericAxis(
+                labelStyle: _chartLabelStyle,
+                axisLine: charts.AxisLine(color: _chartTextColor),
+                majorTickLines: charts.MajorTickLines(color: _chartTextColor),
+                minorTickLines: charts.MinorTickLines(color: _chartTextColor),
+                majorGridLines: charts.MajorGridLines(color: _chartTextColor),
+                minorGridLines: charts.MinorTickLines(color: _chartTextColor),
+              ),
+              margin: const EdgeInsets.all(0),
+              series: _inclinationChartData(),
+              onChartTouchInteractionDown: (arg) =>
+                  _onChartTouchInteractionDown(_inclinationIndex, arg.position, true),
+              onChartTouchInteractionUp: (arg) =>
+                  _onChartTouchInteractionUp(_inclinationIndex, arg.position, true),
+            ),
+          ),
+        );
+      }
+
       for (var entry in _preferencesSpecs.asMap().entries) {
         if (_stationaryWorkout && ["speed", "power"].contains(entry.value.metric)) {
           regularExtras.add(null);
@@ -2551,6 +2689,50 @@ class RecordingState extends State<RecordingScreen> {
           collapsed: Container(),
           expanded: _simplerUi ? Container() : extras[_resistanceIndex],
           controller: _extraRowControllers[_resistanceIndex],
+        ),
+      );
+    }
+
+    if (_showInclination) {
+      final List<Widget> rowChildren = _onStageStatisticsType == onStageStatisticsTypeNone
+          ? [
+              _themeManager.getBlueIcon(Icons.terrain, _sizeDefault),
+              const Spacer(),
+              Text(_optionalValues[_inclinationIndex], style: _fullMeasurementStyle.apply()),
+              SizedBox(
+                width: _sizeDefault * (_simplerUi ? 2 : 1.3),
+                child: Center(child: Text("%", maxLines: 2, style: _fullUnitStyle)),
+              ),
+            ]
+          : [
+              SizedBox(
+                width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(_optionalValues[_inclinationIndex], style: _measurementStyle.apply()),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: _sizeDefault * (_simplerUi ? 1 : 0.65),
+                child: Center(child: Text("%", maxLines: 2, style: _unitStyle)),
+              ),
+            ],
+          ];
+
+      columnOne.add(
+        ExpandablePanel(
+          theme: _expandableThemeData,
+          header: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: rowChildren,
+          ),
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_inclinationIndex],
+          controller: _extraRowControllers[_inclinationIndex],
         ),
       );
     }
