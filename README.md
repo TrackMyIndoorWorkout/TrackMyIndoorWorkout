@@ -42,9 +42,23 @@ DeepWiki: https://deepwiki.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/
 
 ## Extra build quirks
 
-* Some plugins which have native parts may require the Java version to raise from `1.8` to `17`
-  (there are two types of these variables `JavaVersion.VERSION_17` and `17`,
-  you'd need to edit the build files in the cache).
+* Certain plugins which have native parts may require the Java version to be raised from
+  `1.8` to `17`
+  - There are two types of these variables: `JavaVersion.VERSION_17` and `17`
+  - You may want to raise the Java version in your IDE
+  - Some plugins may require you to raise the Java version in the build files in the cache
+  - Example of modifying the `receive_sharing_intent` plugin:
+    1. The cache location on Windows is `C:\Users\{USERNAME}\AppData\Local\Pub\Cache\hosted\pub.dev\receive_sharing_intent-1.8.1\android\build.gradle` or on Linux `/home/{USERNAME}/.pub-cache/hosted/pub.dev/receive_sharing_intent-1.8.1/android/build.gradle`
+    2. Add / modify `compileOptions` and `kotlinOptions` to raise the Java version:
+       ```
+       compileOptions {
+           sourceCompatibility JavaVersion.VERSION_17
+           targetCompatibility JavaVersion.VERSION_17
+       }
+       kotlinOptions {
+           jvmTarget = "17"
+       }
+       ```
 * If you don't have you may need to install 28.2.13676358 version of the NDK:
   1. `cd ${HOME}/{ANDROID_SDK}/cmdline-tools/latest/bin/`
      (in my case `/home/csaba/Android/Sdk/cmdline-tools/latest/bin/`)
