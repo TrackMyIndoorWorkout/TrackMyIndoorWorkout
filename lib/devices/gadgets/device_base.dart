@@ -85,7 +85,7 @@ abstract class DeviceBase {
 
     try {
       connecting = true;
-      await device?.connect();
+      await device?.connect(license: License.free);
     } on Exception catch (e) {
       if (e is PlatformException && e.code != 'already_connected') {
         rethrow;

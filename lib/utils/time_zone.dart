@@ -15,7 +15,7 @@ Future<String> getTimeZone() async {
     return timeZone;
   }
 
-  return getClosestTimeZone(await FlutterTimezone.getLocalTimezone());
+  return getClosestTimeZone((await FlutterTimezone.getLocalTimezone()).identifier);
 }
 
 int timeZoneOffset(String timeZoneName) {
@@ -52,7 +52,8 @@ String getClosestTimeZone(String timeZoneName) {
 Future<List<String>> getSortedTimezones() async {
   // Also curate it so only the ones which are contained in the 10y TZ DB
   final flutterTimezoneChoices = (await FlutterTimezone.getAvailableTimezones())
-      .where((timeZoneName) => tz.timeZoneDatabase.locations.containsKey(timeZoneName))
+      .where((timeZoneInfo) => tz.timeZoneDatabase.locations.containsKey(timeZoneInfo.identifier))
+      .map((timeZoneInfo) => timeZoneInfo.identifier)
       .toList(growable: false);
   flutterTimezoneChoices.sort();
   return flutterTimezoneChoices;

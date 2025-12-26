@@ -43,9 +43,9 @@ class AboutScreenState extends State<AboutScreen> {
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    FlutterTimezone.getLocalTimezone().then((String timeZone) {
+    FlutterTimezone.getLocalTimezone().then((TimezoneInfo timeZoneInfo) {
       setState(() {
-        _detectedTimeZone = timeZone;
+        _detectedTimeZone = timeZoneInfo.identifier;
       });
     });
 
