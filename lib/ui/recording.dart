@@ -36,6 +36,7 @@ import '../preferences/calculate_gps.dart';
 import '../preferences/data_stream_gap_sound_effect.dart';
 import '../preferences/distance_resolution.dart';
 import '../preferences/heart_rate_monitor_workout.dart';
+import '../preferences/graph_view_duration.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_upload.dart';
@@ -206,6 +207,8 @@ class RecordingState extends State<RecordingScreen> {
   String _timeDisplayMode = timeDisplayModeDefault;
   bool _circuitWorkout = workoutModeDefault == workoutModeCircuit;
   String _dataGapSoundEffect = dataStreamGapSoundEffectDefault;
+  double _graphViewDuration = graphViewDurationDefault;
+  bool _firstDataReceived = false;
 
   Map<String, DataFn> _metricToDataFn = {};
   List<RowConfiguration> _rowConfig = [];
@@ -357,6 +360,7 @@ class RecordingState extends State<RecordingScreen> {
       setState(() {
         if (!_simplerUi) {
           _graphData.add(DisplayRecord.fromRecord(record));
+          _firstDataReceived = true;
           if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
               _onStageStatisticsType == onStageStatisticsTypeAlternating) {
             _graphAvgData.add(_workoutStats.averageDisplayRecord(record.timeStamp));
@@ -367,7 +371,24 @@ class RecordingState extends State<RecordingScreen> {
             _graphMaxData.add(_workoutStats.maximumDisplayRecord(record.timeStamp));
           }
 
-          if (_pointCount > 0 && _graphData.length > _pointCount) {
+          if (_graphViewDuration > 0) {
+            final cutoff = record.timeStamp!.subtract(
+              Duration(milliseconds: (_graphViewDuration * 60000).round()),
+            );
+            while (_graphData.isNotEmpty &&
+                (_graphData.first.timeStamp?.isBefore(cutoff) ?? false)) {
+              _graphData.removeFirst();
+              if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+                _graphAvgData.removeFirst();
+              }
+
+              if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+                  _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+                _graphMaxData.removeFirst();
+              }
+            }
+          } else if (_pointCount > 0 && _graphData.length > _pointCount) {
             _graphData.removeFirst();
             if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
                 _onStageStatisticsType == onStageStatisticsTypeAlternating) {
@@ -818,7 +839,9 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<String>(instantExportLocationTag) ?? instantExportLocationDefault;
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
     _stationaryWorkout = prefService.get<bool>(stationaryWorkoutTag) ?? stationaryWorkoutDefault;
-    _pointCount = min(60, size.width ~/ 2);
+    // #252: Disable fixed point retention to allow full history for time scaling.
+    // Originally: _pointCount = min(60, size.width ~/ 2);
+    _pointCount = 0;
     _onStageStatisticsType =
         prefService.get<String>(onStageStatisticsTypeTag) ?? onStageStatisticsTypeDefault;
     final now = DateTime.now();
@@ -910,6 +933,7 @@ class RecordingState extends State<RecordingScreen> {
         prefService.get<bool>(showResistanceLevelTag) ?? showResistanceLevelDefault;
     _showStrokesStridesRevs =
         prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
+    _graphViewDuration = prefService.get<double>(graphViewDurationTag) ?? graphViewDurationDefault;
 
     _instantOnStage = prefService.get<bool>(instantOnStageTag) ?? instantOnStageDefault;
     _onStageStatisticsType =
@@ -1277,6 +1301,41 @@ class RecordingState extends State<RecordingScreen> {
     _sinkSocket = null;
   }
 
+  List<charts.PlotBand> _safeGetPlotBands(List<charts.PlotBand> bands) {
+    // Need at least 3 data points for the chart to have a valid Y-axis range
+    if (!_firstDataReceived || graphData.length < 3) {
+      return <charts.PlotBand>[];
+    }
+
+    for (var band in bands) {
+      // Check start and end for NaN
+      final start = band.start;
+      final end = band.end;
+      if (start is double && (start.isNaN || start.isInfinite)) {
+        return <charts.PlotBand>[];
+      }
+      if (end is double && (end.isNaN || end.isInfinite)) {
+        return <charts.PlotBand>[];
+      }
+    }
+    return bands;
+  }
+
+  bool _hasDataForMetric(String metric) {
+    switch (metric) {
+      case "power":
+        return _graphStats.maxPower > 0;
+      case "speed":
+        return _graphStats.maxSpeed > 0;
+      case "cadence":
+        return _graphStats.maxCadence > 0;
+      case "hr":
+        return _graphStats.maxHeartRate > 0;
+      default:
+        return false;
+    }
+  }
+
   List<charts.LineSeries<DisplayRecord, DateTime>> _powerChartData() {
     List<charts.LineSeries<DisplayRecord, DateTime>> series = [
       charts.LineSeries<DisplayRecord, DateTime>(
@@ -1302,8 +1361,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphAvgData.isNotEmpty) {
       final latestAvgPower = _graphAvgData.last.power;
       if (latestAvgPower != null &&
           latestAvgPower >= minPowerThreshold &&
@@ -1320,8 +1380,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphMaxData.isNotEmpty) {
       final latestMaxPower = _graphMaxData.last.power;
       if (latestMaxPower != null &&
           latestMaxPower >= minPowerThreshold &&
@@ -1366,8 +1427,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphAvgData.isNotEmpty) {
       final latestAvgSpeed = _graphAvgData.last.speed;
       if (latestAvgSpeed != null &&
           latestAvgSpeed >= minSpeedThreshold &&
@@ -1384,8 +1446,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphMaxData.isNotEmpty) {
       final latestMaxSpeed = _graphMaxData.last.speed;
       if (latestMaxSpeed != null &&
           latestMaxSpeed >= minSpeedThreshold &&
@@ -1430,8 +1493,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphAvgData.isNotEmpty) {
       final latestAvgCadence = _graphAvgData.last.cadence;
       if (latestAvgCadence != null &&
           latestAvgCadence >= minCadenceThreshold &&
@@ -1448,8 +1512,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphMaxData.isNotEmpty) {
       final latestMaxCadence = _graphMaxData.last.cadence;
       if (latestMaxCadence != null &&
           latestMaxCadence >= minCadenceThreshold &&
@@ -1494,8 +1559,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphAvgData.isNotEmpty) {
       final latestAvgHr = _graphAvgData.last.heartRate;
       if (latestAvgHr != null && latestAvgHr >= minHrThreshold && latestAvgHr <= maxHrThreshold) {
         series.add(
@@ -1510,8 +1576,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphMaxData.isNotEmpty) {
       final latestMaxHr = _graphMaxData.last.heartRate;
       if (latestMaxHr != null && latestMaxHr >= minHrThreshold && latestMaxHr <= maxHrThreshold) {
         series.add(
@@ -1554,8 +1621,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeAverage ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphAvgData.isNotEmpty) {
       final latestAvgResistance = _graphAvgData.last.resistance;
       if (latestAvgResistance != null &&
           latestAvgResistance >= minResistanceThreshold &&
@@ -1572,8 +1640,9 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
-    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
-        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+    if ((_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+            _onStageStatisticsType == onStageStatisticsTypeAlternating) &&
+        _graphMaxData.isNotEmpty) {
       final latestMaxResistance = _graphMaxData.last.resistance;
       if (latestMaxResistance != null &&
           latestMaxResistance >= minResistanceThreshold &&
@@ -2350,6 +2419,11 @@ class RecordingState extends State<RecordingScreen> {
                 minorTickLines: charts.MinorTickLines(color: _chartTextColor),
                 majorGridLines: charts.MajorGridLines(color: _chartTextColor),
                 minorGridLines: charts.MinorGridLines(color: _chartTextColor),
+                autoScrollingDelta: _graphViewDuration > 0
+                    ? (_graphViewDuration * 60).toInt()
+                    : null,
+                autoScrollingDeltaType: charts.DateTimeIntervalType.seconds,
+                autoScrollingMode: charts.AutoScrollingMode.end,
               ),
               primaryYAxis: charts.NumericAxis(
                 labelStyle: _chartLabelStyle,
@@ -2387,9 +2461,14 @@ class RecordingState extends State<RecordingScreen> {
               minorTickLines: charts.MinorTickLines(color: _chartTextColor),
               majorGridLines: charts.MajorGridLines(color: _chartTextColor),
               minorGridLines: charts.MinorGridLines(color: _chartTextColor),
+              autoScrollingDelta: _graphViewDuration > 0 ? (_graphViewDuration * 60).toInt() : null,
+              autoScrollingDeltaType: charts.DateTimeIntervalType.seconds,
+              autoScrollingMode: charts.AutoScrollingMode.end,
             ),
             primaryYAxis: charts.NumericAxis(
-              plotBands: entry.value.plotBands,
+              plotBands: _hasDataForMetric(entry.value.metric)
+                  ? _safeGetPlotBands(entry.value.plotBands)
+                  : <charts.PlotBand>[],
               labelStyle: _chartLabelStyle,
               axisLine: charts.AxisLine(color: _chartTextColor),
               majorTickLines: charts.MajorTickLines(color: _chartTextColor),

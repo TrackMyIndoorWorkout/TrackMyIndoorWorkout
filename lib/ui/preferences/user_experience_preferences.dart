@@ -18,6 +18,7 @@ import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
+import '../../preferences/graph_view_duration.dart';
 import '../parts/pick_directory.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -175,6 +176,16 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
         title: Text(twoColumnLayout),
         subtitle: Text(twoColumnLayoutDescription),
         pref: twoColumnLayoutTag,
+      ),
+      PrefSlider<double>(
+        title: const Text(graphViewDuration),
+        subtitle: const Text(graphViewDurationDescription),
+        pref: graphViewDurationTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(1)} min"),
+        min: graphViewDurationMin,
+        max: graphViewDurationMax,
+        divisions: graphViewDurationDivisions,
+        direction: Axis.vertical,
       ),
       PrefButton(
         onTap: () async {

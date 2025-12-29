@@ -76,6 +76,7 @@ dev_dependencies:
     version: *isar_version
   mocktail: ^1.0.4
   mock_data: ^2.0.1
+  shared_preferences: ^2.2.0
   yaml: ^3.1.3
 
 flutter:
