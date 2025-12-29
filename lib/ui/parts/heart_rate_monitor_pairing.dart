@@ -11,6 +11,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
+import '../../devices/gadgets/heart_rate_monitor_internal.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
 import '../../utils/bluetooth.dart';
@@ -44,6 +45,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   HeartRateMonitor? _heartRateMonitor;
   int _logLevel = logLevelDefault;
+  bool _hasInternalSensor = false;
 
   @override
   void dispose() {
@@ -105,6 +107,12 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     );
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final hasSensor = await DeviceInternalHeartRate.hasHeartRateSensor();
+      if (mounted) {
+        setState(() {
+          _hasInternalSensor = hasSensor;
+        });
+      }
       await _startScan();
     });
   }
@@ -150,6 +158,55 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                         }),
                       )
                     : Container(),
+                if (_hasInternalSensor && _heartRateMonitor?.device?.remoteId.str != "INTERNAL_HRM")
+                  ListTile(
+                    leading: const Icon(Icons.watch),
+                    title: const Text("Use Watch's Sensor"),
+                    subtitle: const Text("Internal Heart Rate Monitor"),
+                    onTap: () async {
+                      if (!await bluetoothCheck(false, _logLevel)) {
+                        return;
+                      }
+
+                      setState(() {
+                        _pairingHrm = true;
+                      });
+
+                      final heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                          ? Get.find<HeartRateMonitor>()
+                          : null;
+
+                      // Disconnect existing if it's external
+                      if (heartRateMonitor != null &&
+                          heartRateMonitor.device?.remoteId.str != "INTERNAL_HRM") {
+                        await heartRateMonitor.detach();
+                        await heartRateMonitor.disconnect();
+                      }
+
+                      if (heartRateMonitor == null ||
+                          heartRateMonitor.device?.remoteId.str != "INTERNAL_HRM") {
+                        // Dynamic import workaround or just import it at top?
+                        // Need to import DeviceInternalHeartRate.
+                        // Assuming import is added.
+                        final internalHrm = DeviceInternalHeartRate();
+                        if (Get.isRegistered<HeartRateMonitor>()) {
+                          await Get.delete<HeartRateMonitor>(force: true);
+                        }
+                        Get.put<HeartRateMonitor>(internalHrm, permanent: true);
+                        await internalHrm.connect();
+                        await internalHrm.discover();
+                        setState(() {
+                          _heartRateMonitor = internalHrm;
+                        });
+                      }
+
+                      await _heartRateMonitor?.attach();
+                      setState(() {
+                        _pairingHrm = false;
+                      });
+                    },
+                    trailing: _themeManager.getBlueFab(Icons.add, () {}),
+                  ),
               ],
             ),
             const Divider(),
