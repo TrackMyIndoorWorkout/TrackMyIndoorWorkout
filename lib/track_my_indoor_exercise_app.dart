@@ -12,7 +12,7 @@ import 'import/csv_importer.dart';
 import 'persistence/workout_summary.dart';
 import 'preferences/leaderboard_and_rank.dart';
 import 'preferences/show_performance_overlay.dart';
-import 'ui/find_devices.dart';
+import 'ui/find_devices/find_devices_screen.dart';
 import 'utils/theme_manager.dart';
 
 class TrackMyIndoorExerciseApp extends StatefulWidget {
