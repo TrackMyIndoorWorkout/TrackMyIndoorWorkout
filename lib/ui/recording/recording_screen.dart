@@ -92,6 +92,7 @@ import '../parts/spin_down.dart';
 import '../parts/three_choices.dart';
 import '../parts/upload_portal_picker.dart';
 import 'measurement_row.dart';
+import 'header_row.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -2256,23 +2257,6 @@ class RecordingState extends State<RecordingScreen> {
         : "";
 
     final workoutState = _fitnessEquipment?.workoutState ?? WorkoutState.waitingForFirstMove;
-    var timeStyle = _onStageStatisticsType != onStageStatisticsTypeNone
-        ? _timeStyle
-        : _fullMeasurementStyle;
-    if (_timeDisplayMode == timeDisplayModeHIITMoving &&
-        workoutState != WorkoutState.waitingForFirstMove) {
-      final timeColorIndex = [WorkoutState.justPaused, WorkoutState.paused].contains(workoutState)
-          ? 0
-          : 4;
-      timeStyle = _measurementStyle.apply(color: _paletteSpec?.lightFgPalette[5]![timeColorIndex]);
-    }
-
-    var timeIcon =
-        (_timeDisplayMode == timeDisplayModeHIITMoving &&
-            [WorkoutState.startedMoving, WorkoutState.moving].contains(workoutState))
-        ? _themeManager.getRedIcon(Icons.timer, _sizeDefault)
-        : _themeManager.getBlueIcon(Icons.timer, _sizeDefault);
-
     final timeHeaderRow = _onStageStatisticsType != onStageStatisticsTypeNone
         ? Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2288,18 +2272,20 @@ class RecordingState extends State<RecordingScreen> {
         : Container();
 
     List<Widget> rows = [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: _onStageStatisticsType != onStageStatisticsTypeNone
-            ? [
-                const Spacer(),
-                Text(movingTimeDisplay, style: timeStyle),
-                timeIcon,
-                const Spacer(),
-                Text(elapsedTimeDisplay, style: timeStyle),
-              ]
-            : [timeIcon, Text(timeDisplay, style: timeStyle), SizedBox(width: _sizeDefault / 4)],
+      RecordingHeaderRow(
+        themeManager: _themeManager,
+        onStageStatisticsType: _onStageStatisticsType,
+        movingTimeDisplay: movingTimeDisplay,
+        elapsedTimeDisplay: elapsedTimeDisplay,
+        singleTimeDisplay: timeDisplay,
+        timeDisplayMode: _timeDisplayMode,
+        workoutState: workoutState,
+        paletteSpec: _paletteSpec,
+        baseTimeStyle: _onStageStatisticsType != onStageStatisticsTypeNone
+            ? _timeStyle
+            : _fullMeasurementStyle,
+        measurementStyle: _measurementStyle,
+        iconSize: _sizeDefault,
       ),
     ];
 
@@ -2354,6 +2340,7 @@ class RecordingState extends State<RecordingScreen> {
           fullUnitStyle: _fullUnitStyle,
           expandable: entry.value.expandable,
           simplerUi: _simplerUi,
+          halfWidth: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
         ),
       );
     }
@@ -2554,55 +2541,29 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_showResistanceLevel) {
-      final List<Widget> rowChildren = _onStageStatisticsType == onStageStatisticsTypeNone
-          ? [
-              _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault),
-              const Spacer(),
-              Text(_optionalValues[_resistanceIndex], style: _fullMeasurementStyle.apply()),
-              SizedBox(
-                width: _sizeDefault * (_simplerUi ? 2 : 1.3),
-                child: Center(child: Text("", maxLines: 2, style: _fullUnitStyle)),
-              ),
-            ]
-          : [
-              SizedBox(
-                width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_optionalValues[_resistanceIndex], style: _measurementStyle.apply()),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  _themeManager.getBlueIcon(Icons.onetwothree, _sizeDefault / 2),
-                  SizedBox(
-                    width: _sizeDefault * (_simplerUi ? 1 : 0.65),
-                    child: Center(child: Text("", maxLines: 2, style: _unitStyle)),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_optionalStatistics[_resistanceIndex], style: _measurementStyle.apply()),
-                  ],
-                ),
-              ),
-            ];
+      final resistanceLayout = _onStageStatisticsType == onStageStatisticsTypeNone
+          ? MeasurementRowLayout.standard
+          : MeasurementRowLayout.split;
 
       columnOne.add(
         ExpandablePanel(
           theme: _expandableThemeData,
-          header: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: rowChildren,
+          header: MeasurementRow(
+            themeManager: _themeManager,
+            layout: resistanceLayout,
+            icon: Icons.onetwothree,
+            iconSize: _sizeDefault,
+            value: _optionalValues[_resistanceIndex],
+            unit: "",
+            statistic: _optionalStatistics[_resistanceIndex],
+            measurementStyle: resistanceLayout == MeasurementRowLayout.standard
+                ? _fullMeasurementStyle
+                : _measurementStyle,
+            unitStyle: _unitStyle,
+            fullUnitStyle: _fullUnitStyle,
+            expandable: true,
+            simplerUi: _simplerUi,
+            halfWidth: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
           ),
           collapsed: Container(),
           expanded: _simplerUi ? Container() : extras[_resistanceIndex],

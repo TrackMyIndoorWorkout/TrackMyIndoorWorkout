@@ -23,6 +23,7 @@ class MeasurementRow extends StatelessWidget {
     required this.fullUnitStyle,
     required this.expandable,
     this.simplerUi = false,
+    this.halfWidth = 48.0,
   });
 
   final ThemeManager themeManager;
@@ -38,9 +39,7 @@ class MeasurementRow extends StatelessWidget {
   final TextStyle fullUnitStyle;
   final bool expandable;
   final bool simplerUi;
-
-  static const double _halfWidthNonExpandable = 48.0;
-  static const double _halfWidthExpandable = 48.0;
+  final double halfWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +70,7 @@ class MeasurementRow extends StatelessWidget {
       // split layout
       rowChildren.addAll([
         SizedBox(
-          width: expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+          width: halfWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -88,7 +87,7 @@ class MeasurementRow extends StatelessWidget {
           ],
         ),
         SizedBox(
-          width: expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
+          width: halfWidth,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,

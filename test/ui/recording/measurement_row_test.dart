@@ -139,4 +139,39 @@ void main() {
     final unitText = tester.widget<Text>(find.text('bpm'));
     expect(unitText.style?.color, Colors.red);
   });
+
+  testWidgets('respects custom halfWidth in split layout', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: MeasurementRow(
+            themeManager: mockThemeManager,
+            layout: MeasurementRowLayout.split,
+            icon: Icons.speed,
+            iconSize: 24,
+            value: '25',
+            unit: 'km',
+            statistic: '20',
+            measurementStyle: const TextStyle(fontSize: 20),
+            unitStyle: const TextStyle(fontSize: 10),
+            fullUnitStyle: const TextStyle(fontSize: 12),
+            expandable: true,
+            halfWidth: 100.0,
+          ),
+        ),
+      ),
+    );
+
+    // Find SizedBoxes with width 100.0
+    // We expect 2 SizedBoxes with width 100.0 (one for value, one for statistic)
+    final SizedBox valueBox = tester.widget(
+      find.ancestor(of: find.text('25'), matching: find.byType(SizedBox)),
+    );
+    expect(valueBox.width, 100.0);
+
+    final SizedBox statisticBox = tester.widget(
+      find.ancestor(of: find.text('20'), matching: find.byType(SizedBox)),
+    );
+    expect(statisticBox.width, 100.0);
+  });
 }
