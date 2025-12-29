@@ -70,7 +70,7 @@ import 'parts/legend_dialog.dart';
 import 'parts/scan_result.dart';
 import 'parts/sport_picker.dart';
 import 'preferences/preferences_hub.dart';
-import 'recording.dart';
+import 'recording/recording_screen.dart';
 
 class FindDevicesScreen extends StatefulWidget {
   const FindDevicesScreen({super.key});

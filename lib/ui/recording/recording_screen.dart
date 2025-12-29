@@ -19,78 +19,79 @@ import 'package:syncfusion_flutter_charts/charts.dart' as charts;
 import 'package:tuple/tuple.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../devices/bluetooth_device_ex.dart';
-import '../devices/device_descriptors/device_descriptor.dart';
-import '../devices/device_descriptors/kayak_first_descriptor.dart';
-import '../devices/device_fourcc.dart';
-import '../devices/gadgets/fitness_equipment.dart';
-import '../devices/gadgets/heart_rate_monitor.dart';
-import '../export/export_target.dart';
-import '../export/fit/fit_export.dart';
-import '../persistence/activity.dart';
-import '../persistence/db_utils.dart';
-import '../persistence/record.dart';
-import '../persistence/workout_summary.dart';
-import '../preferences/app_debug_mode.dart';
-import '../preferences/calculate_gps.dart';
-import '../preferences/data_stream_gap_sound_effect.dart';
-import '../preferences/distance_resolution.dart';
-import '../preferences/heart_rate_monitor_workout.dart';
-import '../preferences/graph_view_duration.dart';
-import '../preferences/instant_export.dart';
-import '../preferences/instant_measurement_start.dart';
-import '../preferences/instant_upload.dart';
-import '../preferences/lap_counter.dart';
-import '../preferences/last_equipment_id.dart';
-import '../preferences/leaderboard_and_rank.dart';
-import '../preferences/log_level.dart';
-import '../preferences/measurement_font_size_adjust.dart';
-import '../preferences/measurement_sink_address.dart';
-import '../preferences/measurement_ui_state.dart';
-import '../preferences/metric_spec.dart';
-import '../preferences/palette_spec.dart';
-import '../preferences/show_pacer.dart';
-import '../preferences/show_resistance_level.dart';
-import '../preferences/show_strokes_strides_revs.dart';
-import '../preferences/simpler_ui.dart';
-import '../preferences/sound_effects.dart';
-import '../preferences/speed_spec.dart';
-import '../preferences/sport_spec.dart';
-import '../preferences/stage_mode.dart';
-import '../preferences/stationary_workout.dart';
-import '../preferences/target_heart_rate.dart';
-import '../preferences/time_display_mode.dart';
-import '../preferences/two_column_layout.dart';
-import '../preferences/unit_system.dart';
-import '../preferences/use_heart_rate_based_calorie_counting.dart';
-import '../preferences/workout_mode.dart';
-import '../track/calculator.dart';
-import '../track/constants.dart';
-import '../track/track_descriptor.dart';
-import '../track/track_painter.dart';
-import '../utils/bluetooth.dart';
-import '../utils/constants.dart';
-import '../utils/display.dart';
-import '../utils/logging.dart';
-import '../utils/preferences.dart';
-import '../utils/sound.dart';
-import '../utils/statistics_accumulator.dart';
-import '../utils/target_heart_rate.dart';
-import '../utils/theme_manager.dart';
-import '../utils/time_zone.dart';
-import 'activities.dart';
-import 'models/display_record.dart';
-import 'models/progress_state.dart';
-import 'models/row_configuration.dart';
-import 'parts/battery_status.dart';
-import 'parts/heart_rate_monitor_pairing.dart';
-import 'parts/kayak_first.dart';
-import 'parts/legend_dialog.dart';
-import 'parts/pick_directory.dart';
-import 'parts/pre_measurement_progress.dart';
-import 'parts/spin_down.dart';
-import 'parts/three_choices.dart';
-import 'parts/upload_portal_picker.dart';
+import '../../devices/bluetooth_device_ex.dart';
+import '../../devices/device_descriptors/device_descriptor.dart';
+import '../../devices/device_descriptors/kayak_first_descriptor.dart';
+import '../../devices/device_fourcc.dart';
+import '../../devices/gadgets/fitness_equipment.dart';
+import '../../devices/gadgets/heart_rate_monitor.dart';
+import '../../export/export_target.dart';
+import '../../export/fit/fit_export.dart';
+import '../../persistence/activity.dart';
+import '../../persistence/db_utils.dart';
+import '../../persistence/record.dart';
+import '../../persistence/workout_summary.dart';
+import '../../preferences/app_debug_mode.dart';
+import '../../preferences/calculate_gps.dart';
+import '../../preferences/data_stream_gap_sound_effect.dart';
+import '../../preferences/distance_resolution.dart';
+import '../../preferences/heart_rate_monitor_workout.dart';
+import '../../preferences/graph_view_duration.dart';
+import '../../preferences/instant_export.dart';
+import '../../preferences/instant_measurement_start.dart';
+import '../../preferences/instant_upload.dart';
+import '../../preferences/lap_counter.dart';
+import '../../preferences/last_equipment_id.dart';
+import '../../preferences/leaderboard_and_rank.dart';
+import '../../preferences/log_level.dart';
+import '../../preferences/measurement_font_size_adjust.dart';
+import '../../preferences/measurement_sink_address.dart';
+import '../../preferences/measurement_ui_state.dart';
+import '../../preferences/metric_spec.dart';
+import '../../preferences/palette_spec.dart';
+import '../../preferences/show_pacer.dart';
+import '../../preferences/show_resistance_level.dart';
+import '../../preferences/show_strokes_strides_revs.dart';
+import '../../preferences/simpler_ui.dart';
+import '../../preferences/sound_effects.dart';
+import '../../preferences/speed_spec.dart';
+import '../../preferences/sport_spec.dart';
+import '../../preferences/stage_mode.dart';
+import '../../preferences/stationary_workout.dart';
+import '../../preferences/target_heart_rate.dart';
+import '../../preferences/time_display_mode.dart';
+import '../../preferences/two_column_layout.dart';
+import '../../preferences/unit_system.dart';
+import '../../preferences/use_heart_rate_based_calorie_counting.dart';
+import '../../preferences/workout_mode.dart';
+import '../../track/calculator.dart';
+import '../../track/constants.dart';
+import '../../track/track_descriptor.dart';
+import '../../track/track_painter.dart';
+import '../../utils/bluetooth.dart';
+import '../../utils/constants.dart';
+import '../../utils/display.dart';
+import '../../utils/logging.dart';
+import '../../utils/preferences.dart';
+import '../../utils/sound.dart';
+import '../../utils/statistics_accumulator.dart';
+import '../../utils/target_heart_rate.dart';
+import '../../utils/theme_manager.dart';
+import '../../utils/time_zone.dart';
+import '../activities.dart';
+import '../models/display_record.dart';
+import '../models/progress_state.dart';
+import '../models/row_configuration.dart';
+import '../parts/battery_status.dart';
+import '../parts/heart_rate_monitor_pairing.dart';
+import '../parts/kayak_first.dart';
+import '../parts/legend_dialog.dart';
+import '../parts/pick_directory.dart';
+import '../parts/pre_measurement_progress.dart';
+import '../parts/spin_down.dart';
+import '../parts/three_choices.dart';
+import '../parts/upload_portal_picker.dart';
+import 'measurement_row.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -2330,76 +2331,29 @@ class RecordingState extends State<RecordingScreen> {
         measurementStyle = measurementStyle.apply(color: rowColor);
       }
 
-      final List<Widget> rowChildren = [];
-      Widget icon;
-      if (rowColor != null) {
-        icon = Icon(entry.value.icon, color: rowColor, size: _sizeDefault);
-      } else {
-        icon = _themeManager.getBlueIcon(entry.value.icon, _sizeDefault);
-      }
-
-      TextStyle unitStyle = _unitStyle;
-      TextStyle fullUnitStyle = _fullUnitStyle;
-      if (rowColor != null) {
-        unitStyle = unitStyle.apply(color: rowColor);
-        fullUnitStyle = fullUnitStyle.apply(color: rowColor);
-      }
-
+      MeasurementRowLayout layout = MeasurementRowLayout.split;
       if (_stationaryWorkout && [_power0Index, _speed0Index, _distance0Index].contains(entry.key)) {
-        rowChildren.add(const Divider());
+        layout = MeasurementRowLayout.divider;
       } else if ([_calories0Index, _distance0Index].contains(entry.key) ||
           _onStageStatisticsType == onStageStatisticsTypeNone) {
-        rowChildren.addAll([
-          icon,
-          const Spacer(),
-          Text(_values[entry.key], style: measurementStyle),
-          SizedBox(
-            width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
-            child: Center(child: Text(entry.value.unit, maxLines: 2, style: fullUnitStyle)),
-          ),
-        ]);
-      } else {
-        Widget smallIcon;
-        if (rowColor != null) {
-          smallIcon = Icon(entry.value.icon, color: rowColor, size: _sizeDefault / 2);
-        } else {
-          smallIcon = _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2);
-        }
-
-        rowChildren.addAll([
-          SizedBox(
-            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text(_values[entry.key], style: measurementStyle)],
-            ),
-          ),
-          Column(
-            children: [
-              smallIcon,
-              SizedBox(
-                width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
-                child: Center(child: Text(entry.value.unit, maxLines: 2, style: unitStyle)),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text(_statistics[entry.key], style: measurementStyle)],
-            ),
-          ),
-        ]);
+        layout = MeasurementRowLayout.standard;
       }
 
       rows.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: rowChildren,
+        MeasurementRow(
+          themeManager: _themeManager,
+          layout: layout,
+          icon: entry.value.icon,
+          iconColor: rowColor,
+          iconSize: _sizeDefault,
+          value: _values[entry.key],
+          unit: entry.value.unit,
+          statistic: _statistics[entry.key],
+          measurementStyle: measurementStyle,
+          unitStyle: _unitStyle,
+          fullUnitStyle: _fullUnitStyle,
+          expandable: entry.value.expandable,
+          simplerUi: _simplerUi,
         ),
       );
     }
