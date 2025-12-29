@@ -2308,41 +2308,64 @@ class RecordingState extends State<RecordingScreen> {
 
     for (var entry in _rowConfig.asMap().entries) {
       var measurementStyle = getMeasurementStyle(entry.key);
+      Color? rowColor;
 
       if (entry.key == _speed0Index &&
           !_stationaryWorkout &&
           (_leaderboardFeature || _zoneIndexes[_speedNIndex] != null)) {
-        speedTextStyle = measurementStyle.apply(
-          color: _getSpeedColor(_selfRank, background: false),
-        );
+        rowColor = _getSpeedColor(_selfRank, background: false);
+        speedTextStyle = measurementStyle.apply(color: rowColor);
         measurementStyle = speedTextStyle;
       }
 
       if (entry.key == _hr0Index &&
           (_targetHrMode != targetHeartRateModeNone || _zoneIndexes[_hrNIndex] != null)) {
         measurementStyle = targetHrTextStyle;
+        rowColor = measurementStyle.color;
       }
 
       if ((entry.key == _power0Index && !_stationaryWorkout || entry.key == _cadence0Index) &&
           _zoneIndexes[entry.key - 1] != null) {
-        measurementStyle = measurementStyle.apply(color: _getZoneColor(entry.key - 1, false));
+        rowColor = _getZoneColor(entry.key - 1, false);
+        measurementStyle = measurementStyle.apply(color: rowColor);
       }
 
       final List<Widget> rowChildren = [];
+      Widget icon;
+      if (rowColor != null) {
+        icon = Icon(entry.value.icon, color: rowColor, size: _sizeDefault);
+      } else {
+        icon = _themeManager.getBlueIcon(entry.value.icon, _sizeDefault);
+      }
+
+      TextStyle unitStyle = _unitStyle;
+      TextStyle fullUnitStyle = _fullUnitStyle;
+      if (rowColor != null) {
+        unitStyle = unitStyle.apply(color: rowColor);
+        fullUnitStyle = fullUnitStyle.apply(color: rowColor);
+      }
+
       if (_stationaryWorkout && [_power0Index, _speed0Index, _distance0Index].contains(entry.key)) {
         rowChildren.add(const Divider());
       } else if ([_calories0Index, _distance0Index].contains(entry.key) ||
           _onStageStatisticsType == onStageStatisticsTypeNone) {
         rowChildren.addAll([
-          _themeManager.getBlueIcon(entry.value.icon, _sizeDefault),
+          icon,
           const Spacer(),
           Text(_values[entry.key], style: measurementStyle),
           SizedBox(
             width: _sizeDefault * (entry.value.expandable ? 1.3 : 2),
-            child: Center(child: Text(entry.value.unit, maxLines: 2, style: _fullUnitStyle)),
+            child: Center(child: Text(entry.value.unit, maxLines: 2, style: fullUnitStyle)),
           ),
         ]);
       } else {
+        Widget smallIcon;
+        if (rowColor != null) {
+          smallIcon = Icon(entry.value.icon, color: rowColor, size: _sizeDefault / 2);
+        } else {
+          smallIcon = _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2);
+        }
+
         rowChildren.addAll([
           SizedBox(
             width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
@@ -2354,10 +2377,10 @@ class RecordingState extends State<RecordingScreen> {
           ),
           Column(
             children: [
-              _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
+              smallIcon,
               SizedBox(
                 width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
-                child: Center(child: Text(entry.value.unit, maxLines: 2, style: _unitStyle)),
+                child: Center(child: Text(entry.value.unit, maxLines: 2, style: unitStyle)),
               ),
             ],
           ),
