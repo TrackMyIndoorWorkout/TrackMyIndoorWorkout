@@ -93,6 +93,7 @@ import '../parts/three_choices.dart';
 import '../parts/upload_portal_picker.dart';
 import 'measurement_row.dart';
 import 'header_row.dart';
+import 'recording_chart.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -2375,34 +2376,14 @@ class RecordingState extends State<RecordingScreen> {
           SizedBox(
             width: measuredSize.width,
             height: getExpandedHeight(_extraExpandedHeights[_resistanceIndex], measuredSize),
-            child: charts.SfCartesianChart(
-              primaryXAxis: charts.DateTimeAxis(
-                labelStyle: _chartLabelStyle,
-                axisLine: charts.AxisLine(color: _chartTextColor),
-                majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-                minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-                majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-                autoScrollingDelta: _graphViewDuration > 0
-                    ? (_graphViewDuration * 60).toInt()
-                    : null,
-                autoScrollingDeltaType: charts.DateTimeIntervalType.seconds,
-                autoScrollingMode: charts.AutoScrollingMode.end,
-              ),
-              primaryYAxis: charts.NumericAxis(
-                labelStyle: _chartLabelStyle,
-                axisLine: charts.AxisLine(color: _chartTextColor),
-                majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-                minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-                majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-              ),
-              margin: const EdgeInsets.all(0),
+            child: RecordingChart(
+              chartLabelStyle: _chartLabelStyle,
+              chartTextColor: _chartTextColor,
+              graphViewDuration: _graphViewDuration,
               series: _resistanceChartData(),
-              onChartTouchInteractionDown: (arg) =>
+              onTouchDown: (arg) =>
                   _onChartTouchInteractionDown(_resistanceIndex, arg.position, true),
-              onChartTouchInteractionUp: (arg) =>
-                  _onChartTouchInteractionUp(_resistanceIndex, arg.position, true),
+              onTouchUp: (arg) => _onChartTouchInteractionUp(_resistanceIndex, arg.position, true),
             ),
           ),
         );
@@ -2417,35 +2398,16 @@ class RecordingState extends State<RecordingScreen> {
         Widget extra = SizedBox(
           width: measuredSize.width,
           height: getExpandedHeight(_expandedHeights[entry.key], measuredSize),
-          child: charts.SfCartesianChart(
-            primaryXAxis: charts.DateTimeAxis(
-              labelStyle: _chartLabelStyle,
-              axisLine: charts.AxisLine(color: _chartTextColor),
-              majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-              minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-              majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-              minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-              autoScrollingDelta: _graphViewDuration > 0 ? (_graphViewDuration * 60).toInt() : null,
-              autoScrollingDeltaType: charts.DateTimeIntervalType.seconds,
-              autoScrollingMode: charts.AutoScrollingMode.end,
-            ),
-            primaryYAxis: charts.NumericAxis(
-              plotBands: _hasDataForMetric(entry.value.metric)
-                  ? _safeGetPlotBands(entry.value.plotBands)
-                  : <charts.PlotBand>[],
-              labelStyle: _chartLabelStyle,
-              axisLine: charts.AxisLine(color: _chartTextColor),
-              majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-              minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-              majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-              minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-            ),
-            margin: const EdgeInsets.all(0),
+          child: RecordingChart(
+            chartLabelStyle: _chartLabelStyle,
+            chartTextColor: _chartTextColor,
+            graphViewDuration: _graphViewDuration,
             series: _metricToDataFn[entry.value.metric]!(),
-            onChartTouchInteractionDown: (arg) =>
-                _onChartTouchInteractionDown(entry.key, arg.position, false),
-            onChartTouchInteractionUp: (arg) =>
-                _onChartTouchInteractionUp(entry.key, arg.position, false),
+            plotBands: _hasDataForMetric(entry.value.metric)
+                ? _safeGetPlotBands(entry.value.plotBands)
+                : <charts.PlotBand>[],
+            onTouchDown: (arg) => _onChartTouchInteractionDown(entry.key, arg.position, false),
+            onTouchUp: (arg) => _onChartTouchInteractionUp(entry.key, arg.position, false),
           ),
         );
 
