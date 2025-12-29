@@ -67,9 +67,9 @@ import '../../preferences/workout_mode.dart';
 import '../../track/calculator.dart';
 import '../../track/constants.dart';
 import '../../track/track_descriptor.dart';
-import '../../track/track_painter.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
+
 import '../../utils/display.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -94,6 +94,7 @@ import '../parts/upload_portal_picker.dart';
 import 'measurement_row.dart';
 import 'header_row.dart';
 import 'recording_chart.dart';
+import 'track_visualization.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -2477,13 +2478,10 @@ class RecordingState extends State<RecordingScreen> {
 
       if (_trackCalculator != null) {
         regularExtras.add(
-          CustomPaint(
-            painter: TrackPainter(calculator: _trackCalculator!),
-            child: SizedBox(
-              width: measuredSize.width,
-              height: measuredSize.width / 1.9,
-              child: Stack(children: markers),
-            ),
+          TrackVisualization(
+            calculator: _trackCalculator!,
+            markers: markers,
+            width: measuredSize.width,
           ),
         );
       }
