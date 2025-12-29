@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
-import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -56,6 +55,7 @@ import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
 import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
+import 'widgets/activities_fab_menu.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -367,6 +367,54 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     ]);
   }
 
+  Future<void> _onImport() async {
+    final formatPick = await Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: ImportFormatPickerBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      enableDrag: false,
+    );
+
+    if (formatPick == null) {
+      return;
+    }
+
+    await Get.to(() => ImportForm(migration: formatPick == "Migration"))?.whenComplete(
+      () => setState(() {
+        _editCount++;
+      }),
+    );
+  }
+
+  Future<void> _onDeviceUsages() async {
+    await Get.to(() => const DeviceUsagesScreen());
+  }
+
+  Future<void> _onPowerTunes() async {
+    await Get.to(() => const PowerTunesScreen());
+  }
+
+  Future<void> _onCalorieTunes() async {
+    await Get.to(() => const CalorieTunesScreen());
+  }
+
+  Future<void> _onLeaderboard() async {
+    Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: LeaderBoardTypeBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      enableDrag: false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
@@ -380,68 +428,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       _headerStyle = TextStyle(fontFamily: fontFamily, fontSize: _sizeDefault2);
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
-
-    List<Widget> floatingActionButtons = [
-      _themeManager.getTutorialFab(() => invokeLegendDialog()),
-      _themeManager.getAboutFab(),
-      _themeManager.getBlueFab(Icons.file_upload, () async {
-        final formatPick = await Get.bottomSheet(
-          const SafeArea(
-            child: Column(
-              children: [Expanded(child: Center(child: ImportFormatPickerBottomSheet()))],
-            ),
-          ),
-          isScrollControlled: true,
-          ignoreSafeArea: false,
-          enableDrag: false,
-        );
-
-        if (formatPick == null) {
-          return;
-        }
-
-        await Get.to(() => ImportForm(migration: formatPick == "Migration"))?.whenComplete(
-          () => setState(() {
-            _editCount++;
-          }),
-        );
-      }),
-      _themeManager.getBlueFab(Icons.collections_bookmark, () async {
-        await Get.to(() => const DeviceUsagesScreen());
-      }),
-      _themeManager.getBlueFab(Icons.bolt, () async {
-        await Get.to(() => const PowerTunesScreen());
-      }),
-      _themeManager.getBlueFab(Icons.whatshot, () async {
-        await Get.to(() => const CalorieTunesScreen());
-      }),
-    ];
-
-    if (_leaderboardFeature && DbUtils().hasLeaderboardData()) {
-      floatingActionButtons.add(
-        _themeManager.getBlueFab(Icons.leaderboard, () async {
-          Get.bottomSheet(
-            const SafeArea(
-              child: Column(
-                children: [Expanded(child: Center(child: LeaderBoardTypeBottomSheet()))],
-              ),
-            ),
-            isScrollControlled: true,
-            ignoreSafeArea: false,
-            enableDrag: false,
-          );
-        }),
-      );
-    }
-
-    final circularFabMenu = FabCircularMenuPlus(
-      fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-      fabOpenColor: _themeManager.getBlueColor(),
-      fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-      fabCloseColor: _themeManager.getBlueColor(),
-      ringColor: _themeManager.getBlueColorInverse(),
-      children: floatingActionButtons,
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -622,7 +608,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: circularFabMenu,
+      floatingActionButton: ActivitiesFabMenu(
+        themeManager: _themeManager,
+        leaderboardFeature: _leaderboardFeature,
+        hasLeaderboardData: DbUtils().hasLeaderboardData(),
+        onTutorial: () => invokeLegendDialog(),
+        onImport: _onImport,
+        onDeviceUsages: _onDeviceUsages,
+        onPowerTunes: _onPowerTunes,
+        onCalorieTunes: _onCalorieTunes,
+        onLeaderboard: _onLeaderboard,
+      ),
     );
   }
 }

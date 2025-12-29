@@ -94,6 +94,7 @@ import '../parts/upload_portal_picker.dart';
 import 'measurement_row.dart';
 import 'header_row.dart';
 import 'recording_chart.dart';
+import 'widgets/recording_fab_menu.dart';
 import 'track_visualization.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
@@ -2199,6 +2200,54 @@ class RecordingState extends State<RecordingScreen> {
     return height;
   }
 
+  void _onLock() {
+    _unlockButtonIndex = _rng.nextInt(_unlockChoices);
+    _fabKey.currentState?.close();
+    setState(() {
+      _isLocked = true;
+    });
+  }
+
+  void _handleOnStage() {
+    setState(() {
+      _onStage = !_onStage;
+      if (!_onStage) {
+        _statistics[_power0Index] = emptyMeasurement;
+        _statistics[_speed0Index] = emptyMeasurement;
+        _statistics[_cadence0Index] = emptyMeasurement;
+        _statistics[_hr0Index] = emptyMeasurement;
+
+        if (_showResistanceLevel) {
+          _optionalStatistics[_resistanceIndex] = emptyMeasurement;
+        }
+      }
+
+      _workoutStats.reset();
+    });
+  }
+
+  Future<void> _onHrmPairing() async {
+    await Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: HeartRateMonitorPairingBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      isDismissible: false,
+      enableDrag: false,
+    );
+    String hrmId = await _initializeHeartRateMonitor(true);
+    if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
+      _activity!.hrmId = hrmId;
+      _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+      _database.writeTxnSync(() {
+        _database.activitys.putSync(_activity!);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final measuredSize = Get.mediaQuery.size;
@@ -2873,17 +2922,22 @@ class RecordingState extends State<RecordingScreen> {
             ),
             body: body,
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: FabCircularMenuPlus(
-              key: _fabKey,
-              fabOpenIcon: Icon(
-                _isLocked ? Icons.lock : Icons.menu,
-                color: _themeManager.getAntagonistColor(),
-              ),
-              fabOpenColor: _themeManager.getBlueColor(),
-              fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-              fabCloseColor: _themeManager.getBlueColor(),
-              ringColor: _themeManager.getBlueColorInverse(),
-              children: menuButtons,
+            floatingActionButton: RecordingFabMenu(
+              themeManager: _themeManager,
+              fabKey: _fabKey,
+              isLocked: _isLocked,
+              measuring: _measuring,
+              busy: _busy,
+              circuitWorkout: _circuitWorkout,
+              heartRateMonitorWorkout: _heartRateMonitorWorkout,
+              fitnessEquipment: _fitnessEquipment,
+              instantOnStage: _instantOnStage,
+              onStageStatisticsType: _onStageStatisticsType,
+              onStartStop: startStopAction,
+              onUpload: () => _activityUpload(false),
+              onLock: _onLock,
+              onStage: _handleOnStage,
+              onHrmPairing: _onHrmPairing,
             ),
           ),
         ),
