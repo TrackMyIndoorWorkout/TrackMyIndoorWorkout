@@ -96,6 +96,8 @@ import 'header_row.dart';
 import 'recording_chart.dart';
 import 'widgets/recording_fab_menu.dart';
 import 'track_visualization.dart';
+import '../../devices/gadgets/cadence_monitor_internal.dart';
+import '../parts/cadence_monitor_pairing.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -153,6 +155,7 @@ class RecordingState extends State<RecordingScreen> {
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
+  DeviceInternalMotion? _internalMotion;
   TrackCalculator? _trackCalculator;
   PaletteSpec? _paletteSpec;
   double _trackLength = 0; // Just default
@@ -268,6 +271,8 @@ class RecordingState extends State<RecordingScreen> {
   Offset _chartTouchInteractionPosition = const Offset(0, 0);
   int _chartTouchInteractionIndex = -1;
   bool _chartTouchInteractionExtra = false;
+  int? _latestInternalCadence;
+  double? _latestInternalPreciseCadence;
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   int _lapCount = 0;
@@ -347,6 +352,15 @@ class RecordingState extends State<RecordingScreen> {
   Future<void> _recordHandlerFunction(RecordWithSport record) async {
     if (!_measuring || !(_fitnessEquipment?.measuring ?? false)) {
       return;
+    }
+
+    if (_internalMotion != null && _latestInternalCadence != null && _latestInternalCadence! > 0) {
+      // Overwrite or supplement cadence
+      // If we pair an internal sensor, we likely want to use it.
+      record.cadence = _latestInternalCadence;
+      if (_latestInternalPreciseCadence != null) {
+        record.preciseCadence = _latestInternalPreciseCadence;
+      }
     }
 
     _sinkSocket?.add(record.binarySerialize());
@@ -782,6 +796,45 @@ class RecordingState extends State<RecordingScreen> {
     return "";
   }
 
+  Future<void> _initializeInternalMotion() async {
+    _internalMotion = Get.isRegistered<DeviceInternalMotion>()
+        ? Get.find<DeviceInternalMotion>()
+        : null;
+    if (_internalMotion != null) {
+      await _internalMotion!.connect(); // Should be no-op if already connected
+      await _internalMotion!.discover();
+      await _internalMotion!.attach();
+
+      _internalMotion!.pumpData((record) {
+        if (mounted) {
+          setState(() {
+            _latestInternalCadence = record.cadence;
+            _latestInternalPreciseCadence = record.preciseCadence;
+
+            // If the main equipment is not measuring or providing updates,
+            // we might want to trigger a UI update here?
+            // But _recordHandlerFunction handles the main UI update.
+            // Assuming FitnessEquipment is active.
+          });
+        }
+      });
+    }
+  }
+
+  Future<void> _onCadencePairing() async {
+    await Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: CadenceMonitorPairingBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      enableDrag: false,
+    );
+    await _initializeInternalMotion();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1150,6 +1203,7 @@ class RecordingState extends State<RecordingScreen> {
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
     _initializeHeartRateMonitor(false);
+    _initializeInternalMotion();
     _connectOnDemand();
     _isLocked = false;
     _unlockButtonIndex = 0;
@@ -1297,6 +1351,10 @@ class RecordingState extends State<RecordingScreen> {
         if (_instantExport) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             await _activityExport();
+            await _initializeHeartRateMonitor(true);
+            await _initializeInternalMotion();
+            // Only do the connection if we are not expecting an instant start,
+            // because in that case the startMeasurement will do it.
           });
         }
       }
@@ -2938,6 +2996,7 @@ class RecordingState extends State<RecordingScreen> {
               onLock: _onLock,
               onStage: _handleOnStage,
               onHrmPairing: _onHrmPairing,
+              onCadencePairing: _onCadencePairing,
             ),
           ),
         ),

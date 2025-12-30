@@ -29,6 +29,7 @@ class RecordingFabMenu extends StatelessWidget {
     required this.onLock,
     required this.onStage,
     required this.onHrmPairing,
+    required this.onCadencePairing,
   });
 
   final GlobalKey<FabCircularMenuPlusState> fabKey;
@@ -47,6 +48,7 @@ class RecordingFabMenu extends StatelessWidget {
   final VoidCallback onLock;
   final VoidCallback onStage;
   final Future<void> Function() onHrmPairing;
+  final Future<void> Function() onCadencePairing;
 
   void _showBatteryStatus() {
     Get.bottomSheet(
@@ -135,6 +137,13 @@ class RecordingFabMenu extends StatelessWidget {
         }),
       );
     }
+
+    // Always allow adding internal cadence sensor
+    menuButtons.add(
+      themeManager.getBlueFab(Icons.sensors, () async {
+        await onCadencePairing();
+      }),
+    );
 
     menuButtons.add(
       themeManager.getBlueFab(

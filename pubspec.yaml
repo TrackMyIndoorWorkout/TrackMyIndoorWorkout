@@ -54,6 +54,7 @@ dependencies:
   rxdart: ^0.28.0
   receive_sharing_intent: ^1.8.1
   share_plus: ^12.0.1
+  sensors_plus: ^6.1.0
   string_validator: ^1.2.0
   syncfusion_flutter_charts: ^32.1.20
   timezone: ^0.10.1
