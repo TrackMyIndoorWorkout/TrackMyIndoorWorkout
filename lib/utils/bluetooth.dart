@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
+import 'bluetooth_adapter.dart';
 import 'delays.dart';
 import 'logging.dart';
 
 Future<bool> isBluetoothOn() async {
-  var blueState = FlutterBluePlus.adapterStateNow;
+  final adapter = Get.isRegistered<BluetoothAdapter>()
+      ? Get.find<BluetoothAdapter>()
+      : BluetoothAdapter();
+
+  var blueState = adapter.adapterStateNow;
   if (blueState == BluetoothAdapterState.unknown) {
-    blueState = await FlutterBluePlus.adapterState.first.timeout(
+    blueState = await adapter.adapterState.first.timeout(
       const Duration(milliseconds: dataMapExpiry),
       onTimeout: () => BluetoothAdapterState.off,
     );
@@ -23,7 +28,11 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
       return true;
     }
 
-    if (!await FlutterBluePlus.isSupported) {
+    final adapter = Get.isRegistered<BluetoothAdapter>()
+        ? Get.find<BluetoothAdapter>()
+        : BluetoothAdapter();
+
+    if (!await adapter.isSupported) {
       if (!silent) {
         await Get.defaultDialog(
           title: "Bluetooth Error",
@@ -48,7 +57,10 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
       }
 
       if (!(await isBluetoothOn())) {
-        await FlutterBluePlus.turnOn();
+        final adapter = Get.isRegistered<BluetoothAdapter>()
+            ? Get.find<BluetoothAdapter>()
+            : BluetoothAdapter();
+        await adapter.turnOn();
       }
     }
 

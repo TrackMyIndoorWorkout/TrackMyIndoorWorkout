@@ -20,6 +20,16 @@ Located in `lib/utils/cadence_processing.dart`.
 *   **Analysis:** Performs autocorrelation on a sliding window (default 4 seconds at 50Hz) to find the dominant periodic component.
 *   **Constraints:** Filters results to a realistic cadence range (30-220 RPM).
 
+#### Standalone Usage (Cadence Only Workout)
+If you want to perform a workout using **only** the Internal Cadence Sensor (without a Heart Rate Monitor or other equipment):
+1.  Ensure **Stationary Workout** (Cadence Only) is enabled in Settings.
+2.  Pair the Internal Cadence Sensor as described above.
+3.  Tap the **Internal Motion Sensor** tile (Sensors icon) on the main screen to start the workout.
+    *   *Note: This mode is useful for tracking cadence (RPM/SPM) on non-smart equipment.*
+
+## Usage with Heart Rate Monitor
+When using an HRM (Internal or External) as the primary device:
+
 ### 2. Device Integration (`DeviceInternalMotion`)
 Located in `lib/devices/gadgets/cadence_monitor_internal.dart`.
 *   Extends `ComplexSensor` to mimic the lifecycle of external Bluetooth devices (Connect, Discover, Pump Data).

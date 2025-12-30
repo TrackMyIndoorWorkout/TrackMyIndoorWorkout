@@ -25,7 +25,7 @@ class HeartRateSensorDescriptor extends DeviceDescriptor {
   }) : super(
          fourCC: heartRateMonitorFourCC,
          sport: ActivityType.ride,
-         isMultiSport: false,
+         isMultiSport: true,
          deviceCategory: DeviceCategory.primarySensor,
          dataServiceId: heartRateServiceUuid,
          dataCharacteristicId: heartRateMeasurementUuid,

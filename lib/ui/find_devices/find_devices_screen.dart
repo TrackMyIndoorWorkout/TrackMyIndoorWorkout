@@ -89,6 +89,15 @@ class FindDevicesScreen extends StatelessWidget {
                         captionStyle: captionStyle,
                         subtitleStyle: subtitleStyle,
                       ),
+                    if (controller.internalMotion != null)
+                      ConnectedDeviceTile(
+                        device: controller.internalMotion?.device,
+                        icon: Icons.sensors,
+                        onTap: controller.onConnectedMotionTap,
+                        themeManager: controller.themeManager,
+                        captionStyle: captionStyle,
+                        subtitleStyle: subtitleStyle,
+                      ),
                   ],
                 ),
                 const Divider(),

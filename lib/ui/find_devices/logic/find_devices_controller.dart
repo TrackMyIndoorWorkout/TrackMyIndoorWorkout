@@ -20,7 +20,9 @@ import '../../../devices/device_factory.dart';
 import '../../../devices/device_fourcc.dart';
 import '../../../devices/gadgets/complex_sensor.dart';
 import '../../../devices/gadgets/fitness_equipment.dart';
+import '../../../devices/gadgets/cadence_monitor_internal.dart';
 import '../../../devices/gadgets/heart_rate_monitor.dart';
+import '../../../devices/gadgets/heart_rate_monitor_internal.dart';
 import '../../../devices/gatt/appearance.dart';
 import '../../../devices/gatt/concept2.dart';
 import '../../../devices/gatt/csc.dart';
@@ -56,6 +58,7 @@ import '../../../utils/logging.dart';
 import '../../../utils/machine_type.dart';
 import '../../../utils/scan_result_ex.dart';
 import '../../../utils/theme_manager.dart';
+import '../../../utils/bluetooth_adapter.dart';
 import '../../about.dart';
 import '../../models/advertisement_cache.dart';
 import '../../parts/boolean_question.dart';
@@ -86,6 +89,7 @@ class FindDevicesController extends GetxController {
   bool filterDevices = deviceFilteringDefault;
   HeartRateMonitor? heartRateMonitor;
   FitnessEquipment? fitnessEquipment;
+  DeviceInternalMotion? internalMotion;
 
   // Media / Layout
   double mediaSizeMin = 0;
@@ -97,15 +101,36 @@ class FindDevicesController extends GetxController {
   bool privacyStatementViews = false;
 
   final AdvertisementCache advertisementCache = Get.find<AdvertisementCache>();
+  late final DbUtils _dbUtils;
+  DbUtils get dbUtils => _dbUtils;
+
+  late final BluetoothAdapter _bluetoothAdapter;
+  BluetoothAdapter get bluetoothAdapter => _bluetoothAdapter;
   final ThemeManager themeManager = Get.find<ThemeManager>();
 
   @override
   void onInit() {
+    _dbUtils = Get.isRegistered<DbUtils>() ? Get.find<DbUtils>() : DbUtils();
+    _bluetoothAdapter = Get.isRegistered<BluetoothAdapter>()
+        ? Get.find<BluetoothAdapter>()
+        : BluetoothAdapter();
+
     super.onInit();
     initializeDateFormatting();
 
-    final addressNames = Get.find<AddressNames>();
-    DbUtils().getAddressNameDictionary(addressNames);
+    try {
+      final addressNames = Get.find<AddressNames>();
+      dbUtils.getAddressNameDictionary(addressNames);
+    } on Exception catch (e, stack) {
+      Logging().logException(
+        logLevel,
+        tag,
+        "onInit",
+        "DbUtils().getAddressNameDictionary",
+        e,
+        stack,
+      );
+    }
 
     _readPreferencesValues();
     isScanning = false;
@@ -116,6 +141,9 @@ class FindDevicesController extends GetxController {
 
     heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     fitnessEquipment = Get.isRegistered<FitnessEquipment>() ? Get.find<FitnessEquipment>() : null;
+    internalMotion = Get.isRegistered<DeviceInternalMotion>()
+        ? Get.find<DeviceInternalMotion>()
+        : null;
 
     _checkWelcomeAndStart();
   }
@@ -126,10 +154,12 @@ class FindDevicesController extends GetxController {
     _scanStreamSubscription?.cancel();
 
     if (isScanning) {
+      isScanning = false;
+      update();
       try {
-        FlutterBluePlus.stopScan();
+        bluetoothAdapter.stopScan();
       } on Exception catch (e, stack) {
-        Logging().logException(logLevel, tag, "dispose", "FlutterBluePlus.stopScan", e, stack);
+        Logging().logException(logLevel, tag, "onConnectedHrmTap", "stopScan", e, stack);
       }
     }
 
@@ -211,7 +241,7 @@ class FindDevicesController extends GetxController {
   }
 
   Stream<List<ScanResult>> get _throttledScanStream async* {
-    await for (var scanResults in FlutterBluePlus.scanResults.throttleTime(
+    await for (var scanResults in bluetoothAdapter.scanResults.throttleTime(
       const Duration(milliseconds: uiIntermittentDelay),
       leading: false,
       trailing: true,
@@ -260,7 +290,7 @@ class FindDevicesController extends GetxController {
       return;
     }
 
-    if (!await bluetoothCheck(silent, logLevel)) {
+    if (!await bluetoothAdapter.checkBluetooth(silent, logLevel)) {
       Logging().log(logLevel, logLevelInfo, tag, "_startScan", "bluetooth check failed");
       return;
     }
@@ -284,7 +314,7 @@ class FindDevicesController extends GetxController {
     }
 
     try {
-      await FlutterBluePlus.startScan(timeout: Duration(seconds: _scanDuration));
+      await bluetoothAdapter.startScan(timeout: Duration(seconds: _scanDuration));
 
       isScanning = false;
       update();
@@ -378,6 +408,70 @@ class FindDevicesController extends GetxController {
     bool manual,
   ) async {
     Logging().logVersion(Get.find<PackageInfo>());
+
+    if (device.remoteId.str == "INTERNAL_HRM") {
+      goingToRecording = true;
+      update();
+      _scanStreamSubscription?.pause();
+      _autoConnectLatch = false;
+
+      final descriptor = DeviceFactory.getGenericHeartRateMonitor();
+      if (heartRateMonitor is DeviceInternalHeartRate) {
+        descriptor.sport = (heartRateMonitor as DeviceInternalHeartRate).sport;
+      }
+
+      await Get.to(
+        () => RecordingScreen(
+          device: device,
+          descriptor: descriptor,
+          initialState: initialState,
+          size: Get.mediaQuery.size,
+          sport: descriptor.sport,
+        ),
+      );
+
+      goingToRecording = false;
+      update();
+      _scanStreamSubscription?.resume();
+
+      return true;
+    }
+
+    if (device.remoteId.str == "INTERNAL_MOTION") {
+      goingToRecording = true;
+      update();
+      _scanStreamSubscription?.pause();
+      _autoConnectLatch = false;
+
+      final motion =
+          internalMotion ??
+          (Get.isRegistered<DeviceInternalMotion>() ? Get.find<DeviceInternalMotion>() : null);
+
+      var descriptor = DeviceFactory.genericDescriptorForSport(
+        motion?.targetSport ?? ActivityType.ride,
+      );
+      if (motion != null) {
+        descriptor.sport = motion.targetSport;
+      }
+      // Force primary so UI treats it seriously if it's the only one
+      descriptor.deviceCategory = DeviceCategory.primarySensor;
+
+      await Get.to(
+        () => RecordingScreen(
+          device: device,
+          descriptor: descriptor,
+          initialState: initialState,
+          size: Get.mediaQuery.size,
+          sport: descriptor.sport,
+        ),
+      );
+
+      goingToRecording = false;
+      update();
+      _scanStreamSubscription?.resume();
+
+      return true;
+    }
 
     if (!advertisementCache.hasEntry(device.remoteId.str)) {
       return false;
@@ -836,7 +930,7 @@ class FindDevicesController extends GetxController {
       await startScan(false);
     } else {
       if (isScanning) {
-        await FlutterBluePlus.stopScan();
+        await bluetoothAdapter.stopScan();
         await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
         // isScanning is updated by startScan's awaited future completing?
         // To be safe:
@@ -852,7 +946,7 @@ class FindDevicesController extends GetxController {
     }
 
     if (isScanning) {
-      await FlutterBluePlus.stopScan();
+      await bluetoothAdapter.stopScan();
       await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
       isScanning = false;
       update();
@@ -963,7 +1057,9 @@ class FindDevicesController extends GetxController {
 
       if (autoConnect && _lastEquipmentIds.contains(r.device.remoteId.str)) {
         if (isScanning) {
-          FlutterBluePlus.stopScan().whenComplete(() async {
+          bluetoothAdapter.stopScan().whenComplete(() async {
+            isScanning = false;
+            update();
             await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
             isScanning = false;
             update();
@@ -975,7 +1071,7 @@ class FindDevicesController extends GetxController {
 
   Future<void> onConnectedHrmTap() async {
     final hrmConnectionState = await heartRateMonitor?.device?.connectionState.first;
-    if (heartRateMonitorWorkout) {
+    if (heartRateMonitorWorkout || fitnessEquipment == null) {
       if (heartRateMonitor != null &&
           heartRateMonitor!.device != null &&
           hrmConnectionState != null) {
@@ -1003,13 +1099,27 @@ class FindDevicesController extends GetxController {
     }
   }
 
+  Future<void> onConnectedMotionTap() async {
+    internalMotion = Get.isRegistered<DeviceInternalMotion>()
+        ? Get.find<DeviceInternalMotion>()
+        : null;
+    if (internalMotion != null) {
+      if (_stationaryWorkout) {
+        await goToRecording(internalMotion!.device!, BluetoothConnectionState.connected, true);
+      } else {
+        Get.snackbar("Info", "Internal Motion Sensor Connected");
+      }
+    }
+    update();
+  }
+
   Future<void> onConnectedEquipmentTap() async {
     final connectionState =
         await fitnessEquipment?.device?.connectionState.first ??
         BluetoothConnectionState.disconnected;
     if (connectionState == BluetoothConnectionState.connected) {
       if (isScanning) {
-        await FlutterBluePlus.stopScan();
+        await bluetoothAdapter.stopScan();
         await Future.delayed(const Duration(milliseconds: uiIntermittentDelay));
         isScanning = false;
         update();

@@ -22,6 +22,7 @@ import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
+import 'sport_picker.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
   const HeartRateMonitorPairingBottomSheet({super.key});
@@ -168,6 +169,31 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                         return;
                       }
 
+                      final sportPick = await Get.bottomSheet(
+                        SafeArea(
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: SportPickerBottomSheet(
+                                    sportChoices: allSports,
+                                    initialSport: ActivityType.workout,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        isScrollControlled: true,
+                        ignoreSafeArea: false,
+                        isDismissible: false,
+                        enableDrag: false,
+                      );
+
+                      if (sportPick == null) {
+                        return;
+                      }
+
                       setState(() {
                         _pairingHrm = true;
                       });
@@ -188,7 +214,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                         // Dynamic import workaround or just import it at top?
                         // Need to import DeviceInternalHeartRate.
                         // Assuming import is added.
-                        final internalHrm = DeviceInternalHeartRate();
+                        final internalHrm = DeviceInternalHeartRate(sport: sportPick);
                         if (Get.isRegistered<HeartRateMonitor>()) {
                           await Get.delete<HeartRateMonitor>(force: true);
                         }

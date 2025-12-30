@@ -469,6 +469,8 @@ class DeviceFactory {
       return paddleSports;
     } else if (fourCC == concept2ErgFourCC) {
       return c2Sports;
+    } else if (fourCC == heartRateMonitorFourCC) {
+      return allSports;
     }
 
     // KayakPro

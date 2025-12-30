@@ -198,6 +198,8 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
   List<bool> _extraExpandedState = [];
   final List<ExpandableController> _extraRowControllers = [];
+
+  DbUtils get dbUtils => Get.isRegistered<DbUtils>() ? Get.find<DbUtils>() : DbUtils();
   final List<int> _extraExpandedHeights = [];
 
   Activity? _activity;
@@ -574,8 +576,20 @@ class RecordingState extends State<RecordingScreen> {
 
     final now = DateTime.now();
     var continued = false;
+    double powerFactor = 1.0;
+    double calorieFactor = 1.0;
+    double hrmCalorieFactor = 1.0;
+    final dbUtils = this.dbUtils;
+
+    if (widget.device.remoteId.str.isNotEmpty) {
+      final factors = await dbUtils.getFactors(widget.device.remoteId.str);
+      powerFactor = factors.item1;
+      calorieFactor = factors.item2;
+      hrmCalorieFactor = factors.item3;
+    }
+
     if (!_uxDebug) {
-      final dbUtils = DbUtils();
+      // dbUtils used from outer scope
       final unfinished = await dbUtils.unfinishedDeviceActivities(widget.device.remoteId.str);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
@@ -604,10 +618,10 @@ class RecordingState extends State<RecordingScreen> {
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? "",
         start: now,
         sport: widget.descriptor.sport,
-        powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
-        calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
+        powerFactor: powerFactor,
+        calorieFactor: calorieFactor,
         hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
-        hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
+        hrmCalorieFactor: hrmCalorieFactor,
         hrBasedCalories: _hrBasedCalorieCounting,
         timeZone: await getTimeZone(),
       );
@@ -1123,8 +1137,7 @@ class RecordingState extends State<RecordingScreen> {
 
     _optionalStatistics = [emptyMeasurement];
 
-    final calculateCadences =
-        !_heartRateMonitorWorkout && !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
+    final calculateCadences = true;
     _workoutStats = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
@@ -2207,7 +2220,7 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final dbUtils = DbUtils();
+            final dbUtils = this.dbUtils;
             final unfinished = await dbUtils.unfinishedActivities();
             for (final activity in unfinished) {
               await dbUtils.finalizeActivity(activity);
@@ -2299,7 +2312,7 @@ class RecordingState extends State<RecordingScreen> {
     String hrmId = await _initializeHeartRateMonitor(true);
     if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
       _activity!.hrmId = hrmId;
-      _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+      _activity!.hrmCalorieFactor = await dbUtils.calorieFactorValue(hrmId, true);
       _database.writeTxnSync(() {
         _database.activitys.putSync(_activity!);
       });
@@ -2881,7 +2894,7 @@ class RecordingState extends State<RecordingScreen> {
             String hrmId = await _initializeHeartRateMonitor(true);
             if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
               _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+              _activity!.hrmCalorieFactor = await dbUtils.calorieFactorValue(hrmId, true);
               _database.writeTxnSync(() {
                 _database.activitys.putSync(_activity!);
               });

@@ -23,9 +23,12 @@ class DeviceInternalHeartRate extends HeartRateMonitor {
   final HeartRateFlutter _heartRateFlutter;
   final PermissionHandlerWrapper _permissionHandler;
 
+  final String sport;
+
   DeviceInternalHeartRate({
     HeartRateFlutter? heartRateFlutter,
     PermissionHandlerWrapper? permissionHandler,
+    this.sport = ActivityType.workout,
   }) : _heartRateFlutter = heartRateFlutter ?? HeartRateFlutter(),
        _permissionHandler = permissionHandler ?? PermissionHandlerWrapper(),
        super(BluetoothDevice(remoteId: const DeviceIdentifier("INTERNAL_HRM")));
@@ -97,7 +100,7 @@ class DeviceInternalHeartRate extends HeartRateMonitor {
       final record = RecordWithSport(
         timeStamp: DateTime.now(),
         heartRate: hr.toInt(),
-        sport: ActivityType.workout,
+        sport: sport,
       );
       metricProcessingFunction(record);
     });
