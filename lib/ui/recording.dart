@@ -2391,18 +2391,6 @@ class RecordingState extends State<RecordingScreen> {
           Column(
             children: [
               _themeManager.getBlueIcon(entry.value.icon, _sizeDefault / 2),
-              SizedBox(
-                width: _sizeDefault * (entry.value.expandable ? 0.65 : 1),
-                child: Center(child: Text(entry.value.unit, maxLines: 2, style: _unitStyle)),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: entry.value.expandable ? _halfWidthExpandable : _halfWidthNonExpandable,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text(_statistics[entry.key], style: measurementStyle)],
             ),
           ),
         ]);
@@ -2719,8 +2707,7 @@ class RecordingState extends State<RecordingScreen> {
                 width: _sizeDefault * (_simplerUi ? 1 : 0.65),
                 child: Center(child: Text("%", maxLines: 2, style: _unitStyle)),
               ),
-            ],
-          ];
+            ];
 
       columnOne.add(
         ExpandablePanel(
