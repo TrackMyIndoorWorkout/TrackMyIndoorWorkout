@@ -87,6 +87,14 @@ class RowerDeviceDescriptor extends FitnessMachineDescriptor {
         (pace == null || pace == 0 || (slowPace != null && pace > slowPace!))) {
       clearStrokeRates();
     }
+    
+    // Sanity check: discard unrealistic stroke rates (>50 strokes/minute)
+    // Only apply to rowing activities (not kayaking, etc.)
+    // Window not applied to rowing. Quick and dirty substitute for bad data.
+    if (strokeRate != null && strokeRate > 50 && sport == ActivityType.rowing) {
+      strokeRate = null;
+    }
+    
     if (_strokeRateWindowSize > 1 && strokeRate != null) {
       _strokeRates.add(strokeRate);
       _strokeRateSum += strokeRate;
