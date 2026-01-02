@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show debugPrint;
+
 import '../../utils/constants.dart';
 import 'metric_descriptor.dart';
 
@@ -7,10 +9,15 @@ class ByteMetricDescriptor extends MetricDescriptor {
 
   @override
   double? getMeasurementValue(List<int> data) {
-    if (optional && data[lsb] == maxUint8 - 1) {
+    final rawValue = data[lsb];
+    // FTMS spec: 0xFF (255) indicates "not available" for UINT8 fields
+    if (rawValue == maxUint8 - 1) {
+      debugPrint(
+        'FTMS Debug: ByteMetricDescriptor received "not available" value (255) at index $lsb, returning null',
+      );
       return null;
     }
 
-    return data[lsb] / divider;
+    return rawValue / divider;
   }
 }
