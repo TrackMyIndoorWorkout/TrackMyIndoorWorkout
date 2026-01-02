@@ -197,7 +197,11 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processInclinationFlag(int flag) {
     if (flag % 2 == 1) {
       // SInt16, Inclination (percentage with 0.1 resolution)
-      inclinationMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1, divider: 10.0);
+      inclinationMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: 10.0,
+      );
       byteCounter += 2;
       // SInt16, Ramp Angle (percentage with 0.1 resolution) - skipped for now
       byteCounter += 2;
