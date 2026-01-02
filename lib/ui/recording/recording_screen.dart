@@ -484,8 +484,9 @@ class RecordingState extends State<RecordingScreen> {
                   .toString();
             }
             if (_showInclination) {
-              _optionalStatistics[_inclinationIndex] = (_workoutStats.avgInclination ?? 0.0)
-                  .toStringAsFixed(1);
+              _optionalStatistics[_inclinationIndex] = _workoutStats.avgInclination.toStringAsFixed(
+                1,
+              );
             }
           } else {
             if (!_stationaryWorkout) {
@@ -505,7 +506,7 @@ class RecordingState extends State<RecordingScreen> {
               _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
             }
             if (_showInclination) {
-              _optionalStatistics[_inclinationIndex] = (_workoutStats.maxInclination ?? 0.0)
+              _optionalStatistics[_inclinationIndex] = _workoutStats.maxInclinationDisplay
                   .toStringAsFixed(1);
             }
           }
@@ -1721,12 +1722,12 @@ class RecordingState extends State<RecordingScreen> {
     double minInclinationThreshold = minInit.toDouble();
     double maxInclinationThreshold = maxInit.toDouble();
     if (_onStageStatisticsType != onStageStatisticsTypeNone) {
-      final minInclination = _graphStats.minInclination;
+      final minInclination = _graphStats.minInclinationDisplay;
       if (minInclination < minInit.toDouble()) {
         minInclinationThreshold = minInclination * 0.8;
       }
 
-      final maxInclination = _graphStats.maxInclination;
+      final maxInclination = _graphStats.maxInclinationDisplay;
       if (maxInclination > maxInit.toDouble()) {
         maxInclinationThreshold = maxInclination * 1.2;
       }
@@ -2555,7 +2556,7 @@ class RecordingState extends State<RecordingScreen> {
                 majorTickLines: charts.MajorTickLines(color: _chartTextColor),
                 minorTickLines: charts.MinorTickLines(color: _chartTextColor),
                 majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                minorGridLines: charts.MinorTickLines(color: _chartTextColor),
+                minorGridLines: charts.MinorGridLines(color: _chartTextColor),
               ),
               primaryYAxis: charts.NumericAxis(
                 labelStyle: _chartLabelStyle,
@@ -2563,7 +2564,7 @@ class RecordingState extends State<RecordingScreen> {
                 majorTickLines: charts.MajorTickLines(color: _chartTextColor),
                 minorTickLines: charts.MinorTickLines(color: _chartTextColor),
                 majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                minorGridLines: charts.MinorTickLines(color: _chartTextColor),
+                minorGridLines: charts.MinorGridLines(color: _chartTextColor),
               ),
               margin: const EdgeInsets.all(0),
               series: _inclinationChartData(),

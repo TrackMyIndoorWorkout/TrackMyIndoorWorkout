@@ -79,8 +79,8 @@ class StatisticsAccumulator {
   int get maxResistanceDisplay => max(maxResistance, 0);
   int get minResistanceDisplay => min(minResistance, 0);
   double get avgInclination => inclinationCount > 0 ? inclinationSum / inclinationCount : 0.0;
-  double get maxInclination => maxInclination;
-  double get minInclination => minInclination;
+  double get maxInclinationDisplay => max(maxInclination, 0.0);
+  double get minInclinationDisplay => min(minInclination, 0.0);
 
   StatisticsAccumulator({
     required this.si,
@@ -472,6 +472,7 @@ class StatisticsAccumulator {
       avgCadence > 0 ? avgCadence : null,
       avgHeartRate > 0 ? avgHeartRate : null,
       avgResistance > 0 ? avgResistance : null,
+      avgInclination > 0 ? avgInclination : null,
     );
   }
 
@@ -484,6 +485,7 @@ class StatisticsAccumulator {
       maxCadence > 0 ? maxCadence : null,
       maxHeartRate > 0 ? maxHeartRate : null,
       maxResistance > 0 ? maxResistance : null,
+      maxInclinationDisplay > 0 ? maxInclinationDisplay : null,
     );
   }
 }
