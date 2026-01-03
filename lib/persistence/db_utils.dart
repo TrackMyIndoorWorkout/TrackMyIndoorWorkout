@@ -12,6 +12,7 @@ import 'calorie_tune.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
+import 'device_usage.dart';
 
 class DbUtils with PowerSpeedMixin {
   late final Isar database;
@@ -444,5 +445,28 @@ class DbUtils with PowerSpeedMixin {
     });
 
     return numDeleted;
+  }
+
+  Future<Map<String, String>> getDeviceSportDictionary() async {
+    final deviceSport = <String, String>{};
+    for (final deviceUsage in await database.deviceUsages.where().findAll()) {
+      deviceSport[deviceUsage.mac] = deviceUsage.sport;
+    }
+    return deviceSport;
+  }
+
+  Future<DeviceUsage?> getDeviceUsage(String mac) async {
+    return await database.deviceUsages
+        .where()
+        .filter()
+        .macEqualTo(mac)
+        .sortByTimeDesc()
+        .findFirst();
+  }
+
+  Future<void> saveDeviceUsage(DeviceUsage deviceUsage) async {
+    database.writeTxnSync(() {
+      database.deviceUsages.putSync(deviceUsage);
+    });
   }
 }

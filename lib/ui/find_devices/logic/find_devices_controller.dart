@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:isar_community/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:rxdart/rxdart.dart';
@@ -278,10 +277,7 @@ class FindDevicesController extends GetxController {
 
   Future<void> _readDeviceSports() async {
     deviceSport.clear();
-    final database = Get.find<Isar>();
-    for (final deviceUsage in await database.deviceUsages.where().findAll()) {
-      deviceSport[deviceUsage.mac] = deviceUsage.sport;
-    }
+    deviceSport.addAll(await dbUtils.getDeviceSportDictionary());
   }
 
   Future<void> startScan(bool silent) async {
@@ -533,13 +529,7 @@ class FindDevicesController extends GetxController {
       }
     }
 
-    final database = Get.find<Isar>();
-    var deviceUsage = await database.deviceUsages
-        .where()
-        .filter()
-        .macEqualTo(device.remoteId.str)
-        .sortByTimeDesc()
-        .findFirst();
+    var deviceUsage = await dbUtils.getDeviceUsage(device.remoteId.str);
 
     // Step 2. Try to infer from if it has proprietary service
     // Or other dedicated workarounds
@@ -753,9 +743,8 @@ class FindDevicesController extends GetxController {
               manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
-            database.writeTxnSync(() {
-              database.deviceUsages.putSync(deviceUsage!);
-            });
+
+            dbUtils.saveDeviceUsage(deviceUsage);
           }
         }
       }
@@ -798,9 +787,7 @@ class FindDevicesController extends GetxController {
           if (deviceUsage != null) {
             deviceUsage.sport = sportPick;
             deviceUsage.time = DateTime.now();
-            database.writeTxnSync(() {
-              database.deviceUsages.putSync(deviceUsage!);
-            });
+            dbUtils.saveDeviceUsage(deviceUsage);
           } else {
             deviceUsage = DeviceUsage(
               sport: sportPick,
@@ -809,15 +796,11 @@ class FindDevicesController extends GetxController {
               manufacturer: advertisementDigest.manufacturers.join("| "),
               time: DateTime.now(),
             );
-            database.writeTxnSync(() {
-              database.deviceUsages.putSync(deviceUsage!);
-            });
+            dbUtils.saveDeviceUsage(deviceUsage);
           }
         } else {
           descriptor.sport = deviceUsage.sport;
-          database.writeTxnSync(() {
-            database.deviceUsages.putSync(deviceUsage!);
-          });
+          dbUtils.saveDeviceUsage(deviceUsage);
         }
       }
 
@@ -883,9 +866,7 @@ class FindDevicesController extends GetxController {
       if (deviceUsage != null) {
         deviceUsage.manufacturerName = fitnessEquipment!.manufacturerName;
         deviceUsage.time = DateTime.now();
-        database.writeTxnSync(() {
-          database.deviceUsages.putSync(deviceUsage!);
-        });
+        dbUtils.saveDeviceUsage(deviceUsage);
       }
 
       await Get.to(
