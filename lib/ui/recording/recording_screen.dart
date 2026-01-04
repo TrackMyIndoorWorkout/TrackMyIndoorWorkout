@@ -2319,6 +2319,45 @@ class RecordingState extends State<RecordingScreen> {
     }
   }
 
+  Widget _buildSmallScreenLayout(List<Widget> rows) {
+    // 2x2 Grid: HR, Power, Speed, Cadence
+    // Indices in rows (shifted by 1 for Header):
+    // HR: _hr1Index + 1, Power: _power1Index + 1, Speed: _speed1Index + 1, Cadence: _cadence1Index + 1
+    // Footer: Distance: _distance1Index + 1
+    // Header: Time (rows[0] is HeaderRow, but we might want a simpler one or reuse it)
+
+    // Ensure we have enough rows
+    if (rows.length <= _distance1Index + 1) {
+      return ListView(children: rows); // Fallback
+    }
+
+    final gridChildren = [
+      rows[_hr1Index + 1], // Top-Left
+      rows[_power1Index + 1], // Top-Right
+      rows[_speed1Index + 1], // Bottom-Left
+      rows[_cadence1Index + 1], // Bottom-Right
+    ];
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 40,
+          child: FittedBox(child: rows[0]), // Header, scaled down
+        ),
+        SizedBox(height: 30, child: FittedBox(child: rows[_distance1Index + 1])),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 1.3, // Squarish logic
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: gridChildren.map((w) => FittedBox(fit: BoxFit.scaleDown, child: w)).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final measuredSize = Get.mediaQuery.size;
@@ -2738,18 +2777,20 @@ class RecordingState extends State<RecordingScreen> {
       columnOne.addAll(columnRest);
     }
 
-    final body = _landscape && _twoColumnLayout
-        ? GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: _mediaWidth / _mediaHeight / 2,
-            physics: const NeverScrollableScrollPhysics(),
-            semanticChildCount: 2,
-            children: [
-              ListView(children: columnOne),
-              ListView(children: columnTwo),
-            ],
-          )
-        : ListView(children: columnOne);
+    final body = isSmallScreen(context)
+        ? _buildSmallScreenLayout(rows)
+        : (_landscape && _twoColumnLayout
+              ? GridView.count(
+                  crossAxisCount: 2,
+                  childAspectRatio: _mediaWidth / _mediaHeight / 2,
+                  physics: const NeverScrollableScrollPhysics(),
+                  semanticChildCount: 2,
+                  children: [
+                    ListView(children: columnOne),
+                    ListView(children: columnTwo),
+                  ],
+                )
+              : ListView(children: columnOne));
 
     final List<Widget> menuButtons = [];
     if (_isLocked) {
@@ -2978,21 +3019,25 @@ class RecordingState extends State<RecordingScreen> {
         child: AbsorbPointer(
           absorbing: _isLocked,
           child: Scaffold(
-            appBar: AppBar(
-              title: TextOneLine(widget.device.nonEmptyName, overflow: TextOverflow.ellipsis),
-              actions: _busy
-                  ? [
-                      HeartbeatProgressIndicator(
-                        child: IconButton(
-                          icon: const Icon(Icons.hourglass_empty),
-                          onPressed: () => {},
-                        ),
-                      ),
-                    ]
-                  : actions,
-            ),
+            appBar: isSmallScreen(context)
+                ? null
+                : AppBar(
+                    title: TextOneLine(widget.device.nonEmptyName, overflow: TextOverflow.ellipsis),
+                    actions: _busy
+                        ? [
+                            HeartbeatProgressIndicator(
+                              child: IconButton(
+                                icon: const Icon(Icons.hourglass_empty),
+                                onPressed: () => {},
+                              ),
+                            ),
+                          ]
+                        : actions,
+                  ),
             body: body,
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButtonLocation: isSmallScreen(context)
+                ? FloatingActionButtonLocation.centerFloat
+                : FloatingActionButtonLocation.centerDocked,
             floatingActionButton: RecordingFabMenu(
               themeManager: _themeManager,
               fabKey: _fabKey,

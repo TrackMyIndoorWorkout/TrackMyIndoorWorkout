@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../utils/display.dart';
 import 'logic/find_devices_controller.dart';
 import 'widgets/connected_device_tile.dart';
 import 'widgets/scan_fab_menu.dart';
@@ -25,7 +26,9 @@ class FindDevicesScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(controller.filterDevices ? 'Supported Devices:' : 'Devices'),
+            title: isSmallScreen(context)
+                ? Text(controller.filterDevices ? 'Supported' : 'Devices')
+                : Text(controller.filterDevices ? 'Supported Devices:' : 'Devices'),
             actions: [
               if (controller.isScanning)
                 Padding(
@@ -67,6 +70,14 @@ class FindDevicesScreen extends StatelessWidget {
               await controller.startScan(false);
             },
             child: ListView(
+              padding: isSmallScreen(context)
+                  ? EdgeInsets.only(
+                      top: smallScreenPaddingTop(context),
+                      bottom: smallScreenPaddingBottom(context),
+                      left: smallScreenPaddingHorizontal(context),
+                      right: smallScreenPaddingHorizontal(context),
+                    )
+                  : const EdgeInsets.all(0.0),
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               children: [
                 Column(

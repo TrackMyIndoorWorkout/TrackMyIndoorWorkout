@@ -437,6 +437,14 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         ],
       ),
       body: CustomListView(
+        padding: isSmallScreen(context)
+            ? EdgeInsets.only(
+                top: smallScreenPaddingTop(context),
+                bottom: smallScreenPaddingBottom(context),
+                left: smallScreenPaddingHorizontal(context),
+                right: smallScreenPaddingHorizontal(context),
+              )
+            : EdgeInsets.zero,
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,

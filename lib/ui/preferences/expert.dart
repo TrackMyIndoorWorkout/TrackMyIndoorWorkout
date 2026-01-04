@@ -33,6 +33,7 @@ import '../../preferences/recalculate_more.dart';
 import '../../preferences/revolution_sliding_window.dart';
 import '../../preferences/sensor_data_threshold.dart';
 import '../../preferences/show_performance_overlay.dart';
+import '../../preferences/small_screen.dart';
 import '../../utils/date_time_ex.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -469,6 +470,50 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         pref: revolutionSlidingWindowTag,
         min: revolutionSlidingWindowMin,
         max: revolutionSlidingWindowMax,
+      ),
+      const PrefLabel(title: Divider(height: 1)),
+      PrefLabel(
+        title: Text("Small Screen Adaptation", style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
+      PrefSlider<double>(
+        title: const Text("Small Screen Threshold"),
+        subtitle: const Text("Longest side threshold for watch mode"),
+        pref: smallScreenThresholdTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} px"),
+        min: smallScreenThresholdMin,
+        max: smallScreenThresholdMax,
+        divisions: smallScreenThresholdDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Top Padding"),
+        subtitle: const Text("Vertical padding for lists (Top)"),
+        pref: smallScreenPaddingTopTag,
+        trailing: (num value) => Text(value.toStringAsFixed(0)),
+        min: smallScreenPaddingTopMin,
+        max: smallScreenPaddingTopMax,
+        divisions: smallScreenPaddingTopDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Bottom Padding"),
+        subtitle: const Text("Vertical padding for lists (Bottom)"),
+        pref: smallScreenPaddingBottomTag,
+        trailing: (num value) => Text(value.toStringAsFixed(0)),
+        min: smallScreenPaddingBottomMin,
+        max: smallScreenPaddingBottomMax,
+        divisions: smallScreenPaddingBottomDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Horizontal Padding"),
+        subtitle: const Text("Horizontal padding for lists"),
+        pref: smallScreenPaddingHorizontalTag,
+        trailing: (num value) => Text(value.toStringAsFixed(0)),
+        min: smallScreenPaddingHorizontalMin,
+        max: smallScreenPaddingHorizontalMax,
+        divisions: smallScreenPaddingHorizontalDivisions,
+        direction: Axis.vertical,
       ),
     ]);
 

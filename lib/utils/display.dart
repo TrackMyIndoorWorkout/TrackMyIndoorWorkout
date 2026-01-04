@@ -1,8 +1,37 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-
+import 'package:pref/pref.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/small_screen.dart';
 import 'constants.dart';
+
+bool isSmallScreen(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final threshold =
+      PrefService.of(context).get<double>(smallScreenThresholdTag) ?? smallScreenThresholdDefault;
+  return size.longestSide <= threshold;
+}
+
+double smallScreenPaddingTop(BuildContext context) {
+  final pref =
+      PrefService.of(context).get<double>(smallScreenPaddingTopTag) ?? smallScreenPaddingTopDefault;
+  final viewPadding = MediaQuery.of(context).viewPadding.top;
+  return max(pref, viewPadding);
+}
+
+double smallScreenPaddingBottom(BuildContext context) {
+  final pref =
+      PrefService.of(context).get<double>(smallScreenPaddingBottomTag) ??
+      smallScreenPaddingBottomDefault;
+  final viewPadding = MediaQuery.of(context).viewPadding.bottom;
+  return max(pref, viewPadding);
+}
+
+double smallScreenPaddingHorizontal(BuildContext context) {
+  return PrefService.of(context).get<double>(smallScreenPaddingHorizontalTag) ??
+      smallScreenPaddingHorizontalDefault;
+}
 
 extension DurationDisplay on Duration {
   String toDisplay() {
