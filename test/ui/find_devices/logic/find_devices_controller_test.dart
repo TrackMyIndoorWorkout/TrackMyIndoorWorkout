@@ -27,6 +27,7 @@ import 'package:track_my_indoor_exercise/utils/bluetooth_adapter.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/theme_manager.dart';
 import 'package:track_my_indoor_exercise/preferences/log_level.dart';
+import 'package:track_my_indoor_exercise/utils/sound.dart';
 import 'package:tuple/tuple.dart';
 
 class MockAdvertisementCache extends Mock implements AdvertisementCache {
@@ -109,6 +110,11 @@ class MockIsar extends Mock implements Isar {
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => super.toString();
 }
 
+class MockSoundService extends Mock implements SoundService {
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => super.toString();
+}
+
 void main() {
   late FindDevicesController controller;
   late MockAdvertisementCache mockAdvertisementCache;
@@ -120,6 +126,7 @@ void main() {
   late MockPackageInfo mockPackageInfo;
   late MockBluetoothAdapter mockBluetoothAdapter;
   late MockIsar mockIsar;
+  late MockSoundService mockSoundService;
 
   setUpAll(() {
     registerFallbackValue(BluetoothConnectionState.disconnected);
@@ -162,6 +169,7 @@ void main() {
     mockPackageInfo = MockPackageInfo();
     mockBluetoothAdapter = MockBluetoothAdapter();
     mockIsar = MockIsar();
+    mockSoundService = MockSoundService();
 
     Get.put<AdvertisementCache>(mockAdvertisementCache, permanent: true);
     Get.put<ThemeManager>(mockThemeManager, permanent: true);
@@ -170,7 +178,9 @@ void main() {
     Get.put<BluetoothAdapter>(mockBluetoothAdapter, permanent: true);
     Get.put<BasePrefService>(mockPrefService, permanent: true);
     Get.put<PackageInfo>(mockPackageInfo, permanent: true);
+    Get.put<PackageInfo>(mockPackageInfo, permanent: true);
     Get.put<Isar>(mockIsar, permanent: true);
+    Get.put<SoundService>(mockSoundService, permanent: true);
 
     // Mock PackageInfo
     when(() => mockPackageInfo.appName).thenReturn("TestApp");
@@ -244,6 +254,10 @@ void main() {
     when(() => mockBluetoothAdapter.isSupported).thenAnswer((_) async => true);
     when(() => mockBluetoothAdapter.turnOn()).thenAnswer((_) async {});
 
+    // Mock SoundService
+    when(() => mockSoundService.stopSoundEffect()).thenAnswer((_) {});
+    when(() => mockSoundService.playTargetHrSoundEffect()).thenAnswer((_) async => 1);
+
     controller = FindDevicesController();
     Get.put(controller);
   });
@@ -254,9 +268,12 @@ void main() {
 
   testWidgets('onConnectedHrmTap starts workout if hrmWorkout is true', (tester) async {
     await tester.pumpWidget(
-      GetMaterialApp(
-        home: const Scaffold(body: SizedBox()),
-        navigatorObservers: [mockObserver],
+      PrefService(
+        service: mockPrefService,
+        child: GetMaterialApp(
+          home: const Scaffold(body: SizedBox()),
+          navigatorObservers: [mockObserver],
+        ),
       ),
     );
 
@@ -299,9 +316,12 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      GetMaterialApp(
-        home: const Scaffold(body: SizedBox()),
-        navigatorObservers: [mockObserver],
+      PrefService(
+        service: mockPrefService,
+        child: GetMaterialApp(
+          home: const Scaffold(body: SizedBox()),
+          navigatorObservers: [mockObserver],
+        ),
       ),
     );
 
@@ -348,9 +368,12 @@ void main() {
     Get.put(controller);
 
     await tester.pumpWidget(
-      GetMaterialApp(
-        home: const Scaffold(body: SizedBox()),
-        navigatorObservers: [mockObserver],
+      PrefService(
+        service: mockPrefService,
+        child: GetMaterialApp(
+          home: const Scaffold(body: SizedBox()),
+          navigatorObservers: [mockObserver],
+        ),
       ),
     );
 
@@ -401,9 +424,12 @@ void main() {
     Get.put(controller);
 
     await tester.pumpWidget(
-      GetMaterialApp(
-        home: const Scaffold(body: SizedBox()),
-        navigatorObservers: [mockObserver],
+      PrefService(
+        service: mockPrefService,
+        child: GetMaterialApp(
+          home: const Scaffold(body: SizedBox()),
+          navigatorObservers: [mockObserver],
+        ),
       ),
     );
 
