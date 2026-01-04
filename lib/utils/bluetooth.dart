@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'bluetooth_adapter.dart';
 import 'delays.dart';
@@ -24,6 +28,41 @@ Future<bool> isBluetoothOn() async {
 
 Future<bool> bluetoothCheck(bool silent, int logLevel) async {
   try {
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt <= 30) {
+        var status = await Permission.location.status;
+        if (!status.isGranted) {
+          status = await Permission.location.request();
+          if (!status.isGranted) {
+            return false;
+          }
+        }
+
+        if (!await Permission.location.serviceStatus.isEnabled) {
+          final enableLocation = await Get.defaultDialog(
+            title: "Location Services Needed",
+            middleText:
+                "You have granted Location permission, but the system Location Service (GPS) is currently turned OFF.\n\nPlease turn it ON in the system settings.",
+            confirm: TextButton(
+              child: const Text("System Settings"),
+              onPressed: () => Get.back(result: true),
+            ),
+            cancel: TextButton(
+              child: const Text("Cancel"),
+              onPressed: () => Get.back(result: false),
+            ),
+          );
+          if (enableLocation == true) {
+            await openAppSettings();
+            return false;
+          } else {
+            return false;
+          }
+        }
+      }
+    }
+
     if (await isBluetoothOn()) {
       return true;
     }
