@@ -63,6 +63,7 @@ import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
 import '../preferences/show_strokes_strides_revs.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/small_screen.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/stage_mode.dart';
@@ -173,6 +174,10 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     scanDurationTag: scanDurationDefault,
     sensorDataThresholdTag: sensorDataThresholdDefault,
     simplerUiTag: await getSimplerUiDefault(),
+    smallScreenThresholdTag: smallScreenThresholdDefault,
+    smallScreenPaddingTopTag: smallScreenPaddingTopDefault,
+    smallScreenPaddingBottomTag: smallScreenPaddingBottomDefault,
+    smallScreenPaddingHorizontalTag: smallScreenPaddingHorizontalDefault,
     showPacerTag: showPacerDefault,
     showPerformanceOverlayTag: showPerformanceOverlayDefault,
     showResistanceLevelTag: showResistanceLevelDefault,
