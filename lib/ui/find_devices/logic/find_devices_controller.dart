@@ -14,6 +14,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../devices/bluetooth_device_ex.dart';
+import '../../../devices/internal_sensor_manager.dart';
 import '../../../devices/device_descriptors/device_descriptor.dart';
 import '../../../devices/device_factory.dart';
 import '../../../devices/device_fourcc.dart';
@@ -58,6 +59,7 @@ import '../../../utils/machine_type.dart';
 import '../../../utils/scan_result_ex.dart';
 import '../../../utils/theme_manager.dart';
 import '../../../utils/bluetooth_adapter.dart';
+import '../../../utils/display.dart';
 import '../../about.dart';
 import '../../models/advertisement_cache.dart';
 import '../../parts/boolean_question.dart';
@@ -113,6 +115,10 @@ class FindDevicesController extends GetxController {
     _bluetoothAdapter = Get.isRegistered<BluetoothAdapter>()
         ? Get.find<BluetoothAdapter>()
         : BluetoothAdapter();
+
+    if (!Get.isRegistered<InternalSensorManager>()) {
+      Get.put(InternalSensorManager(), permanent: true);
+    }
 
     super.onInit();
     initializeDateFormatting();
@@ -310,6 +316,7 @@ class FindDevicesController extends GetxController {
     }
 
     try {
+      await _addInternalSensors();
       await bluetoothAdapter.startScan(timeout: Duration(seconds: _scanDuration));
 
       isScanning = false;
@@ -380,6 +387,47 @@ class FindDevicesController extends GetxController {
         e,
         stack,
       );
+    }
+  }
+
+  Future<void> _addInternalSensors() async {
+    final internalSensorManager = Get.find<InternalSensorManager>();
+    if (await internalSensorManager.hasInternalHeartRate()) {
+      final device = BluetoothDevice(remoteId: const DeviceIdentifier("INTERNAL_HRM"));
+      final scanResult = ScanResult(
+        device: device,
+        advertisementData: AdvertisementData(
+          advName: "Internal Heart Rate",
+          txPowerLevel: null,
+          connectable: true,
+          manufacturerData: {},
+          serviceData: {},
+          serviceUuids: [],
+          appearance: null, // Heart Rate Sensor appearance
+        ),
+        rssi: 0,
+        timeStamp: DateTime.now(),
+      );
+      addScannedDevice(scanResult);
+    }
+
+    if (await internalSensorManager.hasInternalMotionSensors()) {
+      final device = BluetoothDevice(remoteId: const DeviceIdentifier("INTERNAL_MOTION"));
+      final scanResult = ScanResult(
+        device: device,
+        advertisementData: AdvertisementData(
+          advName: "Internal Motion Sensor",
+          txPowerLevel: null,
+          connectable: true,
+          manufacturerData: {},
+          serviceData: {},
+          serviceUuids: [],
+          appearance: null,
+        ),
+        rssi: 0,
+        timeStamp: DateTime.now(),
+      );
+      addScannedDevice(scanResult);
     }
   }
 

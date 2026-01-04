@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
@@ -22,6 +25,13 @@ class DeviceInternalMotion extends ComplexSensor {
 
   DeviceInternalMotion({this.targetSport = ActivityType.workout})
     : super("", "", BluetoothDevice(remoteId: const DeviceIdentifier("INTERNAL_MOTION")));
+
+  static Future<bool> hasMotionSensors() async {
+    if (!Platform.isAndroid) return false;
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.systemFeatures.contains('android.hardware.sensor.accelerometer');
+  }
 
   @override
   void clearMetrics() {
