@@ -486,6 +486,16 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         direction: Axis.vertical,
       ),
       PrefSlider<double>(
+        title: const Text("Square Screen Threshold"),
+        subtitle: const Text("Longest side threshold for square watches"),
+        pref: smallScreenSquareThresholdTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} dp"),
+        min: smallScreenSquareThresholdMin,
+        max: smallScreenSquareThresholdMax,
+        divisions: smallScreenSquareThresholdDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
         title: const Text("Top Padding"),
         subtitle: const Text("Vertical padding for lists (Top)"),
         pref: smallScreenPaddingTopTag,

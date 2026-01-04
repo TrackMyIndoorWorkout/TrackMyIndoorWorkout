@@ -89,6 +89,27 @@ void main() {
     expect(size.width, 100.0); // Should be "small" now
   });
 
+  testWidgets('isSmallScreen supports square watches (like 531px)', (tester) async {
+    // Square watch size 531x531 (Logical)
+    // Threshold is default (480), but square logic allows up to 800 (default) or configurable
+    tester.view.physicalSize = const Size(531, 531);
+    tester.view.devicePixelRatio = 1.0;
+
+    await tester.pumpWidget(createSubject());
+
+    // isSmallScreen should be true because it's square (531 < 800)
+    final size = tester.getSize(find.byKey(const Key('subject')));
+    expect(size.width, 100.0);
+
+    // Now verify it respects the specific square threshold
+    await mockPrefs.set(smallScreenSquareThresholdTag, 500.0); // Reduce square threshold
+    await tester.pumpWidget(createSubject());
+
+    // isSmallScreen should be false now (531 > 500)
+    final sizeRejected = tester.getSize(find.byKey(const Key('subject')));
+    expect(sizeRejected.width, 200.0);
+  });
+
   testWidgets('Padding preferences are reflected', (tester) async {
     await mockPrefs.set(smallScreenPaddingTopTag, 88.0);
 

@@ -10,7 +10,14 @@ bool isSmallScreen(BuildContext context) {
   final size = MediaQuery.of(context).size;
   final threshold =
       PrefService.of(context).get<double>(smallScreenThresholdTag) ?? smallScreenThresholdDefault;
-  return size.longestSide <= threshold;
+  final aspectRatio = size.longestSide / size.shortestSide;
+  // If the device is square-ish (typical for watches), we allow a larger screen size
+  // Phones usually have an aspect ratio > 1.6 (even old 16:9 is 1.77)
+  final isSquare = aspectRatio < 1.2;
+  final squareThreshold =
+      PrefService.of(context).get<double>(smallScreenSquareThresholdTag) ??
+      smallScreenSquareThresholdDefault;
+  return size.longestSide <= threshold || (isSquare && size.longestSide <= squareThreshold);
 }
 
 double smallScreenPaddingTop(BuildContext context) {

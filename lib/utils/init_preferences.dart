@@ -175,6 +175,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     sensorDataThresholdTag: sensorDataThresholdDefault,
     simplerUiTag: await getSimplerUiDefault(),
     smallScreenThresholdTag: smallScreenThresholdDefault,
+    smallScreenSquareThresholdTag: smallScreenSquareThresholdDefault,
     smallScreenPaddingTopTag: smallScreenPaddingTopDefault,
     smallScreenPaddingBottomTag: smallScreenPaddingBottomDefault,
     smallScreenPaddingHorizontalTag: smallScreenPaddingHorizontalDefault,
