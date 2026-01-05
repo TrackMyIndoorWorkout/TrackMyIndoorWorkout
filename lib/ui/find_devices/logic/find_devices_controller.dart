@@ -59,7 +59,6 @@ import '../../../utils/machine_type.dart';
 import '../../../utils/scan_result_ex.dart';
 import '../../../utils/theme_manager.dart';
 import '../../../utils/bluetooth_adapter.dart';
-import '../../../utils/display.dart';
 import '../../about.dart';
 import '../../models/advertisement_cache.dart';
 import '../../parts/boolean_question.dart';
@@ -79,6 +78,7 @@ class FindDevicesController extends GetxController {
   bool heartRateMonitorWorkout = heartRateMonitorWorkoutDefault;
   bool isScanning = false;
   final List<BluetoothDevice> scannedDevices = [];
+  final List<ScanResult> _internalScanResults = [];
   final StreamController<List<ScanResult>> scanStreamController = StreamController.broadcast();
   StreamSubscription<List<ScanResult>>? _scanStreamSubscription;
   final Map<String, String> deviceSport = {};
@@ -141,7 +141,8 @@ class FindDevicesController extends GetxController {
     isScanning = false;
     _scanStreamSubscription = _throttledScanStream.listen((scanResults) {
       _processScanResults(scanResults);
-      scanStreamController.add(scanResults);
+      final allResults = [..._internalScanResults, ...scanResults];
+      scanStreamController.add(allResults);
     });
 
     heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
@@ -306,6 +307,7 @@ class FindDevicesController extends GetxController {
     _readPreferencesValues();
     await _readDeviceSports();
     scannedDevices.clear();
+    _internalScanResults.clear();
     isScanning = true;
     update();
 
@@ -402,13 +404,14 @@ class FindDevicesController extends GetxController {
           connectable: true,
           manufacturerData: {},
           serviceData: {},
-          serviceUuids: [],
+          serviceUuids: [Guid(heartRateServiceUuid)],
           appearance: null, // Heart Rate Sensor appearance
         ),
         rssi: 0,
         timeStamp: DateTime.now(),
       );
       addScannedDevice(scanResult);
+      _internalScanResults.add(scanResult);
     }
 
     if (await internalSensorManager.hasInternalMotionSensors()) {
@@ -421,13 +424,14 @@ class FindDevicesController extends GetxController {
           connectable: true,
           manufacturerData: {},
           serviceData: {},
-          serviceUuids: [],
+          serviceUuids: [Guid(cyclingCadenceServiceUuid)],
           appearance: null,
         ),
         rssi: 0,
         timeStamp: DateTime.now(),
       );
       addScannedDevice(scanResult);
+      _internalScanResults.add(scanResult);
     }
   }
 
