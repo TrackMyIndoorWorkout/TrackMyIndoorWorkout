@@ -75,6 +75,8 @@ abstract class DeviceBase {
     logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
 
+  bool get isInternal => device?.remoteId.str.startsWith("INTERNAL_") ?? false;
+
   Future<bool> connect() async {
     if (uxDebug) {
       connected = true;
@@ -85,7 +87,11 @@ abstract class DeviceBase {
 
     try {
       connecting = true;
-      await device?.connect(license: License.free);
+      if (isInternal) {
+        // Internal devices are always connected
+      } else {
+        await device?.connect(license: License.free);
+      }
     } on Exception catch (e) {
       if (e is PlatformException && e.code != 'already_connected') {
         rethrow;
@@ -230,6 +236,11 @@ abstract class DeviceBase {
     if (discovering || device == null) return false;
 
     discovering = true;
+    if (isInternal) {
+      discovered = true;
+      discovering = false;
+      return true;
+    }
     try {
       services = await device!.discoverServices(subscribeToServicesChanged: false);
     } on Exception catch (e, stack) {

@@ -666,6 +666,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return;
     }
 
+    if (_blockFTMSFeatureRead || isInternal) {
+      return;
+    }
+
     final machineFeatures = BluetoothDeviceEx.filterCharacteristic(
       service!.characteristics,
       fitnessMachineFeature,
