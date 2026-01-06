@@ -22,7 +22,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/device_descriptors/kayak_first_descriptor.dart';
-import '../../devices/device_fourcc.dart';
+import '../../devices/gadgets/cadence_monitor_internal.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../export/export_target.dart';
@@ -69,7 +69,6 @@ import '../../track/constants.dart';
 import '../../track/track_descriptor.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
-
 import '../../utils/display.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -78,17 +77,14 @@ import '../../utils/statistics_accumulator.dart';
 import '../../utils/target_heart_rate.dart';
 import '../../utils/theme_manager.dart';
 import '../../utils/time_zone.dart';
-import '../activities.dart';
 import '../models/display_record.dart';
 import '../models/progress_state.dart';
 import '../models/row_configuration.dart';
-import '../parts/battery_status.dart';
+import '../parts/cadence_monitor_pairing.dart';
 import '../parts/heart_rate_monitor_pairing.dart';
-import '../parts/kayak_first.dart';
 import '../parts/legend_dialog.dart';
 import '../parts/pick_directory.dart';
 import '../parts/pre_measurement_progress.dart';
-import '../parts/spin_down.dart';
 import '../parts/three_choices.dart';
 import '../parts/upload_portal_picker.dart';
 import 'measurement_row.dart';
@@ -96,8 +92,6 @@ import 'header_row.dart';
 import 'recording_chart.dart';
 import 'widgets/recording_fab_menu.dart';
 import 'track_visualization.dart';
-import '../../devices/gadgets/cadence_monitor_internal.dart';
-import '../parts/cadence_monitor_pairing.dart';
 
 typedef DataFn = List<charts.LineSeries<DisplayRecord, DateTime>> Function();
 
@@ -2271,6 +2265,34 @@ class RecordingState extends State<RecordingScreen> {
     return height;
   }
 
+  void _onTutorial() {
+    final legendList = [
+      const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
+      const Tuple2<IconData, String>(Icons.add_road, "Distance"),
+      const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
+      const Tuple2<IconData, String>(Icons.bolt, "Power (Watts)"),
+      const Tuple2<IconData, String>(Icons.speed, "Speed"),
+      const Tuple2<IconData, String>(Icons.directions_bike, "Bike Cadence"),
+      const Tuple2<IconData, String>(Icons.directions_run, "Running Cadence"),
+      const Tuple2<IconData, String>(Icons.rowing, "Rowing Cadence"),
+      const Tuple2<IconData, String>(Icons.downhill_skiing, "X Train / Ski Cadence"),
+      const Tuple2<IconData, String>(Icons.stairs, "Stair Step / Climb Cadence"),
+      const Tuple2<IconData, String>(Icons.numbers, "Revolutions / steps"),
+      const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
+      const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
+      const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+      const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
+      const Tuple2<IconData, String>(Icons.build, "Calibration"),
+      const Tuple2<IconData, String>(Icons.favorite, "HR / HRM Pairing"),
+      const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
+      const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+    ];
+    if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+      legendList.add(const Tuple2<IconData, String>(Icons.sports_score, "On/Off Stage (Stats)"));
+    }
+    legendDialog(legendList);
+  }
+
   void _onLock() {
     _unlockButtonIndex = _rng.nextInt(_unlockChoices);
     _fabKey.currentState?.close();
@@ -2792,170 +2814,6 @@ class RecordingState extends State<RecordingScreen> {
                 )
               : ListView(children: columnOne));
 
-    final List<Widget> menuButtons = [];
-    if (_isLocked) {
-      for (var i = 0; i < _unlockChoices; ++i) {
-        final button = i == _unlockButtonIndex
-            ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
-                setState(() {
-                  _isLocked = false;
-                });
-              }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
-        menuButtons.add(button);
-      }
-    } else {
-      menuButtons.addAll([
-        _themeManager.getTutorialFab(() {
-          final legendList = [
-            const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
-            const Tuple2<IconData, String>(Icons.add_road, "Distance"),
-            const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
-            const Tuple2<IconData, String>(Icons.bolt, "Power (Watts)"),
-            const Tuple2<IconData, String>(Icons.speed, "Speed"),
-            const Tuple2<IconData, String>(Icons.directions_bike, "Bike Cadence"),
-            const Tuple2<IconData, String>(Icons.directions_run, "Running Cadence"),
-            const Tuple2<IconData, String>(Icons.rowing, "Rowing Cadence"),
-            const Tuple2<IconData, String>(Icons.downhill_skiing, "X Train / Ski Cadence"),
-            const Tuple2<IconData, String>(Icons.stairs, "Stair Step / Climb Cadence"),
-            const Tuple2<IconData, String>(Icons.numbers, "Revolutions / steps"),
-            const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
-            const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
-            const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
-            const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
-            const Tuple2<IconData, String>(Icons.build, "Calibration"),
-            const Tuple2<IconData, String>(Icons.favorite, "HR / HRM Pairing"),
-            const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
-            const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
-          ];
-          if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-            legendList.add(
-              const Tuple2<IconData, String>(Icons.sports_score, "On/Off Stage (Stats)"),
-            );
-          }
-          legendDialog(legendList);
-        }),
-      ]);
-
-      if (_measuring) {
-        menuButtons.add(
-          _themeManager.getGreenFab(Icons.lock_open, () {
-            _unlockButtonIndex = _rng.nextInt(_unlockChoices);
-            _fabKey.currentState?.close();
-            setState(() {
-              _isLocked = true;
-            });
-          }),
-        );
-        if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-          menuButtons.add(
-            _themeManager.getBlueFab(Icons.sports_score, () async {
-              setState(() {
-                _onStage = !_onStage;
-                if (!_onStage) {
-                  _statistics[_power0Index] = emptyMeasurement;
-                  _statistics[_speed0Index] = emptyMeasurement;
-                  _statistics[_cadence0Index] = emptyMeasurement;
-                  _statistics[_hr0Index] = emptyMeasurement;
-
-                  if (_showResistanceLevel) {
-                    _optionalStatistics[_resistanceIndex] = emptyMeasurement;
-                  }
-                }
-
-                _workoutStats.reset();
-              });
-            }),
-          );
-        }
-      } else {
-        menuButtons.addAll([
-          _themeManager.getBlueFab(Icons.cloud_upload, () async {
-            await _activityUpload(false);
-          }),
-          _themeManager.getBlueFab(Icons.list_alt, () {
-            Get.to(() => const ActivitiesScreen());
-          }),
-          _themeManager.getBlueFab(Icons.battery_unknown, () async {
-            Get.bottomSheet(
-              const SafeArea(
-                child: Column(
-                  children: [Expanded(child: Center(child: BatteryStatusBottomSheet()))],
-                ),
-              ),
-              isScrollControlled: true,
-              ignoreSafeArea: false,
-              enableDrag: false,
-            );
-          }),
-          _themeManager.getBlueFab(Icons.build, () async {
-            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false) &&
-                _fitnessEquipment?.descriptor?.fourCC != kayakFirstFourCC) {
-              Get.snackbar("Error", "Not compatible with the calibration method");
-            } else {
-              Get.bottomSheet(
-                SafeArea(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: _fitnessEquipment?.descriptor?.fourCC == kayakFirstFourCC
-                              ? const KayakFirstBottomSheet()
-                              : const SpinDownBottomSheet(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                isScrollControlled: true,
-                ignoreSafeArea: false,
-                isDismissible: false,
-                enableDrag: false,
-              );
-            }
-          }),
-        ]);
-      }
-
-      if (!_heartRateMonitorWorkout &&
-          !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false)) {
-        menuButtons.add(
-          _themeManager.getBlueFab(Icons.favorite, () async {
-            await Get.bottomSheet(
-              const SafeArea(
-                child: Column(
-                  children: [Expanded(child: Center(child: HeartRateMonitorPairingBottomSheet()))],
-                ),
-              ),
-              isScrollControlled: true,
-              ignoreSafeArea: false,
-              isDismissible: false,
-              enableDrag: false,
-            );
-            String hrmId = await _initializeHeartRateMonitor(true);
-            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-              _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await dbUtils.calorieFactorValue(hrmId, true);
-              _database.writeTxnSync(() {
-                _database.activitys.putSync(_activity!);
-              });
-            }
-          }),
-        );
-      }
-
-      menuButtons.add(
-        _themeManager.getBlueFab(
-          _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
-          () async {
-            if (!_busy) {
-              await startStopAction();
-            }
-          },
-        ),
-      );
-    }
-
     final actions = [
       IconButton(
         icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
@@ -3052,9 +2910,19 @@ class RecordingState extends State<RecordingScreen> {
               onStartStop: startStopAction,
               onUpload: () => _activityUpload(false),
               onLock: _onLock,
+              onUnlock: () {
+                _fabKey.currentState?.close();
+                setState(() {
+                  _isLocked = false;
+                });
+              },
               onStage: _handleOnStage,
+              onTutorial: _onTutorial,
               onHrmPairing: _onHrmPairing,
               onCadencePairing: _onCadencePairing,
+              unlockKeys: _unlockKeys,
+              unlockButtonIndex: _unlockButtonIndex,
+              unlockChoices: _unlockChoices,
             ),
           ),
         ),

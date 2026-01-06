@@ -30,6 +30,8 @@ void main() {
     // Default mocks
     when(() => mockThemeManager.getBlueFab(any(), any())).thenReturn(const SizedBox());
     when(() => mockThemeManager.getGreenFab(any(), any())).thenReturn(const SizedBox());
+    when(() => mockThemeManager.getTutorialFab(any())).thenReturn(const SizedBox());
+    when(() => mockThemeManager.getGreenFabWKey(any(), any(), any())).thenReturn(const SizedBox());
   });
 
   testWidgets('RecordingFabMenu shows Start button when not measuring', (
@@ -54,13 +56,19 @@ void main() {
             onHrmPairing: () async {},
             onCadencePairing: () async {},
             onLock: () {},
+            onUnlock: () {},
             onStage: () {},
+            onTutorial: () {},
+            unlockKeys: const [],
+            unlockButtonIndex: 0,
           ),
         ),
       ),
     );
 
     verify(() => mockThemeManager.getBlueFab(Icons.play_arrow, any())).called(1);
+    // Verify tutorial button is present
+    verify(() => mockThemeManager.getTutorialFab(any())).called(1);
   });
 
   testWidgets('RecordingFabMenu shows Stop button when measuring', (WidgetTester tester) async {
@@ -83,7 +91,11 @@ void main() {
             onHrmPairing: () async {},
             onCadencePairing: () async {},
             onLock: () {},
+            onUnlock: () {},
             onStage: () {},
+            onTutorial: () {},
+            unlockKeys: const [],
+            unlockButtonIndex: 0,
           ),
         ),
       ),
@@ -112,7 +124,11 @@ void main() {
             onHrmPairing: () async {},
             onCadencePairing: () async {},
             onLock: () {},
+            onUnlock: () {},
             onStage: () {},
+            onTutorial: () {},
+            unlockKeys: const [],
+            unlockButtonIndex: 0,
           ),
         ),
       ),
@@ -123,6 +139,51 @@ void main() {
 
     // Stage button hidden because instantOnStage is true
     verifyNever(() => mockThemeManager.getBlueFab(Icons.sports_score, any()));
+  });
+
+  testWidgets('RecordingFabMenu shows Unlock Game when locked', (WidgetTester tester) async {
+    final unlockKeys = List.generate(6, (index) => GlobalKey());
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: RecordingFabMenu(
+            fabKey: fabKey,
+            themeManager: mockThemeManager,
+            isLocked: true,
+            measuring: true,
+            busy: false,
+            circuitWorkout: false,
+            heartRateMonitorWorkout: false,
+            fitnessEquipment: null,
+            instantOnStage: true,
+            onStageStatisticsType: "none",
+            onStartStop: () {},
+            onUpload: () async {},
+            onHrmPairing: () async {},
+            onCadencePairing: () async {},
+            onLock: () {},
+            onUnlock: () {},
+            onStage: () {},
+            onTutorial: () {},
+            unlockKeys: unlockKeys,
+            unlockButtonIndex: 2,
+            unlockChoices: 6,
+          ),
+        ),
+      ),
+    );
+
+    // Should call getGreenFabWKey 6 times
+    verify(() => mockThemeManager.getGreenFabWKey(Icons.lock_open, any(), any())).called(6);
+
+    // Verify STRICT MODE: No other buttons should be present
+    // Start/Stop button
+    verifyNever(() => mockThemeManager.getBlueFab(Icons.stop, any()));
+    verifyNever(() => mockThemeManager.getBlueFab(Icons.play_arrow, any()));
+    // HRM Pairing
+    verifyNever(() => mockThemeManager.getBlueFab(Icons.favorite, any()));
+    // Cadence Pairing
+    verifyNever(() => mockThemeManager.getBlueFab(Icons.sensors, any()));
   });
 
   testWidgets('RecordingFabMenu shows HRM button when appropriate', (WidgetTester tester) async {
@@ -145,7 +206,11 @@ void main() {
             onHrmPairing: () async {},
             onCadencePairing: () async {},
             onLock: () {},
+            onUnlock: () {},
             onStage: () {},
+            onTutorial: () {},
+            unlockKeys: const [],
+            unlockButtonIndex: 0,
           ),
         ),
       ),

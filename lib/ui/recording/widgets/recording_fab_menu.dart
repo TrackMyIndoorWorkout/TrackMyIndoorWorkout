@@ -27,9 +27,14 @@ class RecordingFabMenu extends StatelessWidget {
     required this.onStartStop,
     required this.onUpload,
     required this.onLock,
+    required this.onUnlock,
     required this.onStage,
+    required this.onTutorial,
     required this.onHrmPairing,
     required this.onCadencePairing,
+    required this.unlockKeys,
+    required this.unlockButtonIndex,
+    this.unlockChoices = 6,
   });
 
   final GlobalKey<FabCircularMenuPlusState> fabKey;
@@ -42,11 +47,16 @@ class RecordingFabMenu extends StatelessWidget {
   final FitnessEquipment? fitnessEquipment;
   final bool instantOnStage;
   final String onStageStatisticsType;
+  final List<GlobalKey> unlockKeys;
+  final int unlockButtonIndex;
+  final int unlockChoices;
 
   final VoidCallback onStartStop;
   final Future<void> Function() onUpload;
   final VoidCallback onLock;
+  final VoidCallback onUnlock;
   final VoidCallback onStage;
+  final VoidCallback onTutorial;
   final Future<void> Function() onHrmPairing;
   final Future<void> Function() onCadencePairing;
 
@@ -109,6 +119,19 @@ class RecordingFabMenu extends StatelessWidget {
   List<Widget> _buildMenuButtons() {
     List<Widget> menuButtons = [];
 
+    if (isLocked) {
+      for (int i = 0; i < unlockChoices; i++) {
+        menuButtons.add(
+          themeManager.getGreenFabWKey(i == unlockButtonIndex ? Icons.lock_open : Icons.lock, () {
+            if (i == unlockButtonIndex) {
+              onUnlock();
+            }
+          }, unlockKeys[i]),
+        );
+      }
+      return menuButtons;
+    }
+
     if (measuring) {
       if (!circuitWorkout) {
         menuButtons.add(themeManager.getGreenFab(Icons.lock_open, onLock));
@@ -119,6 +142,7 @@ class RecordingFabMenu extends StatelessWidget {
       }
     } else {
       menuButtons.addAll([
+        themeManager.getTutorialFab(onTutorial),
         themeManager.getBlueFab(Icons.cloud_upload, () async {
           await onUpload();
         }),
@@ -130,13 +154,11 @@ class RecordingFabMenu extends StatelessWidget {
       ]);
     }
 
-    if (!heartRateMonitorWorkout && !(fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false)) {
-      menuButtons.add(
-        themeManager.getBlueFab(Icons.favorite, () async {
-          await onHrmPairing();
-        }),
-      );
-    }
+    menuButtons.add(
+      themeManager.getBlueFab(Icons.favorite, () async {
+        await onHrmPairing();
+      }),
+    );
 
     // Always allow adding internal cadence sensor
     menuButtons.add(
