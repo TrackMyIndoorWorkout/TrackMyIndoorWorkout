@@ -16,79 +16,40 @@ void main() {
       expect(result, isNull, reason: 'FTMS value 255 should be null, not 127.5');
     });
 
-    test('ByteMetricDescriptor always returns null for 255 (0xFF) - FTMS sentinel value', () {
-      // Sentinel values should be checked regardless of optional parameter
-      final desc1 = ByteMetricDescriptor(lsb: 0, divider: 2.0, optional: false);
-      final desc2 = ByteMetricDescriptor(lsb: 0, divider: 2.0, optional: true);
+    test('ByteMetricDescriptor returns null for 255 (0xFF) - FTMS sentinel value', () {
+      final desc = ByteMetricDescriptor(lsb: 0, divider: 2.0);
 
       // Test normal value
       var data = [30]; // 30 / 2.0 = 15.0
-      expect(desc1.getMeasurementValue(data), equals(15.0));
-      expect(desc2.getMeasurementValue(data), equals(15.0));
+      expect(desc.getMeasurementValue(data), equals(15.0));
 
       // Test FTMS "not available" sentinel value
       data = [255]; // 0xFF
-      expect(
-        desc1.getMeasurementValue(data),
-        isNull,
-        reason: 'Sentinel value 255 should return null even when optional=false',
-      );
-      expect(
-        desc2.getMeasurementValue(data),
-        isNull,
-        reason: 'Sentinel value 255 should return null when optional=true',
-      );
+      expect(desc.getMeasurementValue(data), isNull);
     });
 
-    test('ShortMetricDescriptor always returns null for 65535 (0xFFFF) - FTMS sentinel value', () {
-      // Sentinel values should be checked regardless of optional parameter
-      final desc1 = ShortMetricDescriptor(lsb: 0, msb: 1, optional: false);
-      final desc2 = ShortMetricDescriptor(lsb: 0, msb: 1, optional: true);
+    test('ShortMetricDescriptor returns null for 65535 (0xFFFF) - FTMS sentinel value', () {
+      final desc = ShortMetricDescriptor(lsb: 0, msb: 1);
 
       // Test normal value
       var data = [100, 0]; // 100
-      expect(desc1.getMeasurementValue(data), equals(100.0));
-      expect(desc2.getMeasurementValue(data), equals(100.0));
+      expect(desc.getMeasurementValue(data), equals(100.0));
 
       // Test FTMS "not available" sentinel value
       data = [255, 255]; // 65535 (maxUint16 - 1)
-      expect(
-        desc1.getMeasurementValue(data),
-        isNull,
-        reason: 'Sentinel value 65535 should return null even when optional=false',
-      );
-      expect(
-        desc2.getMeasurementValue(data),
-        isNull,
-        reason: 'Sentinel value 65535 should return null when optional=true',
-      );
+      expect(desc.getMeasurementValue(data), isNull);
     });
 
-    test(
-      'ThreeByteMetricDescriptor always returns null for 16777215 (0xFFFFFF) - FTMS sentinel value',
-      () {
-        // Sentinel values should be checked regardless of optional parameter
-        final desc1 = ThreeByteMetricDescriptor(lsb: 0, msb: 2, optional: false);
-        final desc2 = ThreeByteMetricDescriptor(lsb: 0, msb: 2, optional: true);
+    test('ThreeByteMetricDescriptor returns null for 16777215 (0xFFFFFF) - FTMS sentinel value', () {
+      final desc = ThreeByteMetricDescriptor(lsb: 0, msb: 2);
 
-        // Test normal value
-        var data = [0, 100, 0]; // 25600
-        expect(desc1.getMeasurementValue(data), equals(25600.0));
-        expect(desc2.getMeasurementValue(data), equals(25600.0));
+      // Test normal value
+      var data = [0, 100, 0]; // 25600
+      expect(desc.getMeasurementValue(data), equals(25600.0));
 
-        // Test FTMS "not available" sentinel value
-        data = [255, 255, 255]; // 16777215 (maxUint24 - 1)
-        expect(
-          desc1.getMeasurementValue(data),
-          isNull,
-          reason: 'Sentinel value 16777215 should return null even when optional=false',
-        );
-        expect(
-          desc2.getMeasurementValue(data),
-          isNull,
-          reason: 'Sentinel value 16777215 should return null when optional=true',
-        );
-      },
-    );
+      // Test FTMS "not available" sentinel value
+      data = [255, 255, 255]; // 16777215 (maxUint24 - 1)
+      expect(desc.getMeasurementValue(data), isNull);
+    });
   });
 }

@@ -127,7 +127,6 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
       caloriesMetric = ShortMetricDescriptor(
         lsb: byteCounter,
         msb: byteCounter + 1,
-        optional: true,
       );
       // Energy / hour UInt16
       byteCounter += 2;
@@ -135,11 +134,10 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         caloriesPerHourMetric = ShortMetricDescriptor(
           lsb: byteCounter,
           msb: byteCounter + 1,
-          optional: true,
         );
         // Energy / minute UInt8
         byteCounter += 2;
-        caloriesPerMinuteMetric = ByteMetricDescriptor(lsb: byteCounter, optional: true);
+        caloriesPerMinuteMetric = ByteMetricDescriptor(lsb: byteCounter);
         byteCounter++;
       }
     }

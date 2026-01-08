@@ -7,7 +7,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group('optional LongMetricDescriptor returns null if the value is max', () {
+  group('LongMetricDescriptor returns null if the value is max (FTMS sentinel)', () {
     final rnd = Random();
     for (var divider in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 6;
@@ -21,14 +21,12 @@ void main() {
       data[msbLocation - dir] = maxByte;
       data[msbLocation] = maxByte;
       divider = rnd.nextDouble() * 4;
-      const expected = 0.0;
 
-      test("$divider -> $expected", () async {
+      test("$divider -> null (sentinel)", () async {
         final desc = LongMetricDescriptor(
           lsb: lsbLocation,
           msb: msbLocation,
           divider: divider,
-          optional: true,
         );
 
         expect(desc.getMeasurementValue(data), null);
@@ -46,19 +44,18 @@ void main() {
       final msbLocation = larger ? lsbLocation + 3 : lsbLocation - 3;
       final dir = larger ? 1 : -1;
       final divider = rnd.nextDouble() * 1024;
-      final optional = rnd.nextBool();
-      final expected =
-          (optional &&
-              data[lsbLocation] == maxByte &&
-              data[lsbLocation + dir] == maxByte &&
-              data[msbLocation - dir] == maxByte &&
-              data[msbLocation] == maxByte)
-          ? 0
+      // Sentinel values always return null now
+      final isSentinel = data[lsbLocation] == maxByte &&
+          data[lsbLocation + dir] == maxByte &&
+          data[msbLocation - dir] == maxByte &&
+          data[msbLocation] == maxByte;
+      final expected = isSentinel
+          ? null
           : (data[lsbLocation] +
-                    maxUint8 *
-                        (data[lsbLocation + dir] +
-                            maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
-                divider;
+                  maxUint8 *
+                      (data[lsbLocation + dir] +
+                          maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
+              divider;
 
       test(
         "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
@@ -67,10 +64,9 @@ void main() {
             lsb: lsbLocation,
             msb: msbLocation,
             divider: divider,
-            optional: optional,
           );
 
-          expect(desc.getMeasurementValue(data), closeTo(expected, eps));
+          expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));
         },
       );
     }

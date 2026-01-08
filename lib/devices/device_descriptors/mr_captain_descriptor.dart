@@ -24,21 +24,18 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
       caloriesPerMinuteMetric = ShortMetricDescriptor(
         lsb: byteCounter,
         msb: byteCounter + 1,
-        optional: true,
       );
       // Energy / minute UInt8, but there are two bytes FFS
       byteCounter += 2;
       caloriesMetric = ShortMetricDescriptor(
         lsb: byteCounter,
         msb: byteCounter + 1,
-        optional: true,
       );
       // Total Energy: UInt16
       byteCounter += 2;
       caloriesPerHourMetric = ShortMetricDescriptor(
         lsb: byteCounter,
         msb: byteCounter + 1,
-        optional: true,
       );
       // Energy / hour UInt16
       byteCounter += 2;

@@ -8,7 +8,6 @@ class ShortMetricDescriptor extends MetricDescriptor {
     required super.lsb,
     required super.msb,
     super.divider = 1.0,
-    super.optional = false,
   });
 
   @override
