@@ -346,10 +346,11 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _recordHandlerFunction(RecordWithSport record) async {
-    if (!_measuring || !(_fitnessEquipment?.measuring ?? false)) {
+    // Allow if measuring AND (FE is measuring OR we are driven by internal cadence)
+    bool drivenByInternal = (_latestInternalCadence ?? 0) > 0;
+    if (!_measuring || (!(_fitnessEquipment?.measuring ?? false) && !drivenByInternal)) {
       return;
     }
-
     if (_internalMotion != null && _latestInternalCadence != null && _latestInternalCadence! > 0) {
       // Overwrite or supplement cadence
       // If we pair an internal sensor, we likely want to use it.
@@ -805,6 +806,7 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _initializeInternalMotion() async {
+    debugPrint("initInternalMotion");
     _internalMotion = Get.isRegistered<DeviceInternalMotion>()
         ? Get.find<DeviceInternalMotion>()
         : null;
@@ -818,12 +820,15 @@ class RecordingState extends State<RecordingScreen> {
           setState(() {
             _latestInternalCadence = record.cadence;
             _latestInternalPreciseCadence = record.preciseCadence;
-
-            // If the main equipment is not measuring or providing updates,
-            // we might want to trigger a UI update here?
-            // But _recordHandlerFunction handles the main UI update.
-            // Assuming FitnessEquipment is active.
           });
+
+          // If the main equipment is not driving the loop (e.g. Cadence Only mode),
+          // we must drive it ourselves.
+          if (_measuring &&
+              !(_fitnessEquipment?.measuring ?? false) &&
+              (_latestInternalCadence ?? 0) > 0) {
+            _recordHandlerFunction(record);
+          }
         }
       });
     }
@@ -1210,7 +1215,13 @@ class RecordingState extends State<RecordingScreen> {
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
     _initializeHeartRateMonitor(false);
-    _initializeInternalMotion();
+    // Delay initialization of internal motion to prevent main thread blocking during screen transition
+    // and allow the UI to render the first frame.
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _initializeInternalMotion();
+      }
+    });
     _connectOnDemand();
     _isLocked = false;
     _unlockButtonIndex = 0;

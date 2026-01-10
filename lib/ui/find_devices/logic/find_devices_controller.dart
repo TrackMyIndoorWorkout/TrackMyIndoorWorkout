@@ -491,6 +491,10 @@ class FindDevicesController extends GetxController {
       _scanStreamSubscription?.pause();
       _autoConnectLatch = false;
 
+      if (!Get.isRegistered<DeviceInternalMotion>()) {
+        Get.put(DeviceInternalMotion(), permanent: true);
+      }
+
       final motion =
           internalMotion ??
           (Get.isRegistered<DeviceInternalMotion>() ? Get.find<DeviceInternalMotion>() : null);
