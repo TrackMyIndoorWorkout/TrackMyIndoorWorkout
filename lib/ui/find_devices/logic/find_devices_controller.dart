@@ -463,7 +463,7 @@ class FindDevicesController extends GetxController {
       _scanStreamSubscription?.pause();
       _autoConnectLatch = false;
 
-      final descriptor = DeviceFactory.getGenericHeartRateMonitor();
+      final descriptor = DeviceFactory.getDescriptorForFourCC(internalHeartRateMonitorFourCC);
       if (heartRateMonitor is DeviceInternalHeartRate) {
         descriptor.sport = (heartRateMonitor as DeviceInternalHeartRate).sport;
       }

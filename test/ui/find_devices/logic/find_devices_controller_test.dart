@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/internal_heart_rate_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/internal_sensor_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cadence_monitor_internal.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
@@ -335,7 +336,7 @@ void main() {
     ).thenAnswer((_) => Stream.value(BluetoothConnectionState.connected));
     when(() => mockDevice.remoteId).thenReturn(const DeviceIdentifier("INTERNAL_HRM"));
     when(() => mockDevice.platformName).thenReturn("Internal HRM");
-    when(() => mockHrm.sport).thenReturn(ActivityType.run);
+    when(() => mockHrm.sport).thenReturn(ActivityType.ride);
     when(
       () => mockDevice.connect(
         timeout: any(named: 'timeout'),
@@ -360,6 +361,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.byType(RecordingScreen), findsOneWidget);
+    final screen = tester.widget<RecordingScreen>(find.byType(RecordingScreen));
+    expect(screen.device.remoteId.str, "INTERNAL_HRM");
+    expect(screen.descriptor, isA<InternalHeartRateDescriptor>());
+    expect(screen.descriptor.deviceCategory, DeviceCategory.primarySensor);
+    expect(screen.sport, ActivityType.ride); // Default is Ride for Internal HRM
   });
 
   testWidgets('onConnectedMotionTap starts workout if stationaryWorkout is true', (tester) async {

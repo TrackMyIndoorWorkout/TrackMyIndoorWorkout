@@ -18,6 +18,8 @@ const genericFTMSStepClimberFourCC = "GSpC";
 const genericFTMSSwimFourCC = "GSwi";
 const genericFTMSTreadmillFourCC = "GRun";
 const heartRateMonitorFourCC = "HRMT";
+const internalHeartRateMonitorFourCC = "INTH";
+const internalMotionSensorFourCC = "INTM";
 const kayakFirstFourCC = "K1st";
 const kayakProGenesisPortFourCC = "KPro";
 const lifeFitnessBikeFourCC = "LFBk";
@@ -43,7 +45,6 @@ const strydFootPodFourCC = "Strd";
 const technogymRunFourCC = "TRun";
 const virtufitUltimatePro2FourCC = "VFUP";
 const yesoulS3FourCC = "ysS3";
-const internalMotionSensorFourCC = "INTM";
 
 List<String> allFourCC = [
   bowflexC7BikeFourCC,
@@ -64,6 +65,8 @@ List<String> allFourCC = [
   genericFTMSSwimFourCC,
   genericFTMSTreadmillFourCC,
   heartRateMonitorFourCC,
+  internalHeartRateMonitorFourCC,
+  internalMotionSensorFourCC,
   kayakFirstFourCC,
   kayakProGenesisPortFourCC,
   lifeFitnessBikeFourCC,
@@ -89,15 +92,15 @@ List<String> allFourCC = [
   technogymRunFourCC,
   virtufitUltimatePro2FourCC,
   yesoulS3FourCC,
-  internalMotionSensorFourCC,
 ];
 
 List<String> multiSportFourCCs = [
   concept2ErgFourCC,
   genericFTMSRowerFourCC,
+  internalHeartRateMonitorFourCC,
+  internalMotionSensorFourCC,
   kayakProGenesisPortFourCC,
   kayakFirstFourCC,
-  internalMotionSensorFourCC,
 ];
 
 List<String> allConcept2FourCCs = [
@@ -194,6 +197,10 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   genericFTMSSwimFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Swim"]),
   genericFTMSTreadmillFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FTMS Treadmill"]),
   heartRateMonitorFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
+  internalHeartRateMonitorFourCC: DeviceIdentifierHelperEntry(
+    deviceNamePrefixes: ["Internal Heart Rate"],
+  ),
+  internalMotionSensorFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Internal Motion"]),
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
   lifeFitnessBikeFourCC: DeviceIdentifierHelperEntry(
@@ -256,10 +263,6 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   ),
   virtufitUltimatePro2FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["VIRTUFIT-UP2"]),
   yesoulS3FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Yesoul"]),
-  internalMotionSensorFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["Internal Motion"],
-    sportsMatch: true,
-  ),
 };
 
 class SportDescriptor {
@@ -305,6 +308,11 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
   genericFTMSSwimFourCC: SportDescriptor(defaultSport: ActivityType.swim, isMultiSport: false),
   genericFTMSTreadmillFourCC: SportDescriptor(defaultSport: ActivityType.run, isMultiSport: false),
   heartRateMonitorFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
+  internalHeartRateMonitorFourCC: SportDescriptor(
+    defaultSport: ActivityType.ride,
+    isMultiSport: true,
+  ),
+  internalMotionSensorFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: true),
   kayakFirstFourCC: SportDescriptor(defaultSport: ActivityType.kayaking, isMultiSport: true),
   kayakProGenesisPortFourCC: SportDescriptor(
     defaultSport: ActivityType.kayaking,
@@ -350,8 +358,4 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
     isMultiSport: false,
   ),
   yesoulS3FourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
-  internalMotionSensorFourCC: SportDescriptor(
-    defaultSport: ActivityType.workout,
-    isMultiSport: true,
-  ),
 };
