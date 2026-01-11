@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
@@ -79,9 +78,7 @@ class DeviceInternalMotion extends ComplexSensor {
 
   void _startListening(ComplexMetricProcessingFunction metricProcessingFunction) {
     try {
-      debugPrint("DEBUG: _startListening called. Subscribing to accelerometer...");
       _sensorSubscription = accelerometerEventStream().listen((event) {
-        // debugPrint("DEBUG: Accel event: ${event.x}, ${event.y}, ${event.z}"); // Uncomment for flood
         final now = DateTime.now();
 
         _processor.addData(event.x, event.y, event.z, now.millisecondsSinceEpoch);
@@ -91,7 +88,6 @@ class DeviceInternalMotion extends ComplexSensor {
           final rpm = _processor.estimateCadence();
 
           if (rpm != null && rpm > 0) {
-            debugPrint("DEBUG: Valid RPM found: $rpm");
             metricProcessingFunction(_createRecord(rpm));
           }
         }

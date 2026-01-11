@@ -806,7 +806,6 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _initializeInternalMotion() async {
-    debugPrint("initInternalMotion");
     _internalMotion = Get.isRegistered<DeviceInternalMotion>()
         ? Get.find<DeviceInternalMotion>()
         : null;
@@ -815,6 +814,9 @@ class RecordingState extends State<RecordingScreen> {
       await _internalMotion!.discover();
       await _internalMotion!.attach();
 
+      // Ensure FitnessEquipment has our record handler
+      _startPumpingData();
+
       _internalMotion!.pumpData((record) {
         if (mounted) {
           setState(() {
@@ -822,12 +824,10 @@ class RecordingState extends State<RecordingScreen> {
             _latestInternalPreciseCadence = record.preciseCadence;
           });
 
-          // If the main equipment is not driving the loop (e.g. Cadence Only mode),
-          // we must drive it ourselves.
-          if (_measuring &&
-              !(_fitnessEquipment?.measuring ?? false) &&
-              (_latestInternalCadence ?? 0) > 0) {
-            _recordHandlerFunction(record);
+          // Pipe the record through FitnessEquipment so it manages the state machine (moving, paused, etc)
+          // and throttling, then calls _recordHandlerFunction.
+          if (_measuring) {
+            _fitnessEquipment?.pumpDataCore(record, false);
           }
         }
       });
