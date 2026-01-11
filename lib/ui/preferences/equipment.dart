@@ -8,6 +8,7 @@ import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
 import '../../preferences/drive_train_loss.dart';
+import '../../preferences/internal_motion_monitor_enabled.dart';
 import '../../preferences/kayak_first_display_configuration.dart';
 import '../../preferences/measurement_sink_address.dart';
 import '../../preferences/paddling_with_cycling_sensors.dart';
@@ -87,6 +88,11 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         direction: Axis.vertical,
       ),
       const PrefInteger(pref: dragForceTuneTag, min: dragForceTuneMin, max: dragForceTuneMax),
+      const PrefCheckbox(
+        title: Text(internalMotionMonitorEnabled),
+        subtitle: Text(internalMotionMonitorEnabledDescription),
+        pref: internalMotionMonitorEnabledTag,
+      ),
       const PrefCheckbox(
         title: Text(paddlingWithCyclingSensors),
         subtitle: Text(paddlingWithCyclingSensorsDescription),

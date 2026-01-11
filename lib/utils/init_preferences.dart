@@ -42,6 +42,7 @@ import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/internal_motion_monitor_enabled.dart';
 import '../preferences/kayak_first_display_configuration.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
@@ -154,6 +155,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     instantOnStageTag: instantOnStageDefault,
     instantScanTag: instantScanDefault,
     instantUploadTag: instantUploadDefault,
+    internalMotionMonitorEnabledTag: internalMotionMonitorEnabledDefault,
     leaderboardFeatureTag: leaderboardFeatureDefault,
     logLevelTag: logLevelDefault,
     maximumChartColorTag: maximumChartColorDefault,
