@@ -11,6 +11,7 @@ import 'device_descriptors/device_descriptor.dart';
 import 'device_descriptors/heart_rate_descriptor.dart';
 import 'device_descriptors/indoor_bike_device_descriptor.dart';
 import 'device_descriptors/kayak_first_descriptor.dart';
+import 'device_descriptors/internal_sensor_descriptor.dart';
 import 'device_descriptors/life_fitness_bike_descriptor.dart';
 import 'device_descriptors/life_fitness_elliptical_descriptor.dart';
 import 'device_descriptors/life_fitness_stair_climber_descriptor.dart';
@@ -368,6 +369,8 @@ class DeviceFactory {
         return DeviceFactory.getGenericHeartRateMonitor();
       case kayakFirstFourCC:
         return KayakFirstDescriptor();
+      case internalMotionSensorFourCC:
+        return InternalSensorDescriptor();
       case kayakProGenesisPortFourCC:
         return DeviceFactory.getKayaPro();
       case lifeFitnessBikeFourCC:

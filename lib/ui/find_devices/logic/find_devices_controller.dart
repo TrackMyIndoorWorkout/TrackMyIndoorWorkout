@@ -499,9 +499,7 @@ class FindDevicesController extends GetxController {
           internalMotion ??
           (Get.isRegistered<DeviceInternalMotion>() ? Get.find<DeviceInternalMotion>() : null);
 
-      var descriptor = DeviceFactory.genericDescriptorForSport(
-        motion?.targetSport ?? ActivityType.ride,
-      );
+      var descriptor = DeviceFactory.getDescriptorForFourCC(internalMotionSensorFourCC);
       if (motion != null) {
         descriptor.sport = motion.targetSport;
       }

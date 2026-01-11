@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:track_my_indoor_exercise/devices/device_descriptors/device_descriptor.dart';
+import 'package:track_my_indoor_exercise/devices/device_descriptors/internal_sensor_descriptor.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cadence_monitor_internal.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/heart_rate_monitor.dart';
@@ -413,6 +414,7 @@ void main() {
     final screen = tester.widget<RecordingScreen>(find.byType(RecordingScreen));
     expect(screen.sport, ActivityType.ride);
     expect(screen.descriptor.deviceCategory, DeviceCategory.primarySensor);
+    expect(screen.descriptor, isA<InternalSensorDescriptor>());
   });
 
   testWidgets('onConnectedMotionTap does NOT start workout if stationaryWorkout is false', (
