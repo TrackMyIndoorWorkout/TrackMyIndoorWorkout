@@ -2,10 +2,12 @@ import 'dart:math';
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
+import 'package:track_my_indoor_exercise/utils/bluetooth_adapter.dart';
 
 import 'utils.dart';
 
@@ -15,9 +17,16 @@ class MockBluetoothService extends Mock implements BluetoothService {}
 
 class MockBluetoothCharacteristic extends Mock implements BluetoothCharacteristic {}
 
+class MockBluetoothAdapter extends Mock implements BluetoothAdapter {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
+    if (!Get.isRegistered<BluetoothAdapter>()) {
+      final mockAdapter = MockBluetoothAdapter();
+      when(() => mockAdapter.isBluetoothOn()).thenAnswer((_) async => true);
+      Get.put<BluetoothAdapter>(mockAdapter);
+    }
   });
 
   group('discover', () {
@@ -37,6 +46,10 @@ void main() {
       return serviceMock;
     }
 
+    void stubRemoteId(MockBluetoothDevice mockDevice) {
+      when(() => mockDevice.remoteId).thenReturn(const DeviceIdentifier("TEST_ID"));
+    }
+
     BluetoothService createMockFtmsService({
       String serviceUid = '00001826-0000-1000-8000-00805f9b34fb',
       String characteristicUid = '00002ad2-0000-1000-8000-00805f9b34fb',
@@ -53,6 +66,7 @@ void main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
+      stubRemoteId(mockDevice);
       when(
         () => mockDevice.discoverServices(subscribeToServicesChanged: false),
       ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
@@ -71,6 +85,7 @@ void main() {
       const anotherUid = '00000000-0000-1000-8000-00805f9b34fb';
       final mockFtmsService = createMockFtmsService(characteristicUid: anotherUid);
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
+      stubRemoteId(mockDevice);
       when(
         () => mockDevice.discoverServices(subscribeToServicesChanged: false),
       ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
@@ -87,6 +102,7 @@ void main() {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
+      stubRemoteId(mockDevice);
       when(
         () => mockDevice.discoverServices(subscribeToServicesChanged: false),
       ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);

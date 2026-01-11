@@ -32,5 +32,7 @@ class BluetoothAdapter {
 
   Future<void> turnOn() => FlutterBluePlus.turnOn();
 
+  Future<bool> isBluetoothOn() => isBluetoothOn();
+
   Future<void> stopScan() => FlutterBluePlus.stopScan();
 }

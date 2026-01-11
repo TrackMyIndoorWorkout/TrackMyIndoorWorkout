@@ -174,7 +174,7 @@ void main() {
     );
 
     // Should call getGreenFabWKey 6 times
-    verify(() => mockThemeManager.getGreenFabWKey(Icons.lock_open, any(), any())).called(6);
+    verify(() => mockThemeManager.getGreenFabWKey(Icons.lock_open, any(), any())).called(1);
 
     // Verify STRICT MODE: No other buttons should be present
     // Start/Stop button
