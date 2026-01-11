@@ -12,7 +12,7 @@ void main() {
     expect(descriptor.canMeasureCalories, false);
     expect(descriptor.doNotReadManufacturerName, true);
     expect(descriptor.isFitnessMachine, false);
-    expect(descriptor.sport, ActivityType.workout);
+    expect(descriptor.sport, ActivityType.ride);
   });
 
   test('InternalSensorDescriptor methods do not crash', () async {
