@@ -73,7 +73,7 @@ class CadenceProcessor {
 
     // Convert RPM limits to Lag indices
     // Lag = Fs * 60 / RPM
-    final minRpm = 20.0;
+    final minRpm = 12.0;
     final maxRpm = 220.0;
 
     final minLag = (fs * 60 / maxRpm).floor();

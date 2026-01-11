@@ -17,7 +17,7 @@ import 'complex_sensor.dart';
 class DeviceInternalMotion extends ComplexSensor {
   static const String logTag = "INTERNAL_MOTION";
   final String targetSport;
-  final CadenceProcessor _processor = CadenceProcessor(windowSize: 200); // 4s @ 50Hz
+  final CadenceProcessor _processor = CadenceProcessor(windowSize: 600); // 12s @ 50Hz
   StreamSubscription<AccelerometerEvent>? _sensorSubscription;
 
   // Throttle processing
@@ -81,7 +81,7 @@ class DeviceInternalMotion extends ComplexSensor {
     try {
       debugPrint("DEBUG: _startListening called. Subscribing to accelerometer...");
       _sensorSubscription = accelerometerEventStream().listen((event) {
-        debugPrint("DEBUG: Accel event: ${event.x}, ${event.y}, ${event.z}"); // Uncomment for flood
+        // debugPrint("DEBUG: Accel event: ${event.x}, ${event.y}, ${event.z}"); // Uncomment for flood
         final now = DateTime.now();
 
         _processor.addData(event.x, event.y, event.z, now.millisecondsSinceEpoch);
