@@ -10,7 +10,7 @@ import 'device_descriptor.dart';
 class InternalSensorDescriptor extends DeviceDescriptor {
   InternalSensorDescriptor()
     : super(
-        sport: ActivityType.workout,
+        sport: ActivityType.ride,
         isMultiSport: true,
         fourCC: internalMotionSensorFourCC,
         vendorName: "Device Internal",

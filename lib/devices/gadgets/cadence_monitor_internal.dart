@@ -24,7 +24,7 @@ class DeviceInternalMotion extends ComplexSensor {
   DateTime _lastProcessTime = DateTime.now();
   final Duration _processInterval = const Duration(milliseconds: 1000); // Update every 1s
 
-  DeviceInternalMotion({this.targetSport = ActivityType.workout})
+  DeviceInternalMotion({this.targetSport = ActivityType.ride})
     : super("", "", BluetoothDevice(remoteId: const DeviceIdentifier("INTERNAL_MOTION")));
 
   static Future<bool> hasMotionSensors() async {
