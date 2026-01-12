@@ -30,6 +30,7 @@ class Logging {
   void log(int logLevelThreshold, int logLevel, String tag, String subTag, String message) {
     if (kDebugMode) {
       debugPrint("$tag | $subTag | $message");
+      return;
     }
 
     if (logLevelThreshold == logLevelNone || testing) {

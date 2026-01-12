@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:isar_community/isar.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
+import 'package:track_my_indoor_exercise/devices/company_registry.dart';
 import 'package:track_my_indoor_exercise/devices/internal_sensor_manager.dart';
 import 'package:track_my_indoor_exercise/ui/find_devices/logic/find_devices_controller.dart';
-import 'package:track_my_indoor_exercise/utils/bluetooth_adapter.dart';
 import 'package:track_my_indoor_exercise/ui/models/advertisement_cache.dart';
-import 'package:track_my_indoor_exercise/utils/theme_manager.dart';
 import 'package:track_my_indoor_exercise/utils/address_names.dart';
-import 'package:track_my_indoor_exercise/persistence/db_utils.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:track_my_indoor_exercise/preferences/stationary_workout.dart';
+import 'package:track_my_indoor_exercise/utils/bluetooth_adapter.dart';
 import 'package:track_my_indoor_exercise/utils/sound.dart';
-import 'package:isar_community/isar.dart';
+import 'package:track_my_indoor_exercise/utils/theme_manager.dart';
+import 'package:track_my_indoor_exercise/persistence/db_utils.dart';
 import 'package:track_my_indoor_exercise/persistence/log_entry.dart';
+import 'package:track_my_indoor_exercise/preferences/stationary_workout.dart';
 
 // Mocks
 class MockBluetoothAdapter extends Mock implements BluetoothAdapter {
@@ -63,6 +64,11 @@ class MockSoundService extends Mock implements SoundService {
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => super.toString();
 }
 
+class MockCompanyRegistry extends Mock implements CompanyRegistry {
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => super.toString();
+}
+
 class MockInternalSensorManager extends Mock implements InternalSensorManager {}
 
 void main() {
@@ -77,6 +83,7 @@ void main() {
   late MockIsar mockIsar;
   late MockSoundService mockSoundService;
   late MockInternalSensorManager mockInternalSensorManager;
+  late MockCompanyRegistry mockCompanyRegistry;
 
   setUpAll(() {
     registerFallbackValue(BluetoothConnectionState.disconnected);
@@ -86,6 +93,22 @@ void main() {
       LogEntry(timeStamp: DateTime.now(), level: "", tag: "", subTag: "", message: ""),
     );
     registerFallbackValue(Duration.zero);
+    registerFallbackValue(
+      ScanResult(
+        device: BluetoothDevice(remoteId: const DeviceIdentifier("00:00:00:00:00:00")),
+        advertisementData: AdvertisementData(
+          advName: "Fallback Device",
+          txPowerLevel: null,
+          connectable: true,
+          manufacturerData: {},
+          serviceData: {},
+          serviceUuids: [],
+          appearance: 0,
+        ),
+        rssi: 0,
+        timeStamp: DateTime.now(),
+      ),
+    );
   });
 
   setUp(() {
@@ -102,6 +125,7 @@ void main() {
     mockIsar = MockIsar();
     mockSoundService = MockSoundService();
     mockInternalSensorManager = MockInternalSensorManager();
+    mockCompanyRegistry = MockCompanyRegistry();
 
     Get.put<BluetoothAdapter>(mockBluetoothAdapter, permanent: true);
     Get.put<BasePrefService>(mockPrefService, permanent: true);
@@ -113,6 +137,7 @@ void main() {
     Get.put<Isar>(mockIsar, permanent: true);
     Get.put<SoundService>(mockSoundService, permanent: true);
     Get.put<InternalSensorManager>(mockInternalSensorManager, permanent: true);
+    Get.put<CompanyRegistry>(mockCompanyRegistry, permanent: true);
 
     // Default mocks
     when(() => mockBluetoothAdapter.scanResults).thenAnswer((_) => Stream.value([]));
@@ -154,6 +179,13 @@ void main() {
     // Internal Sensor Manager
     when(() => mockInternalSensorManager.hasInternalHeartRate()).thenAnswer((_) async => true);
     when(() => mockInternalSensorManager.hasInternalMotionSensors()).thenAnswer((_) async => true);
+    when(() => mockInternalSensorManager.hasBetterHealthTracker()).thenAnswer((_) async => false);
+
+    // AdvertisementCache
+    when(() => mockAdvertisementCache.addEntry(any(), any())).thenReturn(null);
+
+    // CompanyRegistry
+    when(() => mockCompanyRegistry.nameForId(any())).thenReturn("Test Company");
   });
 
   tearDown(() {

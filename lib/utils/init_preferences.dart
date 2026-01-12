@@ -15,6 +15,7 @@ import '../preferences/athlete_name.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/better_health_enabled.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_ftms_feature_read.dart';
 import '../preferences/block_manufacturer_name_read.dart';
@@ -128,6 +129,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     blockFTMSFeatureReadTag: blockFTMSFeatureReadDefault,
     blockManufacturerNameReadTag: blockManufacturerNameReadDefault,
     blockSignalStartStopTag: blockSignalStartStopDefault,
+    betterHealthEnabledTag: betterHealthEnabledDefault,
     bikeWeightTag: bikeWeightDefault,
     cadenceGapWorkaroundTag: cadenceGapWorkaroundDefault,
     calculateGpsTag: calculateGpsDefault,

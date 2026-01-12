@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
 import '../../preferences/air_temperature.dart';
+import '../../preferences/better_health_enabled.dart';
 import '../../preferences/bike_weight.dart';
 import '../../preferences/block_signal_start_stop.dart';
 import '../../preferences/drag_force_tune.dart';
@@ -92,6 +93,11 @@ class EquipmentPreferencesScreen extends StatelessWidget with PreferencesScreenM
         title: Text(internalMotionMonitorEnabled),
         subtitle: Text(internalMotionMonitorEnabledDescription),
         pref: internalMotionMonitorEnabledTag,
+      ),
+      const PrefCheckbox(
+        title: Text(betterHealthEnabled),
+        subtitle: Text(betterHealthEnabledDescription),
+        pref: betterHealthEnabledTag,
       ),
       const PrefCheckbox(
         title: Text(paddlingWithCyclingSensors),

@@ -1,5 +1,6 @@
 import '../utils/constants.dart';
 
+const betterHealthHeartRateFourCC = "BHTH";
 const bowflexC7BikeFourCC = "BFC7";
 const concept2RowerFourCC = "C2Rw";
 const concept2SkiFourCC = "C2Sk";
@@ -47,6 +48,7 @@ const virtufitUltimatePro2FourCC = "VFUP";
 const yesoulS3FourCC = "ysS3";
 
 List<String> allFourCC = [
+  betterHealthHeartRateFourCC,
   bowflexC7BikeFourCC,
   concept2BikeFourCC,
   concept2ErgFourCC,
@@ -95,6 +97,7 @@ List<String> allFourCC = [
 ];
 
 List<String> multiSportFourCCs = [
+  betterHealthHeartRateFourCC,
   concept2ErgFourCC,
   genericFTMSRowerFourCC,
   internalHeartRateMonitorFourCC,
@@ -161,6 +164,7 @@ class DeviceIdentifierHelperEntry {
 // unnecessary instantiate a bunch of them when trying to identify an
 // equipment. So it was factored out here.
 Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
+  betterHealthHeartRateFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["BHT HRM"]),
   bowflexC7BikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["C7-"]),
   concept2BikeFourCC: DeviceIdentifierHelperEntry(
     deviceNamePrefixes: ["PM5"],
@@ -275,6 +279,10 @@ class SportDescriptor {
 // This is also so we don't want to unnecessary instantiate a bunch of
 // DeviceDescriptor when working around sports.
 Map<String, SportDescriptor> deviceSportDescriptors = {
+  betterHealthHeartRateFourCC: SportDescriptor(
+    defaultSport: ActivityType.workout,
+    isMultiSport: true,
+  ),
   bowflexC7BikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   concept2RowerFourCC: SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   concept2SkiFourCC: SportDescriptor(defaultSport: ActivityType.nordicSki, isMultiSport: false),

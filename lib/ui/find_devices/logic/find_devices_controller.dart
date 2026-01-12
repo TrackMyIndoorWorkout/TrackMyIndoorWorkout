@@ -23,6 +23,7 @@ import '../../../devices/gadgets/fitness_equipment.dart';
 import '../../../devices/gadgets/cadence_monitor_internal.dart';
 import '../../../devices/gadgets/heart_rate_monitor.dart';
 import '../../../devices/gadgets/heart_rate_monitor_internal.dart';
+import '../../../devices/gadgets/better_health_heart_rate_monitor.dart';
 import '../../../devices/gatt/appearance.dart';
 import '../../../devices/gatt/concept2.dart';
 import '../../../devices/gatt/csc.dart';
@@ -433,6 +434,26 @@ class FindDevicesController extends GetxController {
       addScannedDevice(scanResult);
       _internalScanResults.add(scanResult);
     }
+
+    if (await internalSensorManager.hasBetterHealthTracker()) {
+      final device = BluetoothDevice(remoteId: const DeviceIdentifier("BHT_HRM"));
+      final scanResult = ScanResult(
+        device: device,
+        advertisementData: AdvertisementData(
+          advName: "Better Health Tracker HR",
+          txPowerLevel: null,
+          connectable: true,
+          manufacturerData: {},
+          serviceData: {},
+          serviceUuids: [Guid(heartRateServiceUuid)],
+          appearance: null,
+        ),
+        rssi: 0,
+        timeStamp: DateTime.now(),
+      );
+      addScannedDevice(scanResult);
+      _internalScanResults.add(scanResult);
+    }
   }
 
   void addScannedDevice(ScanResult scanResult) {
@@ -467,6 +488,31 @@ class FindDevicesController extends GetxController {
       if (heartRateMonitor is DeviceInternalHeartRate) {
         descriptor.sport = (heartRateMonitor as DeviceInternalHeartRate).sport;
       }
+
+      await Get.to(
+        () => RecordingScreen(
+          device: device,
+          descriptor: descriptor,
+          initialState: initialState,
+          size: Get.mediaQuery.size,
+          sport: descriptor.sport,
+        ),
+      );
+
+      goingToRecording = false;
+      update();
+      _scanStreamSubscription?.resume();
+
+      return true;
+    }
+
+    if (device.remoteId.str == "BHT_HRM") {
+      goingToRecording = true;
+      update();
+      _scanStreamSubscription?.pause();
+      _autoConnectLatch = false;
+
+      final descriptor = DeviceFactory.getDescriptorForFourCC(betterHealthHeartRateFourCC);
 
       await Get.to(
         () => RecordingScreen(
@@ -1062,7 +1108,11 @@ class FindDevicesController extends GetxController {
     }
 
     if (heartRateMonitorCandidate == null || existingId != r.device.remoteId.str) {
-      heartRateMonitorCandidate = HeartRateMonitor(r.device);
+      if (r.device.remoteId.str == "BHT_HRM") {
+        heartRateMonitorCandidate = BetterHealthHeartRateMonitor();
+      } else {
+        heartRateMonitorCandidate = HeartRateMonitor(r.device);
+      }
       if (Get.isRegistered<HeartRateMonitor>()) {
         await Get.delete<HeartRateMonitor>(force: true);
       }

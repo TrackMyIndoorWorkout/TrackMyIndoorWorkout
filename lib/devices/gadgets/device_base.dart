@@ -75,7 +75,9 @@ abstract class DeviceBase {
     logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
   }
 
-  bool get isInternal => device?.remoteId.str.startsWith("INTERNAL_") ?? false;
+  bool get isInternal =>
+      (device?.remoteId.str.startsWith("INTERNAL_") ?? false) ||
+      (device?.remoteId.str.startsWith("BHT_") ?? false);
 
   Future<bool> connect() async {
     if (uxDebug) {
