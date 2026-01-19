@@ -2550,29 +2550,14 @@ class RecordingState extends State<RecordingScreen> {
           SizedBox(
             width: measuredSize.width,
             height: getExpandedHeight(_extraExpandedHeights[_inclinationIndex], measuredSize),
-            child: charts.SfCartesianChart(
-              primaryXAxis: charts.DateTimeAxis(
-                labelStyle: _chartLabelStyle,
-                axisLine: charts.AxisLine(color: _chartTextColor),
-                majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-                minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-                majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-              ),
-              primaryYAxis: charts.NumericAxis(
-                labelStyle: _chartLabelStyle,
-                axisLine: charts.AxisLine(color: _chartTextColor),
-                majorTickLines: charts.MajorTickLines(color: _chartTextColor),
-                minorTickLines: charts.MinorTickLines(color: _chartTextColor),
-                majorGridLines: charts.MajorGridLines(color: _chartTextColor),
-                minorGridLines: charts.MinorGridLines(color: _chartTextColor),
-              ),
-              margin: const EdgeInsets.all(0),
+            child: RecordingChart(
+              chartLabelStyle: _chartLabelStyle,
+              chartTextColor: _chartTextColor,
+              graphViewDuration: _graphViewDuration,
               series: _inclinationChartData(),
-              onChartTouchInteractionDown: (arg) =>
+              onTouchDown: (arg) =>
                   _onChartTouchInteractionDown(_inclinationIndex, arg.position, true),
-              onChartTouchInteractionUp: (arg) =>
-                  _onChartTouchInteractionUp(_inclinationIndex, arg.position, true),
+              onTouchUp: (arg) => _onChartTouchInteractionUp(_inclinationIndex, arg.position, true),
             ),
           ),
         );
@@ -2721,40 +2706,29 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     if (_showInclination) {
-      final List<Widget> rowChildren = _onStageStatisticsType == onStageStatisticsTypeNone
-          ? [
-              _themeManager.getBlueIcon(Icons.terrain, _sizeDefault),
-              const Spacer(),
-              Text(_optionalValues[_inclinationIndex], style: _fullMeasurementStyle.apply()),
-              SizedBox(
-                width: _sizeDefault * (_simplerUi ? 2 : 1.3),
-                child: Center(child: Text("%", maxLines: 2, style: _fullUnitStyle)),
-              ),
-            ]
-          : [
-              SizedBox(
-                width: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_optionalValues[_inclinationIndex], style: _measurementStyle.apply()),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: _sizeDefault * (_simplerUi ? 1 : 0.65),
-                child: Center(child: Text("%", maxLines: 2, style: _unitStyle)),
-              ),
-            ];
+      final inclinationLayout = _onStageStatisticsType == onStageStatisticsTypeNone
+          ? MeasurementRowLayout.standard
+          : MeasurementRowLayout.split;
 
       columnOne.add(
         ExpandablePanel(
           theme: _expandableThemeData,
-          header: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: rowChildren,
+          header: MeasurementRow(
+            themeManager: _themeManager,
+            layout: inclinationLayout,
+            icon: Icons.terrain,
+            iconSize: _sizeDefault,
+            value: _optionalValues[_inclinationIndex],
+            unit: "%",
+            statistic: _optionalStatistics[_inclinationIndex],
+            measurementStyle: inclinationLayout == MeasurementRowLayout.standard
+                ? _fullMeasurementStyle
+                : _measurementStyle,
+            unitStyle: _unitStyle,
+            fullUnitStyle: _fullUnitStyle,
+            expandable: true,
+            simplerUi: _simplerUi,
+            halfWidth: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
           ),
           collapsed: Container(),
           expanded: _simplerUi ? Container() : extras[_inclinationIndex],
