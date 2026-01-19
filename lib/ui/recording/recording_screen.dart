@@ -1102,6 +1102,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
+    // 3 slots to match _optionalValues indices: resistance=0, strokeCount=1 (unused, no stats), inclination=2
     _optionalStatistics = [emptyMeasurement, emptyMeasurement, emptyMeasurement];
 
     final calculateCadences =
