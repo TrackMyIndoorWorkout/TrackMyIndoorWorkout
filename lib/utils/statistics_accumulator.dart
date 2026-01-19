@@ -485,7 +485,7 @@ class StatisticsAccumulator {
       maxCadence > 0 ? maxCadence : null,
       maxHeartRate > 0 ? maxHeartRate : null,
       maxResistance > 0 ? maxResistance : null,
-      maxInclinationDisplay > 0 ? maxInclinationDisplay : null,
+      maxInclination > 0 ? maxInclination : null,
     );
   }
 }
