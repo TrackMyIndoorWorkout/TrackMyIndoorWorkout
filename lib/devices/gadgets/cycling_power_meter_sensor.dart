@@ -143,7 +143,7 @@ class CyclingPowerMeterSensor extends FlywheelSensorBase with CadenceMixin {
     var flag = data[0] + maxUint8 * data[1];
     processFlag(flag);
 
-    return featureFlag >= 0 && data.length == expectedLength;
+    return featureFlag >= 0 && data.length >= expectedLength;
   }
 
   @override

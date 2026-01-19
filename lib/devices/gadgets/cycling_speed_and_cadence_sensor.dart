@@ -76,7 +76,7 @@ class CyclingSpeedAndCadenceSensor extends FlywheelSensorBase with CadenceMixin 
 
     processFlag(data[0]);
 
-    return featureFlag >= 0 && data.length == expectedLength;
+    return featureFlag >= 0 && data.length >= expectedLength;
   }
 
   @override
