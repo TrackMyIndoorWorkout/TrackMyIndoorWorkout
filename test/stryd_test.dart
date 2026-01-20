@@ -35,20 +35,7 @@ void main() {
   test('Stryd constructor tests', () async {
     final stryd = DeviceFactory.getStrydFootPod();
 
-    expect(
-      stryd.fourCC,
-      technogymRunFourCC,
-    ); // Using technogymRunFourCC for Stryd as per factory? Wait, checking factory.
-    // Factory says:
-    // static RunningSpeedAndCadenceDescriptor getStrydFootPod() {
-    //   return RunningSpeedAndCadenceDescriptor(
-    //     fourCC: technogymRunFourCC,
-    // ...
-    // Check factory again.
-    // device_factory.dart line 284: fourCC: technogymRunFourCC.
-    // This seems like a copy-paste error in the factory or intentional reuse?
-    // User asked for "Stryd".
-    // Let's use what the factory says for now.
+    expect(stryd.fourCC, technogymRunFourCC);
 
     expect(stryd.vendorName, 'Stryd');
     expect(stryd.modelName, 'Stryd Foot Pod');
@@ -57,11 +44,6 @@ void main() {
   group('Stryd interprets RSC Data properly', () {
     // Packet: [128, 7, 0, 0, 0, 0, 255, 255, 255, 0, 0, 0, 0]
     // 128 = 1000 0000.
-    // Bit 0 (Inst Stride Len): 0
-    // Bit 1 (Total Dist): 0
-    // Bit 2 (Walking/Running): 0 (Running)
-    // ...
-    // Wait. 128 is bit 7?
     // RSC Flags:
     // Bit 0: Instantaneous Stride Length Present
     // Bit 1: Total Distance Present
@@ -85,14 +67,6 @@ void main() {
     // Packet length: 13.
     // 9 extra bytes.
     // Log packet: [128, 7, 0, 0, 0, 0, 255, 255, 255, 0, 0, 0, 0]
-
-    // Why is flag 128? Extension flags?
-    // Standard RSC flags only go up to bit 2 ?? No.
-    // Ref: https://github.com/oesmith/gatt-xml/blob/master/org.bluetooth.characteristic.rsc_measurement.xml
-
-    // Let's verify the expectation.
-    // Speed: 7/256 m/s -> ~0.1 km/h.
-    // Cadence: 0.
 
     final testPair = TestPair(
       data: [128, 7, 0, 0, 0, 0, 255, 255, 255, 0, 0, 0, 0],
@@ -123,6 +97,27 @@ void main() {
       expect(record.cadence, testPair.record.cadence);
       expect(record.distance, testPair.record.distance);
       expect(record.sport, testPair.record.sport);
+    });
+
+    test("Process Stryd Packet with garbage extra bytes", () async {
+      // Stryd packet with extra garbage bytes at the end
+      final dataWithGarbage = [
+        ...testPair.data,
+        0xAA, 0xBB, 0xCC, 0xDD, 0xEE, // Garbage bytes
+      ];
+
+      final stryd = DeviceFactory.getStrydFootPod();
+      final mockDevice = MockBluetoothDevice();
+      when(() => mockDevice.remoteId).thenReturn(const DeviceIdentifier("STRYD_ID"));
+      stryd.sensor = RunningSpeedAndCadenceSensor(mockDevice);
+
+      final flag = dataWithGarbage[0];
+      stryd.processFlag(flag, dataWithGarbage.length);
+
+      final record = stryd.stubRecord(dataWithGarbage)!;
+
+      expect(record.speed, closeTo(testPair.record.speed!, 0.01));
+      expect(record.cadence, testPair.record.cadence);
     });
   });
 }
