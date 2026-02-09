@@ -44,6 +44,8 @@ class Record {
   double? preciseCadence;
   @ignore
   double? strokeCount; // strides / steps / revolutions
+  @ignore
+  double? inclination; // % with 0.1 resolution (FTMS)
 
   Record({
     this.id = Isar.autoIncrement,
@@ -64,6 +66,7 @@ class Record {
     this.resistance,
     this.preciseCadence,
     this.strokeCount,
+    this.inclination,
   }) {
     timeStamp ??= DateTime.now();
     paceToSpeed();
@@ -435,6 +438,7 @@ class Record {
       resistance: record.resistance,
       preciseCadence: record.preciseCadence,
       strokeCount: record.strokeCount,
+      inclination: record.inclination,
     );
   }
 
@@ -456,7 +460,8 @@ class Record {
         "caloriesPerMinute $caloriesPerMinute | "
         "resistance $resistance | "
         "preciseCadence $preciseCadence | "
-        "strokeCount $strokeCount";
+        "strokeCount $strokeCount | "
+        "inclination $inclination";
   }
 }
 
@@ -480,6 +485,7 @@ class RecordWithSport extends Record {
     super.resistance,
     super.preciseCadence,
     super.strokeCount,
+    super.inclination,
   }) : assert(sport != null),
        super(id: id ?? Isar.autoIncrement, activityId: activityId ?? Isar.minId);
 
@@ -499,6 +505,7 @@ class RecordWithSport extends Record {
       resistance: 0,
       preciseCadence: 0.0,
       strokeCount: 0.0,
+      inclination: 0.0,
       sport: sport,
     );
   }
@@ -668,6 +675,7 @@ class RecordWithSport extends Record {
       resistance: record.resistance,
       preciseCadence: record.preciseCadence,
       strokeCount: record.strokeCount,
+      inclination: record.inclination,
     );
   }
 

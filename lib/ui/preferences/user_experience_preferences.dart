@@ -14,6 +14,7 @@ import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/show_resistance_level.dart';
 import '../../preferences/show_strokes_strides_revs.dart';
+import '../../preferences/show_inclination.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
@@ -207,6 +208,11 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
         title: Text(showStrokesStridesRevs),
         subtitle: Text(showStrokesStridesRevsDescription),
         pref: showStrokesStridesRevsTag,
+      ),
+      const PrefCheckbox(
+        title: Text(showInclination),
+        subtitle: Text(showInclinationDescription),
+        pref: showInclinationTag,
       ),
     ];
 

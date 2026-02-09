@@ -25,6 +25,9 @@ class StatisticsAccumulator {
   bool calculateAvgResistance;
   bool calculateMaxResistance;
   bool calculateMinResistance;
+  bool calculateAvgInclination;
+  bool calculateMaxInclination;
+  bool calculateMinInclination;
   bool calculateMedian;
 
   late int powerSum;
@@ -51,6 +54,10 @@ class StatisticsAccumulator {
   late int resistanceCount;
   late int maxResistance;
   late int minResistance;
+  late double inclinationSum;
+  late int inclinationCount;
+  late double maxInclination;
+  late double minInclination;
 
   double get avgPower => powerCount > 0 ? powerSum / powerCount : 0.0;
   int get maxPowerDisplay => max(maxPower, 0);
@@ -71,6 +78,9 @@ class StatisticsAccumulator {
   int get avgResistance => resistanceCount > 0 ? resistanceSum ~/ resistanceCount : 0;
   int get maxResistanceDisplay => max(maxResistance, 0);
   int get minResistanceDisplay => min(minResistance, 0);
+  double get avgInclination => inclinationCount > 0 ? inclinationSum / inclinationCount : 0.0;
+  double get maxInclinationDisplay => max(maxInclination, 0.0);
+  double get minInclinationDisplay => min(minInclination, 0.0);
 
   StatisticsAccumulator({
     required this.si,
@@ -90,6 +100,9 @@ class StatisticsAccumulator {
     this.calculateAvgResistance = false,
     this.calculateMaxResistance = false,
     this.calculateMinResistance = false,
+    this.calculateAvgInclination = false,
+    this.calculateMaxInclination = false,
+    this.calculateMinInclination = false,
     this.calculateMedian = false,
   }) {
     reset();
@@ -120,6 +133,10 @@ class StatisticsAccumulator {
     resistanceCount = 0;
     maxResistance = maxInit;
     minResistance = minInit;
+    inclinationSum = 0.0;
+    inclinationCount = 0;
+    maxInclination = maxInit.toDouble();
+    minInclination = minInit.toDouble();
   }
 
   void processExportRecord(ExportRecord exportRecord) {
@@ -211,6 +228,21 @@ class StatisticsAccumulator {
 
       if (calculateMinResistance) {
         minResistance = min(minResistance, exportRecord.record.resistance!);
+      }
+    }
+
+    if (exportRecord.record.inclination != null) {
+      if (calculateAvgInclination) {
+        inclinationSum += exportRecord.record.inclination!;
+        inclinationCount++;
+      }
+
+      if (calculateMaxInclination) {
+        maxInclination = max(maxInclination, exportRecord.record.inclination!);
+      }
+
+      if (calculateMinInclination) {
+        minInclination = min(minInclination, exportRecord.record.inclination!);
       }
     }
   }
@@ -306,6 +338,21 @@ class StatisticsAccumulator {
         minResistance = min(minResistance, displayRecord.resistance!);
       }
     }
+
+    if (displayRecord.inclination != null) {
+      if (calculateAvgInclination) {
+        inclinationSum += displayRecord.inclination!;
+        inclinationCount++;
+      }
+
+      if (calculateMaxInclination) {
+        maxInclination = max(maxInclination, displayRecord.inclination!);
+      }
+
+      if (calculateMinInclination) {
+        minInclination = min(minInclination, displayRecord.inclination!);
+      }
+    }
   }
 
   void processRecord(Record record) {
@@ -399,6 +446,21 @@ class StatisticsAccumulator {
         minResistance = min(minResistance, record.resistance!);
       }
     }
+
+    if (record.inclination != null) {
+      if (calculateAvgInclination) {
+        inclinationSum += record.inclination!;
+        inclinationCount++;
+      }
+
+      if (calculateMaxInclination) {
+        maxInclination = max(maxInclination, record.inclination!);
+      }
+
+      if (calculateMinInclination) {
+        minInclination = min(minInclination, record.inclination!);
+      }
+    }
   }
 
   DisplayRecord averageDisplayRecord(DateTime? timestamp) {
@@ -410,6 +472,7 @@ class StatisticsAccumulator {
       avgCadence > 0 ? avgCadence : null,
       avgHeartRate > 0 ? avgHeartRate : null,
       avgResistance > 0 ? avgResistance : null,
+      avgInclination > 0 ? avgInclination : null,
     );
   }
 
@@ -422,6 +485,7 @@ class StatisticsAccumulator {
       maxCadence > 0 ? maxCadence : null,
       maxHeartRate > 0 ? maxHeartRate : null,
       maxResistance > 0 ? maxResistance : null,
+      maxInclination > 0 ? maxInclination : null,
     );
   }
 }
