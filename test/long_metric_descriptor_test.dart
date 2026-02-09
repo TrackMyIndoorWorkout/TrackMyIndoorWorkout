@@ -23,11 +23,7 @@ void main() {
       divider = rnd.nextDouble() * 4;
 
       test("$divider -> null (sentinel)", () async {
-        final desc = LongMetricDescriptor(
-          lsb: lsbLocation,
-          msb: msbLocation,
-          divider: divider,
-        );
+        final desc = LongMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), null);
       });
@@ -45,26 +41,23 @@ void main() {
       final dir = larger ? 1 : -1;
       final divider = rnd.nextDouble() * 1024;
       // Sentinel values always return null now
-      final isSentinel = data[lsbLocation] == maxByte &&
+      final isSentinel =
+          data[lsbLocation] == maxByte &&
           data[lsbLocation + dir] == maxByte &&
           data[msbLocation - dir] == maxByte &&
           data[msbLocation] == maxByte;
       final expected = isSentinel
           ? null
           : (data[lsbLocation] +
-                  maxUint8 *
-                      (data[lsbLocation + dir] +
-                          maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
-              divider;
+                    maxUint8 *
+                        (data[lsbLocation + dir] +
+                            maxUint8 * (data[msbLocation - dir] + maxUint8 * data[msbLocation]))) /
+                divider;
 
       test(
         "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",
         () async {
-          final desc = LongMetricDescriptor(
-            lsb: lsbLocation,
-            msb: msbLocation,
-            divider: divider,
-          );
+          final desc = LongMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
           expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));
         },

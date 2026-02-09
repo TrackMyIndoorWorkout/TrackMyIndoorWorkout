@@ -40,16 +40,19 @@ void main() {
       expect(desc.getMeasurementValue(data), isNull);
     });
 
-    test('ThreeByteMetricDescriptor returns null for 16777215 (0xFFFFFF) - FTMS sentinel value', () {
-      final desc = ThreeByteMetricDescriptor(lsb: 0, msb: 2);
+    test(
+      'ThreeByteMetricDescriptor returns null for 16777215 (0xFFFFFF) - FTMS sentinel value',
+      () {
+        final desc = ThreeByteMetricDescriptor(lsb: 0, msb: 2);
 
-      // Test normal value
-      var data = [0, 100, 0]; // 25600
-      expect(desc.getMeasurementValue(data), equals(25600.0));
+        // Test normal value
+        var data = [0, 100, 0]; // 25600
+        expect(desc.getMeasurementValue(data), equals(25600.0));
 
-      // Test FTMS "not available" sentinel value
-      data = [255, 255, 255]; // 16777215 (maxUint24 - 1)
-      expect(desc.getMeasurementValue(data), isNull);
-    });
+        // Test FTMS "not available" sentinel value
+        data = [255, 255, 255]; // 16777215 (maxUint24 - 1)
+        expect(desc.getMeasurementValue(data), isNull);
+      },
+    );
   });
 }

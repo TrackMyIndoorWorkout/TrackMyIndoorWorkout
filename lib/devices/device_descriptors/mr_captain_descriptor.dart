@@ -21,22 +21,13 @@ class MrCaptainDescriptor extends RowerDeviceDescriptor {
 
   int processEffedUpExpandedEnergyFlag(int flag) {
     if (flag % 2 == 1) {
-      caloriesPerMinuteMetric = ShortMetricDescriptor(
-        lsb: byteCounter,
-        msb: byteCounter + 1,
-      );
+      caloriesPerMinuteMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       // Energy / minute UInt8, but there are two bytes FFS
       byteCounter += 2;
-      caloriesMetric = ShortMetricDescriptor(
-        lsb: byteCounter,
-        msb: byteCounter + 1,
-      );
+      caloriesMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       // Total Energy: UInt16
       byteCounter += 2;
-      caloriesPerHourMetric = ShortMetricDescriptor(
-        lsb: byteCounter,
-        msb: byteCounter + 1,
-      );
+      caloriesPerHourMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       // Energy / hour UInt16
       byteCounter += 2;
     }

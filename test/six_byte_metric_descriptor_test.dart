@@ -25,11 +25,7 @@ void main() {
       divider = rnd.nextDouble() * 4;
 
       test("$divider -> null (sentinel)", () async {
-        final desc = SixByteMetricDescriptor(
-          lsb: lsbLocation,
-          msb: msbLocation,
-          divider: divider,
-        );
+        final desc = SixByteMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), null);
       });
@@ -47,7 +43,8 @@ void main() {
       final dir = larger ? 1 : -1;
       final divider = rnd.nextDouble() * 1024;
       // Sentinel values always return null now
-      final isSentinel = data[lsbLocation] == maxByte &&
+      final isSentinel =
+          data[lsbLocation] == maxByte &&
           data[lsbLocation + dir] == maxByte &&
           data[lsbLocation + 2 * dir] == maxByte &&
           data[msbLocation - 2 * dir] == maxByte &&
@@ -56,16 +53,16 @@ void main() {
       final expected = isSentinel
           ? null
           : (data[lsbLocation] +
-                  maxUint8 *
-                      (data[lsbLocation + dir] +
-                          maxUint8 *
-                              (data[lsbLocation + 2 * dir] +
-                                  maxUint8 *
-                                      (data[msbLocation - 2 * dir] +
-                                          maxUint8 *
-                                              (data[msbLocation - dir] +
-                                                  maxUint8 * data[msbLocation]))))) /
-              divider;
+                    maxUint8 *
+                        (data[lsbLocation + dir] +
+                            maxUint8 *
+                                (data[lsbLocation + 2 * dir] +
+                                    maxUint8 *
+                                        (data[msbLocation - 2 * dir] +
+                                            maxUint8 *
+                                                (data[msbLocation - dir] +
+                                                    maxUint8 * data[msbLocation]))))) /
+                divider;
 
       test(
         "(${data[lsbLocation]}, ${data[lsbLocation + dir]}, ${data[lsbLocation + 2 * dir]}, ${data[msbLocation - 2 * dir]}, ${data[msbLocation - dir]}, ${data[msbLocation]}) / $divider -> $expected",

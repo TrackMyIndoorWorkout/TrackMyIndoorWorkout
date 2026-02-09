@@ -44,11 +44,13 @@ void main() {
       final divider = rnd.nextDouble() * 1024;
       // Sentinel values always return null now
       final isSentinel =
-          data[lsbLocation] == maxByte && data[midLocation] == maxByte && data[msbLocation] == maxByte;
+          data[lsbLocation] == maxByte &&
+          data[midLocation] == maxByte &&
+          data[msbLocation] == maxByte;
       final expected = isSentinel
           ? null
           : (data[lsbLocation] + maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
-              divider;
+                divider;
 
       test(
         "(${data[lsbLocation]}, ${data[midLocation]}, ${data[msbLocation]}) / $divider -> $expected",

@@ -20,11 +20,7 @@ void main() {
       final divider = rnd.nextDouble() * 4;
 
       test("$divider -> null (sentinel)", () async {
-        final desc = ShortMetricDescriptor(
-          lsb: lsbLocation,
-          msb: msbLocation,
-          divider: divider,
-        );
+        final desc = ShortMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), null);
       });
@@ -42,14 +38,12 @@ void main() {
       final divider = rnd.nextDouble() * 1024;
       // Sentinel values always return null now
       final isSentinel = data[lsbLocation] == maxByte && data[msbLocation] == maxByte;
-      final expected = isSentinel ? null : (data[lsbLocation] + data[msbLocation] * maxUint8) / divider;
+      final expected = isSentinel
+          ? null
+          : (data[lsbLocation] + data[msbLocation] * maxUint8) / divider;
 
       test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () async {
-        final desc = ShortMetricDescriptor(
-          lsb: lsbLocation,
-          msb: msbLocation,
-          divider: divider,
-        );
+        final desc = ShortMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));
       });
