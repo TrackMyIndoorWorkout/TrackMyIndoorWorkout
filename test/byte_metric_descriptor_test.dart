@@ -7,7 +7,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group('optional ByteMetricDescriptor returns null if the value is max', () {
+  group('ByteMetricDescriptor returns null if the value is max (FTMS sentinel)', () {
     final rnd = Random();
     for (var rep in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 1;
@@ -15,10 +15,9 @@ void main() {
       final lsbLocation = rnd.nextInt(len);
       data[lsbLocation] = maxUint8 - 1;
       final divider = rnd.nextDouble() * 4;
-      const expected = 0.0;
 
-      test("$rep.: $divider -> $expected", () async {
-        final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: true);
+      test("$rep.: $divider -> null (sentinel)", () async {
+        final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), null);
       });
@@ -32,13 +31,11 @@ void main() {
       final data = getRandomInts(len, maxUint8, rnd);
       final lsbLocation = rnd.nextInt(len);
       final divider = rnd.nextDouble() * 1024;
-      final optional = rnd.nextBool();
-      final expected = optional && data[lsbLocation] == maxUint8 - 1
-          ? null
-          : data[lsbLocation] / divider;
+      // Sentinel values always return null now
+      final expected = data[lsbLocation] == maxUint8 - 1 ? null : data[lsbLocation] / divider;
 
       test("$lsbLocation ${data[lsbLocation]} / $divider -> $expected", () async {
-        final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider, optional: optional);
+        final desc = ByteMetricDescriptor(lsb: lsbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));
       });

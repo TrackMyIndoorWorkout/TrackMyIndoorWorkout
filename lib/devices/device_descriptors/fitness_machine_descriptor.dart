@@ -126,22 +126,14 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
   int processExpandedEnergyFlag(int flag, {bool partial = false}) {
     if (flag % 2 == 1) {
       // Total Energy: UInt16
-      caloriesMetric = ShortMetricDescriptor(
-        lsb: byteCounter,
-        msb: byteCounter + 1,
-        optional: true,
-      );
+      caloriesMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
       // Energy / hour UInt16
       byteCounter += 2;
       if (!partial) {
-        caloriesPerHourMetric = ShortMetricDescriptor(
-          lsb: byteCounter,
-          msb: byteCounter + 1,
-          optional: true,
-        );
+        caloriesPerHourMetric = ShortMetricDescriptor(lsb: byteCounter, msb: byteCounter + 1);
         // Energy / minute UInt8
         byteCounter += 2;
-        caloriesPerMinuteMetric = ByteMetricDescriptor(lsb: byteCounter, optional: true);
+        caloriesPerMinuteMetric = ByteMetricDescriptor(lsb: byteCounter);
         byteCounter++;
       }
     }
@@ -190,6 +182,22 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
         msb: byteCounter + 1,
         divider: divider,
       );
+      byteCounter += 2;
+    }
+
+    return advanceFlag(flag);
+  }
+
+  int processInclinationFlag(int flag) {
+    if (flag % 2 == 1) {
+      // SInt16, Inclination (percentage with 0.1 resolution)
+      inclinationMetric = ShortMetricDescriptor(
+        lsb: byteCounter,
+        msb: byteCounter + 1,
+        divider: 10.0,
+      );
+      byteCounter += 2;
+      // SInt16, Ramp Angle (percentage with 0.1 resolution) - skipped for now
       byteCounter += 2;
     }
 

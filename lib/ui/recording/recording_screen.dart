@@ -51,6 +51,7 @@ import '../../preferences/metric_spec.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/show_pacer.dart';
 import '../../preferences/show_resistance_level.dart';
+import '../../preferences/show_inclination.dart';
 import '../../preferences/show_strokes_strides_revs.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/sound_effects.dart';
@@ -145,6 +146,7 @@ class RecordingState extends State<RecordingScreen> {
   // Extra optional measurements
   static const int _resistanceIndex = 0;
   static const int _strokeCountIndex = 1;
+  static const int _inclinationIndex = 2;
 
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
@@ -241,6 +243,7 @@ class RecordingState extends State<RecordingScreen> {
   bool _hrBasedCalorieCounting = useHeartRateBasedCalorieCountingDefault;
   bool _showResistanceLevel = showResistanceLevelDefault;
   bool _showStrokesStridesRevs = showStrokesStridesRevsDefault;
+  bool _showInclination = showInclinationDefault;
   bool _leaderboardFeature = leaderboardFeatureDefault;
   bool _rankingForSportOrDevice = rankingForSportOrDeviceDefault;
   List<WorkoutSummary> _leaderboard = [];
@@ -491,6 +494,11 @@ class RecordingState extends State<RecordingScreen> {
                   .toInt()
                   .toString();
             }
+            if (_showInclination) {
+              _optionalStatistics[_inclinationIndex] = _workoutStats.avgInclination.toStringAsFixed(
+                1,
+              );
+            }
           } else {
             if (!_stationaryWorkout) {
               _statistics[_power0Index] = _workoutStats.maxPowerDisplay.toString();
@@ -507,6 +515,10 @@ class RecordingState extends State<RecordingScreen> {
 
             if (_showResistanceLevel) {
               _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
+            }
+            if (_showInclination) {
+              _optionalStatistics[_inclinationIndex] = _workoutStats.maxInclinationDisplay
+                  .toStringAsFixed(1);
             }
           }
         }
@@ -527,6 +539,11 @@ class RecordingState extends State<RecordingScreen> {
         if (_showStrokesStridesRevs) {
           _optionalValues[_strokeCountIndex] =
               record.strokeCount?.toInt().toString() ?? emptyMeasurement;
+        }
+
+        if (_showInclination) {
+          _optionalValues[_inclinationIndex] =
+              record.inclination?.toStringAsFixed(1) ?? emptyMeasurement;
         }
 
         if (!_stationaryWorkout) {
@@ -739,6 +756,10 @@ class RecordingState extends State<RecordingScreen> {
 
   void _onToggleResistance() {
     _onToggleDetails(_resistanceIndex, true);
+  }
+
+  void _onToggleInclination() {
+    _onToggleDetails(_inclinationIndex, true);
   }
 
   void _onChartTouchInteractionDown(int index, Offset position, bool extra) {
@@ -1005,6 +1026,7 @@ class RecordingState extends State<RecordingScreen> {
     _showStrokesStridesRevs =
         prefService.get<bool>(showStrokesStridesRevsTag) ?? showStrokesStridesRevsDefault;
     _graphViewDuration = prefService.get<double>(graphViewDurationTag) ?? graphViewDurationDefault;
+    _showInclination = prefService.get<bool>(showInclinationTag) ?? showInclinationDefault;
 
     _instantOnStage = prefService.get<bool>(instantOnStageTag) ?? instantOnStageDefault;
     _onStageStatisticsType =
@@ -1074,6 +1096,18 @@ class RecordingState extends State<RecordingScreen> {
       _extraExpandedHeights.add(0);
     }
 
+    if (_showInclination) {
+      if (_extraExpandedState.isEmpty) {
+        _extraExpandedState = [false];
+      } else {
+        _extraExpandedState.add(false);
+      }
+      ExpandableController rowController = ExpandableController(initialExpanded: false);
+      rowController.addListener(_onToggleInclination);
+      _extraRowControllers.add(rowController);
+      _extraExpandedHeights.add(0);
+    }
+
     final expandedStateStr =
         prefService.get<String>(measurementPanelsExpandedTag) ?? measurementPanelsExpandedDefault;
     final expandedHeightStr =
@@ -1123,7 +1157,7 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _optionalValues = [emptyMeasurement, emptyMeasurement];
+    _optionalValues = [emptyMeasurement, emptyMeasurement, emptyMeasurement];
 
     _statistics = [
       emptyMeasurement,
@@ -1134,7 +1168,8 @@ class RecordingState extends State<RecordingScreen> {
       emptyMeasurement,
     ];
 
-    _optionalStatistics = [emptyMeasurement];
+    // 3 slots to match _optionalValues indices: resistance=0, strokeCount=1 (unused, no stats), inclination=2
+    _optionalStatistics = [emptyMeasurement, emptyMeasurement, emptyMeasurement];
 
     final calculateCadences = true;
     _workoutStats = StatisticsAccumulator(
@@ -1150,6 +1185,8 @@ class RecordingState extends State<RecordingScreen> {
       calculateMaxHeartRate: true,
       calculateAvgResistance: _showResistanceLevel,
       calculateMaxResistance: _showResistanceLevel,
+      calculateAvgInclination: _showInclination,
+      calculateMaxInclination: _showInclination,
     );
     _graphStats = StatisticsAccumulator(
       si: _si,
@@ -1171,6 +1208,11 @@ class RecordingState extends State<RecordingScreen> {
           _showResistanceLevel && _onStageStatisticsType != onStageStatisticsTypeNone,
       calculateMinResistance:
           _showResistanceLevel && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateAvgInclination: false,
+      calculateMaxInclination:
+          _showInclination && _onStageStatisticsType != onStageStatisticsTypeNone,
+      calculateMinInclination:
+          _showInclination && _onStageStatisticsType != onStageStatisticsTypeNone,
     );
     _zoneIndexes = [null, null, null, null];
 
@@ -1733,6 +1775,70 @@ class RecordingState extends State<RecordingScreen> {
             dataSource: graphMaxData,
             xValueMapper: (DisplayRecord record, _) => record.timeStamp,
             yValueMapper: (DisplayRecord record, _) => record.resistance,
+            color: _chartMaxColor,
+            animationDuration: 0,
+          ),
+        );
+      }
+    }
+
+    return series;
+  }
+
+  List<charts.LineSeries<DisplayRecord, DateTime>> _inclinationChartData() {
+    List<charts.LineSeries<DisplayRecord, DateTime>> series = [
+      charts.LineSeries<DisplayRecord, DateTime>(
+        dataSource: graphData,
+        xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+        yValueMapper: (DisplayRecord record, _) => record.inclination,
+        color: _chartTextColor,
+        animationDuration: 0,
+      ),
+    ];
+
+    double minInclinationThreshold = minInit.toDouble();
+    double maxInclinationThreshold = maxInit.toDouble();
+    if (_onStageStatisticsType != onStageStatisticsTypeNone) {
+      final minInclination = _graphStats.minInclinationDisplay;
+      if (minInclination < minInit.toDouble()) {
+        minInclinationThreshold = minInclination * 0.8;
+      }
+
+      final maxInclination = _graphStats.maxInclinationDisplay;
+      if (maxInclination > maxInit.toDouble()) {
+        maxInclinationThreshold = maxInclination * 1.2;
+      }
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      final latestAvgInclination = _graphAvgData.last.inclination;
+      if (latestAvgInclination != null &&
+          latestAvgInclination >= minInclinationThreshold &&
+          latestAvgInclination <= maxInclinationThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphAvgData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.inclination,
+            color: _chartAvgColor,
+            animationDuration: 0,
+          ),
+        );
+      }
+    }
+
+    if (_onStageStatisticsType == onStageStatisticsTypeMaximum ||
+        _onStageStatisticsType == onStageStatisticsTypeAlternating) {
+      final latestMaxInclination = _graphMaxData.last.inclination;
+      if (latestMaxInclination != null &&
+          latestMaxInclination >= minInclinationThreshold &&
+          latestMaxInclination <= maxInclinationThreshold) {
+        series.add(
+          charts.LineSeries<DisplayRecord, DateTime>(
+            dataSource: graphMaxData,
+            xValueMapper: (DisplayRecord record, _) => record.timeStamp,
+            yValueMapper: (DisplayRecord record, _) => record.inclination,
             color: _chartMaxColor,
             animationDuration: 0,
           ),
@@ -2582,6 +2688,24 @@ class RecordingState extends State<RecordingScreen> {
         );
       }
 
+      if (_showInclination) {
+        extras.add(
+          SizedBox(
+            width: measuredSize.width,
+            height: getExpandedHeight(_extraExpandedHeights[_inclinationIndex], measuredSize),
+            child: RecordingChart(
+              chartLabelStyle: _chartLabelStyle,
+              chartTextColor: _chartTextColor,
+              graphViewDuration: _graphViewDuration,
+              series: _inclinationChartData(),
+              onTouchDown: (arg) =>
+                  _onChartTouchInteractionDown(_inclinationIndex, arg.position, true),
+              onTouchUp: (arg) => _onChartTouchInteractionUp(_inclinationIndex, arg.position, true),
+            ),
+          ),
+        );
+      }
+
       for (var entry in _preferencesSpecs.asMap().entries) {
         if (_stationaryWorkout && ["speed", "power"].contains(entry.value.metric)) {
           regularExtras.add(null);
@@ -2720,6 +2844,38 @@ class RecordingState extends State<RecordingScreen> {
           collapsed: Container(),
           expanded: _simplerUi ? Container() : extras[_resistanceIndex],
           controller: _extraRowControllers[_resistanceIndex],
+        ),
+      );
+    }
+
+    if (_showInclination) {
+      final inclinationLayout = _onStageStatisticsType == onStageStatisticsTypeNone
+          ? MeasurementRowLayout.standard
+          : MeasurementRowLayout.split;
+
+      columnOne.add(
+        ExpandablePanel(
+          theme: _expandableThemeData,
+          header: MeasurementRow(
+            themeManager: _themeManager,
+            layout: inclinationLayout,
+            icon: Icons.terrain,
+            iconSize: _sizeDefault,
+            value: _optionalValues[_inclinationIndex],
+            unit: "%",
+            statistic: _optionalStatistics[_inclinationIndex],
+            measurementStyle: inclinationLayout == MeasurementRowLayout.standard
+                ? _fullMeasurementStyle
+                : _measurementStyle,
+            unitStyle: _unitStyle,
+            fullUnitStyle: _fullUnitStyle,
+            expandable: true,
+            simplerUi: _simplerUi,
+            halfWidth: _simplerUi ? _halfWidthNonExpandable : _halfWidthExpandable,
+          ),
+          collapsed: Container(),
+          expanded: _simplerUi ? Container() : extras[_inclinationIndex],
+          controller: _extraRowControllers[_inclinationIndex],
         ),
       );
     }

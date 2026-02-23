@@ -7,7 +7,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group('optional ShortMetricDescriptor returns null if the value is max', () {
+  group('ShortMetricDescriptor returns null if the value is max (FTMS sentinel)', () {
     final rnd = Random();
     getRandomDoubles(repetition, 1024, rnd).forEach((divider) {
       final len = rnd.nextInt(99) + 2;
@@ -18,15 +18,9 @@ void main() {
       data[lsbLocation] = maxByte;
       data[msbLocation] = maxByte;
       final divider = rnd.nextDouble() * 4;
-      const expected = 0.0;
 
-      test("$divider -> $expected", () async {
-        final desc = ShortMetricDescriptor(
-          lsb: lsbLocation,
-          msb: msbLocation,
-          divider: divider,
-          optional: true,
-        );
+      test("$divider -> null (sentinel)", () async {
+        final desc = ShortMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
         expect(desc.getMeasurementValue(data), null);
       });
@@ -42,20 +36,16 @@ void main() {
       final lsbLocation = rnd.nextInt(len - 1) + (larger ? 0 : 1);
       final msbLocation = larger ? lsbLocation + 1 : lsbLocation - 1;
       final divider = rnd.nextDouble() * 1024;
-      final optional = rnd.nextBool();
-      final expected = (optional && data[lsbLocation] == maxByte && data[msbLocation] == maxByte)
-          ? 0
+      // Sentinel values always return null now
+      final isSentinel = data[lsbLocation] == maxByte && data[msbLocation] == maxByte;
+      final expected = isSentinel
+          ? null
           : (data[lsbLocation] + data[msbLocation] * maxUint8) / divider;
 
       test("(${data[lsbLocation]} + ${data[msbLocation]}) / $divider -> $expected", () async {
-        final desc = ShortMetricDescriptor(
-          lsb: lsbLocation,
-          msb: msbLocation,
-          divider: divider,
-          optional: optional,
-        );
+        final desc = ShortMetricDescriptor(lsb: lsbLocation, msb: msbLocation, divider: divider);
 
-        expect(desc.getMeasurementValue(data), closeTo(expected, eps));
+        expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));
       });
     }
   });
