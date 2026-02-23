@@ -47,6 +47,22 @@ const technogymRunFourCC = "TRun";
 const virtufitUltimatePro2FourCC = "VFUP";
 const yesoulS3FourCC = "ysS3";
 
+const concept2DeviceNamePrefix = "PM5";
+const concept2BikeNamePostfix = "Bike";
+const concept2RowNamePostfix = "Row";
+const concept2SkiNamePostfix = "Ski";
+const lifeFitnessDeviceNamePrefix = "LF";
+const lifeFitnessManufacturerNamePrefix = "LifeFitness";
+const lifeFitnessBikeNamePostfix = "Bk";
+const lifeFitnessEllipticalNamePostfix = "El";
+const lifeFitnessStairClimberNamePostfix = "Sr";
+const lifeFitnessStepClimberNamePostfix = "Sp";
+const lifeFitnessTreadmillNamePostfix = "Tm";
+const strydManufacturerName = "Stryd";
+const technogymManufacturerName = "Technogym";
+const yesoulManufacturerName = "Yesoul";
+const yesoulModelName = "S3";
+
 List<String> allFourCC = [
   betterHealthHeartRateFourCC,
   bowflexC7BikeFourCC,
@@ -167,20 +183,24 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   betterHealthHeartRateFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["BHT HRM"]),
   bowflexC7BikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["C7-"]),
   concept2BikeFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["PM5"],
-    deviceNamePostfix: "Bike",
+    deviceNamePrefixes: [concept2DeviceNamePrefix],
+    deviceNamePostfix: concept2BikeNamePostfix,
   ),
   concept2ErgFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["PM5"],
-    deviceNamePostfixExclusions: ["Bike", "Row", "Ski"],
+    deviceNamePrefixes: [concept2DeviceNamePrefix],
+    deviceNamePostfixExclusions: [
+      concept2BikeNamePostfix,
+      concept2RowNamePostfix,
+      concept2SkiNamePostfix,
+    ],
   ),
   concept2RowerFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["PM5"],
-    deviceNamePostfix: "Row",
+    deviceNamePrefixes: [concept2DeviceNamePrefix],
+    deviceNamePostfix: concept2RowNamePostfix,
   ),
   concept2SkiFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["PM5"],
-    deviceNamePostfix: "Ski",
+    deviceNamePrefixes: [concept2DeviceNamePrefix],
+    deviceNamePostfix: concept2SkiNamePostfix,
   ),
   cscSensorBasedBikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
   cscSensorBasedPaddleFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [notAvailable]),
@@ -208,32 +228,32 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   kayakFirstFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: []),
   kayakProGenesisPortFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["KayakPro", "KP"]),
   lifeFitnessBikeFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["LF"],
-    manufacturerNamePrefix: "LifeFitness",
+    deviceNamePrefixes: [lifeFitnessDeviceNamePrefix],
+    manufacturerNamePrefix: lifeFitnessManufacturerNamePrefix,
     sportsMatch: true,
     doNotReadManufacturerName: true,
   ),
   lifeFitnessEllipticalFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["LF"],
-    manufacturerNamePrefix: "LifeFitness",
+    deviceNamePrefixes: [lifeFitnessDeviceNamePrefix],
+    manufacturerNamePrefix: lifeFitnessManufacturerNamePrefix,
     sportsMatch: true,
     doNotReadManufacturerName: true,
   ),
   lifeFitnessStairClimberFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["LF"],
-    manufacturerNamePrefix: "LifeFitness",
+    deviceNamePrefixes: [lifeFitnessDeviceNamePrefix],
+    manufacturerNamePrefix: lifeFitnessManufacturerNamePrefix,
     sportsMatch: true,
     doNotReadManufacturerName: true,
   ),
   lifeFitnessStepClimberFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["LF"],
-    manufacturerNamePrefix: "LifeFitness",
+    deviceNamePrefixes: [lifeFitnessDeviceNamePrefix],
+    manufacturerNamePrefix: lifeFitnessManufacturerNamePrefix,
     sportsMatch: true,
     doNotReadManufacturerName: true,
   ),
   lifeFitnessTreadmillFourCC: DeviceIdentifierHelperEntry(
-    deviceNamePrefixes: ["LF"],
-    manufacturerNamePrefix: "LifeFitness",
+    deviceNamePrefixes: [lifeFitnessDeviceNamePrefix],
+    manufacturerNamePrefix: lifeFitnessManufacturerNamePrefix,
     sportsMatch: true,
     doNotReadManufacturerName: true,
   ),
@@ -260,13 +280,13 @@ Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
     deviceNamePrefixes: ["SCHWINN 170", "SCHWINN 270", "SCHWINN 570"],
   ),
   stagesSB20FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stages Bike"]),
-  strydFootPodFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Stryd"]),
+  strydFootPodFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [strydManufacturerName]),
   technogymRunFourCC: DeviceIdentifierHelperEntry(
     deviceNamePrefixes: ["Treadmill"],
-    manufacturerNamePrefix: "Technogym",
+    manufacturerNamePrefix: technogymManufacturerName,
   ),
   virtufitUltimatePro2FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["VIRTUFIT-UP2"]),
-  yesoulS3FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["Yesoul"]),
+  yesoulS3FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: [yesoulManufacturerName]),
 };
 
 class SportDescriptor {

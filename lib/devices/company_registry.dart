@@ -11,6 +11,8 @@ class CompanyRegistry {
   static const johnsonHealthTechKey = 1988;
   static const huaweiTechnologiesCoKey = 637;
   static const technogymSpaKey = 621;
+  // static const trueFitnessTechnologyKey = 999;
+  // static const wahooFitnessLlcKey = 508;
   Map<int, String> registry = {};
 
   Future<void> loadCompanyIdentifiers() async {

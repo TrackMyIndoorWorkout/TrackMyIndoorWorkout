@@ -10,11 +10,11 @@ class LifeFitnessEllipticalDescriptor extends CrossTrainerDeviceDescriptor with 
   LifeFitnessEllipticalDescriptor()
     : super(
         fourCC: lifeFitnessEllipticalFourCC,
-        vendorName: LifeFitnessMixin.lfManufacturer,
-        modelName: "${LifeFitnessMixin.lfManufacturer} Elliptical",
-        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        vendorName: lifeFitnessManufacturerNamePrefix,
+        modelName: "$lifeFitnessManufacturerNamePrefix Elliptical",
+        manufacturerNamePart: lifeFitnessDeviceNamePrefix,
         manufacturerFitId: stravaFitId,
-        model: "${LifeFitnessMixin.lfManufacturer} Elliptical",
+        model: "$lifeFitnessManufacturerNamePrefix Elliptical",
         doNotReadManufacturerName: true,
       );
 

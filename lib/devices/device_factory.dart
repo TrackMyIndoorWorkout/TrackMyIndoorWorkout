@@ -282,9 +282,9 @@ class DeviceFactory {
   static RunningSpeedAndCadenceDescriptor getStrydFootPod() {
     return RunningSpeedAndCadenceDescriptor(
       fourCC: technogymRunFourCC,
-      vendorName: "Stryd",
-      modelName: "Stryd Foot Pod",
-      manufacturerNamePart: "Stryd",
+      vendorName: strydManufacturerName,
+      modelName: "$strydManufacturerName Foot Pod",
+      manufacturerNamePart: strydManufacturerName,
       manufacturerFitId: strydFitId,
       model: "",
       deviceCategory: DeviceCategory.primarySensor,
@@ -294,9 +294,9 @@ class DeviceFactory {
   static RunningSpeedAndCadenceDescriptor getTechnogymRun() {
     return RunningSpeedAndCadenceDescriptor(
       fourCC: technogymRunFourCC,
-      vendorName: "Technogym",
+      vendorName: technogymManufacturerName,
       modelName: "Technogym Run",
-      manufacturerNamePart: "Technogym",
+      manufacturerNamePart: technogymManufacturerName,
       manufacturerFitId: technogymFitId,
       model: "Treadmill",
       deviceCategory: DeviceCategory.primarySensor,
@@ -319,11 +319,11 @@ class DeviceFactory {
   static IndoorBikeDeviceDescriptor getYesoulS3() {
     return IndoorBikeDeviceDescriptor(
       fourCC: yesoulS3FourCC,
-      vendorName: "Yesoul",
-      modelName: "S3",
-      manufacturerNamePart: "Yesoul",
+      vendorName: yesoulManufacturerName,
+      modelName: yesoulModelName,
+      manufacturerNamePart: yesoulManufacturerName,
       manufacturerFitId: stravaFitId,
-      model: "S3",
+      model: yesoulModelName,
     );
   }
 
