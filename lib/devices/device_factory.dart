@@ -2,6 +2,7 @@ import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/concept2_bike_erg.dart';
 import 'device_descriptors/better_health_heart_rate_descriptor.dart';
+import 'device_descriptors/cardiostrong_ib50_descriptor.dart';
 import 'device_descriptors/concept2_erg.dart';
 import 'device_descriptors/concept2_row_erg.dart';
 import 'device_descriptors/concept2_ski_erg.dart';
@@ -333,6 +334,8 @@ class DeviceFactory {
         return BetterHealthHeartRateDescriptor();
       case bowflexC7BikeFourCC:
         return DeviceFactory.getBowflexC7();
+      case cardiostrongIB50FourCC:
+        return CardiostrongIB50Descriptor();
       case concept2RowerFourCC:
         return Concept2RowErg();
       case concept2SkiFourCC:

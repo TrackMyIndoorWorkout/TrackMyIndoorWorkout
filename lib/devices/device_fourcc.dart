@@ -2,6 +2,7 @@ import '../utils/constants.dart';
 
 const betterHealthHeartRateFourCC = "BHTH";
 const bowflexC7BikeFourCC = "BFC7";
+const cardiostrongIB50FourCC = "CSIB";
 const concept2RowerFourCC = "C2Rw";
 const concept2SkiFourCC = "C2Sk";
 const concept2BikeFourCC = "C2Bk";
@@ -66,6 +67,7 @@ const yesoulModelName = "S3";
 List<String> allFourCC = [
   betterHealthHeartRateFourCC,
   bowflexC7BikeFourCC,
+  cardiostrongIB50FourCC,
   concept2BikeFourCC,
   concept2ErgFourCC,
   concept2RowerFourCC,
@@ -182,6 +184,7 @@ class DeviceIdentifierHelperEntry {
 Map<String, DeviceIdentifierHelperEntry> deviceNamePrefixes = {
   betterHealthHeartRateFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["BHT HRM"]),
   bowflexC7BikeFourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["C7-"]),
+  cardiostrongIB50FourCC: DeviceIdentifierHelperEntry(deviceNamePrefixes: ["FS-IB50"]),
   concept2BikeFourCC: DeviceIdentifierHelperEntry(
     deviceNamePrefixes: [concept2DeviceNamePrefix],
     deviceNamePostfix: concept2BikeNamePostfix,
@@ -304,6 +307,7 @@ Map<String, SportDescriptor> deviceSportDescriptors = {
     isMultiSport: true,
   ),
   bowflexC7BikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
+  cardiostrongIB50FourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
   concept2RowerFourCC: SportDescriptor(defaultSport: ActivityType.rowing, isMultiSport: false),
   concept2SkiFourCC: SportDescriptor(defaultSport: ActivityType.nordicSki, isMultiSport: false),
   concept2BikeFourCC: SportDescriptor(defaultSport: ActivityType.ride, isMultiSport: false),
