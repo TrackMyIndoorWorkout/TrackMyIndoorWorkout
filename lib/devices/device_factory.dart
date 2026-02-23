@@ -1,3 +1,9 @@
+import 'package:collection/collection.dart';
+
+import '../../preferences/treadmill_rsc_only_mode.dart';
+import '../../persistence/device_usage.dart';
+import '../../ui/models/advertisement_digest.dart';
+import '../../utils/machine_type.dart';
 import '../export/fit/fit_manufacturer.dart';
 import '../utils/constants.dart';
 import 'device_descriptors/concept2_bike_erg.dart';
@@ -35,6 +41,14 @@ import 'device_descriptors/stair_climber_device_descriptor.dart';
 import 'device_descriptors/step_climber_device_descriptor.dart';
 import 'device_descriptors/treadmill_device_descriptor.dart';
 import 'device_fourcc.dart';
+import 'gatt/ftms.dart';
+import 'gatt/hrm.dart';
+import 'gatt/precor.dart';
+import 'gatt/kayak_first.dart';
+import 'gatt/power_meter.dart';
+import 'gatt/csc.dart';
+import 'gatt/schwinn_x70.dart';
+import 'gatt/concept2.dart';
 
 class DeviceFactory {
   static IndoorBikeDeviceDescriptor getBowflexC7() {
@@ -470,6 +484,102 @@ class DeviceFactory {
     }
 
     return DeviceFactory.getDescriptorForFourCC(fourCC);
+  }
+
+  static DeviceDescriptor? determineDescriptor({
+    required AdvertisementDigest advertisementDigest,
+    required String platformName,
+    required DeviceUsage? deviceUsage,
+    required bool heartRateMonitorWorkout,
+    required String treadmillRscOnlyMode,
+    required bool paddlingWithCyclingSensors,
+  }) {
+    DeviceDescriptor? descriptor;
+    if (!advertisementDigest.needsMatrixSpecialTreatment()) {
+      final loweredPlatformName = platformName.toLowerCase();
+      final ftmsServiceSports = advertisementDigest.machineTypes
+          .map((m) => m.sport)
+          .toList(growable: false);
+      var found = false;
+      for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
+        if (found) break;
+        final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
+        final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
+        for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
+          if (loweredPlatformName.startsWith(lowerPrefix) &&
+              (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
+              !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
+              (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
+              advertisementDigest.isPrefixContained(mapEntry.value.manufacturerNameLoweredPrefix)) {
+            if (mapEntry.key == technogymRunFourCC &&
+                treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
+              continue;
+            }
+
+            if (allConcept2FourCCs.contains(mapEntry.key) &&
+                advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+              // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
+              // TODO: What does SkiErg implement (if any at all)?
+              continue;
+            }
+
+            var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
+            if (descriptorCandidate.sport == ActivityType.run &&
+                mapEntry.key != technogymRunFourCC &&
+                treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
+              descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
+            }
+
+            descriptor = descriptorCandidate;
+            found = true;
+            break;
+          }
+        }
+      }
+    }
+
+    // Step 2. Try to infer from if it has proprietary service
+    // Or other dedicated workarounds
+    if (descriptor == null) {
+      if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
+        if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(precorSpinnerChronoPowerFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(concept2ErgFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
+        } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
+          if (paddlingWithCyclingSensors) {
+            descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedPaddleFourCC);
+          } else {
+            descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
+          }
+        } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
+          if (paddlingWithCyclingSensors) {
+            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedPaddleFourCC);
+          } else {
+            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
+          }
+        } else if (advertisementDigest.serviceUuids.contains(heartRateServiceUuid) &&
+            heartRateMonitorWorkout) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(heartRateMonitorFourCC);
+        }
+      } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
+        if (advertisementDigest.machineType == MachineType.treadmill) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(matrixTreadmillFourCC);
+        } else if (advertisementDigest.machineType == MachineType.indoorBike) {
+          descriptor = DeviceFactory.getDescriptorForFourCC(matrixBikeFourCC);
+        }
+      } else if (deviceUsage != null) {
+        descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
+      } else if (advertisementDigest.serviceUuids.contains(fitnessMachineUuid) &&
+          advertisementDigest.machineType.isSpecificFtms) {
+        descriptor = DeviceFactory.genericDescriptorForSport(advertisementDigest.machineType.sport);
+      }
+    }
+    return descriptor;
   }
 
   static List<DeviceDescriptor> allDescriptors() {

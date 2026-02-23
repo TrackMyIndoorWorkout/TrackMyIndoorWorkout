@@ -30,6 +30,13 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/theme_manager.dart';
 import 'package:track_my_indoor_exercise/preferences/log_level.dart';
 import 'package:track_my_indoor_exercise/utils/sound.dart';
+import 'package:track_my_indoor_exercise/devices/device_factory.dart';
+import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/ftms.dart';
+import 'package:track_my_indoor_exercise/devices/gatt/precor.dart';
+import 'package:track_my_indoor_exercise/preferences/treadmill_rsc_only_mode.dart';
+import 'package:track_my_indoor_exercise/utils/machine_type.dart';
+import 'package:track_my_indoor_exercise/ui/models/advertisement_digest.dart';
 import 'package:tuple/tuple.dart';
 
 class MockAdvertisementCache extends Mock implements AdvertisementCache {
@@ -470,5 +477,147 @@ void main() {
 
     await tester.pump(const Duration(seconds: 4));
     await tester.pump();
+  });
+
+  group('DeviceFactory.determineDescriptor', () {
+    test('standard specific FTMS devices', () {
+      final digest = AdvertisementDigest(
+        id: "ID",
+        serviceUuids: [fitnessMachineUuid],
+        machineTypes: [MachineType.rower],
+        companyIds: [],
+        manufacturers: [],
+        txPower: 0,
+        appearance: 0,
+        machineTypesByte: 0,
+        machineType: MachineType.rower,
+      );
+
+      final descriptor = DeviceFactory.determineDescriptor(
+        advertisementDigest: digest,
+        platformName: "Generic Rower",
+        deviceUsage: null,
+        heartRateMonitorWorkout: false,
+        treadmillRscOnlyMode: treadmillRscOnlyModeNever,
+        paddlingWithCyclingSensors: false,
+      );
+
+      expect(descriptor?.sport, ActivityType.rowing);
+      expect(descriptor?.fourCC, genericFTMSRowerFourCC);
+    });
+
+    test('generic FTMS fallback for unknown specific FTMS type', () {
+      final digest = AdvertisementDigest(
+        id: "ID",
+        serviceUuids: [fitnessMachineUuid],
+        machineTypes: [MachineType.crossTrainer],
+        companyIds: [],
+        manufacturers: [],
+        txPower: 0,
+        appearance: 0,
+        machineTypesByte: 0,
+        machineType: MachineType.crossTrainer,
+      );
+
+      final descriptor = DeviceFactory.determineDescriptor(
+        advertisementDigest: digest,
+        platformName: "Unknown Elliptical",
+        deviceUsage: null,
+        heartRateMonitorWorkout: false,
+        treadmillRscOnlyMode: treadmillRscOnlyModeNever,
+        paddlingWithCyclingSensors: false,
+      );
+
+      expect(descriptor?.sport, ActivityType.elliptical);
+      expect(descriptor?.fourCC, genericFTMSCrossTrainerFourCC);
+    });
+
+    test('historical deviceUsage overrides generic FTMS fallback for multi-sport devices', () {
+      final digest = AdvertisementDigest(
+        id: "ID",
+        serviceUuids: [fitnessMachineUuid],
+        // Multi-sport devices present generic FTMS, but isSpecificFtms is false
+        machineTypes: [MachineType.multiFtms],
+        companyIds: [],
+        manufacturers: [],
+        txPower: 0,
+        appearance: 0,
+        machineTypesByte: 0,
+        machineType: MachineType.multiFtms,
+      );
+
+      // User historically used it as a swimmer
+      final historicalUsage = DeviceUsage(
+        sport: ActivityType.swim,
+        mac: "ID",
+        name: "Unknown MultiSport",
+        manufacturer: "Unknown",
+        time: DateTime.now(),
+      );
+
+      final descriptor = DeviceFactory.determineDescriptor(
+        advertisementDigest: digest,
+        platformName: "Unknown MultiSport",
+        deviceUsage: historicalUsage,
+        heartRateMonitorWorkout: false,
+        treadmillRscOnlyMode: treadmillRscOnlyModeNever,
+        paddlingWithCyclingSensors: false,
+      );
+
+      // It should be a generic FTMS swimmer, not a base bike
+      expect(descriptor?.sport, ActivityType.swim);
+      expect(descriptor?.fourCC, genericFTMSSwimFourCC);
+    });
+
+    test('specific brand matching (True Treadmill from platform name)', () {
+      final digest = AdvertisementDigest(
+        id: "ID",
+        serviceUuids: [fitnessMachineUuid],
+        machineTypes: [MachineType.treadmill],
+        companyIds: [],
+        manufacturers: [],
+        txPower: 0,
+        appearance: 0,
+        machineTypesByte: 0,
+        machineType: MachineType.treadmill,
+      );
+
+      final descriptor = DeviceFactory.determineDescriptor(
+        advertisementDigest: digest,
+        platformName: "Wahoo Fitness", // Wahoo IDs as TRUE fitness
+        deviceUsage: null,
+        heartRateMonitorWorkout: false,
+        treadmillRscOnlyMode: treadmillRscOnlyModeNever,
+        paddlingWithCyclingSensors: false,
+      );
+
+      // It should be a True Fitness treadmill, falling back to generic FTMS Treadmill since True has no specific descriptor anymore
+      expect(descriptor?.fourCC, genericFTMSTreadmillFourCC);
+    });
+
+    test('proprietary precor service matching', () {
+      final digest = AdvertisementDigest(
+        id: "ID",
+        serviceUuids: [precorServiceUuid],
+        machineTypes: [],
+        companyIds: [],
+        manufacturers: [],
+        txPower: 0,
+        appearance: 0,
+        machineTypesByte: 0,
+        machineType: MachineType.notFitnessMachine,
+      );
+
+      final descriptor = DeviceFactory.determineDescriptor(
+        advertisementDigest: digest,
+        platformName: "Precor Bike",
+        deviceUsage: null,
+        heartRateMonitorWorkout: false,
+        treadmillRscOnlyMode: treadmillRscOnlyModeNever,
+        paddlingWithCyclingSensors: false,
+      );
+
+      expect(descriptor?.fourCC, precorSpinnerChronoPowerFourCC);
+    });
   });
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -25,14 +24,9 @@ import '../../../devices/gadgets/heart_rate_monitor.dart';
 import '../../../devices/gadgets/heart_rate_monitor_internal.dart';
 import '../../../devices/gadgets/better_health_heart_rate_monitor.dart';
 import '../../../devices/gatt/appearance.dart';
-import '../../../devices/gatt/concept2.dart';
 import '../../../devices/gatt/csc.dart';
 import '../../../devices/gatt/ftms.dart';
 import '../../../devices/gatt/hrm.dart';
-import '../../../devices/gatt/kayak_first.dart';
-import '../../../devices/gatt/power_meter.dart';
-import '../../../devices/gatt/precor.dart';
-import '../../../devices/gatt/schwinn_x70.dart';
 import '../../../devices/gatt_maps.dart';
 import '../../../persistence/db_utils.dart';
 import '../../../persistence/device_usage.dart';
@@ -585,90 +579,15 @@ class FindDevicesController extends GetxController {
     // Device determination logics
     // Step 1. Try to infer from the Bluetooth advertised name
     final advertisementDigest = advertisementCache.getEntry(device.remoteId.str)!;
-    DeviceDescriptor? descriptor;
-    if (!advertisementDigest.needsMatrixSpecialTreatment()) {
-      final loweredPlatformName = device.platformName.toLowerCase();
-      final ftmsServiceSports = advertisementDigest.machineTypes
-          .map((m) => m.sport)
-          .toList(growable: false);
-      var found = false;
-      for (final mapEntry in deviceNamePrefixes.entries.whereNot((dnp) => dnp.value.ambiguous)) {
-        if (found) break;
-        final lowerPostfix = mapEntry.value.deviceNameLoweredPostfix;
-        final descriptorDefaultSport = deviceSportDescriptors[mapEntry.key]!.defaultSport;
-        for (var lowerPrefix in mapEntry.value.deviceNameLoweredPrefixes) {
-          if (loweredPlatformName.startsWith(lowerPrefix) &&
-              (lowerPostfix.isEmpty || loweredPlatformName.endsWith(lowerPostfix)) &&
-              !mapEntry.value.shouldBeExcludedByBluetoothName(loweredPlatformName) &&
-              (!mapEntry.value.sportsMatch || ftmsServiceSports.contains(descriptorDefaultSport)) &&
-              advertisementDigest.isPrefixContained(mapEntry.value.manufacturerNameLoweredPrefix)) {
-            if (mapEntry.key == technogymRunFourCC &&
-                _treadmillRscOnlyMode == treadmillRscOnlyModeNever) {
-              continue;
-            }
-
-            if (allConcept2FourCCs.contains(mapEntry.key) &&
-                advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-              // TODO: Does BikeErg implement Indoor Bike FTMS (if any at all)?
-              // TODO: What does SkiErg implement (if any at all)?
-              continue;
-            }
-
-            var descriptorCandidate = DeviceFactory.getDescriptorForFourCC(mapEntry.key);
-            if (descriptorCandidate.sport == ActivityType.run &&
-                mapEntry.key != technogymRunFourCC &&
-                _treadmillRscOnlyMode == treadmillRscOnlyModeAlways) {
-              descriptorCandidate = DeviceFactory.getDescriptorForFourCC(technogymRunFourCC);
-            }
-
-            descriptor = descriptorCandidate;
-            found = true;
-            break;
-          }
-        }
-      }
-    }
-
     var deviceUsage = await dbUtils.getDeviceUsage(device.remoteId.str);
-
-    // Step 2. Try to infer from if it has proprietary service
-    // Or other dedicated workarounds
-    if (descriptor == null) {
-      if (!advertisementDigest.serviceUuids.contains(fitnessMachineUuid)) {
-        if (advertisementDigest.serviceUuids.contains(precorServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(precorSpinnerChronoPowerFourCC);
-        } else if (advertisementDigest.serviceUuids.contains(schwinnX70ServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(schwinnX70BikeFourCC);
-        } else if (advertisementDigest.serviceUuids.contains(c2ErgPrimaryServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(concept2ErgFourCC);
-        } else if (advertisementDigest.serviceUuids.contains(kayakFirstServiceUuid)) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(kayakFirstFourCC);
-        } else if (advertisementDigest.serviceUuids.contains(cyclingPowerServiceUuid)) {
-          if (_paddlingWithCyclingSensors) {
-            descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedPaddleFourCC);
-          } else {
-            descriptor = DeviceFactory.getDescriptorForFourCC(powerMeterBasedBikeFourCC);
-          }
-        } else if (advertisementDigest.serviceUuids.contains(cyclingCadenceServiceUuid)) {
-          if (_paddlingWithCyclingSensors) {
-            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedPaddleFourCC);
-          } else {
-            descriptor = DeviceFactory.getDescriptorForFourCC(cscSensorBasedBikeFourCC);
-          }
-        } else if (advertisementDigest.serviceUuids.contains(heartRateServiceUuid) &&
-            heartRateMonitorWorkout) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(heartRateMonitorFourCC);
-        }
-      } else if (advertisementDigest.needsMatrixSpecialTreatment()) {
-        if (advertisementDigest.machineType == MachineType.treadmill) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(matrixTreadmillFourCC);
-        } else if (advertisementDigest.machineType == MachineType.indoorBike) {
-          descriptor = DeviceFactory.getDescriptorForFourCC(matrixBikeFourCC);
-        }
-      } else if (deviceUsage != null) {
-        descriptor = DeviceFactory.genericDescriptorForSport(deviceUsage.sport);
-      }
-    }
+    DeviceDescriptor? descriptor = DeviceFactory.determineDescriptor(
+      advertisementDigest: advertisementDigest,
+      platformName: device.platformName,
+      deviceUsage: deviceUsage,
+      heartRateMonitorWorkout: heartRateMonitorWorkout,
+      treadmillRscOnlyMode: _treadmillRscOnlyMode,
+      paddlingWithCyclingSensors: _paddlingWithCyclingSensors,
+    );
 
     FitnessEquipment? fitnessEquipmentToConnect;
     bool preConnectLogic = true;
