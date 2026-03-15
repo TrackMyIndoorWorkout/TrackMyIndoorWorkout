@@ -12,7 +12,7 @@ environment:
 dependencies:
   app_links: ^7.0.0
   assorted_layout_widgets: ^11.0.0
-  audioplayers: ^6.5.1
+  audioplayers: ^6.6.0
   collection: ^1.19.1
   datetime_picker_formfield_new: ^2.1.0
   device_info_plus: ^12.3.0
@@ -20,15 +20,15 @@ dependencies:
   email_validator: ^3.0.0
   expandable: ^5.0.1
   fab_circular_menu_plus: ^0.0.4
-  file_picker: ^10.3.8
+  file_picker: ^10.3.10
   flex_color_scheme: ^8.4.0
   flutter_archive: ^6.0.4
-  flutter_blue_plus: ^2.1.0
+  flutter_blue_plus: ^2.2.1
   heart_rate_flutter: ^0.0.3
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.8
   flutter_spinbox: ^0.13.1
-  flutter_svg: ^2.2.3
+  flutter_svg: ^2.2.4
   flutter_timezone: ^5.0.1
   get: ^4.7.3
   group_button: ^5.3.4
@@ -56,12 +56,12 @@ dependencies:
   share_plus: ^12.0.1
   sensors_plus: ^6.1.0
   string_validator: ^1.2.0
-  syncfusion_flutter_charts: ^32.1.20
+  syncfusion_flutter_charts: ^32.2.9
   timezone: ^0.10.1
   tuple: ^2.0.2
   url_launcher: ^6.3.2
   vector_math: ^2.1.4
-  wakelock_plus: ^1.4.0
+  wakelock_plus: ^1.5.1
   flutter:
     sdk: flutter
 
