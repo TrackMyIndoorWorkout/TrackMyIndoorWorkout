@@ -59,7 +59,7 @@ const DeviceUsageSchema = CollectionSchema(
   getId: _deviceUsageGetId,
   getLinks: _deviceUsageGetLinks,
   attach: _deviceUsageAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _deviceUsageEstimateSize(

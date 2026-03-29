@@ -50,7 +50,7 @@ const RecordSchema = CollectionSchema(
   getId: _recordGetId,
   getLinks: _recordGetLinks,
   attach: _recordAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _recordEstimateSize(Record object, List<int> offsets, Map<Type, List<int>> allOffsets) {

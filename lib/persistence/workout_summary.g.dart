@@ -55,7 +55,7 @@ const WorkoutSummarySchema = CollectionSchema(
   getId: _workoutSummaryGetId,
   getLinks: _workoutSummaryGetLinks,
   attach: _workoutSummaryAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _workoutSummaryEstimateSize(

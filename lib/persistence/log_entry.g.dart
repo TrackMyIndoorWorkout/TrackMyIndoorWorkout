@@ -47,7 +47,7 @@ const LogEntrySchema = CollectionSchema(
   getId: _logEntryGetId,
   getLinks: _logEntryGetLinks,
   attach: _logEntryAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _logEntryEstimateSize(LogEntry object, List<int> offsets, Map<Type, List<int>> allOffsets) {

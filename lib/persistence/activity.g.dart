@@ -93,7 +93,7 @@ const ActivitySchema = CollectionSchema(
   getId: _activityGetId,
   getLinks: _activityGetLinks,
   attach: _activityAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _activityEstimateSize(Activity object, List<int> offsets, Map<Type, List<int>> allOffsets) {
