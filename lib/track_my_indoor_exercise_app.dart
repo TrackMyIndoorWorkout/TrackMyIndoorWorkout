@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:pref/pref.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
@@ -12,7 +12,7 @@ import 'import/csv_importer.dart';
 import 'persistence/workout_summary.dart';
 import 'preferences/leaderboard_and_rank.dart';
 import 'preferences/show_performance_overlay.dart';
-import 'ui/find_devices.dart';
+import 'ui/find_devices/find_devices_screen.dart';
 import 'utils/theme_manager.dart';
 
 class TrackMyIndoorExerciseApp extends StatefulWidget {

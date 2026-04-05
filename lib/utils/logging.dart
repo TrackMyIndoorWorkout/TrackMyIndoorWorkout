@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 
@@ -30,6 +30,7 @@ class Logging {
   void log(int logLevelThreshold, int logLevel, String tag, String subTag, String message) {
     if (kDebugMode) {
       debugPrint("$tag | $subTag | $message");
+      return;
     }
 
     if (logLevelThreshold == logLevelNone || testing) {

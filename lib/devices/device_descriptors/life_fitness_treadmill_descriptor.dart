@@ -10,11 +10,11 @@ class LifeFitnessTreadmillDescriptor extends TreadmillDeviceDescriptor with Life
   LifeFitnessTreadmillDescriptor()
     : super(
         fourCC: lifeFitnessTreadmillFourCC,
-        vendorName: LifeFitnessMixin.lfManufacturer,
-        modelName: "${LifeFitnessMixin.lfManufacturer} Treadmill",
-        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        vendorName: lifeFitnessManufacturerNamePrefix,
+        modelName: "$lifeFitnessManufacturerNamePrefix Treadmill",
+        manufacturerNamePart: lifeFitnessDeviceNamePrefix,
         manufacturerFitId: stravaFitId,
-        model: "${LifeFitnessMixin.lfManufacturer} Treadmill",
+        model: "$lifeFitnessManufacturerNamePrefix Treadmill",
         doNotReadManufacturerName: true,
       );
 

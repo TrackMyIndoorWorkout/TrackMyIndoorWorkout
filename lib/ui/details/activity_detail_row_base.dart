@@ -50,13 +50,23 @@ class ActivityDetailRowBase extends StatelessWidget {
         ),
       );
     } else if (fitHorizontally) {
-      row.add(FitHorizontally(shrinkLimit: shrinkLimit, child: Text(text, style: textStyle)));
+      row.add(
+        FitHorizontally(
+          shrinkLimit: shrinkLimit,
+          child: Text(text, style: textStyle),
+        ),
+      );
     } else {
       row.add(Text(text, style: textStyle));
     }
 
     if (unitStyle != null && unitText.isNotEmpty) {
-      row.add(SizedBox(width: iconSize, child: Text(unitText, style: unitStyle)));
+      row.add(
+        SizedBox(
+          width: iconSize,
+          child: Text(unitText, style: unitStyle),
+        ),
+      );
     }
 
     return FitHorizontally(

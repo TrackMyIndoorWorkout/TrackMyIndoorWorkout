@@ -1,7 +1,7 @@
 // import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/cycling_power_meter_sensor.dart';
@@ -55,6 +55,23 @@ void main() {
     for (final testPair in [
       TestPair(
         data: sampleData,
+        record: RecordWithSport(
+          distance: null,
+          elapsed: null,
+          calories: null,
+          power: 103,
+          speed: null,
+          cadence: 0,
+          heartRate: null,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+          strokeCount: 228.0,
+        ),
+      ),
+      TestPair(
+        data: [...sampleData, 0xFF, 0xEE, 0xDD], // Extra bytes
         record: RecordWithSport(
           distance: null,
           elapsed: null,

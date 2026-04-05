@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../utils/constants.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:pref/pref.dart';
 
 import '../devices/device_descriptors/device_descriptor.dart';
@@ -507,10 +507,9 @@ class CSVImporter with PowerSpeedMixin {
       DeviceDescriptor device = DeviceFactory.getDescriptorForFourCC(schwinnACPerfPlusFourCC);
       final factors = await DbUtils().getFactors(deviceId);
       fourCC = device.fourCC;
-      deviceName =
-          deviceNamePrefixes.containsKey(fourCC)
-              ? deviceNamePrefixes[fourCC]?.deviceNamePrefixes[0] ?? notAvailable
-              : notAvailable;
+      deviceName = deviceNamePrefixes.containsKey(fourCC)
+          ? deviceNamePrefixes[fourCC]?.deviceNamePrefixes[0] ?? notAvailable
+          : notAvailable;
       sport = device.sport;
       calorieFactor =
           factors.item2 *

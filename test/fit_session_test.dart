@@ -30,16 +30,15 @@ void main() {
       test('for ${exportTarget.item2}', () async {
         final session = FitSession(0, 100.0, exportTarget.item1);
         final exportRecord = ExportRecord(record: Record(timeStamp: DateTime.now()));
-        final exportModel =
-            ExportModelForTests(records: [exportRecord])
-              ..averageSpeed = 0.0
-              ..maximumSpeed = 0.0
-              ..averageHeartRate = 0
-              ..maximumHeartRate = 0
-              ..averageCadence = 0
-              ..maximumCadence = 0
-              ..averagePower = 0.0
-              ..maximumPower = 0;
+        final exportModel = ExportModelForTests(records: [exportRecord])
+          ..averageSpeed = 0.0
+          ..maximumSpeed = 0.0
+          ..averageHeartRate = 0
+          ..maximumHeartRate = 0
+          ..averageCadence = 0
+          ..maximumCadence = 0
+          ..averagePower = 0.0
+          ..maximumPower = 0;
 
         final output = session.serializeData(exportModel);
         final expected = session.fields.fold<int>(0, (accu, field) => accu + field.size);

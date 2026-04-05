@@ -3,7 +3,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 
 import '../persistence/device_usage.dart';
@@ -130,13 +130,12 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.deviceUsages
-                    .where()
-                    .sortByTimeDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.deviceUsages
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -198,7 +197,7 @@ class DeviceUsagesScreenState extends State<DeviceUsagesScreen> with WidgetsBind
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.access_time_filled, _sizeDefault),
                         Text(timeString, style: _textStyle),
                       ],
                     ),

@@ -2,9 +2,10 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/utils/export.dart';
+
 import 'utils.dart';
 
-main() {
+void main() {
   group('int32 serialization and deserialization matches', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 4294967295, rnd).forEach((length) {

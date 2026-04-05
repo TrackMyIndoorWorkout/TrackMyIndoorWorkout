@@ -260,8 +260,8 @@ void main() {
           ),
         );
 
-        final expected =
-            ((caloriesPerMinute * calorieFactor * 50.0 / 3.0).round() * powerFactor).round();
+        final expected = ((caloriesPerMinute * calorieFactor * 50.0 / 3.0).round() * powerFactor)
+            .round();
         expect(record.power, expected);
       });
     });
@@ -309,8 +309,8 @@ void main() {
           RecordWithSport(sport: descriptor.sport, speed: 8.0, caloriesPerHour: caloriesPerHour),
         );
 
-        final expected =
-            ((caloriesPerHour * calorieFactor * 5.0 / 18.0).round() * powerFactor).round();
+        final expected = ((caloriesPerHour * calorieFactor * 5.0 / 18.0).round() * powerFactor)
+            .round();
         expect(record.power, expected);
       });
     });
@@ -370,8 +370,8 @@ void main() {
             hrCalorieFactor;
         expect(record.caloriesPerMinute, closeTo(expectedCaloriesPerMinute, eps));
 
-        final expectedPower =
-            ((expectedCaloriesPerMinute * 50.0 / 3.0).round() * powerFactor).round();
+        final expectedPower = ((expectedCaloriesPerMinute * 50.0 / 3.0).round() * powerFactor)
+            .round();
         expect(record.power, expectedPower);
       });
     });

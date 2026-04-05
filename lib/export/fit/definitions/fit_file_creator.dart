@@ -5,7 +5,7 @@ import '../fit_field.dart';
 import '../fit_message.dart';
 
 class FitFileCreator extends FitDefinitionMessage {
-  FitFileCreator(localMessageType) : super(localMessageType, FitMessage.fileCreator) {
+  FitFileCreator(int localMessageType) : super(localMessageType, FitMessage.fileCreator) {
     fields = [
       FitField(0, FitBaseTypes.uint16Type), // SoftwareRevision
     ];

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../preferences/log_level.dart';
 import '../utils/constants.dart';
@@ -44,6 +44,8 @@ class Record {
   double? preciseCadence;
   @ignore
   double? strokeCount; // strides / steps / revolutions
+  @ignore
+  double? inclination; // % with 0.1 resolution (FTMS)
 
   Record({
     this.id = Isar.autoIncrement,
@@ -64,6 +66,7 @@ class Record {
     this.resistance,
     this.preciseCadence,
     this.strokeCount,
+    this.inclination,
   }) {
     timeStamp ??= DateTime.now();
     paceToSpeed();
@@ -435,6 +438,7 @@ class Record {
       resistance: record.resistance,
       preciseCadence: record.preciseCadence,
       strokeCount: record.strokeCount,
+      inclination: record.inclination,
     );
   }
 
@@ -456,14 +460,15 @@ class Record {
         "caloriesPerMinute $caloriesPerMinute | "
         "resistance $resistance | "
         "preciseCadence $preciseCadence | "
-        "strokeCount $strokeCount";
+        "strokeCount $strokeCount | "
+        "inclination $inclination";
   }
 }
 
 class RecordWithSport extends Record {
   RecordWithSport({
-    id,
-    activityId,
+    Id? id,
+    int? activityId,
     super.timeStamp,
     super.distance,
     super.elapsed,
@@ -480,6 +485,7 @@ class RecordWithSport extends Record {
     super.resistance,
     super.preciseCadence,
     super.strokeCount,
+    super.inclination,
   }) : assert(sport != null),
        super(id: id ?? Isar.autoIncrement, activityId: activityId ?? Isar.minId);
 
@@ -499,17 +505,17 @@ class RecordWithSport extends Record {
       resistance: 0,
       preciseCadence: 0.0,
       strokeCount: 0.0,
+      inclination: 0.0,
       sport: sport,
     );
   }
 
   static RecordWithSport getRandom(String sport, Random random) {
-    final spd =
-        sport == ActivityType.run
-            ? 4.0 + random.nextDouble() * 12.0
-            : (sport == ActivityType.ride
-                ? 30.0 + random.nextDouble() * 20.0
-                : 2.0 + random.nextDouble() * 10.0);
+    final spd = sport == ActivityType.run
+        ? 4.0 + random.nextDouble() * 12.0
+        : (sport == ActivityType.ride
+              ? 30.0 + random.nextDouble() * 20.0
+              : 2.0 + random.nextDouble() * 10.0);
     final cadence = 30.0 + random.nextDouble() * 100.0;
     return RecordWithSport(
       timeStamp: DateTime.now(),
@@ -669,6 +675,7 @@ class RecordWithSport extends Record {
       resistance: record.resistance,
       preciseCadence: record.preciseCadence,
       strokeCount: record.strokeCount,
+      inclination: record.inclination,
     );
   }
 

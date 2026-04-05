@@ -321,10 +321,12 @@ void main() {
         final sdy = straightMarkerA.dy - straightMarkerB.dy;
         expect(sdy, closeTo(0.0, displayEps));
 
-        final chicaneMarkerA =
-            calculator.trackMarker((track.laneLength + track.halfCircle / 2 - 0.1).toDouble())!;
-        final chicaneMarkerB =
-            calculator.trackMarker((track.laneLength + track.halfCircle / 2 + 0.1).toDouble())!;
+        final chicaneMarkerA = calculator.trackMarker(
+          (track.laneLength + track.halfCircle / 2 - 0.1).toDouble(),
+        )!;
+        final chicaneMarkerB = calculator.trackMarker(
+          (track.laneLength + track.halfCircle / 2 + 0.1).toDouble(),
+        )!;
         final cdx = chicaneMarkerA.dx - chicaneMarkerB.dx;
         final cdy = (chicaneMarkerA.dy - chicaneMarkerB.dy).abs();
 

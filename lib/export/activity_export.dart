@@ -107,23 +107,20 @@ abstract class ActivityExport {
             if (dividerCount > 0) {
               int time = previousRecord.timeStamp!.millisecondsSinceEpoch;
               int timePart = dTMillis ~/ (dividerCount + 1);
-              double? dDistance =
-                  (previousRecord.distance != null && r.distance != null)
-                      ? r.distance! - previousRecord.distance!
-                      : null;
+              double? dDistance = (previousRecord.distance != null && r.distance != null)
+                  ? r.distance! - previousRecord.distance!
+                  : null;
               double? distancePart = dDistance != null ? dDistance / (dividerCount + 1) : null;
               double? distance = previousRecord.distance;
-              int? dCaloriesInt =
-                  (previousRecord.calories != null && r.calories != null)
-                      ? r.calories! - previousRecord.calories!
-                      : null;
+              int? dCaloriesInt = (previousRecord.calories != null && r.calories != null)
+                  ? r.calories! - previousRecord.calories!
+                  : null;
               double? dCalories = dCaloriesInt?.toDouble();
               double? caloriesPart = dCalories != null ? dCalories / (dividerCount + 1) : null;
               double? calories = previousRecord.calories?.toDouble();
-              int? dElapsed =
-                  (previousRecord.elapsed != null && r.elapsed != null)
-                      ? r.elapsed! - previousRecord.elapsed!
-                      : null;
+              int? dElapsed = (previousRecord.elapsed != null && r.elapsed != null)
+                  ? r.elapsed! - previousRecord.elapsed!
+                  : null;
               int? elapsedPart = dElapsed != null ? dElapsed ~/ (dividerCount + 1) : null;
               int? elapsed = previousRecord.elapsed;
               for (final _ in List<int>.generate(dividerCount, (i) => i)) {

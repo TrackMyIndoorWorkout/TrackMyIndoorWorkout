@@ -6,7 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../persistence/activity.dart';
 import '../../persistence/athlete.dart';
@@ -124,9 +124,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
   bool _blockFTMSFeatureRead = blockFTMSFeatureReadDefault;
+
+  @visibleForTesting
+  set blockFTMSFeatureRead(bool value) => _blockFTMSFeatureRead = value;
   bool blockManufacturerNameReading = blockManufacturerNameReadDefault;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;
+  DbUtils? _dbUtils;
 
   // For Throttling + deduplication #234
   late final Duration _throttleDuration; // Now configurable
@@ -159,6 +163,22 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double get hrCalorieFactor => _hrCalorieFactor;
   double get hrmCalorieFactor => _hrmCalorieFactor;
 
+  DbUtils get dbUtils {
+    if (_dbUtils == null) {
+      if (Get.isRegistered<DbUtils>()) {
+        try {
+          _dbUtils = Get.find<DbUtils>();
+        } catch (e) {
+          _dbUtils = DbUtils();
+        }
+      } else {
+        _dbUtils = DbUtils();
+      }
+    }
+
+    return _dbUtils!;
+  }
+
   int keySelector(List<int> l) {
     if (l.isEmpty) {
       return badKey;
@@ -190,12 +210,11 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return null;
     }
 
-    final merged =
-        values.length == 1
-            ? values.first
-            : values
-                .skip(1)
-                .fold<RecordWithSport>(values.first, (prev, element) => prev.mergeBest(element));
+    final merged = values.length == 1
+        ? values.first
+        : values
+              .skip(1)
+              .fold<RecordWithSport>(values.first, (prev, element) => prev.mergeBest(element));
     if (logLevel >= logLevelInfo) {
       Logging().log(logLevel, logLevelInfo, tag, "mergedToYield", "merged $merged");
     }
@@ -471,8 +490,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       // Present as an additional sensor
       // Remove from additional sensor list, because the lifecycle
       // spans beyond the FitnessMachine (so we should prevent detach)
-      _additionalSensors =
-          _additionalSensors.where((sensor) => sensor.device?.remoteId.str != hrmId).toList();
+      _additionalSensors = _additionalSensors
+          .where((sensor) => sensor.device?.remoteId.str != hrmId)
+          .toList();
     }
   }
 
@@ -488,10 +508,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     }
 
     if (hadDetach) {
-      _additionalSensors =
-          _additionalSensors
-              .where((sensor) => sensor.device?.remoteId.str == device?.remoteId.str)
-              .toList();
+      _additionalSensors = _additionalSensors
+          .where((sensor) => sensor.device?.remoteId.str == device?.remoteId.str)
+          .toList();
     }
 
     if (descriptor != null && device != null) {
@@ -549,7 +568,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
-      final lastDbRecord = await DbUtils().getLastRecord(activity.id);
+      final lastDbRecord = await dbUtils.getLastRecord(activity.id);
       continuationRecord = lastDbRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
@@ -568,7 +587,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     readConfiguration();
   }
 
-  Future<bool> connectOnDemand({identify = false}) async {
+  Future<bool> connectOnDemand({bool identify = false}) async {
     await connect();
 
     final success = await discover(identify: identify);
@@ -650,6 +669,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return;
     }
 
+    if (_blockFTMSFeatureRead || isInternal) {
+      return;
+    }
+
     final machineFeatures = BluetoothDeviceEx.filterCharacteristic(
       service!.characteristics,
       fitnessMachineFeature,
@@ -661,8 +684,23 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         return;
       }
 
-      readFeatures = _getLongFromBytes(featureValues, 0);
-      writeFeatures = _getLongFromBytes(featureValues, 4);
+      if (featureValues.length < 8 && logLevel >= logLevelWarning) {
+        Logging().log(
+          logLevel,
+          logLevelWarning,
+          tag,
+          "_readFitnessMachineFeatures",
+          "Malformed fitness machine features: expected at least 8 bytes, got ${featureValues.length}. Padding with zeros.",
+        );
+      }
+
+      final paddedValues = List<int>.from(featureValues);
+      while (paddedValues.length < 8) {
+        paddedValues.add(0);
+      }
+
+      readFeatures = _getLongFromBytes(paddedValues, 0);
+      writeFeatures = _getLongFromBytes(paddedValues, 4);
       _speedLevels = await getWriteSupportParameters(
         writeFeatures,
         speedTargetSettingSupported,
@@ -842,7 +880,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   }
 
   @visibleForTesting
-  void setFactors(powerFactor, calorieFactor, hrCalorieFactor, hrmCalorieFactor, extendTuning) {
+  void setFactors(
+    double powerFactor,
+    double calorieFactor,
+    double hrCalorieFactor,
+    double hrmCalorieFactor,
+    bool extendTuning,
+  ) {
     _powerFactor = powerFactor;
     _calorieFactor = calorieFactor;
     _hrCalorieFactor = hrCalorieFactor;
@@ -1274,8 +1318,8 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         stub.speed! > displayEps) {
       // When cycling supplement power from speed if missing
       // via https://www.gribble.org/cycling/power_v_speed.html
-      stub.power =
-          (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport) * _powerFactor).round();
+      stub.power = (powerForVelocity(stub.speed! * DeviceDescriptor.kmh2ms, sport) * _powerFactor)
+          .round();
     }
 
     if (stub.pace != null && stub.pace! > 0.0 && slowPace != null && stub.pace! < slowPace! ||
@@ -1385,7 +1429,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return;
     }
 
-    final dbUtils = DbUtils();
     final factors = await dbUtils.getFactors(device?.remoteId.str ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;

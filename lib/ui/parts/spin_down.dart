@@ -306,20 +306,18 @@ class SpinDownBottomSheetState extends State<SpinDownBottomSheet> {
   TextStyle _weightInputButtonTextStyle() {
     return _smallerTextStyle.merge(
       TextStyle(
-        color:
-            _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
-                ? (_isLight ? Colors.black : Colors.white)
-                : (_isLight ? Colors.black87 : Colors.white70),
+        color: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+            ? (_isLight ? Colors.black : Colors.white)
+            : (_isLight ? Colors.black87 : Colors.white70),
       ),
     );
   }
 
   ButtonStyle _weightInputButtonStyle() {
     return ElevatedButton.styleFrom(
-      backgroundColor:
-          _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
-              ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
-              : (_isLight ? Colors.black12 : Colors.black87),
+      backgroundColor: _calibrationState == CalibrationState.weighInSuccess || _canSubmitWeight
+          ? (_isLight ? Colors.lightGreen.shade100 : Colors.green.shade900)
+          : (_isLight ? Colors.black12 : Colors.black87),
     );
   }
 

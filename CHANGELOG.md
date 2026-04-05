@@ -1,3 +1,27 @@
+## 2.0.163
+* Replace watch icon with access_time_filled
+* Add icons to the legend on the Activity list and the Recording screens
+* Legend dialog screen height adjustment
+* Fix: isar community package transition
+* Fix: Recreate the whole Android platform port to fix compilation (Isar or Flutter sticks to NDK 28.2.13676358)
+* Chore: Refactor the recording screen into a separate directory, factor the measurmeent row into separate widget
+* Feat: being able to see the measurement graph all the way to 5 minutes
+* Feat: color the measurement icon and unit the same as the value when the row is zone colored to avoid low contrasts
+* Feat: support local heart rate monitor (Full Android Watches / FAW)
+* Feat: Internal cadence sensor - based on motion sensors (accelerometer and gyroscope) (Full Android Watches / FAW)
+* Feat: multi sport enablement for HRM only or cadence only workouts, and other corner case handling
+* Feat: configurable pages for very small screens (Full Android Watches / FAW)
+* Feat: checking location permissions and care about GPS on Android 11 (SDK level 30) and earlier devices (Full Android Watches / FAW)
+* Feat: RSC data rule relaxation to allow extra bytes for Stryd
+* Fix: CardioStrong IB50 seems to 1/10th mismeaure distance, fixes #582
+* Feat: Add live display of Treadmill Inclination (by David C)
+* Feat: Refactor to handle sentinel values as per the FTMS standard specification (by David C)
+* Fix: Rowing Machine Stroke Rate Spikes (by David C)
+* Fix: "Null check operator used on a null value" - possibly because navigating away, one of Stefan Gruber's DebugLog about disconnecting cross trainer
+* Fix: treat fitness machine violating the specification returned a truncated payload for readFeatures, fixes (for Spirit XBR55 of David Offutt)
+* Upgrade Flutter SDK and Dart many times
+* Upgrade numerous plugins many times
+
 ## 2.0.162
 * Bug fix: cadence stats (avg / max) were not displaying during recording
 

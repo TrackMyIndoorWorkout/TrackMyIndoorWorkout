@@ -16,13 +16,12 @@ void main() {
         final rndCaloriesPerMinute = rnd.nextDouble() * 12;
         final rndCaloriesPerHour = rnd.nextDouble() * 500;
         final rndPace = rnd.nextDouble() * 600;
-        final rndRecord =
-            RecordWithSport.getRandom(sport, rnd)
-              ..pace = rndPace
-              ..distance = rndDistance
-              ..elapsed = rndElapsed
-              ..caloriesPerMinute = rndCaloriesPerMinute
-              ..caloriesPerHour = rndCaloriesPerHour;
+        final rndRecord = RecordWithSport.getRandom(sport, rnd)
+          ..pace = rndPace
+          ..distance = rndDistance
+          ..elapsed = rndElapsed
+          ..caloriesPerMinute = rndCaloriesPerMinute
+          ..caloriesPerHour = rndCaloriesPerHour;
         test(
           "$sport $idx: ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.pace} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
@@ -54,20 +53,18 @@ void main() {
         final rndCaloriesPerMinute = rnd.nextDouble() * 12 + 1;
         final rndCaloriesPerHour = rnd.nextDouble() * 500 + 1;
         final rndPace = rnd.nextDouble() * 600 + 1;
-        final rndRecord =
-            RecordWithSport.getRandom(sport, rnd)
-              ..pace = rndPace
-              ..distance = rndDistance
-              ..elapsed = rndElapsed
-              ..caloriesPerMinute = rndCaloriesPerMinute
-              ..caloriesPerHour = rndCaloriesPerHour;
+        final rndRecord = RecordWithSport.getRandom(sport, rnd)
+          ..pace = rndPace
+          ..distance = rndDistance
+          ..elapsed = rndElapsed
+          ..caloriesPerMinute = rndCaloriesPerMinute
+          ..caloriesPerHour = rndCaloriesPerHour;
         test(
           "$sport $idx: ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.pace} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
-            final blankRecord =
-                RecordWithSport.getZero(sport)
-                  ..caloriesPerHour = 0.0
-                  ..caloriesPerMinute = 0.0;
+            final blankRecord = RecordWithSport.getZero(sport)
+              ..caloriesPerHour = 0.0
+              ..caloriesPerMinute = 0.0;
             final merged = blankRecord.merge(rndRecord);
 
             expect(merged.distance, closeTo(0.0, eps));
@@ -95,13 +92,12 @@ void main() {
         final rndCaloriesPerMinute = rnd.nextDouble() * 12;
         final rndCaloriesPerHour = rnd.nextDouble() * 500;
         final rndPace = rnd.nextDouble() * 600;
-        final rndRecord =
-            RecordWithSport.getRandom(sport, rnd)
-              ..pace = rndPace
-              ..distance = rndDistance
-              ..elapsed = rndElapsed
-              ..caloriesPerMinute = rndCaloriesPerMinute
-              ..caloriesPerHour = rndCaloriesPerHour;
+        final rndRecord = RecordWithSport.getRandom(sport, rnd)
+          ..pace = rndPace
+          ..distance = rndDistance
+          ..elapsed = rndElapsed
+          ..caloriesPerMinute = rndCaloriesPerMinute
+          ..caloriesPerHour = rndCaloriesPerHour;
         test(
           "$sport $idx: ${rndRecord.calories} ${rndRecord.power} ${rndRecord.speed} ${rndRecord.pace} ${rndRecord.cadence} ${rndRecord.heartRate} ${rndRecord.distance} ${rndRecord.elapsed}",
           () async {
@@ -110,13 +106,12 @@ void main() {
             final targetCaloriesPerMinute = rnd.nextDouble() * 12;
             final targetCaloriesPerHour = rnd.nextDouble() * 500;
             final targetPace = rnd.nextDouble() * 600 + 1;
-            final targetRecord =
-                RecordWithSport.getRandom(sport, rnd)
-                  ..pace = targetPace
-                  ..distance = targetDistance
-                  ..elapsed = targetElapsed
-                  ..caloriesPerMinute = targetCaloriesPerMinute
-                  ..caloriesPerHour = targetCaloriesPerHour;
+            final targetRecord = RecordWithSport.getRandom(sport, rnd)
+              ..pace = targetPace
+              ..distance = targetDistance
+              ..elapsed = targetElapsed
+              ..caloriesPerMinute = targetCaloriesPerMinute
+              ..caloriesPerHour = targetCaloriesPerHour;
             final merged = targetRecord.merge(rndRecord);
 
             expect(merged.distance, closeTo(targetDistance, eps));
@@ -145,13 +140,12 @@ void main() {
         final rndCaloriesPerMinute = rnd.nextDouble() * 12;
         final rndCaloriesPerHour = rnd.nextDouble() * 500;
         final rndPace = rnd.nextDouble() * 600;
-        final targetRecord =
-            RecordWithSport.getRandom(sport, rnd)
-              ..pace = rndPace
-              ..distance = rndDistance
-              ..elapsed = rndElapsed
-              ..caloriesPerMinute = rndCaloriesPerMinute
-              ..caloriesPerHour = rndCaloriesPerHour;
+        final targetRecord = RecordWithSport.getRandom(sport, rnd)
+          ..pace = rndPace
+          ..distance = rndDistance
+          ..elapsed = rndElapsed
+          ..caloriesPerMinute = rndCaloriesPerMinute
+          ..caloriesPerHour = rndCaloriesPerHour;
         test(
           "$sport $idx: ${targetRecord.calories} ${targetRecord.power} ${targetRecord.speed} ${targetRecord.pace} ${targetRecord.cadence} ${targetRecord.heartRate} ${targetRecord.distance} ${targetRecord.elapsed}",
           () async {
@@ -177,22 +171,20 @@ void main() {
     final rnd = Random();
     for (final sport in allSports) {
       for (var idx in List<int>.generate(smallRepetition, (index) => index)) {
-        final blankRecord =
-            RecordWithSport.getZero(sport)
-              ..caloriesPerHour = 0.0
-              ..caloriesPerMinute = 0.0;
+        final blankRecord = RecordWithSport.getZero(sport)
+          ..caloriesPerHour = 0.0
+          ..caloriesPerMinute = 0.0;
         final rndDistance = rnd.nextDouble() * 1000;
         final rndElapsed = rnd.nextInt(600);
         final rndCaloriesPerMinute = rnd.nextDouble() * 12;
         final rndCaloriesPerHour = rnd.nextDouble() * 500;
         final rndPace = rnd.nextDouble() * 600;
-        final targetRecord =
-            RecordWithSport.getRandom(sport, rnd)
-              ..pace = rndPace
-              ..distance = rndDistance
-              ..elapsed = rndElapsed
-              ..caloriesPerMinute = rndCaloriesPerMinute
-              ..caloriesPerHour = rndCaloriesPerHour;
+        final targetRecord = RecordWithSport.getRandom(sport, rnd)
+          ..pace = rndPace
+          ..distance = rndDistance
+          ..elapsed = rndElapsed
+          ..caloriesPerMinute = rndCaloriesPerMinute
+          ..caloriesPerHour = rndCaloriesPerHour;
         test(
           "$sport $idx: ${targetRecord.calories} ${targetRecord.power} ${targetRecord.speed} ${targetRecord.pace} ${targetRecord.cadence} ${targetRecord.heartRate} ${targetRecord.distance} ${targetRecord.elapsed}",
           () async {

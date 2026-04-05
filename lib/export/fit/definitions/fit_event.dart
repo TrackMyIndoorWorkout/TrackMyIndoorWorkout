@@ -12,7 +12,7 @@ import '../fit_message.dart';
 import '../fit_serializable.dart';
 
 class FitEvent extends FitDefinitionMessage {
-  FitEvent(localMessageType) : super(localMessageType, FitMessage.event) {
+  FitEvent(int localMessageType) : super(localMessageType, FitMessage.event) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp (Lap end time)
       FitField(0, FitBaseTypes.enumType), // Event

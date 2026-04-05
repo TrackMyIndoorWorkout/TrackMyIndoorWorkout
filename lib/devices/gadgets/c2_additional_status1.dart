@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../device_descriptors/device_descriptor.dart';
@@ -19,7 +21,7 @@ class C2AdditionalStatus1 extends ComplexSensor {
   MetricDescriptor? speedMetric;
   MetricDescriptor? paceMetric;
 
-  C2AdditionalStatus1(device) : super(serviceUuid, characteristicUuid, device);
+  C2AdditionalStatus1(BluetoothDevice device) : super(serviceUuid, characteristicUuid, device);
 
   @override
   void processFlag(int flag) {

@@ -3,12 +3,11 @@ import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
-import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
@@ -56,6 +55,7 @@ import 'parts/power_factor_tune.dart';
 import 'parts/sport_picker.dart';
 import 'parts/upload_portal_picker.dart';
 import 'power_tunes.dart';
+import 'widgets/activities_fab_menu.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -154,7 +154,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             SafeArea(
               child: Column(
                 children: [
-                  Expanded(child: Center(child: UploadPortalPickerBottomSheet(activity: activity))),
+                  Expanded(
+                    child: Center(child: UploadPortalPickerBottomSheet(activity: activity)),
+                  ),
                 ],
               ),
             ),
@@ -195,7 +197,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           final Directory tempDir = await getTemporaryDirectory();
           final workoutFilePath = "${tempDir.path}/$fileName";
           final workoutFile = await File(workoutFilePath).writeAsBytes(fileBytes, flush: true);
-          Share.shareXFiles([XFile(workoutFile.path)], text: activity.getTitle(false));
+          SharePlus.instance.share(
+            ShareParams(files: [XFile(workoutFile.path)], text: activity.getTitle(false)),
+          );
         },
       ),
       IconButton(
@@ -239,7 +243,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             SafeArea(
               child: Column(
                 children: [
-                  Expanded(child: Center(child: CalorieOverrideBottomSheet(activity: activity))),
+                  Expanded(
+                    child: Center(child: CalorieOverrideBottomSheet(activity: activity)),
+                  ),
                 ],
               ),
             ),
@@ -321,10 +327,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       IconButton(
         icon: _themeManager.getActionIcon(Icons.chevron_right, size),
         iconSize: size,
-        onPressed:
-            () async => await Get.to(
-              () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size),
-            ),
+        onPressed: () async => await Get.to(
+          () => ActivityDetailsScreen(activity: activity, size: Get.mediaQuery.size),
+        ),
       ),
     ]);
 
@@ -338,8 +343,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
     legendDialog([
       const Tuple2<IconData, String>(Icons.file_upload, "Import Workout"),
       const Tuple2<IconData, String>(Icons.collections_bookmark, "Device Usages"),
-      const Tuple2<IconData, String>(Icons.bolt, "Power Tunes"),
-      const Tuple2<IconData, String>(Icons.whatshot, "Calorie Tunes"),
+      const Tuple2<IconData, String>(Icons.bolt, "Power & Tunes"),
+      const Tuple2<IconData, String>(Icons.whatshot, "Calorie & Tunes"),
       const Tuple2<IconData, String>(Icons.leaderboard, "Leaderboards"),
       const Tuple2<IconData, String>(Icons.help, "About"),
       const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
@@ -347,7 +352,67 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       const Tuple2<IconData, String>(Icons.file_download, "Download Workout"),
       const Tuple2<IconData, String>(Icons.delete, "Delete Workout"),
       const Tuple2<IconData, String>(Icons.chevron_right, "Workout Details"),
+      const Tuple2<IconData, String>(Icons.calendar_today, "Activity Date"),
+      const Tuple2<IconData, String>(Icons.access_time_filled, "Activity Time"),
+      const Tuple2<IconData, String>(Icons.timer, "Activity Duration"),
+      const Tuple2<IconData, String>(Icons.add_road, "Activity Distance"),
+      const Tuple2<IconData, String>(Icons.numbers, "Bluetooth ID"),
+      const Tuple2<IconData, String>(Icons.directions_bike, "Bike Sport"),
+      const Tuple2<IconData, String>(Icons.directions_run, "Run Sport"),
+      const Tuple2<IconData, String>(Icons.kayaking, "Kayak / Canoe Sport"),
+      const Tuple2<IconData, String>(Icons.rowing, "Rowing Sport"),
+      const Tuple2<IconData, String>(Icons.waves, "Swimming Sport"),
+      const Tuple2<IconData, String>(Icons.downhill_skiing, "Elliptical / Nordic Ski Sport"),
+      const Tuple2<IconData, String>(Icons.stairs, "Stair Stepper / Climber Sport"),
     ]);
+  }
+
+  Future<void> _onImport() async {
+    final formatPick = await Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: ImportFormatPickerBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      enableDrag: false,
+    );
+
+    if (formatPick == null) {
+      return;
+    }
+
+    await Get.to(() => ImportForm(migration: formatPick == "Migration"))?.whenComplete(
+      () => setState(() {
+        _editCount++;
+      }),
+    );
+  }
+
+  Future<void> _onDeviceUsages() async {
+    await Get.to(() => const DeviceUsagesScreen());
+  }
+
+  Future<void> _onPowerTunes() async {
+    await Get.to(() => const PowerTunesScreen());
+  }
+
+  Future<void> _onCalorieTunes() async {
+    await Get.to(() => const CalorieTunesScreen());
+  }
+
+  Future<void> _onLeaderboard() async {
+    Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: LeaderBoardTypeBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      enableDrag: false,
+    );
   }
 
   @override
@@ -364,68 +429,6 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
 
-    List<Widget> floatingActionButtons = [
-      _themeManager.getTutorialFab(() => invokeLegendDialog()),
-      _themeManager.getAboutFab(),
-      _themeManager.getBlueFab(Icons.file_upload, () async {
-        final formatPick = await Get.bottomSheet(
-          const SafeArea(
-            child: Column(
-              children: [Expanded(child: Center(child: ImportFormatPickerBottomSheet()))],
-            ),
-          ),
-          isScrollControlled: true,
-          ignoreSafeArea: false,
-          enableDrag: false,
-        );
-
-        if (formatPick == null) {
-          return;
-        }
-
-        await Get.to(() => ImportForm(migration: formatPick == "Migration"))?.whenComplete(
-          () => setState(() {
-            _editCount++;
-          }),
-        );
-      }),
-      _themeManager.getBlueFab(Icons.collections_bookmark, () async {
-        await Get.to(() => const DeviceUsagesScreen());
-      }),
-      _themeManager.getBlueFab(Icons.bolt, () async {
-        await Get.to(() => const PowerTunesScreen());
-      }),
-      _themeManager.getBlueFab(Icons.whatshot, () async {
-        await Get.to(() => const CalorieTunesScreen());
-      }),
-    ];
-
-    if (_leaderboardFeature && DbUtils().hasLeaderboardData()) {
-      floatingActionButtons.add(
-        _themeManager.getBlueFab(Icons.leaderboard, () async {
-          Get.bottomSheet(
-            const SafeArea(
-              child: Column(
-                children: [Expanded(child: Center(child: LeaderBoardTypeBottomSheet()))],
-              ),
-            ),
-            isScrollControlled: true,
-            ignoreSafeArea: false,
-            enableDrag: false,
-          );
-        }),
-      );
-    }
-
-    final circularFabMenu = FabCircularMenuPlus(
-      fabOpenIcon: Icon(Icons.menu, color: _themeManager.getAntagonistColor()),
-      fabOpenColor: _themeManager.getBlueColor(),
-      fabCloseIcon: Icon(Icons.close, color: _themeManager.getAntagonistColor()),
-      fabCloseColor: _themeManager.getBlueColor(),
-      ringColor: _themeManager.getBlueColorInverse(),
-      children: floatingActionButtons,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Activities'),
@@ -434,19 +437,26 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         ],
       ),
       body: CustomListView(
+        padding: isSmallScreen(context)
+            ? EdgeInsets.only(
+                top: smallScreenPaddingTop(context),
+                bottom: smallScreenPaddingBottom(context),
+                left: smallScreenPaddingHorizontal(context),
+                right: smallScreenPaddingHorizontal(context),
+              )
+            : EdgeInsets.zero,
         key: Key("CLV$_editCount"),
         paginationMode: PaginationMode.page,
         initialOffset: 0,
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.activitys
-                    .where()
-                    .sortByStartDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.activitys
+                .where()
+                .sortByStartDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -477,7 +487,7 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             ),
             ActivityDetailHeaderTextRow(
               themeManager: _themeManager,
-              icon: Icons.watch,
+              icon: Icons.access_time_filled,
               iconSize: _sizeDefault2,
               text: timeString,
               textStyle: _headerStyle,
@@ -556,10 +566,9 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
               themeManager: _themeManager,
               icon: Icons.timer,
               iconSize: _sizeDefault,
-              text:
-                  _timeDisplayMode == timeDisplayModeElapsed
-                      ? activity.elapsedString
-                      : activity.movingTimeString,
+              text: _timeDisplayMode == timeDisplayModeElapsed
+                  ? activity.elapsedString
+                  : activity.movingTimeString,
               textStyle: _measurementStyle,
             ),
             ActivityDetailRowWithUnit(
@@ -598,10 +607,8 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
                 contentPadding: const EdgeInsets.symmetric(horizontal: 1.0),
                 minLeadingWidth: 0,
                 horizontalTitleGap: 0,
-                onTap:
-                    () => Get.to(
-                      () => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size),
-                    ),
+                onTap: () =>
+                    Get.to(() => ActivityDetailsScreen(activity: item, size: Get.mediaQuery.size)),
                 title: Column(children: body),
               ),
             ),
@@ -609,7 +616,17 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: circularFabMenu,
+      floatingActionButton: ActivitiesFabMenu(
+        themeManager: _themeManager,
+        leaderboardFeature: _leaderboardFeature,
+        hasLeaderboardData: DbUtils().hasLeaderboardData(),
+        onTutorial: () => invokeLegendDialog(),
+        onImport: _onImport,
+        onDeviceUsages: _onDeviceUsages,
+        onPowerTunes: _onPowerTunes,
+        onCalorieTunes: _onCalorieTunes,
+        onLeaderboard: _onLeaderboard,
+      ),
     );
   }
 }

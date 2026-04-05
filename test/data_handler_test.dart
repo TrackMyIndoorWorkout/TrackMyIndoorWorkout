@@ -6,7 +6,7 @@ import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
 import 'utils.dart';
 
-main() {
+void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
   });

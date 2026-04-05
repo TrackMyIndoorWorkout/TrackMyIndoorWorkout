@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
 
@@ -41,52 +42,85 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
   @override
   Widget build(BuildContext context) {
     var rowConfigs = MetricSpec.getRowConfigurations();
-    List<Widget> children = [
-      Container(),
-      Text("\u00BC", style: _textStyle),
-      Text("\u2153", style: _textStyle),
-      Text("\u00BD", style: _textStyle),
-      Icon(Icons.keyboard_arrow_right, size: _textStyle.fontSize),
-    ];
-    rowConfigs.forEachIndexed((rowIndex, rowConfig) {
-      children.add(Icon(rowConfig.icon, size: _textStyle.fontSize));
-      children.addAll(
-        List<Widget>.generate(
-          3,
-          (index) =>
-              rowIndex < 4
-                  ? Transform.scale(
-                    scale: 2,
-                    child: Radio<int>(
-                      value: index,
-                      groupValue: _expandedHeights[rowIndex],
-                      onChanged: (int? value) {
-                        if (value == null) return;
+    final gridChildren = <Widget>[];
 
-                        setState(() {
-                          _expandedHeights[rowIndex] = index;
-                          applyDetailSizes(_expandedHeights);
-                        });
-                      },
-                    ),
-                  )
-                  : Container(),
+    // Header Row
+    gridChildren.add(
+      GridPlacement(
+        columnStart: 1,
+        columnSpan: 3,
+        rowStart: 0,
+        child: Center(child: Text("Size", style: _textStyle)),
+      ),
+    );
+    gridChildren.add(
+      GridPlacement(
+        columnStart: 4,
+        rowStart: 0,
+        child: Center(child: Icon(Icons.keyboard_arrow_right, size: _textStyle.fontSize)),
+      ),
+    );
+
+    // Metric Rows
+    rowConfigs.forEachIndexed((rowIndex, rowConfig) {
+      final gridRow = rowIndex + 1;
+      gridChildren.add(
+        GridPlacement(
+          columnStart: 0,
+          rowStart: gridRow,
+          child: Center(child: Icon(rowConfig.icon, size: _textStyle.fontSize)),
         ),
       );
 
-      children.add(
-        Transform.scale(
-          scale: 2,
-          child: Checkbox(
-            value: _expandedState[rowIndex],
-            onChanged: (bool? value) {
-              if (value == null) return;
+      if (rowIndex < 4) {
+        gridChildren.add(
+          GridPlacement(
+            columnStart: 1,
+            columnSpan: 3,
+            rowStart: gridRow,
+            child: Center(
+              child: ToggleButtons(
+                isSelected: List.generate(3, (index) => index == _expandedHeights[rowIndex]),
+                onPressed: (int index) {
+                  setState(() {
+                    _expandedHeights[rowIndex] = index;
+                    applyDetailSizes(_expandedHeights);
+                  });
+                },
+                children: <Widget>[
+                  Text(' ¼ ', style: _textStyle),
+                  Text(' ⅓ ', style: _textStyle),
+                  Text(' ½ ', style: _textStyle),
+                ],
+              ),
+            ),
+          ),
+        );
+      } else {
+        gridChildren.add(
+          GridPlacement(columnStart: 1, columnSpan: 3, rowStart: gridRow, child: Container()),
+        );
+      }
 
-              setState(() {
-                _expandedState[rowIndex] = value;
-                applyExpandedStates(_expandedState);
-              });
-            },
+      gridChildren.add(
+        GridPlacement(
+          columnStart: 4,
+          rowStart: gridRow,
+          child: Center(
+            child: Transform.scale(
+              scale: 2,
+              child: Checkbox(
+                value: _expandedState[rowIndex],
+                onChanged: (bool? value) {
+                  if (value == null) return;
+
+                  setState(() {
+                    _expandedState[rowIndex] = value;
+                    applyExpandedStates(_expandedState);
+                  });
+                },
+              ),
+            ),
           ),
         ),
       );
@@ -95,11 +129,10 @@ class RowConfigurationDialogState extends State<RowConfigurationDialog> {
     return SizedBox(
       width: Get.mediaQuery.size.width * 0.8,
       height: Get.mediaQuery.size.width * 0.8 / 5 * 6,
-      child: GridView.count(
-        crossAxisCount: 5,
-        shrinkWrap: true,
-        childAspectRatio: 1.0,
-        children: children.map((w) => GridTile(child: Center(child: w))).toList(growable: false),
+      child: LayoutGrid(
+        columnSizes: [auto, 1.fr, 1.fr, 1.fr, auto],
+        rowSizes: List.generate(rowConfigs.length + 1, (_) => auto),
+        children: gridChildren,
       ),
     );
   }

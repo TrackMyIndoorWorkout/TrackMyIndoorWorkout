@@ -19,7 +19,10 @@ class ActivityDetailUnitRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.end,
-      children: [const Spacer(), Text(unitText, style: unitStyle)],
+      children: [
+        const Spacer(),
+        Text(unitText, style: unitStyle),
+      ],
     );
   }
 }

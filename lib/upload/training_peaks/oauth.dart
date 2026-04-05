@@ -362,10 +362,9 @@ mixin Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<bool> deAuthorize() async {
-    final token =
-        Get.isRegistered<TrainingPeaksToken>()
-            ? Get.find<TrainingPeaksToken>()
-            : await _getStoredToken();
+    final token = Get.isRegistered<TrainingPeaksToken>()
+        ? Get.find<TrainingPeaksToken>()
+        : await _getStoredToken();
     final header = token.getAuthorizationHeader();
     // If header is "empty"
     if (header.containsKey('88')) {

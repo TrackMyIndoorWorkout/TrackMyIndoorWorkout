@@ -14,10 +14,12 @@ import '../../preferences/multi_sport_device_support.dart';
 import '../../preferences/scan_duration.dart';
 import '../../preferences/show_resistance_level.dart';
 import '../../preferences/show_strokes_strides_revs.dart';
+import '../../preferences/show_inclination.dart';
 import '../../preferences/simpler_ui.dart';
 import '../../preferences/theme_selection.dart';
 import '../../preferences/two_column_layout.dart';
 import '../../preferences/unit_system.dart';
+import '../../preferences/graph_view_duration.dart';
 import '../parts/pick_directory.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -176,6 +178,16 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
         subtitle: Text(twoColumnLayoutDescription),
         pref: twoColumnLayoutTag,
       ),
+      PrefSlider<double>(
+        title: const Text(graphViewDuration),
+        subtitle: const Text(graphViewDurationDescription),
+        pref: graphViewDurationTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(1)} min"),
+        min: graphViewDurationMin,
+        max: graphViewDurationMax,
+        divisions: graphViewDurationDivisions,
+        direction: Axis.vertical,
+      ),
       PrefButton(
         onTap: () async {
           Get.defaultDialog(
@@ -196,6 +208,11 @@ class UserExperiencePreferencesScreenState extends State<UserExperiencePreferenc
         title: Text(showStrokesStridesRevs),
         subtitle: Text(showStrokesStridesRevsDescription),
         pref: showStrokesStridesRevsTag,
+      ),
+      const PrefCheckbox(
+        title: Text(showInclination),
+        subtitle: Text(showInclinationDescription),
+        pref: showInclinationTag,
       ),
     ];
 

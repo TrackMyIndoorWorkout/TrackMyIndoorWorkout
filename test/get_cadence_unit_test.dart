@@ -7,13 +7,13 @@ void main() {
     for (final sport in allSports) {
       final expected =
           (sport == ActivityType.kayaking ||
-                  sport == ActivityType.canoeing ||
-                  sport == ActivityType.rowing ||
-                  sport == ActivityType.swim ||
-                  sport == ActivityType.elliptical ||
-                  sport == ActivityType.nordicSki)
-              ? "spm"
-              : "rpm";
+              sport == ActivityType.canoeing ||
+              sport == ActivityType.rowing ||
+              sport == ActivityType.swim ||
+              sport == ActivityType.elliptical ||
+              sport == ActivityType.nordicSki)
+          ? "spm"
+          : "rpm";
       test("$sport -> $expected", () {
         expect(getCadenceUnit(sport), expected);
       });

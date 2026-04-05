@@ -7,6 +7,7 @@ class DisplayRecord {
   int? cadence;
   int? heartRate;
   int? resistance;
+  double? inclination; // % with 0.1 resolution (FTMS)
   DateTime? timeStamp;
   String? sport;
 
@@ -20,7 +21,8 @@ class DisplayRecord {
       ..speed = source?.speed ?? 0.0
       ..cadence = source?.cadence ?? 0
       ..heartRate = source?.heartRate ?? 0
-      ..resistance = source?.resistance ?? 0;
+      ..resistance = source?.resistance ?? 0
+      ..inclination = source?.inclination;
   }
 
   factory DisplayRecord.blank(String sport, DateTime dateTime) {
@@ -37,6 +39,7 @@ class DisplayRecord {
     int? cadence,
     int? heartRate,
     int? resistance,
+    double? inclination,
   ) {
     return DisplayRecord()
       ..sport = sport
@@ -45,7 +48,8 @@ class DisplayRecord {
       ..speed = speed
       ..cadence = cadence
       ..heartRate = heartRate
-      ..resistance = resistance;
+      ..resistance = resistance
+      ..inclination = inclination;
   }
 
   double speedByUnit(bool si) {

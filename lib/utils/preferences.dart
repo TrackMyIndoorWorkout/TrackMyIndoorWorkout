@@ -65,8 +65,10 @@ Tuple2<String, int> parseNetworkAddress(String networkAddress, [bool ipOnly = tr
 List<Tuple2<String, int>> parseNetworkAddresses(String networkAddresses, [bool ipOnly = true]) {
   List<Tuple2<String, int>> addresses = [];
   if (networkAddresses.trim().isNotEmpty) {
-    addresses =
-        networkAddresses.split(",").map((address) => parseNetworkAddress(address, ipOnly)).toList();
+    addresses = networkAddresses
+        .split(",")
+        .map((address) => parseNetworkAddress(address, ipOnly))
+        .toList();
 
     // .whereType<Tuple2<String, int>>() I think reflection could be slower
     addresses.removeWhere((value) => value.item2 == 0);
@@ -108,13 +110,12 @@ Future<bool> hasInternetConnection() async {
     }
   }
 
-  var connectionChecker =
-      checkOptions.isEmpty
-          ? InternetConnection()
-          : InternetConnection.createInstance(
-            customCheckOptions: checkOptions,
-            useDefaultOptions: false,
-          );
+  var connectionChecker = checkOptions.isEmpty
+      ? InternetConnection()
+      : InternetConnection.createInstance(
+          customCheckOptions: checkOptions,
+          useDefaultOptions: false,
+        );
 
   return await connectionChecker.hasInternetAccess;
 }

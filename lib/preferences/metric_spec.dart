@@ -279,6 +279,9 @@ class MetricSpec {
     final prefService = Get.find<BasePrefService>();
     final thresholdString = prefService.get<String>(thresholdTag(sport))!;
     threshold = double.tryParse(thresholdString) ?? eps;
+    if (threshold.isNaN || threshold.isInfinite) {
+      threshold = 0.0;
+    }
     if (metric == "speed") {
       threshold = speedByUnitCore(threshold, si);
     }
@@ -296,6 +299,24 @@ class MetricSpec {
   }
 
   void calculateBounds(double minVal, double maxVal, bool isLight, PaletteSpec paletteSpec) {
+    if (threshold < 0.1) {
+      plotBands.clear();
+      return;
+    }
+
+    if (minVal.isNaN || minVal.isInfinite) {
+      minVal = 0;
+    }
+
+    if (maxVal.isNaN || maxVal.isInfinite) {
+      maxVal = 0;
+    }
+
+    if (maxVal <= minVal + eps) {
+      plotBands.clear();
+      return;
+    }
+
     zoneLower = [...zoneBounds];
     zoneUpper = [...zoneBounds];
 
@@ -318,6 +339,21 @@ class MetricSpec {
 
     zoneLower.insert(0, decimalRound(minVal));
     zoneUpper.add(decimalRound(maxVal));
+
+    // Final safety check: ensure all band boundaries are valid
+    for (var val in zoneLower) {
+      if (val.isNaN || val.isInfinite) {
+        plotBands.clear();
+        return;
+      }
+    }
+    for (var val in zoneUpper) {
+      if (val.isNaN || val.isInfinite) {
+        plotBands.clear();
+        return;
+      }
+    }
+
     plotBands.clear();
     plotBands.addAll(
       List.generate(
@@ -365,10 +401,9 @@ class MetricSpec {
   }
 
   static List<RowConfiguration> getRowConfigurations([String sport = ActivityType.ride]) {
-    var rowConfigs =
-        preferencesSpecs
-            .map((p) => RowConfiguration(title: p.title, icon: p.icon, unit: p.unit))
-            .toList();
+    var rowConfigs = preferencesSpecs
+        .map((p) => RowConfiguration(title: p.title, icon: p.icon, unit: p.unit))
+        .toList();
     rowConfigs.add(RowConfiguration(title: "Distance", icon: Icons.add_road, unit: "m"));
 
     return rowConfigs;

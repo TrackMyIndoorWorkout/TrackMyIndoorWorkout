@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/power_meter.dart';
@@ -25,7 +27,7 @@ class CyclingPowerMeterSensor extends FlywheelSensorBase with CadenceMixin {
   MetricDescriptor? crankRevolutionTime;
   MetricDescriptor? caloriesMetric;
 
-  CyclingPowerMeterSensor(device) : super(serviceUuid, characteristicUuid, device) {
+  CyclingPowerMeterSensor(BluetoothDevice device) : super(serviceUuid, characteristicUuid, device) {
     initCadence(64, maxUint16);
     wheelCadence = CadenceMixinImpl();
     wheelCadence.initCadence(32, maxUint32);
@@ -141,7 +143,7 @@ class CyclingPowerMeterSensor extends FlywheelSensorBase with CadenceMixin {
     var flag = data[0] + maxUint8 * data[1];
     processFlag(flag);
 
-    return featureFlag >= 0 && data.length == expectedLength;
+    return featureFlag >= 0 && data.length >= expectedLength;
   }
 
   @override

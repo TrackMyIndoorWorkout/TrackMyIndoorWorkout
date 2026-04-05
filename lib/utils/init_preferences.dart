@@ -15,6 +15,7 @@ import '../preferences/athlete_name.dart';
 import '../preferences/athlete_vo2max.dart';
 import '../preferences/audio_volume.dart';
 import '../preferences/auto_connect.dart';
+import '../preferences/better_health_enabled.dart';
 import '../preferences/bike_weight.dart';
 import '../preferences/block_ftms_feature_read.dart';
 import '../preferences/block_manufacturer_name_read.dart';
@@ -42,6 +43,7 @@ import '../preferences/instant_export.dart';
 import '../preferences/instant_measurement_start.dart';
 import '../preferences/instant_scan.dart';
 import '../preferences/instant_upload.dart';
+import '../preferences/internal_motion_monitor_enabled.dart';
 import '../preferences/kayak_first_display_configuration.dart';
 import '../preferences/lap_counter.dart';
 import '../preferences/last_equipment_id.dart';
@@ -63,6 +65,7 @@ import '../preferences/show_performance_overlay.dart';
 import '../preferences/show_resistance_level.dart';
 import '../preferences/show_strokes_strides_revs.dart';
 import '../preferences/simpler_ui.dart';
+import '../preferences/small_screen.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/stage_mode.dart';
@@ -126,6 +129,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     blockFTMSFeatureReadTag: blockFTMSFeatureReadDefault,
     blockManufacturerNameReadTag: blockManufacturerNameReadDefault,
     blockSignalStartStopTag: blockSignalStartStopDefault,
+    betterHealthEnabledTag: betterHealthEnabledDefault,
     bikeWeightTag: bikeWeightDefault,
     cadenceGapWorkaroundTag: cadenceGapWorkaroundDefault,
     calculateGpsTag: calculateGpsDefault,
@@ -153,6 +157,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     instantOnStageTag: instantOnStageDefault,
     instantScanTag: instantScanDefault,
     instantUploadTag: instantUploadDefault,
+    internalMotionMonitorEnabledTag: internalMotionMonitorEnabledDefault,
     leaderboardFeatureTag: leaderboardFeatureDefault,
     logLevelTag: logLevelDefault,
     maximumChartColorTag: maximumChartColorDefault,
@@ -173,6 +178,11 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     scanDurationTag: scanDurationDefault,
     sensorDataThresholdTag: sensorDataThresholdDefault,
     simplerUiTag: await getSimplerUiDefault(),
+    smallScreenThresholdTag: smallScreenThresholdDefault,
+    smallScreenSquareThresholdTag: smallScreenSquareThresholdDefault,
+    smallScreenPaddingTopTag: smallScreenPaddingTopDefault,
+    smallScreenPaddingBottomTag: smallScreenPaddingBottomDefault,
+    smallScreenPaddingHorizontalTag: smallScreenPaddingHorizontalDefault,
     showPacerTag: showPacerDefault,
     showPerformanceOverlayTag: showPerformanceOverlayDefault,
     showResistanceLevelTag: showResistanceLevelDefault,
@@ -231,11 +241,8 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     for (final fgOrBg in [false, true]) {
       for (final paletteSize in [5, 6, 7]) {
         prefDefaults.addAll({
-          PaletteSpec.getPaletteTag(
-            lightOrDark,
-            fgOrBg,
-            paletteSize,
-          ): PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize),
+          PaletteSpec.getPaletteTag(lightOrDark, fgOrBg, paletteSize):
+              PaletteSpec.getDefaultPaletteString(lightOrDark, fgOrBg, paletteSize),
         });
       }
     }

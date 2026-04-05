@@ -19,7 +19,7 @@ class FitSession extends FitDefinitionMessage {
   final double altitude;
   final int exportTarget;
 
-  FitSession(localMessageType, this.altitude, this.exportTarget)
+  FitSession(int localMessageType, this.altitude, this.exportTarget)
     : super(localMessageType, FitMessage.session) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Session end time

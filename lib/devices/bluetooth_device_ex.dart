@@ -18,8 +18,7 @@ extension BluetoothDeviceEx on BluetoothDevice {
     );
   }
 
-  String get nonEmptyName =>
-      platformName.isNotEmpty
-          ? platformName
-          : Get.find<AddressNames>().getAddressName(remoteId.str, platformName);
+  String get nonEmptyName => platformName.isNotEmpty
+      ? platformName
+      : Get.find<AddressNames>().getAddressName(remoteId.str, platformName);
 }

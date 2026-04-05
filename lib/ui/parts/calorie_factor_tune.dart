@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../persistence/calorie_tune.dart';
 import '../../utils/constants.dart';
@@ -64,15 +64,14 @@ class CalorieFactorTuneBottomSheetState extends State<CalorieFactorTuneBottomShe
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<Isar>();
               final calorieFactor = _calorieFactorPercent / 100.0;
-              final calorieTune =
-                  await database.calorieTunes
-                      .where()
-                      .filter()
-                      .macEqualTo(widget.deviceId)
-                      .and()
-                      .hrBasedEqualTo(widget.hrBased)
-                      .sortByTimeDesc()
-                      .findFirst();
+              final calorieTune = await database.calorieTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .and()
+                  .hrBasedEqualTo(widget.hrBased)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
                 database.writeTxnSync(() {

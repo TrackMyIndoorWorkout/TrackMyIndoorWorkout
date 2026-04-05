@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../persistence/power_tune.dart';
 import '../../utils/constants.dart';
@@ -63,13 +63,12 @@ class PowerFactorTuneBottomSheetState extends State<PowerFactorTuneBottomSheet> 
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<Isar>();
               final powerFactor = _powerFactorPercent / 100.0;
-              final powerTune =
-                  await database.powerTunes
-                      .where()
-                      .filter()
-                      .macEqualTo(widget.deviceId)
-                      .sortByTimeDesc()
-                      .findFirst();
+              final powerTune = await database.powerTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (powerTune != null) {
                 powerTune.powerFactor = powerFactor;
                 database.writeTxnSync(() {

@@ -622,6 +622,17 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             const Tuple2<IconData, String>(Icons.help, "About"),
             const Tuple2<IconData, String>(Icons.info_rounded, "Help Legend"),
             const Tuple2<IconData, String>(Icons.build, "Recalculate"),
+            const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
+            const Tuple2<IconData, String>(Icons.add_road, "Distance"),
+            const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
+            const Tuple2<IconData, String>(Icons.bolt, "Power (Watts)"),
+            const Tuple2<IconData, String>(Icons.speed, "Speed"),
+            const Tuple2<IconData, String>(Icons.directions_bike, "Bike Cadence"),
+            const Tuple2<IconData, String>(Icons.directions_run, "Running Cadence"),
+            const Tuple2<IconData, String>(Icons.rowing, "Rowing Cadence"),
+            const Tuple2<IconData, String>(Icons.downhill_skiing, "X Train / Ski Cadence"),
+            const Tuple2<IconData, String>(Icons.stairs, "Stair Step / Climb Cadence"),
+            const Tuple2<IconData, String>(Icons.numbers, "Revolutions / steps"),
           ]);
         },
       ),
@@ -679,39 +690,38 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
 
     return Scaffold(
       appBar: AppBar(title: Text(title), actions: appBarActions),
-      body:
-          !_initialized
-              ? const Text('Initializing...')
-              : CustomListView(
-                key: Key("CLV$_editCount"),
-                paginationMode: PaginationMode.offset,
-                initialOffset: 0,
-                loadingBuilder: CustomListLoading.defaultBuilder,
-                header: Card(elevation: 6, child: Column(children: header)),
-                adapter: StaticListAdapter(data: _tiles),
-                itemBuilder: (context, index, item) {
-                  return ActivityDetailGraphs(
-                    item: item,
-                    index: index,
-                    size: widget.size,
-                    expandableThemeData: _expandableThemeData,
-                    textStyle: _textStyle,
-                    measurementStyle: _measurementStyle,
-                    unitStyle: _unitStyle,
-                    chartLabelStyle: _chartLabelStyle,
-                    chartTextColor: _chartTextColor,
-                    tileConfiguration: _tileConfigurations[item]!,
-                    preferencesSpec: _preferencesSpecs[index],
-                    si: _si,
-                    sport: widget.activity.sport,
-                    isLight: _isLight,
-                    sizeDefault: _sizeDefault2,
-                    paletteSpec: _paletteSpec!,
-                    themeManager: _themeManager,
-                    displayMedian: _calculateMedian,
-                  );
-                },
-              ),
+      body: !_initialized
+          ? const Text('Initializing...')
+          : CustomListView(
+              key: Key("CLV$_editCount"),
+              paginationMode: PaginationMode.offset,
+              initialOffset: 0,
+              loadingBuilder: CustomListLoading.defaultBuilder,
+              header: Card(elevation: 6, child: Column(children: header)),
+              adapter: StaticListAdapter(data: _tiles),
+              itemBuilder: (context, index, item) {
+                return ActivityDetailGraphs(
+                  item: item,
+                  index: index,
+                  size: widget.size,
+                  expandableThemeData: _expandableThemeData,
+                  textStyle: _textStyle,
+                  measurementStyle: _measurementStyle,
+                  unitStyle: _unitStyle,
+                  chartLabelStyle: _chartLabelStyle,
+                  chartTextColor: _chartTextColor,
+                  tileConfiguration: _tileConfigurations[item]!,
+                  preferencesSpec: _preferencesSpecs[index],
+                  si: _si,
+                  sport: widget.activity.sport,
+                  isLight: _isLight,
+                  sizeDefault: _sizeDefault2,
+                  paletteSpec: _paletteSpec!,
+                  themeManager: _themeManager,
+                  displayMedian: _calculateMedian,
+                );
+              },
+            ),
     );
   }
 }

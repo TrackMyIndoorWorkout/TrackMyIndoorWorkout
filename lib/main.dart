@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
@@ -67,20 +67,19 @@ void main() async {
 
       runApp(TrackMyIndoorExerciseApp(prefService: prefService));
     },
-    (error, stack) =>
-        error is Exception
-            ? Logging().logException(
-              Get.isRegistered<BasePrefService>()
-                  ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
-                  : logLevelDefault,
-              "MAIN",
-              "runZonedGuarded",
-              "pacman",
-              error,
-              stack,
-            )
-            : (error is Error
-                ? Logging().log(
+    (error, stack) => error is Exception
+        ? Logging().logException(
+            Get.isRegistered<BasePrefService>()
+                ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
+                : logLevelDefault,
+            "MAIN",
+            "runZonedGuarded",
+            "pacman",
+            error,
+            stack,
+          )
+        : (error is Error
+              ? Logging().log(
                   Get.isRegistered<BasePrefService>()
                       ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
                       : logLevelDefault,
@@ -89,7 +88,7 @@ void main() async {
                   "runZonedGuarded pacman",
                   "$error; ${error.stackTrace}; $stack",
                 )
-                : Logging().log(
+              : Logging().log(
                   Get.isRegistered<BasePrefService>()
                       ? (Get.find<BasePrefService>().get<int>(logLevelTag) ?? logLevelDefault)
                       : logLevelDefault,

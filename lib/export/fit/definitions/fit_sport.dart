@@ -5,7 +5,7 @@ import '../fit_message.dart';
 import '../fit_sport.dart';
 
 class FitSport extends FitDefinitionMessage {
-  FitSport(localMessageType) : super(localMessageType, FitMessage.sport) {
+  FitSport(int localMessageType) : super(localMessageType, FitMessage.sport) {
     fields = [
       FitField(0, FitBaseTypes.enumType), // Sport
       FitField(1, FitBaseTypes.enumType), // Sub-Sport

@@ -18,10 +18,9 @@ class SuuntoToken {
       'access_token': model.accessToken ?? 'Error',
       'token_type': model.tokenType ?? 'Error',
       'refresh_token': model.refreshToken ?? 'Error',
-      'expires_in':
-          model.expiresAt != null
-              ? (model.expiresAt! - DateTime.now().millisecondsSinceEpoch ~/ 1000)
-              : 'Error',
+      'expires_in': model.expiresAt != null
+          ? (model.expiresAt! - DateTime.now().millisecondsSinceEpoch ~/ 1000)
+          : 'Error',
     };
   }
 
@@ -60,11 +59,10 @@ class RefreshAnswer {
   factory RefreshAnswer.fromJson(Map<String, dynamic> json) => RefreshAnswer.fromMap(json);
 
   static RefreshAnswer fromMap(Map<String, dynamic> map) {
-    RefreshAnswer model =
-        RefreshAnswer()
-          ..accessToken = map['access_token']
-          ..refreshToken = map['refresh_token']
-          ..expiresAt = map['expires_in'] + DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    RefreshAnswer model = RefreshAnswer()
+      ..accessToken = map['access_token']
+      ..refreshToken = map['refresh_token']
+      ..expiresAt = map['expires_in'] + DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     return model;
   }

@@ -334,8 +334,9 @@ mixin Auth {
   ///return codes:
   /// true or false
   Future<bool> deAuthorize(String clientId, String subscriptionKey) async {
-    final token =
-        Get.isRegistered<SuuntoToken>() ? Get.find<SuuntoToken>() : await _getStoredToken();
+    final token = Get.isRegistered<SuuntoToken>()
+        ? Get.find<SuuntoToken>()
+        : await _getStoredToken();
     final header = token.getAuthorizationHeader(subscriptionKey);
     // If header is "empty"
     if (header.containsKey('88')) {

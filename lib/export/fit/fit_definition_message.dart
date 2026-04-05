@@ -6,7 +6,7 @@ abstract class FitDefinitionMessage extends FitRecord {
 
   List<FitField> fields = [];
 
-  FitDefinitionMessage(localMessageType, globalMessageNumber)
+  FitDefinitionMessage(int localMessageType, int globalMessageNumber)
     : super(localMessageType: localMessageType, globalMessageNumber: globalMessageNumber) {
     header += fourtyRecord;
   }

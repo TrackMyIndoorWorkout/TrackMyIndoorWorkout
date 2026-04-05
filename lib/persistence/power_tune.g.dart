@@ -21,19 +21,13 @@ const PowerTuneSchema = CollectionSchema(
     r'powerFactor': PropertySchema(id: 1, name: r'powerFactor', type: IsarType.double),
     r'time': PropertySchema(id: 2, name: r'time', type: IsarType.dateTime),
   },
+
   estimateSize: _powerTuneEstimateSize,
   serialize: _powerTuneSerialize,
   deserialize: _powerTuneDeserialize,
   deserializeProp: _powerTuneDeserializeProp,
   idName: r'id',
   indexes: {
-    r'mac': IndexSchema(
-      id: 3561895766210558431,
-      name: r'mac',
-      unique: false,
-      replace: false,
-      properties: [IndexPropertySchema(name: r'mac', type: IndexType.hash, caseSensitive: true)],
-    ),
     r'time': IndexSchema(
       id: -2250472054110640942,
       name: r'time',
@@ -41,13 +35,21 @@ const PowerTuneSchema = CollectionSchema(
       replace: false,
       properties: [IndexPropertySchema(name: r'time', type: IndexType.value, caseSensitive: false)],
     ),
+    r'mac': IndexSchema(
+      id: 3561895766210558431,
+      name: r'mac',
+      unique: false,
+      replace: false,
+      properties: [IndexPropertySchema(name: r'mac', type: IndexType.hash, caseSensitive: true)],
+    ),
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _powerTuneGetId,
   getLinks: _powerTuneGetLinks,
   attach: _powerTuneAttach,
-  version: '3.1.8',
+  version: '3.3.2',
 );
 
 int _powerTuneEstimateSize(PowerTune object, List<int> offsets, Map<Type, List<int>> allOffsets) {
@@ -180,54 +182,6 @@ extension PowerTuneQueryWhere on QueryBuilder<PowerTune, PowerTune, QWhereClause
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macEqualTo(String mac) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
-    });
-  }
-
-  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macNotEqualTo(String mac) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [],
-                upper: [mac],
-                includeUpper: false,
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [mac],
-                includeLower: false,
-                upper: [],
-              ),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [mac],
-                includeLower: false,
-                upper: [],
-              ),
-            )
-            .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'mac',
-                lower: [],
-                upper: [mac],
-                includeUpper: false,
-              ),
-            );
-      }
-    });
-  }
-
   QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeEqualTo(DateTime time) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'time', value: [time]));
@@ -324,6 +278,54 @@ extension PowerTuneQueryWhere on QueryBuilder<PowerTune, PowerTune, QWhereClause
           includeUpper: includeUpper,
         ),
       );
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macEqualTo(String mac) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
+    });
+  }
+
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macNotEqualTo(String mac) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [],
+                upper: [mac],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [mac],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [mac],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'mac',
+                lower: [],
+                upper: [mac],
+                includeUpper: false,
+              ),
+            );
+      }
     });
   }
 }
@@ -520,6 +522,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
           include: include,
           property: r'powerFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -537,6 +540,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
           include: include,
           property: r'powerFactor',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -558,6 +562,7 @@ extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCond
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );

@@ -6,7 +6,7 @@ import 'package:track_my_indoor_exercise/utils/user_data.dart';
 
 import 'utils.dart';
 
-main() {
+void main() {
   group('getWeightFromBytes is inverse of getWeightBytes', () {
     final rnd = Random();
     getRandomInts(smallRepetition, 200, rnd).forEach((weight) {

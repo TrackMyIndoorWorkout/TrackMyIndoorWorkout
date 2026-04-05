@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../persistence/activity.dart';
 import '../../persistence/calorie_tune.dart';
@@ -77,15 +77,14 @@ class CalorieOverrideBottomSheetState extends State<CalorieOverrideBottomSheet> 
             _themeManager.getGreenFab(Icons.check, () async {
               final database = Get.find<Isar>();
               final calorieFactor = widget.oldFactor * _newCalorie / widget.oldCalories;
-              final calorieTune =
-                  await database.calorieTunes
-                      .where()
-                      .filter()
-                      .macEqualTo(widget.deviceId)
-                      .and()
-                      .hrBasedEqualTo(widget.hrBased)
-                      .sortByTimeDesc()
-                      .findFirst();
+              final calorieTune = await database.calorieTunes
+                  .where()
+                  .filter()
+                  .macEqualTo(widget.deviceId)
+                  .and()
+                  .hrBasedEqualTo(widget.hrBased)
+                  .sortByTimeDesc()
+                  .findFirst();
               if (calorieTune != null) {
                 calorieTune.calorieFactor = calorieFactor;
                 database.writeTxnSync(() {

@@ -1,7 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:tuple/tuple.dart';
 
 import '../../persistence/workout_summary.dart';
@@ -48,8 +48,10 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final distinctBySportWorkoutSummaries =
-                    await _database.workoutSummarys.where().distinctBySport().findAll();
+                final distinctBySportWorkoutSummaries = await _database.workoutSummarys
+                    .where()
+                    .distinctBySport()
+                    .findAll();
                 final sports = distinctBySportWorkoutSummaries.map((w) => w.sport).toList();
                 if (sports.isEmpty) {
                   Get.snackbar("Warning", "No sports found");
@@ -79,16 +81,14 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
             margin: const EdgeInsets.all(5.0),
             child: ElevatedButton(
               onPressed: () async {
-                final distinctByDeviceWorkoutSummaries =
-                    await _database.workoutSummarys
-                        .where()
-                        .sortByStartDesc()
-                        .distinctByDeviceId()
-                        .findAll();
-                final devices =
-                    distinctByDeviceWorkoutSummaries
-                        .map((w) => Tuple3(w.deviceName, w.deviceId, w.sport))
-                        .toList();
+                final distinctByDeviceWorkoutSummaries = await _database.workoutSummarys
+                    .where()
+                    .sortByStartDesc()
+                    .distinctByDeviceId()
+                    .findAll();
+                final devices = distinctByDeviceWorkoutSummaries
+                    .map((w) => Tuple3(w.deviceName, w.deviceId, w.sport))
+                    .toList();
                 if (devices.isEmpty) {
                   Get.snackbar("Warning", "No devices found");
                 } else if (devices.length > 1) {

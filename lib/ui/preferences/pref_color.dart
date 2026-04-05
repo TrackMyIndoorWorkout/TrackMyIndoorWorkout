@@ -35,9 +35,8 @@ class PrefColor extends StatelessWidget {
       onChange: (colorValue) => onChange?.call(Color(colorValue ?? initialValue)),
       disabled: disabled,
       onTap: _onTap,
-      builder:
-          (context, colorValue) =>
-              Container(color: Color(colorValue ?? initialValue), width: 40, height: 30),
+      builder: (context, colorValue) =>
+          Container(color: Color(colorValue ?? initialValue), width: 40, height: 30),
     );
   }
 
@@ -47,7 +46,9 @@ class PrefColor extends StatelessWidget {
       SafeArea(
         child: Column(
           children: [
-            Expanded(child: Center(child: ColorPickerBottomSheet(color: Color(starterValue)))),
+            Expanded(
+              child: Center(child: ColorPickerBottomSheet(color: Color(starterValue))),
+            ),
           ],
         ),
       ),

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 
 import '../../export/activity_export.dart';
 import '../../persistence/activity.dart';

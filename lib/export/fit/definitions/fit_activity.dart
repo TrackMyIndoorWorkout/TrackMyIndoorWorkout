@@ -13,7 +13,8 @@ import '../fit_serializable.dart';
 class FitActivity extends FitDefinitionMessage {
   int exportTarget;
 
-  FitActivity(localMessageType, this.exportTarget) : super(localMessageType, FitMessage.activity) {
+  FitActivity(int localMessageType, this.exportTarget)
+    : super(localMessageType, FitMessage.activity) {
     fields = [
       FitField(253, FitBaseTypes.uint32Type), // Timestamp
     ];

@@ -134,11 +134,11 @@ class ActivityDetailGraphs extends StatelessWidget {
           children: [
             item == "speed" && sport != ActivityType.ride
                 ? TextOneLine(
-                  "Speed ${si ? 'km' : 'mi'}/h",
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                )
+                    "Speed ${si ? 'km' : 'mi'}/h",
+                    style: textStyle,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  )
                 : Container(),
             SizedBox(
               width: size.width,

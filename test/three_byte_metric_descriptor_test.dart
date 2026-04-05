@@ -7,7 +7,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 void main() {
-  group('optional ThreeByteMetricDescriptor returns null if the value is max', () {
+  group('ThreeByteMetricDescriptor returns null if the value is max (FTMS sentinel)', () {
     final rnd = Random();
     for (var divider in getRandomDoubles(repetition, 1024, rnd)) {
       final len = rnd.nextInt(99) + 5;
@@ -19,14 +19,12 @@ void main() {
       data[(lsbLocation + msbLocation) ~/ 2] = maxByte;
       data[msbLocation] = maxByte;
       divider = rnd.nextDouble() * 4;
-      const expected = 0.0;
 
-      test("$divider -> $expected", () async {
+      test("$divider -> null (sentinel)", () async {
         final desc = ThreeByteMetricDescriptor(
           lsb: lsbLocation,
           msb: msbLocation,
           divider: divider,
-          optional: true,
         );
 
         expect(desc.getMeasurementValue(data), null);
@@ -44,16 +42,15 @@ void main() {
       final msbLocation = larger ? lsbLocation + 2 : lsbLocation - 2;
       final midLocation = (lsbLocation + msbLocation) ~/ 2;
       final divider = rnd.nextDouble() * 1024;
-      final optional = rnd.nextBool();
-      final expected =
-          (optional &&
-                  data[lsbLocation] == maxByte &&
-                  data[midLocation] == maxByte &&
-                  data[msbLocation] == maxByte)
-              ? 0
-              : (data[lsbLocation] +
-                      maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
-                  divider;
+      // Sentinel values always return null now
+      final isSentinel =
+          data[lsbLocation] == maxByte &&
+          data[midLocation] == maxByte &&
+          data[msbLocation] == maxByte;
+      final expected = isSentinel
+          ? null
+          : (data[lsbLocation] + maxUint8 * (data[midLocation] + maxUint8 * data[msbLocation])) /
+                divider;
 
       test(
         "(${data[lsbLocation]}, ${data[midLocation]}, ${data[msbLocation]}) / $divider -> $expected",
@@ -62,10 +59,9 @@ void main() {
             lsb: lsbLocation,
             msb: msbLocation,
             divider: divider,
-            optional: optional,
           );
 
-          expect(desc.getMeasurementValue(data), closeTo(expected, eps));
+          expect(desc.getMeasurementValue(data), expected == null ? null : closeTo(expected, eps));
         },
       );
     }

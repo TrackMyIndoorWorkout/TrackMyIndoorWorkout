@@ -3,7 +3,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
 
 import '../persistence/power_tune.dart';
@@ -120,13 +120,12 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
         loadingBuilder: (BuildContext context) => const Center(child: CircularProgressIndicator()),
         adapter: ListAdapter(
           fetchItems: (int page, int limit) async {
-            final data =
-                await _database.powerTunes
-                    .where()
-                    .sortByTimeDesc()
-                    .offset(page * limit)
-                    .limit(limit)
-                    .findAll();
+            final data = await _database.powerTunes
+                .where()
+                .sortByTimeDesc()
+                .offset(page * limit)
+                .limit(limit)
+                .findAll();
             return ListItems(data, reachedToEnd: data.length < limit);
           },
         ),
@@ -181,7 +180,7 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _themeManager.getBlueIcon(Icons.watch, _sizeDefault),
+                        _themeManager.getBlueIcon(Icons.access_time_filled, _sizeDefault),
                         Text(timeString, style: _textStyle),
                       ],
                     ),

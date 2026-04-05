@@ -27,6 +27,7 @@ const RecordSchema = CollectionSchema(
     r'speed': PropertySchema(id: 7, name: r'speed', type: IsarType.double),
     r'timeStamp': PropertySchema(id: 8, name: r'timeStamp', type: IsarType.dateTime),
   },
+
   estimateSize: _recordEstimateSize,
   serialize: _recordSerialize,
   deserialize: _recordDeserialize,
@@ -45,10 +46,11 @@ const RecordSchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _recordGetId,
   getLinks: _recordGetLinks,
   attach: _recordAttach,
-  version: '3.1.8',
+  version: '3.3.2',
 );
 
 int _recordEstimateSize(Record object, List<int> offsets, Map<Type, List<int>> allOffsets) {
@@ -524,6 +526,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
           include: include,
           property: r'distance',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -541,6 +544,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
           include: include,
           property: r'distance',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -562,6 +566,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -825,6 +830,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
           include: include,
           property: r'speed',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -842,6 +848,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
           include: include,
           property: r'speed',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -863,6 +870,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );

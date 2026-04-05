@@ -125,6 +125,9 @@ class MeasurementZonesPreferencesScreen extends StatelessWidget with Preferences
       ),
     ]);
 
-    return Scaffold(appBar: AppBar(title: Text(title)), body: PrefPage(children: zonePreferences));
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: PrefPage(children: zonePreferences),
+    );
   }
 }

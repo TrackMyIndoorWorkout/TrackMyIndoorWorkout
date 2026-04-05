@@ -11,6 +11,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
+import '../../devices/gadgets/heart_rate_monitor_internal.dart';
 import '../../preferences/log_level.dart';
 import '../../preferences/scan_duration.dart';
 import '../../utils/bluetooth.dart';
@@ -21,6 +22,7 @@ import '../../utils/string_ex.dart';
 import '../../utils/theme_manager.dart';
 import 'boolean_question.dart';
 import 'heart_rate_monitor_scan_result.dart';
+import 'sport_picker.dart';
 
 class HeartRateMonitorPairingBottomSheet extends StatefulWidget {
   const HeartRateMonitorPairingBottomSheet({super.key});
@@ -44,6 +46,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   HeartRateMonitor? _heartRateMonitor;
   int _logLevel = logLevelDefault;
+  bool _hasInternalSensor = false;
 
   @override
   void dispose() {
@@ -105,6 +108,12 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
     );
     _heartRateMonitor = Get.isRegistered<HeartRateMonitor>() ? Get.find<HeartRateMonitor>() : null;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final hasSensor = await DeviceInternalHeartRate.hasHeartRateSensor();
+      if (mounted) {
+        setState(() {
+          _hasInternalSensor = hasSensor;
+        });
+      }
       await _startScan();
     });
   }
@@ -123,149 +132,216 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
               children: [
                 _heartRateMonitor != null
                     ? ListTile(
-                      title: TextOneLine(
-                        _heartRateMonitor?.device?.nonEmptyName ?? emptyMeasurement,
-                        overflow: TextOverflow.ellipsis,
-                        style: _themeManager.boldStyle(
-                          _captionStyle,
-                          fontSizeFactor: fontSizeFactor,
+                        title: TextOneLine(
+                          _heartRateMonitor?.device?.nonEmptyName ?? emptyMeasurement,
+                          overflow: TextOverflow.ellipsis,
+                          style: _themeManager.boldStyle(
+                            _captionStyle,
+                            fontSizeFactor: fontSizeFactor,
+                          ),
                         ),
-                      ),
-                      subtitle: Text(
-                        _heartRateMonitor?.device?.remoteId.str.shortAddressString() ??
-                            emptyMeasurement,
-                        style: _subtitleStyle,
-                      ),
-                      trailing: _themeManager.getGreenFab(Icons.favorite, () async {
-                        if (await _heartRateMonitor?.device?.connectionState.first ==
-                            BluetoothConnectionState.connected) {
-                          Get.snackbar("Info", "Already connected");
-                        } else {
-                          setState(() {
-                            _heartRateMonitor =
-                                Get.isRegistered<HeartRateMonitor>()
-                                    ? Get.find<HeartRateMonitor>()
-                                    : null;
-                          });
-                        }
-                      }),
-                    )
+                        subtitle: Text(
+                          _heartRateMonitor?.device?.remoteId.str.shortAddressString() ??
+                              emptyMeasurement,
+                          style: _subtitleStyle,
+                        ),
+                        trailing: _themeManager.getGreenFab(Icons.favorite, () async {
+                          if (await _heartRateMonitor?.device?.connectionState.first ==
+                              BluetoothConnectionState.connected) {
+                            Get.snackbar("Info", "Already connected");
+                          } else {
+                            setState(() {
+                              _heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                  ? Get.find<HeartRateMonitor>()
+                                  : null;
+                            });
+                          }
+                        }),
+                      )
                     : Container(),
+                if (_hasInternalSensor && _heartRateMonitor?.device?.remoteId.str != "INTERNAL_HRM")
+                  ListTile(
+                    leading: const Icon(Icons.watch),
+                    title: const Text("Use Watch's Sensor"),
+                    subtitle: const Text("Internal Heart Rate Monitor"),
+                    onTap: () async {
+                      if (!await bluetoothCheck(false, _logLevel)) {
+                        return;
+                      }
+
+                      final sportPick = await Get.bottomSheet(
+                        SafeArea(
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: Center(
+                                  child: SportPickerBottomSheet(
+                                    sportChoices: allSports,
+                                    initialSport: ActivityType.workout,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        isScrollControlled: true,
+                        ignoreSafeArea: false,
+                        isDismissible: false,
+                        enableDrag: false,
+                      );
+
+                      if (sportPick == null) {
+                        return;
+                      }
+
+                      setState(() {
+                        _pairingHrm = true;
+                      });
+
+                      final heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                          ? Get.find<HeartRateMonitor>()
+                          : null;
+
+                      // Disconnect existing if it's external
+                      if (heartRateMonitor != null &&
+                          heartRateMonitor.device?.remoteId.str != "INTERNAL_HRM") {
+                        await heartRateMonitor.detach();
+                        await heartRateMonitor.disconnect();
+                      }
+
+                      if (heartRateMonitor == null ||
+                          heartRateMonitor.device?.remoteId.str != "INTERNAL_HRM") {
+                        // Dynamic import workaround or just import it at top?
+                        // Need to import DeviceInternalHeartRate.
+                        // Assuming import is added.
+                        final internalHrm = DeviceInternalHeartRate(sport: sportPick);
+                        if (Get.isRegistered<HeartRateMonitor>()) {
+                          await Get.delete<HeartRateMonitor>(force: true);
+                        }
+                        Get.put<HeartRateMonitor>(internalHrm, permanent: true);
+                        await internalHrm.connect();
+                        await internalHrm.discover();
+                        setState(() {
+                          _heartRateMonitor = internalHrm;
+                        });
+                      }
+
+                      await _heartRateMonitor?.attach();
+                      setState(() {
+                        _pairingHrm = false;
+                      });
+                    },
+                    trailing: _themeManager.getBlueFab(Icons.add, () {}),
+                  ),
               ],
             ),
             const Divider(),
             StreamBuilder<List<ScanResult>>(
               stream: _scanStreamController.stream,
               initialData: const [],
-              builder:
-                  (c, snapshot) =>
-                      snapshot.data == null
-                          ? Container()
-                          : Column(
-                            children: snapshot.data!
-                                .where((d) => d.isWorthy())
-                                .map((r) {
-                                  _scanResults.add(r.device.remoteId.str);
-                                  return HeartRateMonitorScanResultTile(
-                                    result: r,
-                                    onTap: () async {
-                                      if (!await bluetoothCheck(false, _logLevel)) {
-                                        return;
-                                      }
+              builder: (c, snapshot) => snapshot.data == null
+                  ? Container()
+                  : Column(
+                      children: snapshot.data!
+                          .where((d) => d.isWorthy())
+                          .map((r) {
+                            _scanResults.add(r.device.remoteId.str);
+                            return HeartRateMonitorScanResultTile(
+                              result: r,
+                              onTap: () async {
+                                if (!await bluetoothCheck(false, _logLevel)) {
+                                  return;
+                                }
 
-                                      setState(() {
-                                        _pairingHrm = true;
-                                      });
+                                setState(() {
+                                  _pairingHrm = true;
+                                });
 
-                                      var heartRateMonitor =
-                                          Get.isRegistered<HeartRateMonitor>()
-                                              ? Get.find<HeartRateMonitor>()
-                                              : null;
-                                      final existingId =
-                                          heartRateMonitor?.device?.remoteId.str ?? notAvailable;
-                                      final storedId =
-                                          _heartRateMonitor?.device?.remoteId.str ?? notAvailable;
-                                      if (existingId != notAvailable &&
-                                          existingId != r.device.remoteId.str) {
-                                        final verdict = await Get.bottomSheet(
-                                          const SafeArea(
-                                            child: Column(
-                                              children: [
-                                                Expanded(
-                                                  child: Center(
-                                                    child: BooleanQuestionBottomSheet(
-                                                      title: "You are connected to a HRM right now",
-                                                      content:
-                                                          "Disconnect from that HRM to connect the selected one?",
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
+                                var heartRateMonitor = Get.isRegistered<HeartRateMonitor>()
+                                    ? Get.find<HeartRateMonitor>()
+                                    : null;
+                                final existingId =
+                                    heartRateMonitor?.device?.remoteId.str ?? notAvailable;
+                                final storedId =
+                                    _heartRateMonitor?.device?.remoteId.str ?? notAvailable;
+                                if (existingId != notAvailable &&
+                                    existingId != r.device.remoteId.str) {
+                                  final verdict = await Get.bottomSheet(
+                                    const SafeArea(
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: Center(
+                                              child: BooleanQuestionBottomSheet(
+                                                title: "You are connected to a HRM right now",
+                                                content:
+                                                    "Disconnect from that HRM to connect the selected one?",
+                                              ),
                                             ),
                                           ),
-                                          isScrollControlled: true,
-                                          ignoreSafeArea: false,
-                                          isDismissible: false,
-                                          enableDrag: false,
-                                        );
-
-                                        if (!verdict) {
-                                          if (existingId != storedId) {
-                                            setState(() {
-                                              _heartRateMonitor = heartRateMonitor;
-                                            });
-                                          } else {
-                                            await Get.delete<HeartRateMonitor>(force: true);
-                                            setState(() {
-                                              _heartRateMonitor = null;
-                                            });
-                                          }
-
-                                          setState(() {
-                                            _pairingHrm = false;
-                                          });
-
-                                          return;
-                                        }
-                                      }
-
-                                      if (heartRateMonitor != null &&
-                                          existingId != r.device.remoteId.str) {
-                                        await heartRateMonitor.detach();
-                                        await heartRateMonitor.disconnect();
-                                      }
-
-                                      if (heartRateMonitor == null ||
-                                          existingId != r.device.remoteId.str) {
-                                        heartRateMonitor = HeartRateMonitor(r.device);
-                                        if (Get.isRegistered<HeartRateMonitor>()) {
-                                          await Get.delete<HeartRateMonitor>(force: true);
-                                        }
-
-                                        Get.put<HeartRateMonitor>(
-                                          heartRateMonitor,
-                                          permanent: true,
-                                        );
-                                        await heartRateMonitor.connect();
-                                        await heartRateMonitor.discover();
-                                        setState(() {
-                                          _heartRateMonitor = heartRateMonitor;
-                                        });
-                                      } else if (existingId != storedId) {
-                                        setState(() {
-                                          _heartRateMonitor = heartRateMonitor;
-                                        });
-                                      }
-
-                                      await heartRateMonitor.attach();
-                                      setState(() {
-                                        _pairingHrm = false;
-                                      });
-                                    },
+                                        ],
+                                      ),
+                                    ),
+                                    isScrollControlled: true,
+                                    ignoreSafeArea: false,
+                                    isDismissible: false,
+                                    enableDrag: false,
                                   );
-                                })
-                                .toList(growable: false),
-                          ),
+
+                                  if (!verdict) {
+                                    if (existingId != storedId) {
+                                      setState(() {
+                                        _heartRateMonitor = heartRateMonitor;
+                                      });
+                                    } else {
+                                      await Get.delete<HeartRateMonitor>(force: true);
+                                      setState(() {
+                                        _heartRateMonitor = null;
+                                      });
+                                    }
+
+                                    setState(() {
+                                      _pairingHrm = false;
+                                    });
+
+                                    return;
+                                  }
+                                }
+
+                                if (heartRateMonitor != null &&
+                                    existingId != r.device.remoteId.str) {
+                                  await heartRateMonitor.detach();
+                                  await heartRateMonitor.disconnect();
+                                }
+
+                                if (heartRateMonitor == null ||
+                                    existingId != r.device.remoteId.str) {
+                                  heartRateMonitor = HeartRateMonitor(r.device);
+                                  if (Get.isRegistered<HeartRateMonitor>()) {
+                                    await Get.delete<HeartRateMonitor>(force: true);
+                                  }
+
+                                  Get.put<HeartRateMonitor>(heartRateMonitor, permanent: true);
+                                  await heartRateMonitor.connect();
+                                  await heartRateMonitor.discover();
+                                  setState(() {
+                                    _heartRateMonitor = heartRateMonitor;
+                                  });
+                                } else if (existingId != storedId) {
+                                  setState(() {
+                                    _heartRateMonitor = heartRateMonitor;
+                                  });
+                                }
+
+                                await heartRateMonitor.attach();
+                                setState(() {
+                                  _pairingHrm = false;
+                                });
+                              },
+                            );
+                          })
+                          .toList(growable: false),
+                    ),
             ),
           ],
         ),
@@ -281,17 +357,17 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
             const SizedBox(width: 10, height: 10),
             _isScanning
                 ? JumpingDotsProgressIndicator(
-                  fontSize: 30.0,
-                  color: _themeManager.getProtagonistColor(),
-                )
+                    fontSize: 30.0,
+                    color: _themeManager.getProtagonistColor(),
+                  )
                 : _pairingHrm
                 ? HeartbeatProgressIndicator(
-                  child: IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
-                )
+                    child: IconButton(icon: const Icon(Icons.hourglass_empty), onPressed: () => {}),
+                  )
                 : IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () async => await _startScan(),
-                ),
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () async => await _startScan(),
+                  ),
           ],
         ),
       ),

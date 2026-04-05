@@ -22,19 +22,7 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
       - name: Mock Secret File
-        run: |
-          echo 'const stravaSecret = "a";' > lib/secret.dart
-          echo 'const stravaClientId = "1";' >> lib/secret.dart
-          echo 'const suuntoSecret = "a";' >> lib/secret.dart
-          echo 'const suuntoClientId = "a";' >> lib/secret.dart
-          echo 'const suuntoSubscriptionPrimaryKey = "a";' >> lib/secret.dart
-          echo 'const suuntoSubscriptionSecondaryKey = "a";' >> lib/secret.dart
-          echo 'const underArmourSecret = "a";' >> lib/secret.dart
-          echo 'const underArmourKey = "a";' >> lib/secret.dart
-          echo 'const trainingPeaksSecret = "a";' >> lib/secret.dart
-          echo 'const trainingPeaksClientId = "a";' >> lib/secret.dart
-          echo 'const googleFitClientId = "a";' >> lib/secret.dart
-          echo 'const googleFitSecret = "a";' >> lib/secret.dart
+        run: cp lib/secret.mock.dart lib/secret.dart
       - name: Format files
         run: dart format --set-exit-if-changed .
       - name: Analyze files

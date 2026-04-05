@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:get/get.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_plus/share_plus.dart';
@@ -33,6 +33,7 @@ import '../../preferences/recalculate_more.dart';
 import '../../preferences/revolution_sliding_window.dart';
 import '../../preferences/sensor_data_threshold.dart';
 import '../../preferences/show_performance_overlay.dart';
+import '../../preferences/small_screen.dart';
 import '../../utils/date_time_ex.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -197,8 +198,16 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
           }
 
           final title = "Debug Logs ${DateTimeEx.isoDateTime}";
-          final result = await Share.shareXFiles([XFile(zipFile.path)], text: title);
-          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
+          final result = await SharePlus.instance.share(
+            ShareParams(files: [XFile(zipFile.path)], text: title),
+          );
+          Logging().log(
+            logLevel,
+            logLevelInfo,
+            logTag,
+            "SharePlus.instance.share",
+            "${result.status}",
+          );
         },
         child: const Text("Export Logs..."),
       ),
@@ -281,8 +290,16 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return;
           }
 
-          final result = await Share.shareXFiles([XFile(zipFilePath)], text: "Exported DB");
-          Logging().log(logLevel, logLevelInfo, logTag, "Share.shareXFiles", "${result.status}");
+          final result = await SharePlus.instance.share(
+            ShareParams(files: [XFile(zipFilePath)], text: "Exported DB"),
+          );
+          Logging().log(
+            logLevel,
+            logLevelInfo,
+            logTag,
+            "SharePlus.instance.share",
+            "${result.status}",
+          );
         },
         child: const Text(dataExport),
       ),
@@ -453,6 +470,60 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         pref: revolutionSlidingWindowTag,
         min: revolutionSlidingWindowMin,
         max: revolutionSlidingWindowMax,
+      ),
+      const PrefLabel(title: Divider(height: 1)),
+      PrefLabel(
+        title: Text("Small Screen Adaptation", style: Get.textTheme.headlineSmall!, maxLines: 3),
+      ),
+      PrefSlider<double>(
+        title: const Text("Small Screen Threshold"),
+        subtitle: const Text("Longest side threshold for watch mode"),
+        pref: smallScreenThresholdTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} dp"),
+        min: smallScreenThresholdMin,
+        max: smallScreenThresholdMax,
+        divisions: smallScreenThresholdDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Square Screen Threshold"),
+        subtitle: const Text("Longest side threshold for square watches"),
+        pref: smallScreenSquareThresholdTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} dp"),
+        min: smallScreenSquareThresholdMin,
+        max: smallScreenSquareThresholdMax,
+        divisions: smallScreenSquareThresholdDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Top Padding"),
+        subtitle: const Text("Vertical padding for lists (Top)"),
+        pref: smallScreenPaddingTopTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} dp"),
+        min: smallScreenPaddingTopMin,
+        max: smallScreenPaddingTopMax,
+        divisions: smallScreenPaddingTopDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Bottom Padding"),
+        subtitle: const Text("Vertical padding for lists (Bottom)"),
+        pref: smallScreenPaddingBottomTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} dp"),
+        min: smallScreenPaddingBottomMin,
+        max: smallScreenPaddingBottomMax,
+        divisions: smallScreenPaddingBottomDivisions,
+        direction: Axis.vertical,
+      ),
+      PrefSlider<double>(
+        title: const Text("Horizontal Padding"),
+        subtitle: const Text("Horizontal padding for lists"),
+        pref: smallScreenPaddingHorizontalTag,
+        trailing: (num value) => Text("${value.toStringAsFixed(0)} dp"),
+        min: smallScreenPaddingHorizontalMin,
+        max: smallScreenPaddingHorizontalMax,
+        divisions: smallScreenPaddingHorizontalDivisions,
+        direction: Axis.vertical,
       ),
     ]);
 

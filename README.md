@@ -11,15 +11,19 @@ laundry drying racks.
 
 For more details please see [the application's website](https://trackmyindoorworkout.github.io).
 
+## Technical Architecture and Design
+
+DeepWiki: https://deepwiki.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/
+
 ## Contribution Rules
 
 * The project works on the Flutter stable channel. (For a good while it was on the beta channel
   because for example
   https://github.com/flutter/flutter/issues/114199#issuecomment-1294263848 and
   https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399).
-* For a successful local build you need to augment a dummy `secret.dart` file,
-  see the the CI build script for a hint:
-  https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/develop/.github/workflows/flutter_test.yml#L24
+* For a successful local build you need to augment a dummy `secret.dart` file.
+  You can simply copy the provided mock file to satisfy compilation dependencies:
+  `cp lib/secret.mock.dart lib/secret.dart`
 * Execute `dart format --line-length 100 .` at the project root.
   The project currently uses flutter format with 100 character line length.
 * Also run `flutter analyze` at the project root. That picks up the analyzer settings from the yaml.
@@ -32,19 +36,46 @@ For more details please see [the application's website](https://trackmyindoorwor
   I'm performing releases that way as well.
   I'm also using [Git Town](https://github.com/git-town/git-town) but currently only for
   [git sync](https://github.com/git-town/git-town/blob/main/documentation/development/branch_hierarchy.md)
-  and I don't employ `git hack` - `git ship` workflow. I'm avoiding squashing commits because
+  and I don't use the `git hack` - `git ship` workflow. I'm avoiding squashing commits because
   I want to preserve detailed commit history to help forensic debugging. But I'm flexible if
   contributions become common and majority wants to change policies.
 
+## Extra build quirks
+
+* Certain plugins which have native parts may require the Java version to be raised from
+  `1.8` to `17`
+  - There are two types of these variables: `JavaVersion.VERSION_17` and `17`
+  - You may want to raise the Java version in your IDE
+  - Some plugins may require you to raise the Java version in the build files in the cache
+  - Example of modifying the `receive_sharing_intent` plugin:
+    1. The cache location on Windows is `C:\Users\{USERNAME}\AppData\Local\Pub\Cache\hosted\pub.dev\receive_sharing_intent-1.8.1\android\build.gradle` or on Linux `/home/{USERNAME}/.pub-cache/hosted/pub.dev/receive_sharing_intent-1.8.1/android/build.gradle`
+    2. Add / modify `compileOptions` and `kotlinOptions` to raise the Java version:
+       ```
+       compileOptions {
+           sourceCompatibility JavaVersion.VERSION_17
+           targetCompatibility JavaVersion.VERSION_17
+       }
+       kotlinOptions {
+           jvmTarget = "17"
+       }
+       ```
+* If you don't have you may need to install 28.2.13676358 version of the NDK:
+  1. `cd ${HOME}/{ANDROID_SDK}/cmdline-tools/latest/bin/`
+     (in my case `/home/csaba/Android/Sdk/cmdline-tools/latest/bin/`)
+  2. Verify that you can install this version of NDK: `./sdkmanager --list | grep "ndk;28.2.13676358"`
+  3. Install it: `./sdkmanager "ndk;28.2.13676358"`
+  4. In you `local.properties` if you have NDK directory, reference that:
+     ```
+     sdk.dir=/home/csaba/Android/Sdk
+     ndk.dir=/home/csaba/Android/Sdk/ndk/28.2.13676358
+     ```
+
 ## Code regeneration
 
-With certain data persistence or testing Mock changes you may need code regeneration. Due to the community build of `isar` lagging behind we'll need to temporarily set back the `anslyzer` version for successful code generation.
-1. Set the `analyzer` version to `6.11.0` in the developer dependencies of the `pubspec.yaml` and comment out the override at the top.
-2. `pub get`
-3. `dart run build_runner build --delete-conflicting-outputs`
-4. Don't forget to re-run `dart format .` after that.
-5. Set back the original `analyzer` version within the `drveloper` dependencies to match the override version, and remove the comments from the version override.
-6. `pub get`
+With certain data persistence or testing Mock changes you may need code regeneration.
+It's always good to regen the persistence code after any `isar` version change.
+1. `dart run build_runner build --delete-conflicting-outputs`
+2. Don't forget to re-run `dart format .` after that.
 
 ## License
 

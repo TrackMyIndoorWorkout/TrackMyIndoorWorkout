@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:get/get.dart';
-// import 'package:isar/isar.dart';
+// import 'package:isar_community/isar.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -43,9 +43,9 @@ class AboutScreenState extends State<AboutScreen> {
     _version = packageInfo.version;
     _buildNumber = packageInfo.buildNumber;
 
-    FlutterTimezone.getLocalTimezone().then((String timeZone) {
+    FlutterTimezone.getLocalTimezone().then((TimezoneInfo timeZoneInfo) {
       setState(() {
-        _detectedTimeZone = timeZone;
+        _detectedTimeZone = timeZoneInfo.identifier;
       });
     });
 
@@ -135,14 +135,13 @@ class AboutScreenState extends State<AboutScreen> {
     required String title,
     required String value,
     bool oneLine = false,
-  }) =>
-      oneLine
-          ? [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: _valueWithTitleCore(title: title, value: value),
-            ),
-          ]
-          : _valueWithTitleCore(title: title, value: value);
+  }) => oneLine
+      ? [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: _valueWithTitleCore(title: title, value: value),
+          ),
+        ]
+      : _valueWithTitleCore(title: title, value: value);
 }

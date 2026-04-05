@@ -1,3 +1,5 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+
 import '../../persistence/record.dart';
 import '../../utils/constants.dart';
 import '../gatt/concept2.dart';
@@ -14,7 +16,7 @@ class C2AdditionalStatus2 extends ComplexSensor {
 
   MetricDescriptor? caloriesMetric;
 
-  C2AdditionalStatus2(device) : super(serviceUuid, characteristicUuid, device);
+  C2AdditionalStatus2(BluetoothDevice device) : super(serviceUuid, characteristicUuid, device);
 
   @override
   void processFlag(int flag) {

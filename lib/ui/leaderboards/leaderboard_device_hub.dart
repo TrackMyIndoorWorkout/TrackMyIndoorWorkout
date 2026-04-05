@@ -35,31 +35,27 @@ class LeaderboardDeviceHubScreenState extends State<LeaderboardDeviceHubScreen> 
       appBar: AppBar(title: const Text('Leaderboard Devices')),
       body: ListView.separated(
         padding: const EdgeInsets.all(5.0),
-        itemBuilder:
-            (context, index) => ElevatedButton(
-              onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
-              child: FitHorizontally(
-                shrinkLimit: shrinkLimit,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        itemBuilder: (context, index) => ElevatedButton(
+          onPressed: () => Get.to(() => DeviceLeaderboardScreen(device: widget.devices[index])),
+          child: FitHorizontally(
+            shrinkLimit: shrinkLimit,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.devices[index].item1, style: _textStyle),
-                        Text(
-                          widget.devices[index].item2.shortAddressString(),
-                          style: _subTextStyle,
-                        ),
-                      ],
-                    ),
-                    Icon(Icons.chevron_right, size: _sizeDefault),
+                    Text(widget.devices[index].item1, style: _textStyle),
+                    Text(widget.devices[index].item2.shortAddressString(), style: _subTextStyle),
                   ],
                 ),
-              ),
+                Icon(Icons.chevron_right, size: _sizeDefault),
+              ],
             ),
+          ),
+        ),
         separatorBuilder: (context, index) => const SizedBox(width: 10, height: 10),
         itemCount: widget.devices.length,
       ),

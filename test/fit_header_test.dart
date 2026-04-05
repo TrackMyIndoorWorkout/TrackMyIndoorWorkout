@@ -62,10 +62,9 @@ void main() {
       test(
         "${testData.protocolVersion} ${testData.profileVersion} ${testData.dataSize} ${testData.crc}",
         () async {
-          final header =
-              FitHeader(dataSize: testData.dataSize)
-                ..protocolVersion = testData.protocolVersion
-                ..profileVersion = testData.profileVersion;
+          final header = FitHeader(dataSize: testData.dataSize)
+            ..protocolVersion = testData.protocolVersion
+            ..profileVersion = testData.profileVersion;
 
           final output = header.binarySerialize();
 

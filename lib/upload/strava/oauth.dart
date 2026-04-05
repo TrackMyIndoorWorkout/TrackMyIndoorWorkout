@@ -395,8 +395,9 @@ mixin Auth {
   ///return codes:
   /// statusOK or statusNoAuthenticationYet
   Future<Fault> deAuthorize() async {
-    final token =
-        Get.isRegistered<StravaToken>() ? Get.find<StravaToken>() : await _getStoredToken();
+    final token = Get.isRegistered<StravaToken>()
+        ? Get.find<StravaToken>()
+        : await _getStoredToken();
     final header = token.getAuthorizationHeader();
     var fault = Fault(StravaStatusCode.statusUnknownError, "Unknown reason");
     // If header is not "empty"

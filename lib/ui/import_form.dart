@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:pref/pref.dart';
 
@@ -97,10 +97,9 @@ class ImportFormState extends State<ImportForm> {
                   }
                   return null;
                 },
-                onChanged:
-                    (value) => setState(() {
-                      _filePath = value;
-                    }),
+                onChanged: (value) => setState(() {
+                  _filePath = value;
+                }),
               ),
               Visibility(visible: !widget.migration, child: const SizedBox(height: 24)),
               Visibility(
@@ -137,10 +136,9 @@ class ImportFormState extends State<ImportForm> {
                     }
                     return null;
                   },
-                  onChanged:
-                      (value) => setState(() {
-                        _activityDateTime = value;
-                      }),
+                  onChanged: (value) => setState(() {
+                    _activityDateTime = value;
+                  }),
                 ),
               ),
               const SizedBox(height: 24),

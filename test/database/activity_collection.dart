@@ -1,6 +1,8 @@
+// ignore_for_file: avoid_types_as_parameter_names
+
 import 'dart:typed_data';
 
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
 
 import 'activity_query.dart';

@@ -17,7 +17,7 @@ class FitDataRecord extends FitDefinitionMessage {
   final bool outputGps;
 
   FitDataRecord(
-    localMessageType,
+    int localMessageType,
     this.altitude,
     this.heartRateGapWorkaround,
     this.heartRateUpperLimit,

@@ -15,10 +15,9 @@ import '../../preferences/log_level.dart';
 import '../../utils/constants.dart';
 import '../../utils/logging.dart';
 import '../../utils/user_data.dart';
+import '../device_fourcc.dart';
 
 mixin LifeFitnessMixin {
-  static const String lfNamePrefix = "LF";
-  static const String lfManufacturer = "LifeFitness";
   StreamSubscription? lfStatusSubscription;
 
   Future<void> prePumpConfig(List<BluetoothService> svcs, Athlete athlete, int logLvl) async {
@@ -38,7 +37,7 @@ mixin LifeFitnessMixin {
           Logging().log(
             logLvl,
             logLevelInfo,
-            lfNamePrefix,
+            lifeFitnessDeviceNamePrefix,
             "lfStatus1 statusSub",
             controlResponse.toString(),
           );
@@ -58,7 +57,14 @@ mixin LifeFitnessMixin {
     try {
       await lfControl1?.write([lifeFitnessUserControl1MagicNumber1]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lfControl1.write 1", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "lfControl1.write 1",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfLongerDelay);
@@ -76,7 +82,7 @@ mixin LifeFitnessMixin {
     } on Exception catch (e, stack) {
       Logging().logException(
         logLvl,
-        lfNamePrefix,
+        lifeFitnessDeviceNamePrefix,
         "prePumpConfig",
         "firstNameData.write",
         e,
@@ -95,7 +101,14 @@ mixin LifeFitnessMixin {
       final lastName = prefService.get<String>(athleteLastNameTag) ?? athleteLastNameDefault;
       await lastNameData?.write(lastName.codeUnits + [0x00]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lastNameData.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "lastNameData.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -111,7 +124,7 @@ mixin LifeFitnessMixin {
     } on Exception catch (e, stack) {
       Logging().logException(
         logLvl,
-        lfNamePrefix,
+        lifeFitnessDeviceNamePrefix,
         "prePumpConfig",
         "userEmailData.write",
         e,
@@ -128,7 +141,14 @@ mixin LifeFitnessMixin {
     try {
       await ageData?.write([athlete.age]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "userAgeData.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "userAgeData.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -143,7 +163,7 @@ mixin LifeFitnessMixin {
     } on Exception catch (e, stack) {
       Logging().logException(
         logLvl,
-        lfNamePrefix,
+        lifeFitnessDeviceNamePrefix,
         "prePumpConfig",
         "userGenderData.write",
         e,
@@ -161,7 +181,14 @@ mixin LifeFitnessMixin {
     try {
       await languageData?.write([0x65, 0x6E]); // "en"
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "languageData.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "languageData.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -175,7 +202,14 @@ mixin LifeFitnessMixin {
       // https://github.com/cagnulein/qdomyos-zwift/blame/5a6afbb500e5937c6808304577c6cdc4269a87c9/src/devices/lifefitnesstreadmill/lifefitnesstreadmill.cpp#L97
       await unk1Data?.write(lifeFitnessUserUnk1MagicNumber);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "unk1Data.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "unk1Data.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -186,7 +220,14 @@ mixin LifeFitnessMixin {
     try {
       await unk2Data?.write([lifeFitnessUserUnk2MagicNumber]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "unk2Data.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "unk2Data.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -202,7 +243,14 @@ mixin LifeFitnessMixin {
     try {
       await weightData?.write([weightLsb, weightMsb]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "weightData.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "weightData.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -215,7 +263,14 @@ mixin LifeFitnessMixin {
     try {
       await heightData?.write([athlete.height % maxUint8, athlete.height ~/ maxUint8]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "heightData.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "heightData.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
@@ -226,14 +281,28 @@ mixin LifeFitnessMixin {
     try {
       await lfControl2?.write(lifeFitnessUserControl2MagicNumber);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lfControl2.write", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "lfControl2.write",
+        e,
+        stack,
+      );
     }
 
     await Future.delayed(lfShorterDelay);
     try {
       await lfControl1?.write([lifeFitnessUserControl1MagicNumber2]);
     } on Exception catch (e, stack) {
-      Logging().logException(logLvl, lfNamePrefix, "prePumpConfig", "lfControl1.write 2", e, stack);
+      Logging().logException(
+        logLvl,
+        lifeFitnessDeviceNamePrefix,
+        "prePumpConfig",
+        "lfControl1.write 2",
+        e,
+        stack,
+      );
     }
   }
 

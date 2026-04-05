@@ -1,8 +1,44 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-
+import 'package:pref/pref.dart';
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
+import '../preferences/small_screen.dart';
 import 'constants.dart';
+
+bool isSmallScreen(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final threshold =
+      PrefService.of(context).get<double>(smallScreenThresholdTag) ?? smallScreenThresholdDefault;
+  final aspectRatio = size.longestSide / size.shortestSide;
+  // If the device is square-ish (typical for watches), we allow a larger screen size
+  // Phones usually have an aspect ratio > 1.6 (even old 16:9 is 1.77)
+  final isSquare = aspectRatio < 1.2;
+  final squareThreshold =
+      PrefService.of(context).get<double>(smallScreenSquareThresholdTag) ??
+      smallScreenSquareThresholdDefault;
+  return size.longestSide <= threshold || (isSquare && size.longestSide <= squareThreshold);
+}
+
+double smallScreenPaddingTop(BuildContext context) {
+  final pref =
+      PrefService.of(context).get<double>(smallScreenPaddingTopTag) ?? smallScreenPaddingTopDefault;
+  final viewPadding = MediaQuery.of(context).viewPadding.top;
+  return max(pref, viewPadding);
+}
+
+double smallScreenPaddingBottom(BuildContext context) {
+  final pref =
+      PrefService.of(context).get<double>(smallScreenPaddingBottomTag) ??
+      smallScreenPaddingBottomDefault;
+  final viewPadding = MediaQuery.of(context).viewPadding.bottom;
+  return max(pref, viewPadding);
+}
+
+double smallScreenPaddingHorizontal(BuildContext context) {
+  return PrefService.of(context).get<double>(smallScreenPaddingHorizontalTag) ??
+      smallScreenPaddingHorizontalDefault;
+}
 
 extension DurationDisplay on Duration {
   String toDisplay() {

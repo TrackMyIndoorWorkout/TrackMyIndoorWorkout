@@ -14,8 +14,7 @@ import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'utils.dart';
 
 class FitDefinitionMessageTest extends FitDefinitionMessage {
-  FitDefinitionMessageTest({localMessageType, globalMessageNumber})
-    : super(localMessageType, globalMessageNumber);
+  FitDefinitionMessageTest(super.localMessageType, super.globalMessageNumber);
 
   @override
   List<int> serializeData(dynamic parameter) {
@@ -29,14 +28,14 @@ class FitStringFieldTest extends FitDefinitionMessage {
   final String text;
   final int byte2;
 
-  FitStringFieldTest({
-    localMessageType,
-    globalMessageNumber,
+  FitStringFieldTest(
+    super.localMessageType,
+    super.globalMessageNumber, {
     required this.definitionNumber,
     required this.byte1,
     required this.text,
     required this.byte2,
-  }) : super(localMessageType, globalMessageNumber) {
+  }) {
     fields = [
       FitField(definitionNumber, FitBaseTypes.uint8Type),
       FitStringField(definitionNumber + 1, text.length),
@@ -72,10 +71,8 @@ void main() {
         0,
       ];
       test('$short -> $expected', () async {
-        final subject = FitDefinitionMessageTest(
-          localMessageType: localMessageType,
-          globalMessageNumber: short,
-        )..architecture = bigEndian ? 1 : 0;
+        final subject = FitDefinitionMessageTest(localMessageType, short)
+          ..architecture = bigEndian ? 1 : 0;
 
         final output = subject.serializeData(null);
 
@@ -96,8 +93,8 @@ void main() {
       final expected = [localMessageType, 0, byte1] + utf8.encode(text) + [0, byte2];
       test('$text($length) -> $expected', () async {
         final subject = FitStringFieldTest(
-          localMessageType: localMessageType,
-          globalMessageNumber: globalMessageNumber,
+          localMessageType,
+          globalMessageNumber,
           definitionNumber: definitionNumber,
           byte1: byte1,
           text: text,
@@ -140,8 +137,8 @@ void main() {
         ];
         test('$text($length) -> $expected', () async {
           final subject = FitStringFieldTest(
-            localMessageType: localMessageType,
-            globalMessageNumber: globalMessageNumber,
+            localMessageType,
+            globalMessageNumber,
             definitionNumber: definitionNumber,
             byte1: byte1,
             text: text,
