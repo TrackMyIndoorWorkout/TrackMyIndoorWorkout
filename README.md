@@ -21,9 +21,9 @@ DeepWiki: https://deepwiki.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/
   because for example
   https://github.com/flutter/flutter/issues/114199#issuecomment-1294263848 and
   https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/issues/399).
-* For a successful local build you need to augment a dummy `secret.dart` file,
-  see the the CI build script for a hint:
-  https://github.com/TrackMyIndoorWorkout/TrackMyIndoorWorkout/blob/develop/.github/workflows/flutter_test.yml#L24
+* For a successful local build you need to augment a dummy `secret.dart` file.
+  You can simply copy the provided mock file to satisfy compilation dependencies:
+  `cp lib/secret.mock.dart lib/secret.dart`
 * Execute `dart format --line-length 100 .` at the project root.
   The project currently uses flutter format with 100 character line length.
 * Also run `flutter analyze` at the project root. That picks up the analyzer settings from the yaml.
