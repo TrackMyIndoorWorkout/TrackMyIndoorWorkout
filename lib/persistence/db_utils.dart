@@ -12,6 +12,7 @@ import 'calorie_tune.dart';
 import 'power_tune.dart';
 import 'record.dart';
 import 'workout_summary.dart';
+import 'device_usage.dart';
 
 class DbUtils with PowerSpeedMixin {
   late final Isar database;
@@ -124,7 +125,7 @@ class DbUtils with PowerSpeedMixin {
 
     activity.distance = previousRecord.distance!;
     activity.calories = previousRecord.calories!;
-    if (strides.toInt() > activity.strides) {
+    if (strides.toInt() > activity.strides || activity.strides > movingTime / 1000 / 60 * 180) {
       activity.strides = strides.toInt();
     }
 
@@ -389,38 +390,63 @@ class DbUtils with PowerSpeedMixin {
   }
 
   Future<bool> splitActivity(Activity activity, int minutesSplitPoint, int targetId) async {
-    // Assumes empty target activity
-    final targetRecords = await getRecords(targetId);
-    if (targetRecords.isNotEmpty) {
-      return false;
-    }
-
-    final target = database.activitys.getSync(targetId);
-    if (target == null) {
-      return false;
-      // Establish new Activity instead of exiting
-    }
-
-    final splitPoint = Duration(minutes: minutesSplitPoint);
-
     final records = await getRecords(activity.id);
     if (records.isEmpty) {
       return false;
     }
 
+    var target = database.activitys.getSync(targetId);
+    if (target == null) {
+      target = Activity(
+        deviceName: activity.deviceName,
+        deviceId: activity.deviceId,
+        hrmId: activity.hrmId,
+        fourCC: activity.fourCC,
+        sport: activity.sport,
+        powerFactor: activity.powerFactor,
+        calorieFactor: activity.calorieFactor,
+        hrCalorieFactor: activity.hrCalorieFactor,
+        hrmCalorieFactor: activity.hrmCalorieFactor,
+        hrBasedCalories: activity.hrBasedCalories,
+        timeZone: activity.timeZone,
+        start: activity.start,
+        end: activity.end,
+      );
+      database.writeTxnSync(() {
+        database.activitys.putSync(target!); // Keep ! here just in case closure loses promotion
+      });
+    } else {
+      // Assumes empty target activity
+      final targetRecords = await getRecords(targetId);
+      if (targetRecords.isNotEmpty) {
+        return false;
+      }
+    }
+
+    final splitPoint = Duration(minutes: minutesSplitPoint);
+    activity.start = records.first.timeStamp!;
     final watermark = activity.start.add(splitPoint);
+    var lastRecord = records.first;
     database.writeTxnSync(() {
+      bool inFirstPart = true;
       for (final record in records) {
         if (record.timeStamp != null && record.timeStamp!.compareTo(watermark) > 0) {
-          record.activityId = target.id;
+          if (inFirstPart) {
+            activity.end = lastRecord.timeStamp;
+            target!.start = record.timeStamp!;
+          }
+          inFirstPart = false;
+          record.activityId = target!.id;
           database.records.putSync(record);
         }
+        lastRecord = record;
       }
     });
 
-    if (activity.end != null) {
-      activity.end = activity.end!.add(-splitPoint);
-    }
+    target.end = lastRecord.timeStamp;
+    // if (activity.end != null) {
+    //   activity.end = activity.end!.add(-splitPoint);
+    // }
 
     updateActivity(activity);
 
@@ -444,5 +470,28 @@ class DbUtils with PowerSpeedMixin {
     });
 
     return numDeleted;
+  }
+
+  Future<Map<String, String>> getDeviceSportDictionary() async {
+    final deviceSport = <String, String>{};
+    for (final deviceUsage in await database.deviceUsages.where().findAll()) {
+      deviceSport[deviceUsage.mac] = deviceUsage.sport;
+    }
+    return deviceSport;
+  }
+
+  Future<DeviceUsage?> getDeviceUsage(String mac) async {
+    return await database.deviceUsages
+        .where()
+        .filter()
+        .macEqualTo(mac)
+        .sortByTimeDesc()
+        .findFirst();
+  }
+
+  Future<void> saveDeviceUsage(DeviceUsage deviceUsage) async {
+    database.writeTxnSync(() {
+      database.deviceUsages.putSync(deviceUsage);
+    });
   }
 }

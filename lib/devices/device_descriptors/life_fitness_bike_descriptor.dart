@@ -10,11 +10,11 @@ class LifeFitnessBikeDescriptor extends IndoorBikeDeviceDescriptor with LifeFitn
   LifeFitnessBikeDescriptor()
     : super(
         fourCC: lifeFitnessBikeFourCC,
-        vendorName: LifeFitnessMixin.lfManufacturer,
-        modelName: "${LifeFitnessMixin.lfManufacturer} Bike",
-        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        vendorName: lifeFitnessManufacturerNamePrefix,
+        modelName: "$lifeFitnessManufacturerNamePrefix $lifeFitnessBikeNamePostfix",
+        manufacturerNamePart: lifeFitnessDeviceNamePrefix,
         manufacturerFitId: stravaFitId,
-        model: "${LifeFitnessMixin.lfManufacturer} Bike",
+        model: "$lifeFitnessManufacturerNamePrefix $lifeFitnessBikeNamePostfix",
         doNotReadManufacturerName: true,
       );
 

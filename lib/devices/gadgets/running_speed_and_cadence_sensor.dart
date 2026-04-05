@@ -70,7 +70,7 @@ class RunningSpeedAndCadenceSensor extends ComplexSensor {
     flag &= 3; // 1 + 2
     processFlag(flag);
 
-    return featureFlag >= 0 && data.length == expectedLength;
+    return featureFlag >= 0 && data.length >= expectedLength;
   }
 
   @override

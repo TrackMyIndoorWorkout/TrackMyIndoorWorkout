@@ -10,11 +10,11 @@ class LifeFitnessStepClimberDescriptor extends StepClimberDeviceDescriptor with 
   LifeFitnessStepClimberDescriptor()
     : super(
         fourCC: lifeFitnessStepClimberFourCC,
-        vendorName: LifeFitnessMixin.lfManufacturer,
-        modelName: "${LifeFitnessMixin.lfManufacturer} Step Climber",
-        manufacturerNamePart: LifeFitnessMixin.lfNamePrefix,
+        vendorName: lifeFitnessManufacturerNamePrefix,
+        modelName: "$lifeFitnessManufacturerNamePrefix Step Climber",
+        manufacturerNamePart: lifeFitnessDeviceNamePrefix,
         manufacturerFitId: stravaFitId,
-        model: "${LifeFitnessMixin.lfManufacturer} Step Climber",
+        model: "$lifeFitnessManufacturerNamePrefix Step Climber",
         doNotReadManufacturerName: true,
       );
 

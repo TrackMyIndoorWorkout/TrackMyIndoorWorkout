@@ -70,6 +70,23 @@ void main() {
           strokeCount: 228.0,
         ),
       ),
+      TestPair(
+        data: [...sampleData, 0xFF, 0xEE, 0xDD], // Extra bytes
+        record: RecordWithSport(
+          distance: null,
+          elapsed: null,
+          calories: null,
+          power: 103,
+          speed: null,
+          cadence: 0,
+          heartRate: null,
+          pace: null,
+          sport: ActivityType.ride,
+          caloriesPerHour: null,
+          caloriesPerMinute: null,
+          strokeCount: 228.0,
+        ),
+      ),
     ]) {
       final sum = testPair.data.fold<int>(0, (a, b) => a + b);
       test("$sum", () async {

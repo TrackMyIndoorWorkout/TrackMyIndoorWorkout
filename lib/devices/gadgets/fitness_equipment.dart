@@ -124,9 +124,13 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
   bool _blockFTMSFeatureRead = blockFTMSFeatureReadDefault;
+
+  @visibleForTesting
+  set blockFTMSFeatureRead(bool value) => _blockFTMSFeatureRead = value;
   bool blockManufacturerNameReading = blockManufacturerNameReadDefault;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;
+  DbUtils? _dbUtils;
 
   // For Throttling + deduplication #234
   late final Duration _throttleDuration; // Now configurable
@@ -158,6 +162,22 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   double get calorieFactor => _calorieFactor;
   double get hrCalorieFactor => _hrCalorieFactor;
   double get hrmCalorieFactor => _hrmCalorieFactor;
+
+  DbUtils get dbUtils {
+    if (_dbUtils == null) {
+      if (Get.isRegistered<DbUtils>()) {
+        try {
+          _dbUtils = Get.find<DbUtils>();
+        } catch (e) {
+          _dbUtils = DbUtils();
+        }
+      } else {
+        _dbUtils = DbUtils();
+      }
+    }
+
+    return _dbUtils!;
+  }
 
   int keySelector(List<int> l) {
     if (l.isEmpty) {
@@ -548,7 +568,7 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
     _activity = activity;
     lastRecord = RecordWithSport.getZero(sport);
     if (Get.isRegistered<Isar>()) {
-      final lastDbRecord = await DbUtils().getLastRecord(activity.id);
+      final lastDbRecord = await dbUtils.getLastRecord(activity.id);
       continuationRecord = lastDbRecord ?? RecordWithSport.getZero(sport);
       continuation = continuationRecord.hasCumulative();
       if (logLevel >= logLevelInfo) {
@@ -649,6 +669,10 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return;
     }
 
+    if (_blockFTMSFeatureRead || isInternal) {
+      return;
+    }
+
     final machineFeatures = BluetoothDeviceEx.filterCharacteristic(
       service!.characteristics,
       fitnessMachineFeature,
@@ -660,8 +684,23 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         return;
       }
 
-      readFeatures = _getLongFromBytes(featureValues, 0);
-      writeFeatures = _getLongFromBytes(featureValues, 4);
+      if (featureValues.length < 8 && logLevel >= logLevelWarning) {
+        Logging().log(
+          logLevel,
+          logLevelWarning,
+          tag,
+          "_readFitnessMachineFeatures",
+          "Malformed fitness machine features: expected at least 8 bytes, got ${featureValues.length}. Padding with zeros.",
+        );
+      }
+
+      final paddedValues = List<int>.from(featureValues);
+      while (paddedValues.length < 8) {
+        paddedValues.add(0);
+      }
+
+      readFeatures = _getLongFromBytes(paddedValues, 0);
+      writeFeatures = _getLongFromBytes(paddedValues, 4);
       _speedLevels = await getWriteSupportParameters(
         writeFeatures,
         speedTargetSettingSupported,
@@ -1390,7 +1429,6 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
       return;
     }
 
-    final dbUtils = DbUtils();
     final factors = await dbUtils.getFactors(device?.remoteId.str ?? "");
     _powerFactor = factors.item1;
     _calorieFactor = factors.item2;

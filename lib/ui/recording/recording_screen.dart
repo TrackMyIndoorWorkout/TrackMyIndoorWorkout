@@ -22,7 +22,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../devices/bluetooth_device_ex.dart';
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../devices/device_descriptors/kayak_first_descriptor.dart';
-import '../../devices/device_fourcc.dart';
+import '../../devices/gadgets/cadence_monitor_internal.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
 import '../../export/export_target.dart';
@@ -70,7 +70,6 @@ import '../../track/constants.dart';
 import '../../track/track_descriptor.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
-
 import '../../utils/display.dart';
 import '../../utils/logging.dart';
 import '../../utils/preferences.dart';
@@ -79,17 +78,14 @@ import '../../utils/statistics_accumulator.dart';
 import '../../utils/target_heart_rate.dart';
 import '../../utils/theme_manager.dart';
 import '../../utils/time_zone.dart';
-import '../activities.dart';
 import '../models/display_record.dart';
 import '../models/progress_state.dart';
 import '../models/row_configuration.dart';
-import '../parts/battery_status.dart';
+import '../parts/cadence_monitor_pairing.dart';
 import '../parts/heart_rate_monitor_pairing.dart';
-import '../parts/kayak_first.dart';
 import '../parts/legend_dialog.dart';
 import '../parts/pick_directory.dart';
 import '../parts/pre_measurement_progress.dart';
-import '../parts/spin_down.dart';
 import '../parts/three_choices.dart';
 import '../parts/upload_portal_picker.dart';
 import 'measurement_row.dart';
@@ -155,6 +151,7 @@ class RecordingState extends State<RecordingScreen> {
   late Size size = const Size(0, 0);
   FitnessEquipment? _fitnessEquipment;
   HeartRateMonitor? _heartRateMonitor;
+  DeviceInternalMotion? _internalMotion;
   TrackCalculator? _trackCalculator;
   PaletteSpec? _paletteSpec;
   double _trackLength = 0; // Just default
@@ -197,6 +194,8 @@ class RecordingState extends State<RecordingScreen> {
   List<MetricSpec> _preferencesSpecs = [];
   List<bool> _extraExpandedState = [];
   final List<ExpandableController> _extraRowControllers = [];
+
+  DbUtils get dbUtils => Get.isRegistered<DbUtils>() ? Get.find<DbUtils>() : DbUtils();
   final List<int> _extraExpandedHeights = [];
 
   Activity? _activity;
@@ -271,6 +270,8 @@ class RecordingState extends State<RecordingScreen> {
   Offset _chartTouchInteractionPosition = const Offset(0, 0);
   int _chartTouchInteractionIndex = -1;
   bool _chartTouchInteractionExtra = false;
+  int? _latestInternalCadence;
+  double? _latestInternalPreciseCadence;
   ThemeManager _themeManager = Get.find<ThemeManager>();
   bool _isLight = true;
   int _lapCount = 0;
@@ -318,13 +319,17 @@ class RecordingState extends State<RecordingScreen> {
         });
       }
 
-      setState(() {
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+        });
+      }
     } else {
-      setState(() {
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+        });
+      }
 
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
@@ -348,8 +353,18 @@ class RecordingState extends State<RecordingScreen> {
   }
 
   Future<void> _recordHandlerFunction(RecordWithSport record) async {
-    if (!_measuring || !(_fitnessEquipment?.measuring ?? false)) {
+    // Allow if measuring AND (FE is measuring OR we are driven by internal cadence)
+    bool drivenByInternal = (_latestInternalCadence ?? 0) > 0;
+    if (!_measuring || (!(_fitnessEquipment?.measuring ?? false) && !drivenByInternal)) {
       return;
+    }
+    if (_internalMotion != null && _latestInternalCadence != null && _latestInternalCadence! > 0) {
+      // Overwrite or supplement cadence
+      // If we pair an internal sensor, we likely want to use it.
+      record.cadence = _latestInternalCadence;
+      if (_latestInternalPreciseCadence != null) {
+        record.preciseCadence = _latestInternalPreciseCadence;
+      }
     }
 
     _sinkSocket?.add(record.binarySerialize());
@@ -363,6 +378,10 @@ class RecordingState extends State<RecordingScreen> {
         _database.writeTxnSync(() {
           _database.records.putSync(record);
         });
+      }
+
+      if (!mounted) {
+        return;
       }
 
       setState(() {
@@ -577,8 +596,20 @@ class RecordingState extends State<RecordingScreen> {
 
     final now = DateTime.now();
     var continued = false;
+    double powerFactor = 1.0;
+    double calorieFactor = 1.0;
+    double hrmCalorieFactor = 1.0;
+    final dbUtils = this.dbUtils;
+
+    if (widget.device.remoteId.str.isNotEmpty) {
+      final factors = await dbUtils.getFactors(widget.device.remoteId.str);
+      powerFactor = factors.item1;
+      calorieFactor = factors.item2;
+      hrmCalorieFactor = factors.item3;
+    }
+
     if (!_uxDebug) {
-      final dbUtils = DbUtils();
+      // dbUtils used from outer scope
       final unfinished = await dbUtils.unfinishedDeviceActivities(widget.device.remoteId.str);
       if (unfinished.isNotEmpty) {
         final yesterday = now.subtract(const Duration(days: 1));
@@ -607,10 +638,10 @@ class RecordingState extends State<RecordingScreen> {
         hrmId: _fitnessEquipment?.heartRateMonitor?.device?.remoteId.str ?? "",
         start: now,
         sport: widget.descriptor.sport,
-        powerFactor: _fitnessEquipment?.powerFactor ?? 1.0,
-        calorieFactor: _fitnessEquipment?.calorieFactor ?? 1.0,
+        powerFactor: powerFactor,
+        calorieFactor: calorieFactor,
         hrCalorieFactor: _fitnessEquipment?.hrCalorieFactor ?? 1.0,
-        hrmCalorieFactor: _fitnessEquipment?.hrmCalorieFactor ?? 1.0,
+        hrmCalorieFactor: hrmCalorieFactor,
         hrBasedCalories: _hrBasedCalorieCounting,
         timeZone: await getTimeZone(),
       );
@@ -785,6 +816,10 @@ class RecordingState extends State<RecordingScreen> {
           _heartRateMonitor?.cancelSubscription();
         }
         _heartRateMonitor?.pumpData((record) async {
+          if (!mounted) {
+            return;
+          }
+
           setState(() {
             if ((_heartRate == null || _heartRate == 0) &&
                 (record.heartRate != null && record.heartRate! > 0)) {
@@ -801,6 +836,49 @@ class RecordingState extends State<RecordingScreen> {
     }
 
     return "";
+  }
+
+  Future<void> _initializeInternalMotion() async {
+    _internalMotion = Get.isRegistered<DeviceInternalMotion>()
+        ? Get.find<DeviceInternalMotion>()
+        : null;
+    if (_internalMotion != null) {
+      await _internalMotion!.connect(); // Should be no-op if already connected
+      await _internalMotion!.discover();
+      await _internalMotion!.attach();
+
+      // Ensure FitnessEquipment has our record handler
+      _startPumpingData();
+
+      _internalMotion!.pumpData((record) {
+        if (mounted) {
+          setState(() {
+            _latestInternalCadence = record.cadence;
+            _latestInternalPreciseCadence = record.preciseCadence;
+          });
+
+          // Pipe the record through FitnessEquipment so it manages the state machine (moving, paused, etc)
+          // and throttling, then calls _recordHandlerFunction.
+          if (_measuring) {
+            _fitnessEquipment?.pumpDataCore(record, false);
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> _onCadencePairing() async {
+    await Get.bottomSheet(
+      const SafeArea(
+        child: Column(
+          children: [Expanded(child: Center(child: CadenceMonitorPairingBottomSheet()))],
+        ),
+      ),
+      isScrollControlled: true,
+      ignoreSafeArea: false,
+      enableDrag: false,
+    );
+    await _initializeInternalMotion();
   }
 
   @override
@@ -1105,8 +1183,7 @@ class RecordingState extends State<RecordingScreen> {
     // 3 slots to match _optionalValues indices: resistance=0, strokeCount=1 (unused, no stats), inclination=2
     _optionalStatistics = [emptyMeasurement, emptyMeasurement, emptyMeasurement];
 
-    final calculateCadences =
-        !_heartRateMonitorWorkout && !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false);
+    final calculateCadences = true;
     _workoutStats = StatisticsAccumulator(
       si: _si,
       sport: widget.sport,
@@ -1192,6 +1269,13 @@ class RecordingState extends State<RecordingScreen> {
     _lightBlue = isLight ? Colors.lightBlueAccent.shade100 : Colors.indigo.shade900;
 
     _initializeHeartRateMonitor(false);
+    // Delay initialization of internal motion to prevent main thread blocking during screen transition
+    // and allow the UI to render the first frame.
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _initializeInternalMotion();
+      }
+    });
     _connectOnDemand();
     _isLocked = false;
     _unlockButtonIndex = 0;
@@ -1339,6 +1423,10 @@ class RecordingState extends State<RecordingScreen> {
         if (_instantExport) {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             await _activityExport();
+            await _initializeHeartRateMonitor(true);
+            await _initializeInternalMotion();
+            // Only do the connection if we are not expecting an instant start,
+            // because in that case the startMeasurement will do it.
           });
         }
       }
@@ -2255,7 +2343,7 @@ class RecordingState extends State<RecordingScreen> {
         if (selection > 0) {
           await _stopMeasurement(false);
           if (selection > 1) {
-            final dbUtils = DbUtils();
+            final dbUtils = this.dbUtils;
             final unfinished = await dbUtils.unfinishedActivities();
             for (final activity in unfinished) {
               await dbUtils.finalizeActivity(activity);
@@ -2306,6 +2394,34 @@ class RecordingState extends State<RecordingScreen> {
     return height;
   }
 
+  void _onTutorial() {
+    final legendList = [
+      const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
+      const Tuple2<IconData, String>(Icons.add_road, "Distance"),
+      const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
+      const Tuple2<IconData, String>(Icons.bolt, "Power (Watts)"),
+      const Tuple2<IconData, String>(Icons.speed, "Speed"),
+      const Tuple2<IconData, String>(Icons.directions_bike, "Bike Cadence"),
+      const Tuple2<IconData, String>(Icons.directions_run, "Running Cadence"),
+      const Tuple2<IconData, String>(Icons.rowing, "Rowing Cadence"),
+      const Tuple2<IconData, String>(Icons.downhill_skiing, "X Train / Ski Cadence"),
+      const Tuple2<IconData, String>(Icons.stairs, "Stair Step / Climb Cadence"),
+      const Tuple2<IconData, String>(Icons.numbers, "Revolutions / steps"),
+      const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
+      const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
+      const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
+      const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
+      const Tuple2<IconData, String>(Icons.build, "Calibration"),
+      const Tuple2<IconData, String>(Icons.favorite, "HR / HRM Pairing"),
+      const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
+      const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
+    ];
+    if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
+      legendList.add(const Tuple2<IconData, String>(Icons.sports_score, "On/Off Stage (Stats)"));
+    }
+    legendDialog(legendList);
+  }
+
   void _onLock() {
     _unlockButtonIndex = _rng.nextInt(_unlockChoices);
     _fabKey.currentState?.close();
@@ -2347,11 +2463,50 @@ class RecordingState extends State<RecordingScreen> {
     String hrmId = await _initializeHeartRateMonitor(true);
     if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
       _activity!.hrmId = hrmId;
-      _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
+      _activity!.hrmCalorieFactor = await dbUtils.calorieFactorValue(hrmId, true);
       _database.writeTxnSync(() {
         _database.activitys.putSync(_activity!);
       });
     }
+  }
+
+  Widget _buildSmallScreenLayout(List<Widget> rows) {
+    // 2x2 Grid: HR, Power, Speed, Cadence
+    // Indices in rows (shifted by 1 for Header):
+    // HR: _hr1Index + 1, Power: _power1Index + 1, Speed: _speed1Index + 1, Cadence: _cadence1Index + 1
+    // Footer: Distance: _distance1Index + 1
+    // Header: Time (rows[0] is HeaderRow, but we might want a simpler one or reuse it)
+
+    // Ensure we have enough rows
+    if (rows.length <= _distance1Index + 1) {
+      return ListView(children: rows); // Fallback
+    }
+
+    final gridChildren = [
+      rows[_hr1Index + 1], // Top-Left
+      rows[_power1Index + 1], // Top-Right
+      rows[_speed1Index + 1], // Bottom-Left
+      rows[_cadence1Index + 1], // Bottom-Right
+    ];
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 40,
+          child: FittedBox(child: rows[0]), // Header, scaled down
+        ),
+        SizedBox(height: 30, child: FittedBox(child: rows[_distance1Index + 1])),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio: 1.3, // Squarish logic
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            children: gridChildren.map((w) => FittedBox(fit: BoxFit.scaleDown, child: w)).toList(),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -2823,182 +2978,20 @@ class RecordingState extends State<RecordingScreen> {
       columnOne.addAll(columnRest);
     }
 
-    final body = _landscape && _twoColumnLayout
-        ? GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: _mediaWidth / _mediaHeight / 2,
-            physics: const NeverScrollableScrollPhysics(),
-            semanticChildCount: 2,
-            children: [
-              ListView(children: columnOne),
-              ListView(children: columnTwo),
-            ],
-          )
-        : ListView(children: columnOne);
-
-    final List<Widget> menuButtons = [];
-    if (_isLocked) {
-      for (var i = 0; i < _unlockChoices; ++i) {
-        final button = i == _unlockButtonIndex
-            ? _themeManager.getGreenFabWKey(Icons.lock_open, () {
-                setState(() {
-                  _isLocked = false;
-                });
-              }, _unlockKeys[i])
-            : _themeManager.getBlueFabWKey(Icons.adjust, null, _unlockKeys[i]);
-        menuButtons.add(button);
-      }
-    } else {
-      menuButtons.addAll([
-        _themeManager.getTutorialFab(() {
-          final legendList = [
-            const Tuple2<IconData, String>(Icons.whatshot, "Calories"),
-            const Tuple2<IconData, String>(Icons.add_road, "Distance"),
-            const Tuple2<IconData, String>(Icons.timer, "Elapsed / moving time"),
-            const Tuple2<IconData, String>(Icons.bolt, "Power (Watts)"),
-            const Tuple2<IconData, String>(Icons.speed, "Speed"),
-            const Tuple2<IconData, String>(Icons.directions_bike, "Bike Cadence"),
-            const Tuple2<IconData, String>(Icons.directions_run, "Running Cadence"),
-            const Tuple2<IconData, String>(Icons.rowing, "Rowing Cadence"),
-            const Tuple2<IconData, String>(Icons.downhill_skiing, "X Train / Ski Cadence"),
-            const Tuple2<IconData, String>(Icons.stairs, "Stair Step / Climb Cadence"),
-            const Tuple2<IconData, String>(Icons.numbers, "Revolutions / steps"),
-            const Tuple2<IconData, String>(Icons.lock_open, "Lock Screen"),
-            const Tuple2<IconData, String>(Icons.cloud_upload, "Upload Workout"),
-            const Tuple2<IconData, String>(Icons.list_alt, "Workout List"),
-            const Tuple2<IconData, String>(Icons.battery_unknown, "Battery & Extras"),
-            const Tuple2<IconData, String>(Icons.build, "Calibration"),
-            const Tuple2<IconData, String>(Icons.favorite, "HR / HRM Pairing"),
-            const Tuple2<IconData, String>(Icons.stop, "Stop Workout"),
-            const Tuple2<IconData, String>(Icons.play_arrow, "Start Workout"),
-          ];
-          if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-            legendList.add(
-              const Tuple2<IconData, String>(Icons.sports_score, "On/Off Stage (Stats)"),
-            );
-          }
-          legendDialog(legendList);
-        }),
-      ]);
-
-      if (_measuring) {
-        menuButtons.add(
-          _themeManager.getGreenFab(Icons.lock_open, () {
-            _unlockButtonIndex = _rng.nextInt(_unlockChoices);
-            _fabKey.currentState?.close();
-            setState(() {
-              _isLocked = true;
-            });
-          }),
-        );
-        if (!_instantOnStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-          menuButtons.add(
-            _themeManager.getBlueFab(Icons.sports_score, () async {
-              setState(() {
-                _onStage = !_onStage;
-                if (!_onStage) {
-                  _statistics[_power0Index] = emptyMeasurement;
-                  _statistics[_speed0Index] = emptyMeasurement;
-                  _statistics[_cadence0Index] = emptyMeasurement;
-                  _statistics[_hr0Index] = emptyMeasurement;
-
-                  if (_showResistanceLevel) {
-                    _optionalStatistics[_resistanceIndex] = emptyMeasurement;
-                  }
-                }
-
-                _workoutStats.reset();
-              });
-            }),
-          );
-        }
-      } else {
-        menuButtons.addAll([
-          _themeManager.getBlueFab(Icons.cloud_upload, () async {
-            await _activityUpload(false);
-          }),
-          _themeManager.getBlueFab(Icons.list_alt, () {
-            Get.to(() => const ActivitiesScreen());
-          }),
-          _themeManager.getBlueFab(Icons.battery_unknown, () async {
-            Get.bottomSheet(
-              const SafeArea(
-                child: Column(
-                  children: [Expanded(child: Center(child: BatteryStatusBottomSheet()))],
-                ),
-              ),
-              isScrollControlled: true,
-              ignoreSafeArea: false,
-              enableDrag: false,
-            );
-          }),
-          _themeManager.getBlueFab(Icons.build, () async {
-            if (!(_fitnessEquipment?.descriptor?.isFitnessMachine ?? false) &&
-                _fitnessEquipment?.descriptor?.fourCC != kayakFirstFourCC) {
-              Get.snackbar("Error", "Not compatible with the calibration method");
-            } else {
-              Get.bottomSheet(
-                SafeArea(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: _fitnessEquipment?.descriptor?.fourCC == kayakFirstFourCC
-                              ? const KayakFirstBottomSheet()
-                              : const SpinDownBottomSheet(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                isScrollControlled: true,
-                ignoreSafeArea: false,
-                isDismissible: false,
-                enableDrag: false,
-              );
-            }
-          }),
-        ]);
-      }
-
-      if (!_heartRateMonitorWorkout &&
-          !(_fitnessEquipment?.descriptor?.isHeartRateMonitor ?? false)) {
-        menuButtons.add(
-          _themeManager.getBlueFab(Icons.favorite, () async {
-            await Get.bottomSheet(
-              const SafeArea(
-                child: Column(
-                  children: [Expanded(child: Center(child: HeartRateMonitorPairingBottomSheet()))],
-                ),
-              ),
-              isScrollControlled: true,
-              ignoreSafeArea: false,
-              isDismissible: false,
-              enableDrag: false,
-            );
-            String hrmId = await _initializeHeartRateMonitor(true);
-            if (hrmId.isNotEmpty && _activity != null && (_activity!.hrmId != hrmId)) {
-              _activity!.hrmId = hrmId;
-              _activity!.hrmCalorieFactor = await DbUtils().calorieFactorValue(hrmId, true);
-              _database.writeTxnSync(() {
-                _database.activitys.putSync(_activity!);
-              });
-            }
-          }),
-        );
-      }
-
-      menuButtons.add(
-        _themeManager.getBlueFab(
-          _busy ? Icons.hourglass_bottom : (_measuring ? Icons.stop : Icons.play_arrow),
-          () async {
-            if (!_busy) {
-              await startStopAction();
-            }
-          },
-        ),
-      );
-    }
+    final body = isSmallScreen(context)
+        ? _buildSmallScreenLayout(rows)
+        : (_landscape && _twoColumnLayout
+              ? GridView.count(
+                  crossAxisCount: 2,
+                  childAspectRatio: _mediaWidth / _mediaHeight / 2,
+                  physics: const NeverScrollableScrollPhysics(),
+                  semanticChildCount: 2,
+                  children: [
+                    ListView(children: columnOne),
+                    ListView(children: columnTwo),
+                  ],
+                )
+              : ListView(children: columnOne));
 
     final actions = [
       IconButton(
@@ -3063,21 +3056,25 @@ class RecordingState extends State<RecordingScreen> {
         child: AbsorbPointer(
           absorbing: _isLocked,
           child: Scaffold(
-            appBar: AppBar(
-              title: TextOneLine(widget.device.nonEmptyName, overflow: TextOverflow.ellipsis),
-              actions: _busy
-                  ? [
-                      HeartbeatProgressIndicator(
-                        child: IconButton(
-                          icon: const Icon(Icons.hourglass_empty),
-                          onPressed: () => {},
-                        ),
-                      ),
-                    ]
-                  : actions,
-            ),
+            appBar: isSmallScreen(context)
+                ? null
+                : AppBar(
+                    title: TextOneLine(widget.device.nonEmptyName, overflow: TextOverflow.ellipsis),
+                    actions: _busy
+                        ? [
+                            HeartbeatProgressIndicator(
+                              child: IconButton(
+                                icon: const Icon(Icons.hourglass_empty),
+                                onPressed: () => {},
+                              ),
+                            ),
+                          ]
+                        : actions,
+                  ),
             body: body,
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            floatingActionButtonLocation: isSmallScreen(context)
+                ? FloatingActionButtonLocation.centerFloat
+                : FloatingActionButtonLocation.centerDocked,
             floatingActionButton: RecordingFabMenu(
               themeManager: _themeManager,
               fabKey: _fabKey,
@@ -3092,8 +3089,19 @@ class RecordingState extends State<RecordingScreen> {
               onStartStop: startStopAction,
               onUpload: () => _activityUpload(false),
               onLock: _onLock,
+              onUnlock: () {
+                _fabKey.currentState?.close();
+                setState(() {
+                  _isLocked = false;
+                });
+              },
               onStage: _handleOnStage,
+              onTutorial: _onTutorial,
               onHrmPairing: _onHrmPairing,
+              onCadencePairing: _onCadencePairing,
+              unlockKeys: _unlockKeys,
+              unlockButtonIndex: _unlockButtonIndex,
+              unlockChoices: _unlockChoices,
             ),
           ),
         ),

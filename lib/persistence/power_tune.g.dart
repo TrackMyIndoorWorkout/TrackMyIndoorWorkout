@@ -49,7 +49,7 @@ const PowerTuneSchema = CollectionSchema(
   getId: _powerTuneGetId,
   getLinks: _powerTuneGetLinks,
   attach: _powerTuneAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _powerTuneEstimateSize(PowerTune object, List<int> offsets, Map<Type, List<int>> allOffsets) {

@@ -1,6 +1,8 @@
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:get/get.dart';
 
 import '../../utils/bluetooth.dart';
+import '../../utils/bluetooth_adapter.dart';
 import '../../utils/logging.dart';
 import '../gatt/ftms.dart';
 import '../metric_descriptors/byte_metric_descriptor.dart';
@@ -210,7 +212,10 @@ abstract class FitnessMachineDescriptor extends DeviceDescriptor {
     int opCode, {
     int? controlInfo,
   }) async {
-    if (!(await isBluetoothOn())) {
+    final ison = Get.isRegistered<BluetoothAdapter>()
+        ? await Get.find<BluetoothAdapter>().isBluetoothOn()
+        : await isBluetoothOn();
+    if (!ison) {
       return;
     }
 

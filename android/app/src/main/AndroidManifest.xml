@@ -17,6 +17,9 @@
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>
+        <intent>
+            <action android:name="com.ailife.betterhealth.GET_DATA_API" />
+        </intent>
     </queries>
 
     <!-- Trying to comply with Android 12+ not needing location permission -->
@@ -31,6 +34,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
     <!-- legacy for Android 9 or lower -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
 
     <!-- Folder and File Pickers -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="23" />
@@ -42,7 +46,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name="io.flutter.embedding.android.FlutterActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
