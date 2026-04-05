@@ -64,26 +64,33 @@ void main() {
 
     test('handles truncated fitness machine features payload without crashing', () async {
       final mockDevice = MockBluetoothDevice();
-      
+
       final mockFtmsService = MockBluetoothService();
-      when(() => mockFtmsService.serviceUuid).thenReturn(Guid('00001826-0000-1000-8000-00805f9b34fb'));
-      
+      when(
+        () => mockFtmsService.serviceUuid,
+      ).thenReturn(Guid('00001826-0000-1000-8000-00805f9b34fb'));
+
       final mockFeatureCharacteristic = MockBluetoothCharacteristic();
-      when(() => mockFeatureCharacteristic.characteristicUuid)
-          .thenReturn(Guid('00002acc-0000-1000-8000-00805f9b34fb'));
-      when(() => mockFeatureCharacteristic.read()).thenAnswer((_) async => [0x01, 0x02]); // Truncated length 2
+      when(
+        () => mockFeatureCharacteristic.characteristicUuid,
+      ).thenReturn(Guid('00002acc-0000-1000-8000-00805f9b34fb'));
+      when(
+        () => mockFeatureCharacteristic.read(),
+      ).thenAnswer((_) async => [0x01, 0x02]); // Truncated length 2
 
       final mockBikeCharacteristic = MockBluetoothCharacteristic();
-      when(() => mockBikeCharacteristic.characteristicUuid)
-          .thenReturn(Guid('00002ad2-0000-1000-8000-00805f9b34fb'));
+      when(
+        () => mockBikeCharacteristic.characteristicUuid,
+      ).thenReturn(Guid('00002ad2-0000-1000-8000-00805f9b34fb'));
       when(() => mockBikeCharacteristic.read()).thenAnswer((_) async => <int>[]);
       when(() => mockBikeCharacteristic.lastValueStream).thenAnswer((_) => Stream.empty());
 
-      when(() => mockFtmsService.characteristics)
-          .thenReturn([mockFeatureCharacteristic, mockBikeCharacteristic]);
+      when(
+        () => mockFtmsService.characteristics,
+      ).thenReturn([mockFeatureCharacteristic, mockBikeCharacteristic]);
 
       final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
-      
+
       stubRemoteId(mockDevice);
       when(
         () => mockDevice.discoverServices(subscribeToServicesChanged: false),
