@@ -13,7 +13,7 @@
 * Feat: configurable pages for very small screens (Full Android Watches / FAW)
 * Feat: checking location permissions and care about GPS on Android 11 (SDK level 30) and earlier devices (Full Android Watches / FAW)
 * Feat: RSC data rule relaxation to allow extra bytes for Stryd
-* Fix: CardioStrong IB50 seems to 1/10th mismeaure distance, fixes #582
+* Fix: CardioStrong IB50 seems to 1/10th mismeaure distance
 * Feat: Add live display of Treadmill Inclination (by David C)
 * Feat: Refactor to handle sentinel values as per the FTMS standard specification (by David C)
 * Fix: Rowing Machine Stroke Rate Spikes (by David C)
