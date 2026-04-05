@@ -62,6 +62,44 @@ void main() {
           characteristicData: manufacturerName.codeUnits,
         );
 
+    test('handles truncated fitness machine features payload without crashing', () async {
+      final mockDevice = MockBluetoothDevice();
+      
+      final mockFtmsService = MockBluetoothService();
+      when(() => mockFtmsService.serviceUuid).thenReturn(Guid('00001826-0000-1000-8000-00805f9b34fb'));
+      
+      final mockFeatureCharacteristic = MockBluetoothCharacteristic();
+      when(() => mockFeatureCharacteristic.characteristicUuid)
+          .thenReturn(Guid('00002acc-0000-1000-8000-00805f9b34fb'));
+      when(() => mockFeatureCharacteristic.read()).thenAnswer((_) async => [0x01, 0x02]); // Truncated length 2
+
+      final mockBikeCharacteristic = MockBluetoothCharacteristic();
+      when(() => mockBikeCharacteristic.characteristicUuid)
+          .thenReturn(Guid('00002ad2-0000-1000-8000-00805f9b34fb'));
+      when(() => mockBikeCharacteristic.read()).thenAnswer((_) async => <int>[]);
+      when(() => mockBikeCharacteristic.lastValueStream).thenAnswer((_) => Stream.empty());
+
+      when(() => mockFtmsService.characteristics)
+          .thenReturn([mockFeatureCharacteristic, mockBikeCharacteristic]);
+
+      final mockDeviceInfoService = createMockDeviceInfoService(manufacturerName: 'FUJIAN YESOUL');
+      
+      stubRemoteId(mockDevice);
+      when(
+        () => mockDevice.discoverServices(subscribeToServicesChanged: false),
+      ).thenAnswer((_) async => [mockFtmsService, mockDeviceInfoService]);
+
+      final deviceDescriptor = DeviceFactory.getYesoulS3();
+      final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
+      equipment.blockManufacturerNameReading = false;
+      equipment.connected = true;
+
+      // The test passes if this does not throw a RangeError
+      expect(await equipment.discover(), true);
+      expect(equipment.readFeatures, 513); // 0x01 + 256 * 0x02 = 1 + 512 = 513
+      expect(equipment.writeFeatures, 0); // Padded with zeros
+    });
+
     test('ignores case in manufacturer check', () async {
       final mockDevice = MockBluetoothDevice();
       final mockFtmsService = createMockFtmsService();

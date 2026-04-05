@@ -681,8 +681,23 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
         return;
       }
 
-      readFeatures = _getLongFromBytes(featureValues, 0);
-      writeFeatures = _getLongFromBytes(featureValues, 4);
+      if (featureValues.length < 8 && logLevel >= logLevelWarning) {
+        Logging().log(
+          logLevel,
+          logLevelWarning,
+          tag,
+          "_readFitnessMachineFeatures",
+          "Malformed fitness machine features: expected at least 8 bytes, got ${featureValues.length}. Padding with zeros.",
+        );
+      }
+
+      final paddedValues = List<int>.from(featureValues);
+      while (paddedValues.length < 8) {
+        paddedValues.add(0);
+      }
+
+      readFeatures = _getLongFromBytes(paddedValues, 0);
+      writeFeatures = _getLongFromBytes(paddedValues, 4);
       _speedLevels = await getWriteSupportParameters(
         writeFeatures,
         speedTargetSettingSupported,
