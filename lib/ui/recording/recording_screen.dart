@@ -319,13 +319,17 @@ class RecordingState extends State<RecordingScreen> {
         });
       }
 
-      setState(() {
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+        });
+      }
     } else {
-      setState(() {
-        _busy = false;
-      });
+      if (mounted) {
+        setState(() {
+          _busy = false;
+        });
+      }
 
       Get.defaultDialog(
         middleText: 'Problem connecting to ${widget.descriptor.fullName}. Aborting...',
@@ -374,6 +378,10 @@ class RecordingState extends State<RecordingScreen> {
         _database.writeTxnSync(() {
           _database.records.putSync(record);
         });
+      }
+
+      if (!mounted) {
+        return;
       }
 
       setState(() {
@@ -808,6 +816,10 @@ class RecordingState extends State<RecordingScreen> {
           _heartRateMonitor?.cancelSubscription();
         }
         _heartRateMonitor?.pumpData((record) async {
+          if (!mounted) {
+            return;
+          }
+
           setState(() {
             if ((_heartRate == null || _heartRate == 0) &&
                 (record.heartRate != null && record.heartRate! > 0)) {
