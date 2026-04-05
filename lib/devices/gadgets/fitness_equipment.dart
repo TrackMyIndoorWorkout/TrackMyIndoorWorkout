@@ -124,6 +124,9 @@ class FitnessEquipment extends DeviceBase with PowerSpeedMixin {
   WriteSupportParameters? _powerLevels;
   bool supportsSpinDown = false;
   bool _blockFTMSFeatureRead = blockFTMSFeatureReadDefault;
+
+  @visibleForTesting
+  set blockFTMSFeatureRead(bool value) => _blockFTMSFeatureRead = value;
   bool blockManufacturerNameReading = blockManufacturerNameReadDefault;
   bool _blockSignalStartStop = blockSignalStartStopDefault;
   bool _enableAsserts = enableAssertsDefault;

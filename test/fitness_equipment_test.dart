@@ -99,6 +99,7 @@ void main() {
       final deviceDescriptor = DeviceFactory.getYesoulS3();
       final equipment = FitnessEquipment(descriptor: deviceDescriptor, device: mockDevice);
       equipment.blockManufacturerNameReading = false;
+      equipment.blockFTMSFeatureRead = false;
       equipment.connected = true;
 
       // The test passes if this does not throw a RangeError
