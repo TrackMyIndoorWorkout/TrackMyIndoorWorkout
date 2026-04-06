@@ -1,9 +1,9 @@
 ## 2.0.163
-* Replace watch icon with access_time_filled
-* Add icons to the legend on the Activity list and the Recording screens
-* Legend dialog screen height adjustment
+* Feat: replace watch icon with access_time_filled
+* Feat: add icons to the legend on the Activity list and the Recording screens
+* Feat: legend dialog screen height adjustment
 * Fix: isar community package transition
-* Fix: Recreate the whole Android platform port to fix compilation (Isar or Flutter sticks to NDK 28.2.13676358)
+* Fix: recreate the whole Android platform port to fix compilation (Isar or Flutter sticks to NDK 28.2.13676358)
 * Chore: Refactor the recording screen into a separate directory, factor the measurmeent row into separate widget
 * Feat: being able to see the measurement graph all the way to 5 minutes
 * Feat: color the measurement icon and unit the same as the value when the row is zone colored to avoid low contrasts
@@ -19,8 +19,8 @@
 * Fix: Rowing Machine Stroke Rate Spikes (by David C)
 * Fix: "Null check operator used on a null value" - possibly because navigating away, one of Stefan Gruber's DebugLog about disconnecting cross trainer
 * Fix: treat fitness machine violating the specification returned a truncated payload for readFeatures, fixes (for Spirit XBR55 of David Offutt)
-* Upgrade Flutter SDK and Dart many times
-* Upgrade numerous plugins many times
+* Chore: Upgrade Flutter SDK and Dart many times
+* Chore: Upgrade numerous plugins many times
 
 ## 2.0.162
 * Bug fix: cadence stats (avg / max) were not displaying during recording
