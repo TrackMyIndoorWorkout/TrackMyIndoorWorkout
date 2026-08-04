@@ -5,11 +5,11 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../utils/constants.dart';
+import '../secure_token_storage.dart';
 import 'constants.dart';
 import 'training_peaks_token.dart';
 
@@ -18,6 +18,7 @@ import 'training_peaks_token.dart';
 ///===========================================
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
+  final SecureTokenStorage _secureTokenStorage = SecureTokenStorage();
 
   String getUrlBase(bool oAuthOrApi) {
     return oAuthOrApi ? tpProductionOAuthUrlBase : tpProductionApiUrlBase;
@@ -52,11 +53,13 @@ mixin Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(String? token, String? refreshToken, int? expire, String? scope) async {
-    final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(trainingPeaksAccessTokenTag, token ?? '');
-    await prefService.set<String>(trainingPeaksRefreshTokenTag, refreshToken ?? '');
-    await prefService.set<int>(trainingPeaksExpiresAtTag, expire ?? 0); // Stored in seconds
-    await prefService.set<String>(trainingPeaksTokenScopeTag, scope ?? '');
+    await _secureTokenStorage.write(trainingPeaksAccessTokenTag, token ?? '');
+    await _secureTokenStorage.write(trainingPeaksRefreshTokenTag, refreshToken ?? '');
+    await _secureTokenStorage.write(
+      trainingPeaksExpiresAtTag,
+      (expire ?? 0).toString(),
+    ); // Stored in seconds
+    await _secureTokenStorage.write(trainingPeaksTokenScopeTag, scope ?? '');
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -71,11 +74,12 @@ mixin Auth {
     debugPrint('Entering _getStoredToken');
 
     try {
-      final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(trainingPeaksAccessTokenTag);
-      localToken.refreshToken = prefService.get<String>(trainingPeaksRefreshTokenTag);
-      localToken.expiresAt = prefService.get<int>(trainingPeaksExpiresAtTag);
-      localToken.scope = prefService.get<String>(trainingPeaksTokenScopeTag);
+      localToken.accessToken = await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
+      localToken.refreshToken = await _secureTokenStorage.read(trainingPeaksRefreshTokenTag);
+      localToken.expiresAt = int.tryParse(
+        await _secureTokenStorage.read(trainingPeaksExpiresAtTag) ?? '',
+      );
+      localToken.scope = await _secureTokenStorage.read(trainingPeaksTokenScopeTag);
 
       // load the data into Get
       await registerToken(
@@ -154,8 +158,7 @@ mixin Auth {
   }
 
   Future<bool> hasValidToken() async {
-    final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(trainingPeaksAccessTokenTag);
+    String? accessToken = await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
