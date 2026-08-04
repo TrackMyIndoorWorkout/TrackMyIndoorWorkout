@@ -76,6 +76,23 @@ void main() {
     },
   );
 
+  test('read treats an empty secure storage value as a cleared token and does not '
+      'migrate a stale legacy value back in', () async {
+    when(() => mockSecureStorage.read(key: testKey)).thenAnswer((_) async => '');
+
+    final result = await secureTokenStorage.read(testKey);
+
+    expect(result, '');
+    verifyNever(() => mockPrefService.get<dynamic>(any()));
+    verifyNever(
+      () => mockSecureStorage.write(
+        key: any(named: 'key'),
+        value: any(named: 'value'),
+      ),
+    );
+    verifyNever(() => mockPrefService.remove(any()));
+  });
+
   test('write stores the value in secure storage only', () async {
     when(() => mockSecureStorage.write(key: testKey, value: 'new-value')).thenAnswer((_) async {});
 

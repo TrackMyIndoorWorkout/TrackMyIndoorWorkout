@@ -22,14 +22,20 @@ class SecureTokenStorage {
 
   /// Read the value stored under [key].
   ///
-  /// Checks secure storage first. If it is empty, falls back to the
-  /// legacy `pref`/`shared_preferences` value (if any), migrating it into
-  /// secure storage and deleting the legacy entry. Returns `null` if no
-  /// value is found in either store.
+  /// Checks secure storage first, treating any stored value - including an
+  /// empty string, which callers use as a "cleared" sentinel - as
+  /// authoritative. Only when nothing has been written to secure storage yet
+  /// does this fall back to the legacy `pref`/`shared_preferences` value (if
+  /// any), migrating it into secure storage and deleting the legacy entry.
+  /// Returns `null` if no value is found in either store.
   Future<String?> read(String key) async {
     final secureValue = await _secureStorage.read(key: key);
-    if (secureValue != null && secureValue.isNotEmpty) {
+    if (secureValue != null) {
       return secureValue;
+    }
+
+    if (!Get.isRegistered<BasePrefService>()) {
+      return null;
     }
 
     final prefService = Get.find<BasePrefService>();

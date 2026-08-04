@@ -29,6 +29,7 @@ class PreferencesHubScreen extends StatefulWidget {
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
+  Map<String, bool> _integrationStates = {};
 
   @override
   void initState() {
@@ -38,6 +39,18 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService(), permanent: true);
     }
+    _loadIntegrationStates();
+  }
+
+  Future<void> _loadIntegrationStates() async {
+    final states = <String, bool>{};
+    for (final portalName in portalNames) {
+      states[portalName] = await UploadService.isIntegrationEnabled(portalName);
+    }
+    if (!mounted) return;
+    setState(() {
+      _integrationStates = states;
+    });
   }
 
   @override
@@ -45,7 +58,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     final keyPart = portalNames
         .asMap()
         .entries
-        .map((e) => UploadService.isIntegrationEnabled(e.value) ? "1" : "0")
+        .map((e) => (_integrationStates[e.value] ?? false) ? "1" : "0")
         .toList()
         .join("_");
     final integrationsKey = "integrations$keyPart";
