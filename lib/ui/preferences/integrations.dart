@@ -32,8 +32,16 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
   void initState() {
     super.initState();
     _largerTextStyle = Get.textTheme.headlineMedium!;
+    _loadIntegrationStates();
+  }
+
+  Future<void> _loadIntegrationStates() async {
     for (final portalName in portalNames) {
-      integrationStates[portalName] = UploadService.isIntegrationEnabled(portalName);
+      final isEnabled = await UploadService.isIntegrationEnabled(portalName);
+      if (!mounted) return;
+      setState(() {
+        integrationStates[portalName] = isEnabled;
+      });
     }
   }
 
@@ -45,7 +53,7 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
 
     UploadService uploadService = UploadService.getInstance(portalName);
     var success = false;
-    if (UploadService.isIntegrationEnabled(portalName)) {
+    if (await UploadService.isIntegrationEnabled(portalName)) {
       final returnCode = await uploadService.logout();
       debugPrint("Logout (deauthorization) return code: $returnCode");
       if (returnCode >= 200 && returnCode < 300) {
@@ -65,9 +73,12 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
     }
 
     if (success) {
-      setState(() {
-        integrationStates[portalName] = UploadService.isIntegrationEnabled(portalName);
-      });
+      final isEnabled = await UploadService.isIntegrationEnabled(portalName);
+      if (mounted) {
+        setState(() {
+          integrationStates[portalName] = isEnabled;
+        });
+      }
     }
 
     return success;

@@ -5,11 +5,11 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../utils/constants.dart';
+import '../secure_token_storage.dart';
 import 'constants.dart';
 import 'under_armour_token.dart';
 
@@ -18,6 +18,7 @@ import 'under_armour_token.dart';
 ///===========================================
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
+  final SecureTokenStorage _secureTokenStorage = SecureTokenStorage();
 
   Future<void> registerToken(String? token, String? refreshToken, int? expire) async {
     if (Get.isRegistered<UnderArmourToken>()) {
@@ -37,10 +38,12 @@ mixin Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(String? token, String? refreshToken, int? expire) async {
-    final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(underArmourAccessTokenTag, token ?? '');
-    await prefService.set<String>(underArmourRefreshTokenTag, refreshToken ?? '');
-    await prefService.set<int>(underArmourExpiresAtTag, expire ?? 0); // Stored in seconds
+    await _secureTokenStorage.write(underArmourAccessTokenTag, token ?? '');
+    await _secureTokenStorage.write(underArmourRefreshTokenTag, refreshToken ?? '');
+    await _secureTokenStorage.write(
+      underArmourExpiresAtTag,
+      (expire ?? 0).toString(),
+    ); // Stored in seconds
     await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
@@ -55,10 +58,11 @@ mixin Auth {
     debugPrint('Entering _getStoredToken');
 
     try {
-      final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(underArmourAccessTokenTag);
-      localToken.refreshToken = prefService.get<String>(underArmourRefreshTokenTag);
-      localToken.expiresAt = prefService.get<int>(underArmourExpiresAtTag);
+      localToken.accessToken = await _secureTokenStorage.read(underArmourAccessTokenTag);
+      localToken.refreshToken = await _secureTokenStorage.read(underArmourRefreshTokenTag);
+      localToken.expiresAt = int.tryParse(
+        await _secureTokenStorage.read(underArmourExpiresAtTag) ?? '',
+      );
 
       // load the data into Get
       await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
@@ -130,8 +134,7 @@ mixin Auth {
   }
 
   Future<bool> hasValidToken() async {
-    final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(underArmourAccessTokenTag);
+    String? accessToken = await _secureTokenStorage.read(underArmourAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }

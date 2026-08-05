@@ -1,12 +1,8 @@
 import "package:flutter/widgets.dart";
 
-class BrandIconData extends IconData {
-  const BrandIconData(super.codePoint) : super(fontFamily: "brands");
-}
-
 class BrandIcons {
-  static const IconData fitbit = BrandIconData(0xe9c7);
-  static const IconData flutter = BrandIconData(0xe9cc);
-  static const IconData garmin = BrandIconData(0xe9d4);
-  static const IconData strava = BrandIconData(0xeb20);
+  static const IconData fitbit = IconData(0xe9c7, fontFamily: "brands");
+  static const IconData flutter = IconData(0xe9cc, fontFamily: "brands");
+  static const IconData garmin = IconData(0xe9d4, fontFamily: "brands");
+  static const IconData strava = IconData(0xeb20, fontFamily: "brands");
 }

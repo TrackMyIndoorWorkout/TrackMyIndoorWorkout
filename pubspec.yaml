@@ -27,6 +27,7 @@ dependencies:
   heart_rate_flutter: ^0.0.3
   flutter_circle_color_picker: ^0.3.0
   flutter_layout_grid: ^2.0.8
+  flutter_secure_storage: ^9.2.4
   flutter_spinbox: ^0.13.1
   flutter_svg: ^2.2.4
   flutter_timezone: ^5.0.2
