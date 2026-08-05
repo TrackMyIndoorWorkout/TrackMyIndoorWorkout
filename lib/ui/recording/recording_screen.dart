@@ -67,6 +67,7 @@ import '../../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../../preferences/workout_mode.dart';
 import '../../track/calculator.dart';
 import '../../track/constants.dart';
+import '../../track/record_processor.dart';
 import '../../track/track_descriptor.dart';
 import '../../utils/bluetooth.dart';
 import '../../utils/constants.dart';
@@ -447,88 +448,45 @@ class RecordingState extends State<RecordingScreen> {
           }
         }
 
-        _distance = record.distance ?? 0.0;
-        if (_displayLapCounter) {
-          _lapCount = (_distance / _trackLength).floor();
-        }
-
-        _elapsed = record.elapsed ?? 0;
-        if (_timeDisplayMode == timeDisplayModeHIITMoving) {
-          if (workoutState == WorkoutState.justPaused ||
-              workoutState == WorkoutState.startedMoving) {
-            _markedTime = _elapsed;
-          }
-
-          if (workoutState != WorkoutState.waitingForFirstMove) {
-            _elapsed -= _markedTime;
-          }
-        }
-
-        _movingTime = record.movingTime.round();
-        if (record.heartRate != null &&
-            (record.heartRate! > 0 || _heartRate == null || _heartRate == 0)) {
-          _heartRate = record.heartRate;
-        }
+        final tickResult = RecordProcessor.process(
+          record: record,
+          workoutState: workoutState,
+          displayLapCounter: _displayLapCounter,
+          trackLength: _trackLength,
+          currentLapCount: _lapCount,
+          timeDisplayMode: _timeDisplayMode,
+          markedTime: _markedTime,
+          currentHeartRate: _heartRate,
+          onStage: _onStage,
+          onStageStatisticsType: _onStageStatisticsType,
+          onStageStatisticsAlternationDuration: _onStageStatisticsAlternationDuration,
+          stationaryWorkout: _stationaryWorkout,
+          showResistanceLevel: _showResistanceLevel,
+          showInclination: _showInclination,
+          si: _si,
+          sport: widget.descriptor.sport,
+          workoutStats: _workoutStats,
+          statistics: _statistics,
+          optionalStatistics: _optionalStatistics,
+          power0Index: _power0Index,
+          speed0Index: _speed0Index,
+          cadence0Index: _cadence0Index,
+          hr0Index: _hr0Index,
+          resistanceIndex: _resistanceIndex,
+          inclinationIndex: _inclinationIndex,
+        );
+        _distance = tickResult.distance;
+        _lapCount = tickResult.lapCount;
+        _elapsed = tickResult.elapsed;
+        _markedTime = tickResult.markedTime;
+        _movingTime = tickResult.movingTime;
+        _heartRate = tickResult.heartRate;
 
         if (_leaderboardFeature || _showPacer) {
           final selfRankTuple = _getSelfRank();
           _selfRank = selfRankTuple.item1;
           _selfAvgSpeed = selfRankTuple.item2;
           _selfRankString = _getSelfRankString();
-        }
-
-        if (_onStage && _onStageStatisticsType != onStageStatisticsTypeNone) {
-          _workoutStats.processRecord(record);
-
-          if (_onStageStatisticsType == onStageStatisticsTypeAverage ||
-              _onStageStatisticsType == onStageStatisticsTypeAlternating &&
-                  _elapsed % (_onStageStatisticsAlternationDuration * 2) <
-                      _onStageStatisticsAlternationDuration) {
-            if (!_stationaryWorkout) {
-              _statistics[_power0Index] = _workoutStats.avgPower.toInt().toString();
-              _statistics[_speed0Index] = speedOrPaceString(
-                _workoutStats.avgSpeed,
-                _si,
-                widget.descriptor.sport,
-                limitSlowSpeed: true,
-              );
-            }
-
-            _statistics[_cadence0Index] = _workoutStats.avgCadence.toInt().toString();
-            _statistics[_hr0Index] = _workoutStats.avgHeartRate.toInt().toString();
-
-            if (_showResistanceLevel) {
-              _optionalStatistics[_resistanceIndex] = _workoutStats.avgResistance
-                  .toInt()
-                  .toString();
-            }
-            if (_showInclination) {
-              _optionalStatistics[_inclinationIndex] = _workoutStats.avgInclination.toStringAsFixed(
-                1,
-              );
-            }
-          } else {
-            if (!_stationaryWorkout) {
-              _statistics[_power0Index] = _workoutStats.maxPowerDisplay.toString();
-              _statistics[_speed0Index] = speedOrPaceString(
-                _workoutStats.maxSpeedDisplay,
-                _si,
-                widget.descriptor.sport,
-                limitSlowSpeed: true,
-              );
-            }
-
-            _statistics[_cadence0Index] = _workoutStats.maxCadenceDisplay.toString();
-            _statistics[_hr0Index] = _workoutStats.maxHeartRateDisplay.toString();
-
-            if (_showResistanceLevel) {
-              _optionalStatistics[_resistanceIndex] = _workoutStats.maxResistanceDisplay.toString();
-            }
-            if (_showInclination) {
-              _optionalStatistics[_inclinationIndex] = _workoutStats.maxInclinationDisplay
-                  .toStringAsFixed(1);
-            }
-          }
         }
 
         _values = [
@@ -2509,9 +2467,9 @@ class RecordingState extends State<RecordingScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final measuredSize = Get.mediaQuery.size;
+  /// Recomputes cached layout metrics (sizes, text styles) derived from the
+  /// current [measuredSize] whenever it changes meaningfully.
+  void _updateLayoutMetrics(Size measuredSize) {
     if (measuredSize.width != _mediaWidth || measuredSize.height != _mediaHeight) {
       _mediaWidth = measuredSize.width;
       _mediaHeight = measuredSize.height;
@@ -2533,7 +2491,11 @@ class RecordingState extends State<RecordingScreen> {
       _unitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 6);
       _fullUnitStyle = _themeManager.getBlueTextStyle(_sizeDefault / 3);
     }
+  }
 
+  /// Plays or stops the target heart rate audio alert based on the latest
+  /// heart rate reading versus the configured target bounds.
+  void _maybeAlertTargetHeartRate() {
     if (_measuring &&
         _targetHrMode != targetHeartRateModeNone &&
         _targetHrAudio &&
@@ -2555,7 +2517,18 @@ class RecordingState extends State<RecordingScreen> {
         _targetHrAlerting = false;
       }
     }
+  }
 
+  /// Computes the moving/elapsed/single time display strings, the current
+  /// [WorkoutState], and the "moving"/"elapsed" column header row.
+  ({
+    String movingTimeDisplay,
+    String elapsedTimeDisplay,
+    String timeDisplay,
+    WorkoutState workoutState,
+    Widget timeHeaderRow,
+  })
+  _buildTimeDisplays() {
     final movingTimeDisplay = _onStageStatisticsType != onStageStatisticsTypeNone
         ? Duration(seconds: _movingTime ~/ 1000).toDisplay()
         : "";
@@ -2583,6 +2556,31 @@ class RecordingState extends State<RecordingScreen> {
           )
         : Container();
 
+    return (
+      movingTimeDisplay: movingTimeDisplay,
+      elapsedTimeDisplay: elapsedTimeDisplay,
+      timeDisplay: timeDisplay,
+      workoutState: workoutState,
+      timeHeaderRow: timeHeaderRow,
+    );
+  }
+
+  /// Builds the measurement row widgets (header row plus one row per
+  /// configured metric), along with the target heart rate state/style and
+  /// the speed row's text style - both of which downstream extras/columns
+  /// need to stay visually consistent with these rows.
+  ({
+    List<Widget> rows,
+    TargetHrState targetHrState,
+    TextStyle targetHrTextStyle,
+    TextStyle? speedTextStyle,
+  })
+  _buildMeasurementRows({
+    required String movingTimeDisplay,
+    required String elapsedTimeDisplay,
+    required String timeDisplay,
+    required WorkoutState workoutState,
+  }) {
     List<Widget> rows = [
       RecordingHeaderRow(
         themeManager: _themeManager,
@@ -2657,6 +2655,17 @@ class RecordingState extends State<RecordingScreen> {
       );
     }
 
+    return (
+      rows: rows,
+      targetHrState: targetHrState,
+      targetHrTextStyle: targetHrTextStyle,
+      speedTextStyle: speedTextStyle,
+    );
+  }
+
+  /// Builds the "current"/"average or maximum" statistics header row shown
+  /// above the on-stage statistics column.
+  Widget _buildStatHeaderRow() {
     final statString =
         ([
               onStageStatisticsTypeAverage,
@@ -2667,7 +2676,7 @@ class RecordingState extends State<RecordingScreen> {
                     _onStageStatisticsAlternationDuration)
         ? "average"
         : "maximum";
-    final statHeaderRow = Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -2678,9 +2687,21 @@ class RecordingState extends State<RecordingScreen> {
         const Spacer(),
       ],
     );
+  }
 
-    var regularExtras = [];
-    var extras = [];
+  /// Builds the expandable "extras" (per-metric charts, plus the optional
+  /// resistance/inclination charts) and the track visualization that gets
+  /// appended to [regularExtras], mirroring the metric rows built by
+  /// [_buildMeasurementRows]. Returns empty lists when the simpler UI is in
+  /// effect, since none of these extras are shown in that mode.
+  ({List<Widget?> regularExtras, List<Widget> extras}) _buildExtrasAndTrack({
+    required Size measuredSize,
+    required TargetHrState targetHrState,
+    required TextStyle targetHrTextStyle,
+    required TextStyle? speedTextStyle,
+  }) {
+    List<Widget?> regularExtras = [];
+    List<Widget> extras = [];
     if (!_simplerUi) {
       if (_showResistanceLevel) {
         extras.add(
@@ -2815,6 +2836,20 @@ class RecordingState extends State<RecordingScreen> {
       }
     }
 
+    return (regularExtras: regularExtras, extras: extras);
+  }
+
+  /// Assembles the two display columns (used side by side in landscape with
+  /// the two-column layout, or stacked into a single column otherwise) from
+  /// the previously built [rows], header rows, and extras.
+  ({List<Widget> columnOne, List<Widget> columnTwo}) _buildColumns({
+    required List<Widget> rows,
+    required Widget timeHeaderRow,
+    required Widget statHeaderRow,
+    required List<Widget> extras,
+    required List<Widget?> regularExtras,
+    required TargetHrState targetHrState,
+  }) {
     List<Widget> columnOne = _onStageStatisticsType != onStageStatisticsTypeNone
         ? [timeHeaderRow]
         : [];
@@ -2902,7 +2937,7 @@ class RecordingState extends State<RecordingScreen> {
             theme: _expandableThemeData,
             header: rows[_power1Index],
             collapsed: Container(),
-            expanded: _simplerUi ? Container() : regularExtras[_powerNIndex],
+            expanded: _simplerUi ? Container() : regularExtras[_powerNIndex]!,
             controller: _rowControllers[_powerNIndex],
           ),
         ),
@@ -2912,7 +2947,7 @@ class RecordingState extends State<RecordingScreen> {
             theme: _expandableThemeData,
             header: rows[_speed1Index],
             collapsed: Container(),
-            expanded: _simplerUi ? Container() : regularExtras[_speedNIndex],
+            expanded: _simplerUi ? Container() : regularExtras[_speedNIndex]!,
             controller: _rowControllers[_speedNIndex],
           ),
         ),
@@ -2926,7 +2961,7 @@ class RecordingState extends State<RecordingScreen> {
           theme: _expandableThemeData,
           header: rows[_cadence1Index],
           collapsed: Container(),
-          expanded: _simplerUi ? Container() : regularExtras[_cadenceNIndex],
+          expanded: _simplerUi ? Container() : regularExtras[_cadenceNIndex]!,
           controller: _rowControllers[_cadenceNIndex],
         ),
       ),
@@ -2936,7 +2971,7 @@ class RecordingState extends State<RecordingScreen> {
           theme: _expandableThemeData,
           header: rows[_hr1Index],
           collapsed: Container(),
-          expanded: _simplerUi ? Container() : regularExtras[_hrNIndex],
+          expanded: _simplerUi ? Container() : regularExtras[_hrNIndex]!,
           controller: _rowControllers[_hrNIndex],
         ),
       ),
@@ -2967,7 +3002,7 @@ class RecordingState extends State<RecordingScreen> {
               theme: _expandableThemeData,
               header: rows[_distance1Index],
               collapsed: Container(),
-              expanded: _simplerUi ? Container() : regularExtras[_distanceNIndex],
+              expanded: _simplerUi ? Container() : regularExtras[_distanceNIndex]!,
               controller: _rowControllers[_distanceNIndex],
             ),
     );
@@ -2978,7 +3013,19 @@ class RecordingState extends State<RecordingScreen> {
       columnOne.addAll(columnRest);
     }
 
-    final body = isSmallScreen(context)
+    return (columnOne: columnOne, columnTwo: columnTwo);
+  }
+
+  /// Builds the scrollable body: a single column on small screens, two
+  /// side-by-side columns in landscape with the two-column layout enabled,
+  /// or a single scrolling column otherwise.
+  Widget _buildBody(
+    BuildContext context,
+    List<Widget> rows,
+    List<Widget> columnOne,
+    List<Widget> columnTwo,
+  ) {
+    return isSmallScreen(context)
         ? _buildSmallScreenLayout(rows)
         : (_landscape && _twoColumnLayout
               ? GridView.count(
@@ -2992,7 +3039,11 @@ class RecordingState extends State<RecordingScreen> {
                   ],
                 )
               : ListView(children: columnOne));
+  }
 
+  /// Builds the app bar's action buttons (play/stop, plus pause when a
+  /// circuit workout is in progress).
+  List<Widget> _buildAppBarActions() {
     final actions = [
       IconButton(
         icon: Icon(_measuring ? Icons.stop : Icons.play_arrow),
@@ -3006,53 +3057,111 @@ class RecordingState extends State<RecordingScreen> {
       actions.insert(0, IconButton(icon: const Icon(Icons.pause), onPressed: () => Get.back()));
     }
 
+    return actions;
+  }
+
+  /// Handles the lock-screen unlock gesture's tap-up: completes the unlock
+  /// sequence if the matching button was tapped twice in a row, otherwise
+  /// resets the in-progress unlock choice.
+  void _handleUnlockTapUp(TapUpDetails details) {
+    if (!_isLocked) return;
+
+    for (var i = 0; i < _unlockChoices; ++i) {
+      if (hitTest(_unlockKeys[i], details.globalPosition)) {
+        if (_unlockKey == i && _unlockKey == _unlockButtonIndex) {
+          _fabKey.currentState?.close();
+          setState(() {
+            _isLocked = false;
+          });
+        } else {
+          _unlockKey = -2;
+        }
+        return;
+      }
+    }
+
+    if (hitTest(_fabKey, details.globalPosition)) {
+      if (_unlockKey == -1 && _fabKey.currentState != null) {
+        if (_fabKey.currentState!.isOpen) {
+          _fabKey.currentState?.close();
+        } else {
+          _fabKey.currentState?.open();
+        }
+      }
+      return;
+    }
+  }
+
+  /// Handles the lock-screen unlock gesture's tap-down: records which
+  /// unlock choice (or the FAB itself) the tap started on.
+  void _handleUnlockTapDown(TapDownDetails details) {
+    if (!_isLocked) return;
+
+    for (var i = 0; i < _unlockChoices; ++i) {
+      if (hitTest(_unlockKeys[i], details.globalPosition)) {
+        _unlockKey = i;
+        return;
+      }
+    }
+
+    if (hitTest(_fabKey, details.globalPosition)) {
+      _unlockKey = -1;
+      return;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final measuredSize = Get.mediaQuery.size;
+    _updateLayoutMetrics(measuredSize);
+    _maybeAlertTargetHeartRate();
+
+    final timeDisplays = _buildTimeDisplays();
+    final workoutState = timeDisplays.workoutState;
+    final timeHeaderRow = timeDisplays.timeHeaderRow;
+
+    final measurementRows = _buildMeasurementRows(
+      movingTimeDisplay: timeDisplays.movingTimeDisplay,
+      elapsedTimeDisplay: timeDisplays.elapsedTimeDisplay,
+      timeDisplay: timeDisplays.timeDisplay,
+      workoutState: workoutState,
+    );
+    List<Widget> rows = measurementRows.rows;
+    final targetHrState = measurementRows.targetHrState;
+    final targetHrTextStyle = measurementRows.targetHrTextStyle;
+    TextStyle? speedTextStyle = measurementRows.speedTextStyle;
+
+    final statHeaderRow = _buildStatHeaderRow();
+
+    final extrasAndTrack = _buildExtrasAndTrack(
+      measuredSize: measuredSize,
+      targetHrState: targetHrState,
+      targetHrTextStyle: targetHrTextStyle,
+      speedTextStyle: speedTextStyle,
+    );
+    var regularExtras = extrasAndTrack.regularExtras;
+    var extras = extrasAndTrack.extras;
+
+    final columns = _buildColumns(
+      rows: rows,
+      timeHeaderRow: timeHeaderRow,
+      statHeaderRow: statHeaderRow,
+      extras: extras,
+      regularExtras: regularExtras,
+      targetHrState: targetHrState,
+    );
+    List<Widget> columnOne = columns.columnOne;
+    List<Widget> columnTwo = columns.columnTwo;
+
+    final body = _buildBody(context, rows, columnOne, columnTwo);
+    final actions = _buildAppBarActions();
+
     return PopScope(
       canPop: !_measuring || _circuitWorkout,
       child: GestureDetector(
         behavior: HitTestBehavior.deferToChild,
-        onTapUp: (details) {
-          if (!_isLocked) return;
-
-          for (var i = 0; i < _unlockChoices; ++i) {
-            if (hitTest(_unlockKeys[i], details.globalPosition)) {
-              if (_unlockKey == i && _unlockKey == _unlockButtonIndex) {
-                _fabKey.currentState?.close();
-                setState(() {
-                  _isLocked = false;
-                });
-              } else {
-                _unlockKey = -2;
-              }
-              return;
-            }
-          }
-
-          if (hitTest(_fabKey, details.globalPosition)) {
-            if (_unlockKey == -1 && _fabKey.currentState != null) {
-              if (_fabKey.currentState!.isOpen) {
-                _fabKey.currentState?.close();
-              } else {
-                _fabKey.currentState?.open();
-              }
-            }
-            return;
-          }
-        },
-        onTapDown: (details) {
-          if (!_isLocked) return;
-
-          for (var i = 0; i < _unlockChoices; ++i) {
-            if (hitTest(_unlockKeys[i], details.globalPosition)) {
-              _unlockKey = i;
-              return;
-            }
-          }
-
-          if (hitTest(_fabKey, details.globalPosition)) {
-            _unlockKey = -1;
-            return;
-          }
-        },
+        onTapUp: _handleUnlockTapUp,
+        onTapDown: _handleUnlockTapDown,
         child: AbsorbPointer(
           absorbing: _isLocked,
           child: Scaffold(
