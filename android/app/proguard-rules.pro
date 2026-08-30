@@ -36,8 +36,8 @@
 -keepclassmembernames class com.mr.flutter.plugin.filepicker.** { *; }
 -keep class com.kineapps.flutterarchive.** { *; }
 -keepclassmembernames class com.kineapps.flutterarchive.** { *; }
--keep class com.lib.flutter_blue_plus.** { *; }
--keepclassmembernames class com.lib.flutter_blue_plus.* { *; }
+-keep class com.jmx.flutter_blue_plus.** { *; }
+-keepclassmembernames class com.jmx.flutter_blue_plus.* { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class net.wolverinebeach.flutter_timezone.** { *; }
