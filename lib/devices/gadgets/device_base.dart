@@ -92,7 +92,7 @@ abstract class DeviceBase {
       if (isInternal) {
         // Internal devices are always connected
       } else {
-        await device?.connect(license: License.free);
+        await device?.connect(license: License.nonprofit);
       }
     } on Exception catch (e) {
       if (e is PlatformException && e.code != 'already_connected') {

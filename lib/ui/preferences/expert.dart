@@ -305,11 +305,11 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
-          final result = await FilePicker.platform.pickFiles();
-          if (result != null && result.files.single.path != null) {
+          final result = await FilePicker.pickFile();
+          if (result != null && result.path != null) {
             Get.snackbar("Import started", "In progress...");
 
-            final zipFilePath = result.files.single.path;
+            final zipFilePath = result.path;
             if (zipFilePath == null) {
               Get.snackbar("Import failed", "No file selected?");
               return;

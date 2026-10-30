@@ -7,7 +7,9 @@ import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/devices/gadgets/fitness_equipment.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
+import 'package:get/get.dart';
 import 'package:track_my_indoor_exercise/persistence/record.dart';
+import 'package:track_my_indoor_exercise/utils/bluetooth_adapter.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 import 'package:track_my_indoor_exercise/utils/init_preferences.dart';
 
@@ -15,9 +17,16 @@ import 'utils.dart';
 
 class MockBluetoothDevice extends Mock implements BluetoothDevice {}
 
+class MockBluetoothAdapter extends Mock implements BluetoothAdapter {}
+
 void main() {
   setUpAll(() async {
     await initPrefServiceForTest();
+    if (!Get.isRegistered<BluetoothAdapter>()) {
+      final mockAdapter = MockBluetoothAdapter();
+      when(() => mockAdapter.isBluetoothOn()).thenAnswer((_) async => true);
+      Get.put<BluetoothAdapter>(mockAdapter);
+    }
   });
 
   test('Riding startWorkout blanks out leftover lastRecord', () async {
