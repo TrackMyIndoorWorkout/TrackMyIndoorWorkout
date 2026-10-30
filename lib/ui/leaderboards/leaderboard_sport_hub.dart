@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/constants.dart';
@@ -40,8 +39,9 @@ class LeaderboardSportHubScreenState extends State<LeaderboardSportHubScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      TextOneLine(
+                      Text(
                         sport,
+                        maxLines: 1,
                         style: _textStyle,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,

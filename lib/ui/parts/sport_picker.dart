@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -62,8 +61,9 @@ class SportPickerBottomSheetState extends State<SportPickerBottomSheet> {
                         getSportIcon(e.value),
                         _largerTextStyle.fontSize!,
                       ),
-                      label: TextOneLine(
+                      label: Text(
                         e.value,
+                        maxLines: 1,
                         style: _sportIndex == e.key ? _selectedTextStyle : _largerTextStyle,
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,

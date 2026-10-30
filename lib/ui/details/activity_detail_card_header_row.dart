@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/widgets.dart';
 
+
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -37,8 +38,9 @@ class ActivityDetailCardHeaderRow extends StatelessWidget {
           themeManager.getBlueIcon(icon, iconSize),
           Text(statName, style: unitStyle),
           const Spacer(),
-          TextOneLine(
+          Text(
             text,
+            maxLines: 1,
             style: textStyle,
             textAlign: TextAlign.left,
             overflow: TextOverflow.ellipsis,

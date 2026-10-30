@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -80,8 +79,9 @@ class CadenceMonitorPairingBottomSheetState extends State<CadenceMonitorPairingB
               children: [
                 ListTile(
                   leading: const Icon(Icons.sensors),
-                  title: TextOneLine(
+                  title: Text(
                     "Internal Motion Sensor",
+                    maxLines: 1,
                     style: _themeManager.boldStyle(_captionStyle, fontSizeFactor: fontSizeFactor),
                   ),
                   subtitle: Text(

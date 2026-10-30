@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
@@ -132,8 +131,9 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
               children: [
                 _heartRateMonitor != null
                     ? ListTile(
-                        title: TextOneLine(
+                        title: Text(
                           _heartRateMonitor?.device?.nonEmptyName ?? emptyMeasurement,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: _themeManager.boldStyle(
                             _captionStyle,

@@ -1,6 +1,7 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/widgets.dart';
 
+
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 
@@ -41,8 +42,9 @@ class ActivityDetailRowBase extends StatelessWidget {
     if (forceOneLine) {
       row.add(
         Expanded(
-          child: TextOneLine(
+          child: Text(
             text,
+            maxLines: 1,
             style: textStyle,
             textAlign: TextAlign.right,
             overflow: TextOverflow.ellipsis,

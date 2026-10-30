@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
@@ -18,7 +17,7 @@ Future<void> legendDialog(List<Tuple2<IconData, String>> legendItems) async {
             .map(
               (i) => ListTile(
                 leading: Icon(i.item1),
-                title: TextOneLine(i.item2, overflow: TextOverflow.ellipsis),
+                title: Text(i.item2, maxLines: 1, overflow: TextOverflow.ellipsis),
               ),
             )
             .toList(growable: false),

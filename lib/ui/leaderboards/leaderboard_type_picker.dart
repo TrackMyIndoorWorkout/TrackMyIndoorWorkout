@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
@@ -65,8 +64,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TextOneLine(
+                  Text(
                     "Sport",
+                    maxLines: 1,
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
@@ -101,8 +101,9 @@ class LeaderBoardTypeBottomSheetState extends State<LeaderBoardTypeBottomSheet> 
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TextOneLine(
+                  Text(
                     "Device",
+                    maxLines: 1,
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,

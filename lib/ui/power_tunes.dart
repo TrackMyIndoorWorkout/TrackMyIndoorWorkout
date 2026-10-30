@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -150,14 +149,16 @@ class PowerTunesScreenState extends State<PowerTunesScreen> with WidgetsBindingO
               theme: _expandableThemeData,
               header: Column(
                 children: [
-                  TextOneLine(
+                  Text(
                     powerTune.mac.shortAddressString(),
+                    maxLines: 1,
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  TextOneLine(
+                  Text(
                     "$powerPercent %",
+                    maxLines: 1,
                     style: _textStyle.apply(fontSizeFactor: 2.0),
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -152,20 +151,23 @@ class DeviceLeaderboardScreenState extends State<DeviceLeaderboardScreen>
                   ),
                   Column(
                     children: [
-                      TextOneLine(
+                      Text(
                         speedString,
+                        maxLines: 1,
                         style: _textStyle2,
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      TextOneLine(
+                      Text(
                         '($distanceString',
+                        maxLines: 1,
                         style: _textStyle,
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      TextOneLine(
+                      Text(
                         ' / $timeDisplay)',
+                        maxLines: 1,
                         style: _textStyle,
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
