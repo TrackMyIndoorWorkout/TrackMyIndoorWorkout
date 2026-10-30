@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
@@ -79,8 +78,9 @@ class ActivityDetailGraphs extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextOneLine(
+          Text(
             tileConfiguration.title,
+            maxLines: 1,
             style: textStyle,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -133,8 +133,9 @@ class ActivityDetailGraphs extends StatelessWidget {
         expanded: Column(
           children: [
             item == "speed" && sport != ActivityType.ride
-                ? TextOneLine(
+                ? Text(
                     "Speed ${si ? 'km' : 'mi'}/h",
+                    maxLines: 1,
                     style: textStyle,
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
@@ -168,8 +169,9 @@ class ActivityDetailGraphs extends StatelessWidget {
               ),
             ),
             const Divider(height: 20, thickness: 2),
-            TextOneLine(
+            Text(
               tileConfiguration.histogramTitle,
+              maxLines: 1,
               style: textStyle,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,

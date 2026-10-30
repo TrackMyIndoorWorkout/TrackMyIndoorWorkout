@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pref/pref.dart';
@@ -49,8 +48,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextOneLine(
+              Text(
                 sport,
+                maxLines: 1,
                 style: _textStyle,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
@@ -89,8 +89,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextOneLine(
+              Text(
                 ZonePalettePreferencesScreen.shortTitle,
+                maxLines: 1,
                 style: _textStyle,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
@@ -109,8 +110,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextOneLine(
+              Text(
                 ColoringByZonePreferencesScreen.shortTitle,
+                maxLines: 1,
                 style: _textStyle,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
@@ -129,8 +131,9 @@ class ZonesHubScreenState extends State<ZonesHubScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextOneLine(
+              Text(
                 ZoneIndexDisplayPreferencesScreen.shortTitle,
+                maxLines: 1,
                 style: _textStyle,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

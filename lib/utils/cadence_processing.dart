@@ -15,7 +15,7 @@ class CadenceProcessor {
   final List<double> _buffer = [];
   final List<int> _timeStamps = [];
 
-  CadenceProcessor({int windowSize = 256}) : _windowSize = windowSize;
+  CadenceProcessor({this._windowSize = 256});
 
   /// Adds a 3D vector (x,y,z) and timestamp (ms) to the buffer.
   /// Returns the estimated cadence (RPM) if a valid estimate is found, or null.

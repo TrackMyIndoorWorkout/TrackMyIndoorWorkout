@@ -15,7 +15,11 @@ Future<String> getTimeZone() async {
     return timeZone;
   }
 
-  return getClosestTimeZone((await FlutterTimezone.getLocalTimezone()).identifier);
+  try {
+    return getClosestTimeZone((await FlutterTimezone.getLocalTimezone()).identifier);
+  } catch (_) {
+    return "America/Los_Angeles";
+  }
 }
 
 int timeZoneOffset(String timeZoneName) {
@@ -41,7 +45,7 @@ String getClosestTimeZone(String timeZoneName) {
       .map(
         (loc) => Tuple2<String, int>(
           loc.key,
-          (loc.value.currentTimeZone.offset ~/ 60000 - timeOffset).abs(),
+          (loc.value.currentTimeZone.offset.inMinutes - timeOffset).abs(),
         ),
       )
       .sortedByCompare((loc) => loc.item2, (int o1, int o2) => o1.compareTo(o2))

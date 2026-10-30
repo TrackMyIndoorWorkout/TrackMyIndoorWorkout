@@ -23,6 +23,7 @@ import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'ui/models/progress_state.dart';
 import 'utils/address_names.dart';
+import 'utils/display.dart';
 import 'utils/init_preferences.dart';
 import 'utils/logging.dart';
 
@@ -30,8 +31,10 @@ void main() async {
   runZonedGuarded<Future<void>>(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      await initWatchInfo();
 
       final byteData = await rootBundle.load('assets/timezones_10y.tzf');
+
       tz.initializeDatabase(byteData.buffer.asUint8List());
 
       final prefService = await initPreferences();

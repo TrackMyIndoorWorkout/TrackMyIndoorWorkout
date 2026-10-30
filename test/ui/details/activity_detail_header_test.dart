@@ -67,7 +67,7 @@ void main() {
     expect(find.byType(FitHorizontally), findsOneWidget);
     expect(find.byIcon(Icons.analytics), findsOneWidget);
     expect(find.text('Statistic'), findsOneWidget);
-    expect(find.byType(TextOneLine), findsOneWidget);
+    expect(find.text('100'), findsOneWidget);
     expect(find.text('km'), findsOneWidget);
   });
 }

@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:fab_circular_menu_plus/fab_circular_menu_plus.dart';
 import 'package:flutter/material.dart';
@@ -3059,7 +3058,7 @@ class RecordingState extends State<RecordingScreen> {
             appBar: isSmallScreen(context)
                 ? null
                 : AppBar(
-                    title: TextOneLine(widget.device.nonEmptyName, overflow: TextOverflow.ellipsis),
+                    title: Text(widget.device.nonEmptyName, maxLines: 1, overflow: TextOverflow.ellipsis),
                     actions: _busy
                         ? [
                             HeartbeatProgressIndicator(

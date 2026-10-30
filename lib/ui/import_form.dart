@@ -77,14 +77,14 @@ class ImportFormState extends State<ImportForm> {
                   suffixIcon: ElevatedButton(
                     child: const Text('⋯', style: TextStyle(fontSize: 30)),
                     onPressed: () async {
-                      final result = await FilePicker.platform.pickFiles(
+                      final result = await FilePicker.pickFile(
                         type: FileType.custom,
                         allowedExtensions: ['csv'],
                       );
-                      if (result != null && result.files.single.path != null) {
-                        _textController.text = result.files.single.path!;
+                      if (result != null && result.path != null) {
+                        _textController.text = result.path!;
                         setState(() {
-                          _filePath = result.files.single.path;
+                          _filePath = result.path;
                         });
                       }
                     },

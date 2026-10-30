@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -146,14 +145,16 @@ class CalorieTunesScreenState extends State<CalorieTunesScreen> with WidgetsBind
               theme: _expandableThemeData,
               header: Column(
                 children: [
-                  TextOneLine(
+                  Text(
                     calorieTune.mac.shortAddressString(),
+                    maxLines: 1,
                     style: _textStyle,
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  TextOneLine(
+                  Text(
                     "$caloriePercent %",
+                    maxLines: 1,
                     style: _textStyle.apply(fontSizeFactor: 2.0),
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.ellipsis,

@@ -7,7 +7,7 @@ part of 'record.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types, experimental_member_use
 
 extension GetRecordCollection on Isar {
   IsarCollection<Record> get records => this.collection();
@@ -17,15 +17,31 @@ const RecordSchema = CollectionSchema(
   name: r'Record',
   id: -5560585825827271694,
   properties: {
-    r'activityId': PropertySchema(id: 0, name: r'activityId', type: IsarType.long),
+    r'activityId': PropertySchema(
+      id: 0,
+      name: r'activityId',
+      type: IsarType.long,
+    ),
     r'cadence': PropertySchema(id: 1, name: r'cadence', type: IsarType.long),
     r'calories': PropertySchema(id: 2, name: r'calories', type: IsarType.long),
-    r'distance': PropertySchema(id: 3, name: r'distance', type: IsarType.double),
+    r'distance': PropertySchema(
+      id: 3,
+      name: r'distance',
+      type: IsarType.double,
+    ),
     r'elapsed': PropertySchema(id: 4, name: r'elapsed', type: IsarType.long),
-    r'heartRate': PropertySchema(id: 5, name: r'heartRate', type: IsarType.long),
+    r'heartRate': PropertySchema(
+      id: 5,
+      name: r'heartRate',
+      type: IsarType.long,
+    ),
     r'power': PropertySchema(id: 6, name: r'power', type: IsarType.long),
     r'speed': PropertySchema(id: 7, name: r'speed', type: IsarType.double),
-    r'timeStamp': PropertySchema(id: 8, name: r'timeStamp', type: IsarType.dateTime),
+    r'timeStamp': PropertySchema(
+      id: 8,
+      name: r'timeStamp',
+      type: IsarType.dateTime,
+    ),
   },
 
   estimateSize: _recordEstimateSize,
@@ -40,7 +56,11 @@ const RecordSchema = CollectionSchema(
       unique: false,
       replace: false,
       properties: [
-        IndexPropertySchema(name: r'timeStamp', type: IndexType.value, caseSensitive: false),
+        IndexPropertySchema(
+          name: r'timeStamp',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
       ],
     ),
   },
@@ -50,10 +70,14 @@ const RecordSchema = CollectionSchema(
   getId: _recordGetId,
   getLinks: _recordGetLinks,
   attach: _recordAttach,
-  version: '3.3.2',
+  version: '3.4.1',
 );
 
-int _recordEstimateSize(Record object, List<int> offsets, Map<Type, List<int>> allOffsets) {
+int _recordEstimateSize(
+  Record object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   var bytesCount = offsets.last;
   return bytesCount;
 }
@@ -147,7 +171,9 @@ extension RecordQueryWhereSort on QueryBuilder<Record, Record, QWhere> {
 
   QueryBuilder<Record, Record, QAfterWhere> anyTimeStamp() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IndexWhereClause.any(indexName: r'timeStamp'));
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'timeStamp'),
+      );
     });
   }
 }
@@ -163,25 +189,43 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
 
-  QueryBuilder<Record, Record, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+  QueryBuilder<Record, Record, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<Record, Record, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
     });
   }
 
@@ -205,7 +249,9 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
 
   QueryBuilder<Record, Record, QAfterWhereClause> timeStampIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'timeStamp', value: [null]));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'timeStamp', value: [null]),
+      );
     });
   }
 
@@ -222,7 +268,9 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampEqualTo(DateTime? timeStamp) {
+  QueryBuilder<Record, Record, QAfterWhereClause> timeStampEqualTo(
+    DateTime? timeStamp,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'timeStamp', value: [timeStamp]),
@@ -230,7 +278,9 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterWhereClause> timeStampNotEqualTo(DateTime? timeStamp) {
+  QueryBuilder<Record, Record, QAfterWhereClause> timeStampNotEqualTo(
+    DateTime? timeStamp,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -325,7 +375,9 @@ extension RecordQueryWhere on QueryBuilder<Record, Record, QWhereClause> {
 }
 
 extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
-  QueryBuilder<Record, Record, QAfterFilterCondition> activityIdEqualTo(int value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> activityIdEqualTo(
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'activityId', value: value),
@@ -339,7 +391,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'activityId', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'activityId',
+          value: value,
+        ),
       );
     });
   }
@@ -350,7 +406,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'activityId', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'activityId',
+          value: value,
+        ),
       );
     });
   }
@@ -376,19 +436,27 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> cadenceIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'cadence'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'cadence'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> cadenceIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'cadence'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'cadence'),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> cadenceEqualTo(int? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> cadenceEqualTo(
+    int? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'cadence', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cadence', value: value),
+      );
     });
   }
 
@@ -398,7 +466,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'cadence', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cadence',
+          value: value,
+        ),
       );
     });
   }
@@ -409,7 +481,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'cadence', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cadence',
+          value: value,
+        ),
       );
     });
   }
@@ -435,19 +511,27 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> caloriesIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'calories'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'calories'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> caloriesIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'calories'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'calories'),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> caloriesEqualTo(int? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> caloriesEqualTo(
+    int? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'calories', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'calories', value: value),
+      );
     });
   }
 
@@ -457,7 +541,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'calories', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'calories',
+          value: value,
+        ),
       );
     });
   }
@@ -468,7 +556,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'calories', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'calories',
+          value: value,
+        ),
       );
     });
   }
@@ -494,13 +586,17 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> distanceIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'distance'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'distance'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> distanceIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'distance'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'distance'),
+      );
     });
   }
 
@@ -510,7 +606,12 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'distance', value: value, epsilon: epsilon),
+        FilterCondition.equalTo(
+          property: r'distance',
+          value: value,
+
+          epsilon: epsilon,
+        ),
       );
     });
   }
@@ -575,19 +676,27 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> elapsedIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'elapsed'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'elapsed'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> elapsedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'elapsed'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'elapsed'),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> elapsedEqualTo(int? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> elapsedEqualTo(
+    int? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'elapsed', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'elapsed', value: value),
+      );
     });
   }
 
@@ -597,7 +706,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'elapsed', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'elapsed',
+          value: value,
+        ),
       );
     });
   }
@@ -608,7 +721,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'elapsed', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'elapsed',
+          value: value,
+        ),
       );
     });
   }
@@ -634,17 +751,23 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> heartRateIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'heartRate'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'heartRate'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> heartRateIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'heartRate'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'heartRate'),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> heartRateEqualTo(int? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> heartRateEqualTo(
+    int? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'heartRate', value: value),
@@ -658,7 +781,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'heartRate', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'heartRate',
+          value: value,
+        ),
       );
     });
   }
@@ -669,7 +796,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'heartRate', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'heartRate',
+          value: value,
+        ),
       );
     });
   }
@@ -695,7 +826,9 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -705,15 +838,26 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'id', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
       );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> idLessThan(Id value, {bool include = false}) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> idLessThan(
+    Id value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'id', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
       );
     });
   }
@@ -739,19 +883,25 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> powerIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'power'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'power'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> powerIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'power'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'power'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> powerEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'power', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'power', value: value),
+      );
     });
   }
 
@@ -761,7 +911,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'power', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'power',
+          value: value,
+        ),
       );
     });
   }
@@ -772,7 +926,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'power', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'power',
+          value: value,
+        ),
       );
     });
   }
@@ -798,13 +956,17 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> speedIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'speed'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'speed'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> speedIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'speed'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'speed'),
+      );
     });
   }
 
@@ -814,7 +976,12 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'speed', value: value, epsilon: epsilon),
+        FilterCondition.equalTo(
+          property: r'speed',
+          value: value,
+
+          epsilon: epsilon,
+        ),
       );
     });
   }
@@ -879,17 +1046,23 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(property: r'timeStamp'));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'timeStamp'),
+      );
     });
   }
 
   QueryBuilder<Record, Record, QAfterFilterCondition> timeStampIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'timeStamp'));
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'timeStamp'),
+      );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> timeStampEqualTo(DateTime? value) {
+  QueryBuilder<Record, Record, QAfterFilterCondition> timeStampEqualTo(
+    DateTime? value,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'timeStamp', value: value),
@@ -903,7 +1076,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'timeStamp', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'timeStamp',
+          value: value,
+        ),
       );
     });
   }
@@ -914,7 +1091,11 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'timeStamp', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'timeStamp',
+          value: value,
+        ),
       );
     });
   }

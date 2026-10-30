@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -93,17 +92,17 @@ void main() {
     expect(find.text('MAX'), findsOneWidget);
     expect(find.text('AVG'), findsOneWidget);
     expect(find.text('MED'), findsOneWidget);
-
-    // Title, Max, Avg, Med, SpeedUnit, SpeedZones are TextOneLine (Total 6)
-    // Note: ExpandablePanel keeps content in tree even when collapsed
-    expect(find.byType(TextOneLine), findsNWidgets(6));
+    expect(find.text('Speed'), findsOneWidget);
+    expect(find.text('30.0'), findsOneWidget);
+    expect(find.text('20.0'), findsOneWidget);
+    expect(find.text('25.0'), findsOneWidget);
 
     // Tap to expand (ensure interactivity works)
     await tester.tap(find.byType(ExpandablePanel));
     await tester.pumpAndSettle();
 
     // Check Expanded Content
-    expect(find.byType(TextOneLine), findsNWidgets(6));
+    expect(find.text('Speed Zones'), findsOneWidget);
     expect(find.byType(SfCartesianChart), findsOneWidget);
     expect(find.byType(SfCircularChart), findsOneWidget);
   });

@@ -1,4 +1,3 @@
-import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -30,8 +29,9 @@ class ConnectedDeviceTile extends StatelessWidget {
     if (device == null) return Container();
 
     return ListTile(
-      title: TextOneLine(
+      title: Text(
         device?.nonEmptyName ?? emptyMeasurement,
+        maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: themeManager.boldStyle(captionStyle, fontSizeFactor: fontSizeFactor),
       ),
