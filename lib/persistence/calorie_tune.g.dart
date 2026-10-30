@@ -7,7 +7,7 @@ part of 'calorie_tune.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types, experimental_member_use
 
 extension GetCalorieTuneCollection on Isar {
   IsarCollection<CalorieTune> get calorieTunes => this.collection();
@@ -17,7 +17,11 @@ const CalorieTuneSchema = CollectionSchema(
   name: r'CalorieTune',
   id: -3959865530402248089,
   properties: {
-    r'calorieFactor': PropertySchema(id: 0, name: r'calorieFactor', type: IsarType.double),
+    r'calorieFactor': PropertySchema(
+      id: 0,
+      name: r'calorieFactor',
+      type: IsarType.double,
+    ),
     r'hrBased': PropertySchema(id: 1, name: r'hrBased', type: IsarType.bool),
     r'mac': PropertySchema(id: 2, name: r'mac', type: IsarType.string),
     r'time': PropertySchema(id: 3, name: r'time', type: IsarType.dateTime),
@@ -34,14 +38,26 @@ const CalorieTuneSchema = CollectionSchema(
       name: r'time',
       unique: false,
       replace: false,
-      properties: [IndexPropertySchema(name: r'time', type: IndexType.value, caseSensitive: false)],
+      properties: [
+        IndexPropertySchema(
+          name: r'time',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
     ),
     r'mac': IndexSchema(
       id: 3561895766210558431,
       name: r'mac',
       unique: false,
       replace: false,
-      properties: [IndexPropertySchema(name: r'mac', type: IndexType.hash, caseSensitive: true)],
+      properties: [
+        IndexPropertySchema(
+          name: r'mac',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+      ],
     ),
   },
   links: {},
@@ -50,7 +66,7 @@ const CalorieTuneSchema = CollectionSchema(
   getId: _calorieTuneGetId,
   getLinks: _calorieTuneGetLinks,
   attach: _calorieTuneAttach,
-  version: '3.3.2',
+  version: '3.4.1',
 );
 
 int _calorieTuneEstimateSize(
@@ -119,11 +135,16 @@ List<IsarLinkBase<dynamic>> _calorieTuneGetLinks(CalorieTune object) {
   return [];
 }
 
-void _calorieTuneAttach(IsarCollection<dynamic> col, Id id, CalorieTune object) {
+void _calorieTuneAttach(
+  IsarCollection<dynamic> col,
+  Id id,
+  CalorieTune object,
+) {
   object.id = id;
 }
 
-extension CalorieTuneQueryWhereSort on QueryBuilder<CalorieTune, CalorieTune, QWhere> {
+extension CalorieTuneQueryWhereSort
+    on QueryBuilder<CalorieTune, CalorieTune, QWhere> {
   QueryBuilder<CalorieTune, CalorieTune, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -132,28 +153,41 @@ extension CalorieTuneQueryWhereSort on QueryBuilder<CalorieTune, CalorieTune, QW
 
   QueryBuilder<CalorieTune, CalorieTune, QAfterWhere> anyTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IndexWhereClause.any(indexName: r'time'));
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'time'),
+      );
     });
   }
 }
 
-extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhereClause> {
+extension CalorieTuneQueryWhere
+    on QueryBuilder<CalorieTune, CalorieTune, QWhereClause> {
   QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> idNotEqualTo(
+    Id id,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
-            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
-            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
@@ -163,7 +197,9 @@ extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
     });
   }
 
@@ -172,7 +208,9 @@ extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
     });
   }
 
@@ -194,13 +232,19 @@ extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhere
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeEqualTo(DateTime time) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeEqualTo(
+    DateTime time,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'time', value: [time]));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'time', value: [time]),
+      );
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeNotEqualTo(DateTime time) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> timeNotEqualTo(
+    DateTime time,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -293,13 +337,19 @@ extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhere
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> macEqualTo(String mac) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> macEqualTo(
+    String mac,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'mac', value: [mac]),
+      );
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> macNotEqualTo(String mac) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterWhereClause> macNotEqualTo(
+    String mac,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -342,19 +392,24 @@ extension CalorieTuneQueryWhere on QueryBuilder<CalorieTune, CalorieTune, QWhere
   }
 }
 
-extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilterCondition> {
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> calorieFactorEqualTo(
-    double value, {
-    double epsilon = Query.epsilon,
-  }) {
+extension CalorieTuneQueryFilter
+    on QueryBuilder<CalorieTune, CalorieTune, QFilterCondition> {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition>
+  calorieFactorEqualTo(double value, {double epsilon = Query.epsilon}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'calorieFactor', value: value, epsilon: epsilon),
+        FilterCondition.equalTo(
+          property: r'calorieFactor',
+          value: value,
+
+          epsilon: epsilon,
+        ),
       );
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> calorieFactorGreaterThan(
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition>
+  calorieFactorGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -372,7 +427,8 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> calorieFactorLessThan(
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition>
+  calorieFactorLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -390,7 +446,8 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> calorieFactorBetween(
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition>
+  calorieFactorBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -412,15 +469,23 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> hrBasedEqualTo(bool value) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> hrBasedEqualTo(
+    bool value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'hrBased', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hrBased', value: value),
+      );
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> idEqualTo(
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -430,7 +495,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'id', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
       );
     });
   }
@@ -441,7 +510,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'id', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
       );
     });
   }
@@ -471,7 +544,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'mac', value: value, caseSensitive: caseSensitive),
+        FilterCondition.equalTo(
+          property: r'mac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
       );
     });
   }
@@ -537,7 +614,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(property: r'mac', value: value, caseSensitive: caseSensitive),
+        FilterCondition.startsWith(
+          property: r'mac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
       );
     });
   }
@@ -548,7 +629,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(property: r'mac', value: value, caseSensitive: caseSensitive),
+        FilterCondition.endsWith(
+          property: r'mac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
       );
     });
   }
@@ -559,7 +644,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(property: r'mac', value: value, caseSensitive: caseSensitive),
+        FilterCondition.contains(
+          property: r'mac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
       );
     });
   }
@@ -570,26 +659,39 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.matches(property: r'mac', wildcard: pattern, caseSensitive: caseSensitive),
+        FilterCondition.matches(
+          property: r'mac',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
       );
     });
   }
 
   QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> macIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'mac', value: ''));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'mac', value: ''),
+      );
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> macIsNotEmpty() {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition>
+  macIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(property: r'mac', value: ''));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'mac', value: ''),
+      );
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeEqualTo(DateTime value) {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterFilterCondition> timeEqualTo(
+    DateTime value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(property: r'time', value: value));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'time', value: value),
+      );
     });
   }
 
@@ -599,7 +701,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(include: include, property: r'time', value: value),
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'time',
+          value: value,
+        ),
       );
     });
   }
@@ -610,7 +716,11 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(include: include, property: r'time', value: value),
+        FilterCondition.lessThan(
+          include: include,
+          property: r'time',
+          value: value,
+        ),
       );
     });
   }
@@ -635,18 +745,22 @@ extension CalorieTuneQueryFilter on QueryBuilder<CalorieTune, CalorieTune, QFilt
   }
 }
 
-extension CalorieTuneQueryObject on QueryBuilder<CalorieTune, CalorieTune, QFilterCondition> {}
+extension CalorieTuneQueryObject
+    on QueryBuilder<CalorieTune, CalorieTune, QFilterCondition> {}
 
-extension CalorieTuneQueryLinks on QueryBuilder<CalorieTune, CalorieTune, QFilterCondition> {}
+extension CalorieTuneQueryLinks
+    on QueryBuilder<CalorieTune, CalorieTune, QFilterCondition> {}
 
-extension CalorieTuneQuerySortBy on QueryBuilder<CalorieTune, CalorieTune, QSortBy> {
+extension CalorieTuneQuerySortBy
+    on QueryBuilder<CalorieTune, CalorieTune, QSortBy> {
   QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> sortByCalorieFactor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'calorieFactor', Sort.asc);
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> sortByCalorieFactorDesc() {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy>
+  sortByCalorieFactorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'calorieFactor', Sort.desc);
     });
@@ -689,14 +803,16 @@ extension CalorieTuneQuerySortBy on QueryBuilder<CalorieTune, CalorieTune, QSort
   }
 }
 
-extension CalorieTuneQuerySortThenBy on QueryBuilder<CalorieTune, CalorieTune, QSortThenBy> {
+extension CalorieTuneQuerySortThenBy
+    on QueryBuilder<CalorieTune, CalorieTune, QSortThenBy> {
   QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> thenByCalorieFactor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'calorieFactor', Sort.asc);
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy> thenByCalorieFactorDesc() {
+  QueryBuilder<CalorieTune, CalorieTune, QAfterSortBy>
+  thenByCalorieFactorDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'calorieFactor', Sort.desc);
     });
@@ -751,7 +867,8 @@ extension CalorieTuneQuerySortThenBy on QueryBuilder<CalorieTune, CalorieTune, Q
   }
 }
 
-extension CalorieTuneQueryWhereDistinct on QueryBuilder<CalorieTune, CalorieTune, QDistinct> {
+extension CalorieTuneQueryWhereDistinct
+    on QueryBuilder<CalorieTune, CalorieTune, QDistinct> {
   QueryBuilder<CalorieTune, CalorieTune, QDistinct> distinctByCalorieFactor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'calorieFactor');
@@ -764,7 +881,9 @@ extension CalorieTuneQueryWhereDistinct on QueryBuilder<CalorieTune, CalorieTune
     });
   }
 
-  QueryBuilder<CalorieTune, CalorieTune, QDistinct> distinctByMac({bool caseSensitive = true}) {
+  QueryBuilder<CalorieTune, CalorieTune, QDistinct> distinctByMac({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'mac', caseSensitive: caseSensitive);
     });
@@ -777,7 +896,8 @@ extension CalorieTuneQueryWhereDistinct on QueryBuilder<CalorieTune, CalorieTune
   }
 }
 
-extension CalorieTuneQueryProperty on QueryBuilder<CalorieTune, CalorieTune, QQueryProperty> {
+extension CalorieTuneQueryProperty
+    on QueryBuilder<CalorieTune, CalorieTune, QQueryProperty> {
   QueryBuilder<CalorieTune, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
