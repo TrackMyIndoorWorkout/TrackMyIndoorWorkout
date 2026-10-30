@@ -150,4 +150,41 @@ void main() {
     expect((paddingWidget.padding as EdgeInsets).left, 20.0);
     expect((paddingWidget.padding as EdgeInsets).right, 20.0);
   });
+
+  testWidgets('isSmallScreen detects split screen on phones and returns false', (tester) async {
+    // Simulate split screen: physical size is 360x640 (Logical) but app window is 360x300.
+    // Flutter's View.of(context).physicalSize reflects the physicalSize set via tester.view.physicalSize.
+    // The MediaQuery.of(context).size will be based on the MediaQuery widget we wrap or the widget tree constraints.
+    tester.view.physicalSize = const Size(360, 640);
+    tester.view.devicePixelRatio = 1.0;
+
+    await tester.pumpWidget(
+      PrefService(
+        service: mockPrefs,
+        child: Builder(
+          builder: (context) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(size: const Size(360, 300)),
+              child: Builder(
+                builder: (innerContext) {
+                  return Center(
+                    child: SizedBox(
+                      key: const Key('subject'),
+                      width: isSmallScreen(innerContext) ? 100 : 200,
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    // Because screen size (360x640) differs from window size (360x300) by more than 150 logical pixels,
+    // isSmallScreen should return false, so width should be 200.0.
+    final size = tester.getSize(find.byKey(const Key('subject')));
+    expect(size.width, 200.0);
+  });
 }
+

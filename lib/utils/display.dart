@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:math';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import '../preferences/speed_spec.dart';
@@ -6,8 +8,47 @@ import '../preferences/sport_spec.dart';
 import '../preferences/small_screen.dart';
 import 'constants.dart';
 
+bool isWatch = false;
+
+Future<void> initWatchInfo() async {
+  if (Platform.isAndroid) {
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      isWatch = androidInfo.systemFeatures.contains('android.hardware.type.watch');
+    } catch (_) {
+      isWatch = false;
+    }
+  } else {
+    isWatch = false;
+  }
+}
+
 bool isSmallScreen(BuildContext context) {
+  // If not on a watch (and not in a test environment), it is not a small screen.
+  final isTest = Platform.environment.containsKey('FLUTTER_TEST');
+  if (!isWatch && !isTest) {
+    return false;
+  }
+
   final size = MediaQuery.of(context).size;
+
+  // Detect split-screen mode on phones/tablets.
+  // If the app window is significantly smaller than the physical screen size,
+  // we treat it as split-screen and do not apply small screen (watch) overrides.
+  try {
+    final view = View.of(context);
+    final screenWidth = view.physicalSize.width / view.devicePixelRatio;
+    final screenHeight = view.physicalSize.height / view.devicePixelRatio;
+    final isSplitScreen = (screenWidth - size.width).abs() > 150.0 ||
+        (screenHeight - size.height).abs() > 150.0;
+    if (isSplitScreen) {
+      return false;
+    }
+  } catch (_) {
+    // Fallback if View.of(context) is not available
+  }
+
   final threshold =
       PrefService.of(context).get<double>(smallScreenThresholdTag) ?? smallScreenThresholdDefault;
   final aspectRatio = size.longestSide / size.shortestSide;
@@ -19,6 +60,9 @@ bool isSmallScreen(BuildContext context) {
       smallScreenSquareThresholdDefault;
   return size.longestSide <= threshold || (isSquare && size.longestSide <= squareThreshold);
 }
+
+
+
 
 double smallScreenPaddingTop(BuildContext context) {
   final pref =
