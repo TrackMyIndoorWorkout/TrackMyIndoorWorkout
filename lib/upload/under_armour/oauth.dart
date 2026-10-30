@@ -18,7 +18,7 @@ import 'under_armour_token.dart';
 ///===========================================
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
-  final SecureTokenStorage _secureTokenStorage = SecureTokenStorage();
+  SecureTokenStorage get _secureTokenStorage => SecureTokenStorage.resolve();
 
   Future<void> registerToken(String? token, String? refreshToken, int? expire) async {
     if (Get.isRegistered<UnderArmourToken>()) {
@@ -38,11 +38,11 @@ mixin Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(String? token, String? refreshToken, int? expire) async {
-    await _secureTokenStorage.write(underArmourAccessTokenTag, token ?? '');
-    await _secureTokenStorage.write(underArmourRefreshTokenTag, refreshToken ?? '');
-    await _secureTokenStorage.write(
+    await _secureTokenStorage.writeOrDelete(underArmourAccessTokenTag, token);
+    await _secureTokenStorage.writeOrDelete(underArmourRefreshTokenTag, refreshToken);
+    await _secureTokenStorage.writeOrDelete(
       underArmourExpiresAtTag,
-      (expire ?? 0).toString(),
+      expire != null && expire > 0 ? expire.toString() : null,
     ); // Stored in seconds
     await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
@@ -53,12 +53,13 @@ mixin Auth {
   /// And refreshToken as well
   /// Stored them in Get UnderArmourToken
   ///
-  Future<UnderArmourToken> _getStoredToken() async {
+  Future<UnderArmourToken> _getStoredToken({String? preloadedAccessToken}) async {
     var localToken = UnderArmourToken();
     debugPrint('Entering _getStoredToken');
 
     try {
-      localToken.accessToken = await _secureTokenStorage.read(underArmourAccessTokenTag);
+      localToken.accessToken =
+          preloadedAccessToken ?? await _secureTokenStorage.read(underArmourAccessTokenTag);
       localToken.refreshToken = await _secureTokenStorage.read(underArmourRefreshTokenTag);
       localToken.expiresAt = int.tryParse(
         await _secureTokenStorage.read(underArmourExpiresAtTag) ?? '',
@@ -134,13 +135,13 @@ mixin Auth {
   }
 
   Future<bool> hasValidToken() async {
-    String? accessToken = await _secureTokenStorage.read(underArmourAccessTokenTag);
+    final String? accessToken = await _secureTokenStorage.read(underArmourAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
-    final UnderArmourToken tokenStored = await _getStoredToken();
-    accessToken = tokenStored.accessToken;
-    return (accessToken?.length ?? 0) > 0;
+    final UnderArmourToken tokenStored = await _getStoredToken(preloadedAccessToken: accessToken);
+    final resolvedToken = tokenStored.accessToken;
+    return resolvedToken != null && resolvedToken.isNotEmpty && resolvedToken != "null";
   }
 
   /// Do Under Armour Authentication.

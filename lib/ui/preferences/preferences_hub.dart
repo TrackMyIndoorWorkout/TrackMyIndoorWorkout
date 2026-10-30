@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../upload/constants.dart';
-import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'athlete.dart';
@@ -29,7 +27,6 @@ class PreferencesHubScreen extends StatefulWidget {
 class PreferencesHubScreenState extends State<PreferencesHubScreen> {
   double _sizeDefault = 10.0;
   TextStyle _textStyle = const TextStyle();
-  Map<String, bool> _integrationStates = {};
 
   @override
   void initState() {
@@ -39,29 +36,10 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
     if (!Get.isRegistered<SoundService>()) {
       Get.put<SoundService>(SoundService(), permanent: true);
     }
-    _loadIntegrationStates();
-  }
-
-  Future<void> _loadIntegrationStates() async {
-    final states = <String, bool>{};
-    for (final portalName in portalNames) {
-      states[portalName] = await UploadService.isIntegrationEnabled(portalName);
-    }
-    if (!mounted) return;
-    setState(() {
-      _integrationStates = states;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final keyPart = portalNames
-        .asMap()
-        .entries
-        .map((e) => (_integrationStates[e.value] ?? false) ? "1" : "0")
-        .toList()
-        .join("_");
-    final integrationsKey = "integrations$keyPart";
     final List<Tuple2<String, Function>> screenConfigs = [
       Tuple2(
         UserExperiencePreferencesScreen.shortTitle,
@@ -75,10 +53,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
       Tuple2(AthletePreferencesScreen.shortTitle, () => const AthletePreferencesScreen()),
       Tuple2(EquipmentPreferencesScreen.shortTitle, () => const EquipmentPreferencesScreen()),
       Tuple2(WorkoutPreferencesScreen.shortTitle, () => const WorkoutPreferencesScreen()),
-      Tuple2(
-        IntegrationPreferencesScreen.shortTitle,
-        () => IntegrationPreferencesScreen(key: Key(integrationsKey)),
-      ),
+      Tuple2(IntegrationPreferencesScreen.shortTitle, () => const IntegrationPreferencesScreen()),
       Tuple2(ExpertPreferencesScreen.shortTitle, () => const ExpertPreferencesScreen()),
     ];
 

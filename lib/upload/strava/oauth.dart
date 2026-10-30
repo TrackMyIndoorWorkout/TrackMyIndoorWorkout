@@ -21,7 +21,7 @@ import 'strava_token.dart';
 ///===========================================
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
-  final SecureTokenStorage _secureTokenStorage = SecureTokenStorage();
+  SecureTokenStorage get _secureTokenStorage => SecureTokenStorage.resolve();
 
   Future<void> registerToken(
     String? token,
@@ -52,13 +52,13 @@ mixin Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(String? token, String? refreshToken, int? expire, String? scope) async {
-    await _secureTokenStorage.write(stravaAccessTokenTag, token ?? '');
-    await _secureTokenStorage.write(stravaRefreshTokenTag, refreshToken ?? '');
-    await _secureTokenStorage.write(
+    await _secureTokenStorage.writeOrDelete(stravaAccessTokenTag, token);
+    await _secureTokenStorage.writeOrDelete(stravaRefreshTokenTag, refreshToken);
+    await _secureTokenStorage.writeOrDelete(
       stravaExpiresAtTag,
-      (expire ?? 0).toString(),
+      expire != null && expire > 0 ? expire.toString() : null,
     ); // Stored in seconds
-    await _secureTokenStorage.write(stravaTokenScopeTag, scope ?? '');
+    await _secureTokenStorage.writeOrDelete(stravaTokenScopeTag, scope);
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -68,12 +68,13 @@ mixin Auth {
   /// And refreshToken as well
   /// Stored them in Get StravaToken
   ///
-  Future<StravaToken> _getStoredToken() async {
+  Future<StravaToken> _getStoredToken({String? preloadedAccessToken}) async {
     var localToken = StravaToken();
     debugPrint('Entering _getStoredToken');
 
     try {
-      localToken.accessToken = await _secureTokenStorage.read(stravaAccessTokenTag);
+      localToken.accessToken =
+          preloadedAccessToken ?? await _secureTokenStorage.read(stravaAccessTokenTag);
       localToken.refreshToken = await _secureTokenStorage.read(stravaRefreshTokenTag);
       localToken.expiresAt = int.tryParse(await _secureTokenStorage.read(stravaExpiresAtTag) ?? '');
       localToken.scope = await _secureTokenStorage.read(stravaTokenScopeTag);
@@ -201,13 +202,13 @@ mixin Auth {
   }
 
   Future<bool> hasValidToken() async {
-    String? accessToken = await _secureTokenStorage.read(stravaAccessTokenTag);
+    final String? accessToken = await _secureTokenStorage.read(stravaAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
-    final StravaToken tokenStored = await _getStoredToken();
-    accessToken = tokenStored.accessToken;
-    return (accessToken?.length ?? 0) > 0;
+    final StravaToken tokenStored = await _getStoredToken(preloadedAccessToken: accessToken);
+    final resolvedToken = tokenStored.accessToken;
+    return resolvedToken != null && resolvedToken.isNotEmpty && resolvedToken != "null";
   }
 
   /// Do Strava Authentication.

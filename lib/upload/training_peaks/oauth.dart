@@ -18,7 +18,7 @@ import 'training_peaks_token.dart';
 ///===========================================
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
-  final SecureTokenStorage _secureTokenStorage = SecureTokenStorage();
+  SecureTokenStorage get _secureTokenStorage => SecureTokenStorage.resolve();
 
   String getUrlBase(bool oAuthOrApi) {
     return oAuthOrApi ? tpProductionOAuthUrlBase : tpProductionApiUrlBase;
@@ -53,13 +53,13 @@ mixin Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(String? token, String? refreshToken, int? expire, String? scope) async {
-    await _secureTokenStorage.write(trainingPeaksAccessTokenTag, token ?? '');
-    await _secureTokenStorage.write(trainingPeaksRefreshTokenTag, refreshToken ?? '');
-    await _secureTokenStorage.write(
+    await _secureTokenStorage.writeOrDelete(trainingPeaksAccessTokenTag, token);
+    await _secureTokenStorage.writeOrDelete(trainingPeaksRefreshTokenTag, refreshToken);
+    await _secureTokenStorage.writeOrDelete(
       trainingPeaksExpiresAtTag,
-      (expire ?? 0).toString(),
+      expire != null && expire > 0 ? expire.toString() : null,
     ); // Stored in seconds
-    await _secureTokenStorage.write(trainingPeaksTokenScopeTag, scope ?? '');
+    await _secureTokenStorage.writeOrDelete(trainingPeaksTokenScopeTag, scope);
     await registerToken(token, refreshToken, expire, scope);
     debugPrint('token saved!!!');
   }
@@ -69,12 +69,13 @@ mixin Auth {
   /// And refreshToken as well
   /// Stored them in Get TrainingPeaksToken
   ///
-  Future<TrainingPeaksToken> _getStoredToken() async {
+  Future<TrainingPeaksToken> _getStoredToken({String? preloadedAccessToken}) async {
     var localToken = TrainingPeaksToken();
     debugPrint('Entering _getStoredToken');
 
     try {
-      localToken.accessToken = await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
+      localToken.accessToken =
+          preloadedAccessToken ?? await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
       localToken.refreshToken = await _secureTokenStorage.read(trainingPeaksRefreshTokenTag);
       localToken.expiresAt = int.tryParse(
         await _secureTokenStorage.read(trainingPeaksExpiresAtTag) ?? '',
@@ -158,13 +159,13 @@ mixin Auth {
   }
 
   Future<bool> hasValidToken() async {
-    String? accessToken = await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
+    final String? accessToken = await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
-    final TrainingPeaksToken tokenStored = await _getStoredToken();
-    accessToken = tokenStored.accessToken;
-    return (accessToken?.length ?? 0) > 0;
+    final TrainingPeaksToken tokenStored = await _getStoredToken(preloadedAccessToken: accessToken);
+    final resolvedToken = tokenStored.accessToken;
+    return resolvedToken != null && resolvedToken.isNotEmpty && resolvedToken != "null";
   }
 
   /// Do Training Peaks Authentication.
