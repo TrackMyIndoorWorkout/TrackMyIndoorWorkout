@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
@@ -103,15 +102,19 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
             widget.prefService.get<bool>(showPerformanceOverlayTag) ??
             showPerformanceOverlayDefault,
         color: _themeManager!.getHeaderColor(),
-        theme: FlexThemeData.light(
-          scheme: FlexScheme.indigoM3,
+        theme: ThemeData(
           useMaterial3: true,
-          swapLegacyOnMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigo,
+            brightness: Brightness.light,
+          ),
         ),
-        darkTheme: FlexThemeData.dark(
-          scheme: FlexScheme.indigoM3,
+        darkTheme: ThemeData(
           useMaterial3: true,
-          swapLegacyOnMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigo,
+            brightness: Brightness.dark,
+          ),
         ),
         themeMode: _themeManager!.getThemeMode(),
         home: const FindDevicesScreen(),
