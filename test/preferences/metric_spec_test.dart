@@ -121,8 +121,7 @@ void main() {
       expect(
         spec.plotBands,
         isEmpty,
-        reason:
-            'plotBands should be empty when maxVal is Infinite (sanitized to 0, causing zero range)',
+        reason: 'plotBands should be empty when maxVal is Infinite (sanitized to 0, causing zero range)',
       );
     });
 

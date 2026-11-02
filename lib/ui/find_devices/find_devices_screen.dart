@@ -20,9 +20,8 @@ class FindDevicesScreen extends StatelessWidget {
         controller.updateLayout(Get.mediaQuery.size);
 
         final captionStyle = Theme.of(context).textTheme.bodySmall!;
-        final subtitleStyle = Theme.of(
-          context,
-        ).textTheme.bodyMedium!.copyWith(color: controller.themeManager.getGreyColor());
+        final subtitleStyle = Theme.of(context).textTheme.bodyMedium!
+            .copyWith(color: controller.themeManager.getGreyColor());
 
         return Scaffold(
           appBar: AppBar(

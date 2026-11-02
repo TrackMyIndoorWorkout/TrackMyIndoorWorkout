@@ -274,8 +274,7 @@ class HeartRateMonitorPairingBottomSheetState extends State<HeartRateMonitorPair
                                             child: Center(
                                               child: BooleanQuestionBottomSheet(
                                                 title: "You are connected to a HRM right now",
-                                                content:
-                                                    "Disconnect from that HRM to connect the selected one?",
+                                                content: "Disconnect from that HRM to connect the selected one?",
                                               ),
                                             ),
                                           ),

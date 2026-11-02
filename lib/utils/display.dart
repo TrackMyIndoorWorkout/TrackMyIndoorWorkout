@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:math';
+
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+
 import '../preferences/speed_spec.dart';
 import '../preferences/sport_spec.dart';
 import '../preferences/small_screen.dart';
@@ -40,8 +42,8 @@ bool isSmallScreen(BuildContext context) {
     final view = View.of(context);
     final screenWidth = view.physicalSize.width / view.devicePixelRatio;
     final screenHeight = view.physicalSize.height / view.devicePixelRatio;
-    final isSplitScreen = (screenWidth - size.width).abs() > 150.0 ||
-        (screenHeight - size.height).abs() > 150.0;
+    final isSplitScreen =
+        (screenWidth - size.width).abs() > 150.0 || (screenHeight - size.height).abs() > 150.0;
     if (isSplitScreen) {
       return false;
     }
@@ -60,9 +62,6 @@ bool isSmallScreen(BuildContext context) {
       smallScreenSquareThresholdDefault;
   return size.longestSide <= threshold || (isSquare && size.longestSide <= squareThreshold);
 }
-
-
-
 
 double smallScreenPaddingTop(BuildContext context) {
   final pref =

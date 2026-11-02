@@ -2322,8 +2322,7 @@ class RecordingState extends State<RecordingScreen> {
                 Expanded(
                   child: Center(
                     child: ThreeChoicesBottomSheet(
-                      title:
-                          "Circuit workout in progress, use pause to move to a new machine without stopping the workout",
+                      title: "Circuit workout in progress, use pause to move to a new machine without stopping the workout",
                       verticalActions: true,
                       firstChoice: "Continue workout",
                       secondChoice: "Finish on THIS machine for good",
@@ -3058,7 +3057,11 @@ class RecordingState extends State<RecordingScreen> {
             appBar: isSmallScreen(context)
                 ? null
                 : AppBar(
-                    title: Text(widget.device.nonEmptyName, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    title: Text(
+                      widget.device.nonEmptyName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     actions: _busy
                         ? [
                             HeartbeatProgressIndicator(

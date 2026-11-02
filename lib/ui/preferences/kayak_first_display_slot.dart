@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_ui/material_ui.dart' as modern show DropdownMenuItem;
 import 'package:pref/pref.dart';
+
 import '../../preferences/kayak_first_display_configuration.dart';
 
 List<DropdownMenuItem<int>> getKayakFirstDisplayChoices() {

@@ -18,11 +18,7 @@ const PowerTuneSchema = CollectionSchema(
   id: -53467010452562818,
   properties: {
     r'mac': PropertySchema(id: 0, name: r'mac', type: IsarType.string),
-    r'powerFactor': PropertySchema(
-      id: 1,
-      name: r'powerFactor',
-      type: IsarType.double,
-    ),
+    r'powerFactor': PropertySchema(id: 1, name: r'powerFactor', type: IsarType.double),
     r'time': PropertySchema(id: 2, name: r'time', type: IsarType.dateTime),
   },
 
@@ -37,26 +33,14 @@ const PowerTuneSchema = CollectionSchema(
       name: r'time',
       unique: false,
       replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'time',
-          type: IndexType.value,
-          caseSensitive: false,
-        ),
-      ],
+      properties: [IndexPropertySchema(name: r'time', type: IndexType.value, caseSensitive: false)],
     ),
     r'mac': IndexSchema(
       id: 3561895766210558431,
       name: r'mac',
       unique: false,
       replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'mac',
-          type: IndexType.hash,
-          caseSensitive: true,
-        ),
-      ],
+      properties: [IndexPropertySchema(name: r'mac', type: IndexType.hash, caseSensitive: true)],
     ),
   },
   links: {},
@@ -68,11 +52,7 @@ const PowerTuneSchema = CollectionSchema(
   version: '3.4.1',
 );
 
-int _powerTuneEstimateSize(
-  PowerTune object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _powerTuneEstimateSize(PowerTune object, List<int> offsets, Map<Type, List<int>> allOffsets) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.mac.length * 3;
   return bytesCount;
@@ -134,8 +114,7 @@ void _powerTuneAttach(IsarCollection<dynamic> col, Id id, PowerTune object) {
   object.id = id;
 }
 
-extension PowerTuneQueryWhereSort
-    on QueryBuilder<PowerTune, PowerTune, QWhere> {
+extension PowerTuneQueryWhereSort on QueryBuilder<PowerTune, PowerTune, QWhere> {
   QueryBuilder<PowerTune, PowerTune, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -144,15 +123,12 @@ extension PowerTuneQueryWhereSort
 
   QueryBuilder<PowerTune, PowerTune, QAfterWhere> anyTime() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'time'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'time'));
     });
   }
 }
 
-extension PowerTuneQueryWhere
-    on QueryBuilder<PowerTune, PowerTune, QWhereClause> {
+extension PowerTuneQueryWhere on QueryBuilder<PowerTune, PowerTune, QWhereClause> {
   QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
@@ -163,20 +139,12 @@ extension PowerTuneQueryWhere
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
       } else {
         return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
       }
     });
   }
@@ -186,20 +154,13 @@ extension PowerTuneQueryWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
+      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> idLessThan(
-    Id id, {
-    bool include = false,
-  }) {
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
+      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
     });
   }
 
@@ -221,19 +182,13 @@ extension PowerTuneQueryWhere
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeEqualTo(
-    DateTime time,
-  ) {
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeEqualTo(DateTime time) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'time', value: [time]),
-      );
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'time', value: [time]));
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeNotEqualTo(
-    DateTime time,
-  ) {
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> timeNotEqualTo(DateTime time) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -328,15 +283,11 @@ extension PowerTuneQueryWhere
 
   QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macEqualTo(String mac) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'mac', value: [mac]),
-      );
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'mac', value: [mac]));
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macNotEqualTo(
-    String mac,
-  ) {
+  QueryBuilder<PowerTune, PowerTune, QAfterWhereClause> macNotEqualTo(String mac) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -379,15 +330,10 @@ extension PowerTuneQueryWhere
   }
 }
 
-extension PowerTuneQueryFilter
-    on QueryBuilder<PowerTune, PowerTune, QFilterCondition> {
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> idEqualTo(
-    Id value,
-  ) {
+extension PowerTuneQueryFilter on QueryBuilder<PowerTune, PowerTune, QFilterCondition> {
+  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'id', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
     });
   }
 
@@ -397,11 +343,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'id',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'id', value: value),
       );
     });
   }
@@ -412,11 +354,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'id',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'id', value: value),
       );
     });
   }
@@ -446,11 +384,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'mac',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'mac', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -516,11 +450,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'mac',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'mac', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -531,11 +461,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'mac',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'mac', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -546,11 +472,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'mac',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'mac', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -561,28 +483,20 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'mac',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.matches(property: r'mac', wildcard: pattern, caseSensitive: caseSensitive),
       );
     });
   }
 
   QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> macIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'mac', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'mac', value: ''));
     });
   }
 
   QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> macIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'mac', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'mac', value: ''));
     });
   }
 
@@ -592,18 +506,12 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'powerFactor',
-          value: value,
-
-          epsilon: epsilon,
-        ),
+        FilterCondition.equalTo(property: r'powerFactor', value: value, epsilon: epsilon),
       );
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition>
-  powerFactorGreaterThan(
+  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> powerFactorGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -661,13 +569,9 @@ extension PowerTuneQueryFilter
     });
   }
 
-  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeEqualTo(
-    DateTime value,
-  ) {
+  QueryBuilder<PowerTune, PowerTune, QAfterFilterCondition> timeEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'time', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'time', value: value));
     });
   }
 
@@ -677,11 +581,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'time',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'time', value: value),
       );
     });
   }
@@ -692,11 +592,7 @@ extension PowerTuneQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'time',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'time', value: value),
       );
     });
   }
@@ -721,11 +617,9 @@ extension PowerTuneQueryFilter
   }
 }
 
-extension PowerTuneQueryObject
-    on QueryBuilder<PowerTune, PowerTune, QFilterCondition> {}
+extension PowerTuneQueryObject on QueryBuilder<PowerTune, PowerTune, QFilterCondition> {}
 
-extension PowerTuneQueryLinks
-    on QueryBuilder<PowerTune, PowerTune, QFilterCondition> {}
+extension PowerTuneQueryLinks on QueryBuilder<PowerTune, PowerTune, QFilterCondition> {}
 
 extension PowerTuneQuerySortBy on QueryBuilder<PowerTune, PowerTune, QSortBy> {
   QueryBuilder<PowerTune, PowerTune, QAfterSortBy> sortByMac() {
@@ -765,8 +659,7 @@ extension PowerTuneQuerySortBy on QueryBuilder<PowerTune, PowerTune, QSortBy> {
   }
 }
 
-extension PowerTuneQuerySortThenBy
-    on QueryBuilder<PowerTune, PowerTune, QSortThenBy> {
+extension PowerTuneQuerySortThenBy on QueryBuilder<PowerTune, PowerTune, QSortThenBy> {
   QueryBuilder<PowerTune, PowerTune, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -816,11 +709,8 @@ extension PowerTuneQuerySortThenBy
   }
 }
 
-extension PowerTuneQueryWhereDistinct
-    on QueryBuilder<PowerTune, PowerTune, QDistinct> {
-  QueryBuilder<PowerTune, PowerTune, QDistinct> distinctByMac({
-    bool caseSensitive = true,
-  }) {
+extension PowerTuneQueryWhereDistinct on QueryBuilder<PowerTune, PowerTune, QDistinct> {
+  QueryBuilder<PowerTune, PowerTune, QDistinct> distinctByMac({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'mac', caseSensitive: caseSensitive);
     });
@@ -839,8 +729,7 @@ extension PowerTuneQueryWhereDistinct
   }
 }
 
-extension PowerTuneQueryProperty
-    on QueryBuilder<PowerTune, PowerTune, QQueryProperty> {
+extension PowerTuneQueryProperty on QueryBuilder<PowerTune, PowerTune, QQueryProperty> {
   QueryBuilder<PowerTune, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');

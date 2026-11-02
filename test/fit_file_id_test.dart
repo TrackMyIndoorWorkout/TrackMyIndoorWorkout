@@ -10,6 +10,7 @@ import 'package:track_my_indoor_exercise/export/export_target.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_file_id.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
 import 'utils.dart';
 
 class MockBasePrefService extends Mock implements BasePrefService {

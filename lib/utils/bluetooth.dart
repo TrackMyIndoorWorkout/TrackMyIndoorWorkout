@@ -42,8 +42,7 @@ Future<bool> bluetoothCheck(bool silent, int logLevel) async {
         if (!await Permission.location.serviceStatus.isEnabled) {
           final enableLocation = await Get.defaultDialog(
             title: "Location Services Needed",
-            middleText:
-                "You have granted Location permission, but the system Location Service (GPS) is currently turned OFF.\n\nPlease turn it ON in the system settings.",
+            middleText: "You have granted Location permission, but the system Location Service (GPS) is currently turned OFF.\n\nPlease turn it ON in the system settings.",
             confirm: TextButton(
               child: const Text("System Settings"),
               onPressed: () => Get.back(result: true),

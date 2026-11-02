@@ -187,4 +187,3 @@ void main() {
     expect(size.width, 200.0);
   });
 }
-

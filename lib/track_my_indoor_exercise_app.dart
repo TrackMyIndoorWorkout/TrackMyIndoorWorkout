@@ -104,17 +104,11 @@ class TrackMyIndoorExerciseAppState extends State<TrackMyIndoorExerciseApp> {
         color: _themeManager!.getHeaderColor(),
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo,
-            brightness: Brightness.light,
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, brightness: Brightness.light),
         ),
         darkTheme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigo,
-            brightness: Brightness.dark,
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo, brightness: Brightness.dark),
         ),
         themeMode: _themeManager!.getThemeMode(),
         home: const FindDevicesScreen(),

@@ -88,16 +88,13 @@ void main() {
     when(() => mockThemeManager.getAntagonistColor()).thenReturn(Colors.white);
     when(() => mockThemeManager.getGreyColor()).thenReturn(Colors.grey);
     when(() => mockThemeManager.getBlueColor()).thenReturn(Colors.blue);
-    when(
-      () => mockThemeManager.getGreenFab(any(), any()),
-    ).thenReturn(const SizedBox(width: 40, height: 40));
-    when(
-      () => mockThemeManager.getIconFab(any(), any(), any()),
-    ).thenReturn(const SizedBox(width: 40, height: 40));
+    when(() => mockThemeManager.getGreenFab(any(), any()))
+        .thenReturn(const SizedBox(width: 40, height: 40));
+    when(() => mockThemeManager.getIconFab(any(), any(), any()))
+        .thenReturn(const SizedBox(width: 40, height: 40));
 
-    when(
-      () => mockThemeManager.boldStyle(any(), fontSizeFactor: any(named: 'fontSizeFactor')),
-    ).thenAnswer((invocation) => invocation.positionalArguments[0] as TextStyle);
+    when(() => mockThemeManager.boldStyle(any(), fontSizeFactor: any(named: 'fontSizeFactor')))
+        .thenAnswer((invocation) => invocation.positionalArguments[0] as TextStyle);
 
     // Mimic ScanResult behavior: advertisementData needed for 'isWorthy'?
     // isWorthy checks name or UUIDs.

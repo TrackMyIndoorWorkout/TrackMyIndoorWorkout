@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuple/tuple.dart';
+
 import 'utils.dart';
 
 String paceString(double pace) {

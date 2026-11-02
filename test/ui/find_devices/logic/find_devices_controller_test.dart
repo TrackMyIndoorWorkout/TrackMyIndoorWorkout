@@ -210,13 +210,11 @@ void main() {
     when(() => mockThemeManager.getAverageChartColor()).thenReturn(Colors.orange);
     when(() => mockThemeManager.getMaximumChartColor()).thenReturn(Colors.red);
     when(() => mockThemeManager.getHeaderColor()).thenReturn(Colors.blue);
-    when(
-      () => mockThemeManager.boldStyle(any(), fontSizeFactor: any(named: 'fontSizeFactor')),
-    ).thenAnswer((invocation) => invocation.positionalArguments[0] as TextStyle);
+    when(() => mockThemeManager.boldStyle(any(), fontSizeFactor: any(named: 'fontSizeFactor')))
+        .thenAnswer((invocation) => invocation.positionalArguments[0] as TextStyle);
     when(() => mockThemeManager.getIconFab(any(), any(), any())).thenReturn(const SizedBox());
-    when(
-      () => mockThemeManager.getIconFabWKey(any(), any(), any(), any()),
-    ).thenReturn(const SizedBox());
+    when(() => mockThemeManager.getIconFabWKey(any(), any(), any(), any()))
+        .thenReturn(const SizedBox());
     when(() => mockThemeManager.getBlueFab(any(), any())).thenReturn(const SizedBox());
     when(() => mockThemeManager.getGreenFab(any(), any())).thenReturn(const SizedBox());
     when(() => mockThemeManager.getBlueFabWKey(any(), any(), any())).thenReturn(const SizedBox());
@@ -252,13 +250,11 @@ void main() {
     // Mock Bluetooth Adapter
     when(() => mockBluetoothAdapter.scanResults).thenAnswer((_) => Stream.value([]));
     when(() => mockBluetoothAdapter.stopScan()).thenAnswer((_) async {});
-    when(
-      () => mockBluetoothAdapter.startScan(timeout: any(named: 'timeout')),
-    ).thenAnswer((_) async {});
+    when(() => mockBluetoothAdapter.startScan(timeout: any(named: 'timeout')))
+        .thenAnswer((_) async {});
     when(() => mockBluetoothAdapter.checkBluetooth(any(), any())).thenAnswer((_) async => true);
-    when(
-      () => mockBluetoothAdapter.adapterState,
-    ).thenAnswer((_) => Stream.value(BluetoothAdapterState.on));
+    when(() => mockBluetoothAdapter.adapterState)
+        .thenAnswer((_) => Stream.value(BluetoothAdapterState.on));
     when(() => mockBluetoothAdapter.adapterStateNow).thenReturn(BluetoothAdapterState.on);
     when(() => mockBluetoothAdapter.isSupported).thenAnswer((_) async => true);
     when(() => mockBluetoothAdapter.turnOn()).thenAnswer((_) async {});
@@ -290,9 +286,8 @@ void main() {
     final mockDevice = MockBluetoothDevice();
 
     when(() => mockHrm.device).thenReturn(mockDevice);
-    when(
-      () => mockDevice.connectionState,
-    ).thenAnswer((_) => Stream.value(BluetoothConnectionState.connected));
+    when(() => mockDevice.connectionState)
+        .thenAnswer((_) => Stream.value(BluetoothConnectionState.connected));
     when(() => mockDevice.remoteId).thenReturn(const DeviceIdentifier("INTERNAL_HRM"));
     when(() => mockDevice.platformName).thenReturn("Internal HRM");
     when(() => mockHrm.sport).thenReturn(ActivityType.ride);
@@ -338,9 +333,8 @@ void main() {
     final mockDevice = MockBluetoothDevice();
 
     when(() => mockHrm.device).thenReturn(mockDevice);
-    when(
-      () => mockDevice.connectionState,
-    ).thenAnswer((_) => Stream.value(BluetoothConnectionState.connected));
+    when(() => mockDevice.connectionState)
+        .thenAnswer((_) => Stream.value(BluetoothConnectionState.connected));
     when(() => mockDevice.remoteId).thenReturn(const DeviceIdentifier("INTERNAL_HRM"));
     when(() => mockDevice.platformName).thenReturn("Internal HRM");
     when(() => mockHrm.sport).thenReturn(ActivityType.ride);

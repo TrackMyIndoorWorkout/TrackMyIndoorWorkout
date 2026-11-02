@@ -22,11 +22,7 @@ const LogEntrySchema = CollectionSchema(
     r'message': PropertySchema(id: 2, name: r'message', type: IsarType.string),
     r'subTag': PropertySchema(id: 3, name: r'subTag', type: IsarType.string),
     r'tag': PropertySchema(id: 4, name: r'tag', type: IsarType.string),
-    r'timeStamp': PropertySchema(
-      id: 5,
-      name: r'timeStamp',
-      type: IsarType.dateTime,
-    ),
+    r'timeStamp': PropertySchema(id: 5, name: r'timeStamp', type: IsarType.dateTime),
   },
 
   estimateSize: _logEntryEstimateSize,
@@ -41,11 +37,7 @@ const LogEntrySchema = CollectionSchema(
       unique: false,
       replace: false,
       properties: [
-        IndexPropertySchema(
-          name: r'timeStamp',
-          type: IndexType.value,
-          caseSensitive: false,
-        ),
+        IndexPropertySchema(name: r'timeStamp', type: IndexType.value, caseSensitive: false),
       ],
     ),
   },
@@ -58,11 +50,7 @@ const LogEntrySchema = CollectionSchema(
   version: '3.4.1',
 );
 
-int _logEntryEstimateSize(
-  LogEntry object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _logEntryEstimateSize(LogEntry object, List<int> offsets, Map<Type, List<int>> allOffsets) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.level.length * 3;
   bytesCount += 3 + object.message.length * 3;
@@ -148,9 +136,7 @@ extension LogEntryQueryWhereSort on QueryBuilder<LogEntry, LogEntry, QWhere> {
 
   QueryBuilder<LogEntry, LogEntry, QAfterWhere> anyTimeStamp() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'timeStamp'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'timeStamp'));
     });
   }
 }
@@ -166,43 +152,25 @@ extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
       } else {
         return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
       }
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> idGreaterThan(
-    Id id, {
-    bool include = false,
-  }) {
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
+      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> idLessThan(
-    Id id, {
-    bool include = false,
-  }) {
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
+      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
     });
   }
 
@@ -224,9 +192,7 @@ extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampEqualTo(
-    DateTime timeStamp,
-  ) {
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampEqualTo(DateTime timeStamp) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'timeStamp', value: [timeStamp]),
@@ -234,9 +200,7 @@ extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampNotEqualTo(
-    DateTime timeStamp,
-  ) {
+  QueryBuilder<LogEntry, LogEntry, QAfterWhereClause> timeStampNotEqualTo(DateTime timeStamp) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -330,15 +294,10 @@ extension LogEntryQueryWhere on QueryBuilder<LogEntry, LogEntry, QWhereClause> {
   }
 }
 
-extension LogEntryQueryFilter
-    on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {
-  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> counterEqualTo(
-    int value,
-  ) {
+extension LogEntryQueryFilter on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {
+  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> counterEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'counter', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'counter', value: value));
     });
   }
 
@@ -348,11 +307,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'counter',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'counter', value: value),
       );
     });
   }
@@ -363,11 +318,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'counter',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'counter', value: value),
       );
     });
   }
@@ -393,9 +344,7 @@ extension LogEntryQueryFilter
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'id', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
     });
   }
 
@@ -405,11 +354,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'id',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'id', value: value),
       );
     });
   }
@@ -420,11 +365,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'id',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'id', value: value),
       );
     });
   }
@@ -454,11 +395,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'level',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'level', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -524,11 +461,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'level',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'level', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -539,11 +472,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'level',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'level', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -554,11 +483,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'level',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'level', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -580,17 +505,13 @@ extension LogEntryQueryFilter
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> levelIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'level', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'level', value: ''));
     });
   }
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> levelIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'level', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'level', value: ''));
     });
   }
 
@@ -600,11 +521,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'message',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'message', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -685,11 +602,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'message',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'message', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -700,11 +613,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'message',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'message', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -726,17 +635,13 @@ extension LogEntryQueryFilter
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> messageIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'message', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'message', value: ''));
     });
   }
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> messageIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'message', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'message', value: ''));
     });
   }
 
@@ -746,11 +651,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'subTag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'subTag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -816,11 +717,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'subTag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'subTag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -831,11 +728,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'subTag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'subTag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -846,11 +739,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'subTag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'subTag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -872,17 +761,13 @@ extension LogEntryQueryFilter
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> subTagIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'subTag', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'subTag', value: ''));
     });
   }
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> subTagIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'subTag', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'subTag', value: ''));
     });
   }
 
@@ -892,11 +777,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'tag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'tag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -962,11 +843,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'tag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'tag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -977,11 +854,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'tag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'tag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -992,11 +865,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'tag',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'tag', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1007,34 +876,24 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'tag',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.matches(property: r'tag', wildcard: pattern, caseSensitive: caseSensitive),
       );
     });
   }
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> tagIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'tag', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'tag', value: ''));
     });
   }
 
   QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> tagIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'tag', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'tag', value: ''));
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> timeStampEqualTo(
-    DateTime value,
-  ) {
+  QueryBuilder<LogEntry, LogEntry, QAfterFilterCondition> timeStampEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'timeStamp', value: value),
@@ -1048,11 +907,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'timeStamp',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'timeStamp', value: value),
       );
     });
   }
@@ -1063,11 +918,7 @@ extension LogEntryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'timeStamp',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'timeStamp', value: value),
       );
     });
   }
@@ -1092,11 +943,9 @@ extension LogEntryQueryFilter
   }
 }
 
-extension LogEntryQueryObject
-    on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {}
+extension LogEntryQueryObject on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {}
 
-extension LogEntryQueryLinks
-    on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {}
+extension LogEntryQueryLinks on QueryBuilder<LogEntry, LogEntry, QFilterCondition> {}
 
 extension LogEntryQuerySortBy on QueryBuilder<LogEntry, LogEntry, QSortBy> {
   QueryBuilder<LogEntry, LogEntry, QAfterSortBy> sortByCounter() {
@@ -1172,8 +1021,7 @@ extension LogEntryQuerySortBy on QueryBuilder<LogEntry, LogEntry, QSortBy> {
   }
 }
 
-extension LogEntryQuerySortThenBy
-    on QueryBuilder<LogEntry, LogEntry, QSortThenBy> {
+extension LogEntryQuerySortThenBy on QueryBuilder<LogEntry, LogEntry, QSortThenBy> {
   QueryBuilder<LogEntry, LogEntry, QAfterSortBy> thenByCounter() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'counter', Sort.asc);
@@ -1259,41 +1107,32 @@ extension LogEntryQuerySortThenBy
   }
 }
 
-extension LogEntryQueryWhereDistinct
-    on QueryBuilder<LogEntry, LogEntry, QDistinct> {
+extension LogEntryQueryWhereDistinct on QueryBuilder<LogEntry, LogEntry, QDistinct> {
   QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByCounter() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'counter');
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByLevel({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByLevel({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'level', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByMessage({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByMessage({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'message', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctBySubTag({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctBySubTag({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'subTag', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByTag({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<LogEntry, LogEntry, QDistinct> distinctByTag({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'tag', caseSensitive: caseSensitive);
     });
@@ -1306,8 +1145,7 @@ extension LogEntryQueryWhereDistinct
   }
 }
 
-extension LogEntryQueryProperty
-    on QueryBuilder<LogEntry, LogEntry, QQueryProperty> {
+extension LogEntryQueryProperty on QueryBuilder<LogEntry, LogEntry, QQueryProperty> {
   QueryBuilder<LogEntry, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
