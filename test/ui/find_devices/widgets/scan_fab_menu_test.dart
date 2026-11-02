@@ -69,9 +69,8 @@ void main() {
 
   testWidgets('ScanFabMenu shows Search button when not scanning', (WidgetTester tester) async {
     when(() => mockController.isScanning).thenReturn(false);
-    when(
-      () => mockThemeManager.getGreenFab(Icons.search, any()),
-    ).thenReturn(const Text('Start Scan'));
+    when(() => mockThemeManager.getGreenFab(Icons.search, any()))
+        .thenReturn(const Text('Start Scan'));
 
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: ScanFabMenu())));
 

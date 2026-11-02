@@ -1,4 +1,5 @@
 import 'package:tuple/tuple.dart';
+
 import '../../utils/constants.dart';
 
 const fitnessEquipmentSportId = 4;

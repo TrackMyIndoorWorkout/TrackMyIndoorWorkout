@@ -17,100 +17,36 @@ const ActivitySchema = CollectionSchema(
   name: r'Activity',
   id: -6099828696840999229,
   properties: {
-    r'calorieFactor': PropertySchema(
-      id: 0,
-      name: r'calorieFactor',
-      type: IsarType.double,
-    ),
+    r'calorieFactor': PropertySchema(id: 0, name: r'calorieFactor', type: IsarType.double),
     r'calories': PropertySchema(id: 1, name: r'calories', type: IsarType.long),
-    r'deviceId': PropertySchema(
-      id: 2,
-      name: r'deviceId',
-      type: IsarType.string,
-    ),
-    r'deviceName': PropertySchema(
-      id: 3,
-      name: r'deviceName',
-      type: IsarType.string,
-    ),
-    r'distance': PropertySchema(
-      id: 4,
-      name: r'distance',
-      type: IsarType.double,
-    ),
+    r'deviceId': PropertySchema(id: 2, name: r'deviceId', type: IsarType.string),
+    r'deviceName': PropertySchema(id: 3, name: r'deviceName', type: IsarType.string),
+    r'distance': PropertySchema(id: 4, name: r'distance', type: IsarType.double),
     r'elapsed': PropertySchema(id: 5, name: r'elapsed', type: IsarType.long),
-    r'elapsedString': PropertySchema(
-      id: 6,
-      name: r'elapsedString',
-      type: IsarType.string,
-    ),
+    r'elapsedString': PropertySchema(id: 6, name: r'elapsedString', type: IsarType.string),
     r'end': PropertySchema(id: 7, name: r'end', type: IsarType.dateTime),
     r'fourCC': PropertySchema(id: 8, name: r'fourCC', type: IsarType.string),
-    r'hrBasedCalories': PropertySchema(
-      id: 9,
-      name: r'hrBasedCalories',
-      type: IsarType.bool,
-    ),
-    r'hrCalorieFactor': PropertySchema(
-      id: 10,
-      name: r'hrCalorieFactor',
-      type: IsarType.double,
-    ),
-    r'hrmCalorieFactor': PropertySchema(
-      id: 11,
-      name: r'hrmCalorieFactor',
-      type: IsarType.double,
-    ),
+    r'hrBasedCalories': PropertySchema(id: 9, name: r'hrBasedCalories', type: IsarType.bool),
+    r'hrCalorieFactor': PropertySchema(id: 10, name: r'hrCalorieFactor', type: IsarType.double),
+    r'hrmCalorieFactor': PropertySchema(id: 11, name: r'hrmCalorieFactor', type: IsarType.double),
     r'hrmId': PropertySchema(id: 12, name: r'hrmId', type: IsarType.string),
-    r'movingTime': PropertySchema(
-      id: 13,
-      name: r'movingTime',
-      type: IsarType.long,
-    ),
-    r'movingTimeString': PropertySchema(
-      id: 14,
-      name: r'movingTimeString',
-      type: IsarType.string,
-    ),
-    r'powerFactor': PropertySchema(
-      id: 15,
-      name: r'powerFactor',
-      type: IsarType.double,
-    ),
+    r'movingTime': PropertySchema(id: 13, name: r'movingTime', type: IsarType.long),
+    r'movingTimeString': PropertySchema(id: 14, name: r'movingTimeString', type: IsarType.string),
+    r'powerFactor': PropertySchema(id: 15, name: r'powerFactor', type: IsarType.double),
     r'sport': PropertySchema(id: 16, name: r'sport', type: IsarType.string),
     r'start': PropertySchema(id: 17, name: r'start', type: IsarType.dateTime),
-    r'stravaActivityId': PropertySchema(
-      id: 18,
-      name: r'stravaActivityId',
-      type: IsarType.long,
-    ),
+    r'stravaActivityId': PropertySchema(id: 18, name: r'stravaActivityId', type: IsarType.long),
     r'stravaId': PropertySchema(id: 19, name: r'stravaId', type: IsarType.long),
     r'strides': PropertySchema(id: 20, name: r'strides', type: IsarType.long),
-    r'suuntoBlobUrl': PropertySchema(
-      id: 21,
-      name: r'suuntoBlobUrl',
-      type: IsarType.string,
-    ),
+    r'suuntoBlobUrl': PropertySchema(id: 21, name: r'suuntoBlobUrl', type: IsarType.string),
     r'suuntoUploadIdentifier': PropertySchema(
       id: 22,
       name: r'suuntoUploadIdentifier',
       type: IsarType.string,
     ),
-    r'suuntoUploaded': PropertySchema(
-      id: 23,
-      name: r'suuntoUploaded',
-      type: IsarType.bool,
-    ),
-    r'suuntoWorkoutUrl': PropertySchema(
-      id: 24,
-      name: r'suuntoWorkoutUrl',
-      type: IsarType.string,
-    ),
-    r'timeZone': PropertySchema(
-      id: 25,
-      name: r'timeZone',
-      type: IsarType.string,
-    ),
+    r'suuntoUploaded': PropertySchema(id: 23, name: r'suuntoUploaded', type: IsarType.bool),
+    r'suuntoWorkoutUrl': PropertySchema(id: 24, name: r'suuntoWorkoutUrl', type: IsarType.string),
+    r'timeZone': PropertySchema(id: 25, name: r'timeZone', type: IsarType.string),
     r'trainingPeaksFileTrackingUuid': PropertySchema(
       id: 26,
       name: r'trainingPeaksFileTrackingUuid',
@@ -126,11 +62,7 @@ const ActivitySchema = CollectionSchema(
       name: r'trainingPeaksWorkoutId',
       type: IsarType.long,
     ),
-    r'uaWorkoutId': PropertySchema(
-      id: 29,
-      name: r'uaWorkoutId',
-      type: IsarType.long,
-    ),
+    r'uaWorkoutId': PropertySchema(id: 29, name: r'uaWorkoutId', type: IsarType.long),
     r'underArmourUploaded': PropertySchema(
       id: 30,
       name: r'underArmourUploaded',
@@ -151,11 +83,7 @@ const ActivitySchema = CollectionSchema(
       unique: false,
       replace: false,
       properties: [
-        IndexPropertySchema(
-          name: r'start',
-          type: IndexType.value,
-          caseSensitive: false,
-        ),
+        IndexPropertySchema(name: r'start', type: IndexType.value, caseSensitive: false),
       ],
     ),
   },
@@ -168,11 +96,7 @@ const ActivitySchema = CollectionSchema(
   version: '3.4.1',
 );
 
-int _activityEstimateSize(
-  Activity object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _activityEstimateSize(Activity object, List<int> offsets, Map<Type, List<int>> allOffsets) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.deviceId.length * 3;
   bytesCount += 3 + object.deviceName.length * 3;
@@ -368,9 +292,7 @@ extension ActivityQueryWhereSort on QueryBuilder<Activity, Activity, QWhere> {
 
   QueryBuilder<Activity, Activity, QAfterWhere> anyStart() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'start'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'start'));
     });
   }
 }
@@ -386,43 +308,25 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false))
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false));
       } else {
         return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+            .addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: false))
+            .addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: false));
       }
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterWhereClause> idGreaterThan(
-    Id id, {
-    bool include = false,
-  }) {
+  QueryBuilder<Activity, Activity, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
+      return query.addWhereClause(IdWhereClause.greaterThan(lower: id, includeLower: include));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterWhereClause> idLessThan(
-    Id id, {
-    bool include = false,
-  }) {
+  QueryBuilder<Activity, Activity, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
+      return query.addWhereClause(IdWhereClause.lessThan(upper: id, includeUpper: include));
     });
   }
 
@@ -444,19 +348,13 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterWhereClause> startEqualTo(
-    DateTime start,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startEqualTo(DateTime start) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'start', value: [start]),
-      );
+      return query.addWhereClause(IndexWhereClause.equalTo(indexName: r'start', value: [start]));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterWhereClause> startNotEqualTo(
-    DateTime start,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterWhereClause> startNotEqualTo(DateTime start) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -550,26 +448,19 @@ extension ActivityQueryWhere on QueryBuilder<Activity, Activity, QWhereClause> {
   }
 }
 
-extension ActivityQueryFilter
-    on QueryBuilder<Activity, Activity, QFilterCondition> {
+extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterCondition> {
   QueryBuilder<Activity, Activity, QAfterFilterCondition> calorieFactorEqualTo(
     double value, {
     double epsilon = Query.epsilon,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'calorieFactor',
-          value: value,
-
-          epsilon: epsilon,
-        ),
+        FilterCondition.equalTo(property: r'calorieFactor', value: value, epsilon: epsilon),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  calorieFactorGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> calorieFactorGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -627,13 +518,9 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> caloriesEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> caloriesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'calories', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'calories', value: value));
     });
   }
 
@@ -643,11 +530,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'calories',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'calories', value: value),
       );
     });
   }
@@ -658,11 +541,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'calories',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'calories', value: value),
       );
     });
   }
@@ -692,11 +571,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'deviceId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'deviceId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -777,11 +652,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'deviceId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'deviceId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -792,11 +663,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'deviceId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'deviceId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -818,9 +685,7 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> deviceIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'deviceId', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'deviceId', value: ''));
     });
   }
 
@@ -964,14 +829,11 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> deviceNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'deviceName', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'deviceName', value: ''));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  deviceNameIsNotEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> deviceNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'deviceName', value: ''),
@@ -985,12 +847,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'distance',
-          value: value,
-
-          epsilon: epsilon,
-        ),
+        FilterCondition.equalTo(property: r'distance', value: value, epsilon: epsilon),
       );
     });
   }
@@ -1053,13 +910,9 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> elapsedEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> elapsedEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'elapsed', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'elapsed', value: value));
     });
   }
 
@@ -1069,11 +922,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'elapsed',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'elapsed', value: value),
       );
     });
   }
@@ -1084,11 +933,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'elapsed',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'elapsed', value: value),
       );
     });
   }
@@ -1127,8 +972,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  elapsedStringGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> elapsedStringGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1183,8 +1027,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  elapsedStringStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> elapsedStringStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1241,8 +1087,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  elapsedStringIsEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> elapsedStringIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'elapsedString', value: ''),
@@ -1250,8 +1095,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  elapsedStringIsNotEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> elapsedStringIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'elapsedString', value: ''),
@@ -1261,27 +1105,19 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> endIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'end'),
-      );
+      return query.addFilterCondition(const FilterCondition.isNull(property: r'end'));
     });
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> endIsNotNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'end'),
-      );
+      return query.addFilterCondition(const FilterCondition.isNotNull(property: r'end'));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> endEqualTo(
-    DateTime? value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> endEqualTo(DateTime? value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'end', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'end', value: value));
     });
   }
 
@@ -1291,11 +1127,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'end',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'end', value: value),
       );
     });
   }
@@ -1306,11 +1138,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'end',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'end', value: value),
       );
     });
   }
@@ -1340,11 +1168,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'fourCC',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'fourCC', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1410,11 +1234,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'fourCC',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'fourCC', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1425,11 +1245,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'fourCC',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'fourCC', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1440,11 +1256,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'fourCC',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'fourCC', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1466,22 +1278,17 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> fourCCIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'fourCC', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'fourCC', value: ''));
     });
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> fourCCIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'fourCC', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'fourCC', value: ''));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrBasedCaloriesEqualTo(bool value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrBasedCaloriesEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'hrBasedCalories', value: value),
@@ -1489,22 +1296,18 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrCalorieFactorEqualTo(double value, {double epsilon = Query.epsilon}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrCalorieFactorEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'hrCalorieFactor',
-          value: value,
-
-          epsilon: epsilon,
-        ),
+        FilterCondition.equalTo(property: r'hrCalorieFactor', value: value, epsilon: epsilon),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrCalorieFactorGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrCalorieFactorGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1522,8 +1325,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrCalorieFactorLessThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrCalorieFactorLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1541,8 +1343,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrCalorieFactorBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrCalorieFactorBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1564,22 +1365,18 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrmCalorieFactorEqualTo(double value, {double epsilon = Query.epsilon}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrmCalorieFactorEqualTo(
+    double value, {
+    double epsilon = Query.epsilon,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'hrmCalorieFactor',
-          value: value,
-
-          epsilon: epsilon,
-        ),
+        FilterCondition.equalTo(property: r'hrmCalorieFactor', value: value, epsilon: epsilon),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrmCalorieFactorGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrmCalorieFactorGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1597,8 +1394,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrmCalorieFactorLessThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrmCalorieFactorLessThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -1616,8 +1412,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  hrmCalorieFactorBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> hrmCalorieFactorBetween(
     double lower,
     double upper, {
     bool includeLower = true,
@@ -1645,11 +1440,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'hrmId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'hrmId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1715,11 +1506,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'hrmId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'hrmId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1730,11 +1517,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'hrmId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'hrmId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1745,11 +1528,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'hrmId',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'hrmId', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1771,25 +1550,19 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> hrmIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'hrmId', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'hrmId', value: ''));
     });
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> hrmIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'hrmId', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'hrmId', value: ''));
     });
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'id', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'id', value: value));
     });
   }
 
@@ -1799,11 +1572,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'id',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'id', value: value),
       );
     });
   }
@@ -1814,11 +1583,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'id',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'id', value: value),
       );
     });
   }
@@ -1842,9 +1607,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'movingTime', value: value),
@@ -1858,11 +1621,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'movingTime',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'movingTime', value: value),
       );
     });
   }
@@ -1873,11 +1632,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'movingTime',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'movingTime', value: value),
       );
     });
   }
@@ -1901,8 +1656,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringEqualTo(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -1914,8 +1671,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1932,8 +1688,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringLessThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1950,8 +1705,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -1972,8 +1726,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -1985,8 +1741,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringEndsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -1998,8 +1756,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -2011,8 +1771,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -2024,8 +1786,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringIsEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'movingTimeString', value: ''),
@@ -2033,8 +1794,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  movingTimeStringIsNotEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> movingTimeStringIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'movingTimeString', value: ''),
@@ -2048,18 +1808,12 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'powerFactor',
-          value: value,
-
-          epsilon: epsilon,
-        ),
+        FilterCondition.equalTo(property: r'powerFactor', value: value, epsilon: epsilon),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  powerFactorGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> powerFactorGreaterThan(
     double value, {
     bool include = false,
     double epsilon = Query.epsilon,
@@ -2123,11 +1877,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'sport',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'sport', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -2193,11 +1943,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'sport',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.startsWith(property: r'sport', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -2208,11 +1954,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'sport',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'sport', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -2223,11 +1965,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'sport',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'sport', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -2249,27 +1987,19 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> sportIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'sport', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'sport', value: ''));
     });
   }
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> sportIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'sport', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(property: r'sport', value: ''));
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> startEqualTo(
-    DateTime value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> startEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'start', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'start', value: value));
     });
   }
 
@@ -2279,11 +2009,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'start',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'start', value: value),
       );
     });
   }
@@ -2294,11 +2020,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'start',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'start', value: value),
       );
     });
   }
@@ -2322,8 +2044,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  stravaActivityIdEqualTo(int value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'stravaActivityId', value: value),
@@ -2331,34 +2052,29 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  stravaActivityIdGreaterThan(int value, {bool include = false}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'stravaActivityId',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'stravaActivityId', value: value),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  stravaActivityIdLessThan(int value, {bool include = false}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'stravaActivityId',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'stravaActivityId', value: value),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  stravaActivityIdBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaActivityIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -2377,13 +2093,9 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaIdEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stravaIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'stravaId', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'stravaId', value: value));
     });
   }
 
@@ -2393,11 +2105,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'stravaId',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'stravaId', value: value),
       );
     });
   }
@@ -2408,11 +2116,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'stravaId',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'stravaId', value: value),
       );
     });
   }
@@ -2436,13 +2140,9 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> stridesEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> stridesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'strides', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'strides', value: value));
     });
   }
 
@@ -2452,11 +2152,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'strides',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'strides', value: value),
       );
     });
   }
@@ -2467,11 +2163,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'strides',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'strides', value: value),
       );
     });
   }
@@ -2510,8 +2202,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoBlobUrlGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoBlobUrlGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2566,8 +2257,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoBlobUrlStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoBlobUrlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -2624,8 +2317,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoBlobUrlIsEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoBlobUrlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'suuntoBlobUrl', value: ''),
@@ -2633,8 +2325,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoBlobUrlIsNotEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoBlobUrlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'suuntoBlobUrl', value: ''),
@@ -2642,8 +2333,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierEqualTo(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -2655,8 +2348,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2673,8 +2365,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierLessThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2691,8 +2382,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -2713,8 +2403,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -2726,8 +2418,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierEndsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -2739,8 +2433,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -2752,8 +2448,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -2765,8 +2463,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierIsEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'suuntoUploadIdentifier', value: ''),
@@ -2774,21 +2471,15 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoUploadIdentifierIsNotEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadIdentifierIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          property: r'suuntoUploadIdentifier',
-          value: '',
-        ),
+        FilterCondition.greaterThan(property: r'suuntoUploadIdentifier', value: ''),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadedEqualTo(
-    bool value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoUploadedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'suuntoUploaded', value: value),
@@ -2796,8 +2487,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlEqualTo(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -2809,8 +2502,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2827,8 +2519,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlLessThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2845,8 +2536,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -2867,8 +2557,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlStartsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -2880,8 +2572,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlEndsWith(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -2893,8 +2587,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -2906,8 +2602,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -2919,8 +2617,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlIsEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'suuntoWorkoutUrl', value: ''),
@@ -2928,8 +2625,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  suuntoWorkoutUrlIsNotEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> suuntoWorkoutUrlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'suuntoWorkoutUrl', value: ''),
@@ -2943,11 +2639,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'timeZone',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'timeZone', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -3028,11 +2720,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'timeZone',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.endsWith(property: r'timeZone', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -3043,11 +2731,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'timeZone',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.contains(property: r'timeZone', value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -3069,9 +2753,7 @@ extension ActivityQueryFilter
 
   QueryBuilder<Activity, Activity, QAfterFilterCondition> timeZoneIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'timeZone', value: ''),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'timeZone', value: ''));
     });
   }
 
@@ -3083,8 +2765,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidEqualTo(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -3099,8 +2780,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidGreaterThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -3117,8 +2797,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidLessThan(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -3135,8 +2814,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -3157,8 +2835,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidStartsWith(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -3173,8 +2850,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidEndsWith(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -3189,8 +2865,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidContains(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidContains(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -3205,8 +2880,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidMatches(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidMatches(
     String pattern, {
     bool caseSensitive = true,
   }) {
@@ -3221,14 +2895,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksFileTrackingUuidIsEmpty() {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksFileTrackingUuidIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'trainingPeaksFileTrackingUuid',
-          value: '',
-        ),
+        FilterCondition.equalTo(property: r'trainingPeaksFileTrackingUuid', value: ''),
       );
     });
   }
@@ -3237,40 +2907,31 @@ extension ActivityQueryFilter
   trainingPeaksFileTrackingUuidIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          property: r'trainingPeaksFileTrackingUuid',
-          value: '',
-        ),
+        FilterCondition.greaterThan(property: r'trainingPeaksFileTrackingUuid', value: ''),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksUploadedEqualTo(bool value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksUploadedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'trainingPeaksUploaded',
-          value: value,
-        ),
+        FilterCondition.equalTo(property: r'trainingPeaksUploaded', value: value),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksWorkoutIdEqualTo(int value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksWorkoutIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'trainingPeaksWorkoutId',
-          value: value,
-        ),
+        FilterCondition.equalTo(property: r'trainingPeaksWorkoutId', value: value),
       );
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksWorkoutIdGreaterThan(int value, {bool include = false}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksWorkoutIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -3282,8 +2943,10 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksWorkoutIdLessThan(int value, {bool include = false}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksWorkoutIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -3295,8 +2958,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  trainingPeaksWorkoutIdBetween(
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> trainingPeaksWorkoutIdBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -3315,9 +2977,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> uaWorkoutIdEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> uaWorkoutIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'uaWorkoutId', value: value),
@@ -3325,15 +2985,13 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  uaWorkoutIdGreaterThan(int value, {bool include = false}) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> uaWorkoutIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'uaWorkoutId',
-          value: value,
-        ),
+        FilterCondition.greaterThan(include: include, property: r'uaWorkoutId', value: value),
       );
     });
   }
@@ -3344,11 +3002,7 @@ extension ActivityQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'uaWorkoutId',
-          value: value,
-        ),
+        FilterCondition.lessThan(include: include, property: r'uaWorkoutId', value: value),
       );
     });
   }
@@ -3372,8 +3026,7 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition>
-  underArmourUploadedEqualTo(bool value) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> underArmourUploadedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'underArmourUploaded', value: value),
@@ -3381,22 +3034,16 @@ extension ActivityQueryFilter
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterFilterCondition> uploadedEqualTo(
-    bool value,
-  ) {
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> uploadedEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'uploaded', value: value),
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(property: r'uploaded', value: value));
     });
   }
 }
 
-extension ActivityQueryObject
-    on QueryBuilder<Activity, Activity, QFilterCondition> {}
+extension ActivityQueryObject on QueryBuilder<Activity, Activity, QFilterCondition> {}
 
-extension ActivityQueryLinks
-    on QueryBuilder<Activity, Activity, QFilterCondition> {}
+extension ActivityQueryLinks on QueryBuilder<Activity, Activity, QFilterCondition> {}
 
 extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
   QueryBuilder<Activity, Activity, QAfterSortBy> sortByCalorieFactor() {
@@ -3663,15 +3310,13 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortBySuuntoUploadIdentifier() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortBySuuntoUploadIdentifier() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'suuntoUploadIdentifier', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortBySuuntoUploadIdentifierDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortBySuuntoUploadIdentifierDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'suuntoUploadIdentifier', Sort.desc);
     });
@@ -3713,15 +3358,13 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortByTrainingPeaksFileTrackingUuid() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksFileTrackingUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortByTrainingPeaksFileTrackingUuidDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksFileTrackingUuidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.desc);
     });
@@ -3733,22 +3376,19 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortByTrainingPeaksUploadedDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksUploadedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksUploaded', Sort.desc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortByTrainingPeaksWorkoutId() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksWorkoutId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksWorkoutId', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortByTrainingPeaksWorkoutIdDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByTrainingPeaksWorkoutIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksWorkoutId', Sort.desc);
     });
@@ -3772,8 +3412,7 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  sortByUnderArmourUploadedDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByUnderArmourUploadedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'underArmourUploaded', Sort.desc);
     });
@@ -3792,8 +3431,7 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
   }
 }
 
-extension ActivityQuerySortThenBy
-    on QueryBuilder<Activity, Activity, QSortThenBy> {
+extension ActivityQuerySortThenBy on QueryBuilder<Activity, Activity, QSortThenBy> {
   QueryBuilder<Activity, Activity, QAfterSortBy> thenByCalorieFactor() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'calorieFactor', Sort.asc);
@@ -4070,15 +3708,13 @@ extension ActivityQuerySortThenBy
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenBySuuntoUploadIdentifier() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenBySuuntoUploadIdentifier() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'suuntoUploadIdentifier', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenBySuuntoUploadIdentifierDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenBySuuntoUploadIdentifierDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'suuntoUploadIdentifier', Sort.desc);
     });
@@ -4120,15 +3756,13 @@ extension ActivityQuerySortThenBy
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenByTrainingPeaksFileTrackingUuid() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksFileTrackingUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenByTrainingPeaksFileTrackingUuidDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksFileTrackingUuidDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksFileTrackingUuid', Sort.desc);
     });
@@ -4140,22 +3774,19 @@ extension ActivityQuerySortThenBy
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenByTrainingPeaksUploadedDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksUploadedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksUploaded', Sort.desc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenByTrainingPeaksWorkoutId() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksWorkoutId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksWorkoutId', Sort.asc);
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenByTrainingPeaksWorkoutIdDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByTrainingPeaksWorkoutIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'trainingPeaksWorkoutId', Sort.desc);
     });
@@ -4179,8 +3810,7 @@ extension ActivityQuerySortThenBy
     });
   }
 
-  QueryBuilder<Activity, Activity, QAfterSortBy>
-  thenByUnderArmourUploadedDesc() {
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByUnderArmourUploadedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'underArmourUploaded', Sort.desc);
     });
@@ -4199,8 +3829,7 @@ extension ActivityQuerySortThenBy
   }
 }
 
-extension ActivityQueryWhereDistinct
-    on QueryBuilder<Activity, Activity, QDistinct> {
+extension ActivityQueryWhereDistinct on QueryBuilder<Activity, Activity, QDistinct> {
   QueryBuilder<Activity, Activity, QDistinct> distinctByCalorieFactor() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'calorieFactor');
@@ -4213,17 +3842,13 @@ extension ActivityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByDeviceId({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByDeviceId({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deviceId', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByDeviceName({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByDeviceName({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'deviceName', caseSensitive: caseSensitive);
     });
@@ -4241,14 +3866,9 @@ extension ActivityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByElapsedString({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByElapsedString({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(
-        r'elapsedString',
-        caseSensitive: caseSensitive,
-      );
+      return query.addDistinctBy(r'elapsedString', caseSensitive: caseSensitive);
     });
   }
 
@@ -4258,9 +3878,7 @@ extension ActivityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByFourCC({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByFourCC({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'fourCC', caseSensitive: caseSensitive);
     });
@@ -4284,9 +3902,7 @@ extension ActivityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByHrmId({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByHrmId({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hrmId', caseSensitive: caseSensitive);
     });
@@ -4302,10 +3918,7 @@ extension ActivityQueryWhereDistinct
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(
-        r'movingTimeString',
-        caseSensitive: caseSensitive,
-      );
+      return query.addDistinctBy(r'movingTimeString', caseSensitive: caseSensitive);
     });
   }
 
@@ -4315,9 +3928,7 @@ extension ActivityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctBySport({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctBySport({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'sport', caseSensitive: caseSensitive);
     });
@@ -4347,14 +3958,9 @@ extension ActivityQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctBySuuntoBlobUrl({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctBySuuntoBlobUrl({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(
-        r'suuntoBlobUrl',
-        caseSensitive: caseSensitive,
-      );
+      return query.addDistinctBy(r'suuntoBlobUrl', caseSensitive: caseSensitive);
     });
   }
 
@@ -4362,10 +3968,7 @@ extension ActivityQueryWhereDistinct
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(
-        r'suuntoUploadIdentifier',
-        caseSensitive: caseSensitive,
-      );
+      return query.addDistinctBy(r'suuntoUploadIdentifier', caseSensitive: caseSensitive);
     });
   }
 
@@ -4379,40 +3982,31 @@ extension ActivityQueryWhereDistinct
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(
-        r'suuntoWorkoutUrl',
-        caseSensitive: caseSensitive,
-      );
+      return query.addDistinctBy(r'suuntoWorkoutUrl', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct> distinctByTimeZone({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByTimeZone({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'timeZone', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct>
-  distinctByTrainingPeaksFileTrackingUuid({bool caseSensitive = true}) {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByTrainingPeaksFileTrackingUuid({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(
-        r'trainingPeaksFileTrackingUuid',
-        caseSensitive: caseSensitive,
-      );
+      return query.addDistinctBy(r'trainingPeaksFileTrackingUuid', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct>
-  distinctByTrainingPeaksUploaded() {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByTrainingPeaksUploaded() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'trainingPeaksUploaded');
     });
   }
 
-  QueryBuilder<Activity, Activity, QDistinct>
-  distinctByTrainingPeaksWorkoutId() {
+  QueryBuilder<Activity, Activity, QDistinct> distinctByTrainingPeaksWorkoutId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'trainingPeaksWorkoutId');
     });
@@ -4437,8 +4031,7 @@ extension ActivityQueryWhereDistinct
   }
 }
 
-extension ActivityQueryProperty
-    on QueryBuilder<Activity, Activity, QQueryProperty> {
+extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProperty> {
   QueryBuilder<Activity, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
@@ -4577,8 +4170,7 @@ extension ActivityQueryProperty
     });
   }
 
-  QueryBuilder<Activity, String, QQueryOperations>
-  suuntoUploadIdentifierProperty() {
+  QueryBuilder<Activity, String, QQueryOperations> suuntoUploadIdentifierProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'suuntoUploadIdentifier');
     });
@@ -4602,22 +4194,19 @@ extension ActivityQueryProperty
     });
   }
 
-  QueryBuilder<Activity, String, QQueryOperations>
-  trainingPeaksFileTrackingUuidProperty() {
+  QueryBuilder<Activity, String, QQueryOperations> trainingPeaksFileTrackingUuidProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'trainingPeaksFileTrackingUuid');
     });
   }
 
-  QueryBuilder<Activity, bool, QQueryOperations>
-  trainingPeaksUploadedProperty() {
+  QueryBuilder<Activity, bool, QQueryOperations> trainingPeaksUploadedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'trainingPeaksUploaded');
     });
   }
 
-  QueryBuilder<Activity, int, QQueryOperations>
-  trainingPeaksWorkoutIdProperty() {
+  QueryBuilder<Activity, int, QQueryOperations> trainingPeaksWorkoutIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'trainingPeaksWorkoutId');
     });

@@ -1,7 +1,6 @@
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/widgets.dart';
 
-
 import '../../utils/constants.dart';
 import '../../utils/theme_manager.dart';
 

@@ -324,9 +324,8 @@ void main() {
       test("serviceData: ${serviceDataPair.serviceData}, byte: ${serviceDataPair.byte}", () async {
         final scanResult = MockScanResult();
         final advertisementData = MockAdvertisementData();
-        when(
-          () => advertisementData.serviceData,
-        ).thenReturn({Guid(fitnessMachineUuid): serviceDataPair.serviceData});
+        when(() => advertisementData.serviceData)
+            .thenReturn({Guid(fitnessMachineUuid): serviceDataPair.serviceData});
         when(() => scanResult.advertisementData).thenReturn(advertisementData);
 
         expect(scanResult.getFtmsServiceDataMachineByte(""), serviceDataPair.byte);

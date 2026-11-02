@@ -38,9 +38,8 @@ void main() {
     when(() => mockDeviceId.str).thenReturn("00:11:22:33:44:55");
     when(() => mockDevice.platformName).thenReturn("Test Device");
 
-    when(
-      () => mockThemeManager.boldStyle(any(), fontSizeFactor: any(named: 'fontSizeFactor')),
-    ).thenAnswer((invocation) => invocation.positionalArguments[0] as TextStyle);
+    when(() => mockThemeManager.boldStyle(any(), fontSizeFactor: any(named: 'fontSizeFactor')))
+        .thenAnswer((invocation) => invocation.positionalArguments[0] as TextStyle);
     when(() => mockThemeManager.getGreenFab(any(), any())).thenAnswer((invocation) {
       final onClose = invocation.positionalArguments[1] as VoidCallback?;
       return FloatingActionButton(

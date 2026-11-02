@@ -143,13 +143,11 @@ void main() {
     when(() => mockBluetoothAdapter.scanResults).thenAnswer((_) => Stream.value([]));
     when(() => mockBluetoothAdapter.isSupported).thenAnswer((_) async => true);
     when(() => mockBluetoothAdapter.checkBluetooth(any(), any())).thenAnswer((_) async => true);
-    when(
-      () => mockBluetoothAdapter.startScan(timeout: any(named: 'timeout')),
-    ).thenAnswer((_) async {});
+    when(() => mockBluetoothAdapter.startScan(timeout: any(named: 'timeout')))
+        .thenAnswer((_) async {});
     when(() => mockBluetoothAdapter.stopScan()).thenAnswer((_) async {});
-    when(
-      () => mockBluetoothAdapter.adapterState,
-    ).thenAnswer((_) => Stream.value(BluetoothAdapterState.on));
+    when(() => mockBluetoothAdapter.adapterState)
+        .thenAnswer((_) => Stream.value(BluetoothAdapterState.on));
     when(() => mockBluetoothAdapter.turnOn()).thenAnswer((_) async {});
 
     // Prefs defaults

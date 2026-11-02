@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../utils/theme_manager.dart';
 import '../../preferences/palette_spec.dart';
 import '../../preferences/stage_mode.dart';

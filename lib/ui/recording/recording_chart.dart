@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
+
 import '../models/display_record.dart';
 
 typedef ChartTouchCallback = void Function(charts.ChartTouchInteractionArgs);

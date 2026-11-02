@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+
 import '../../preferences/lap_counter.dart';
 import '../../preferences/leaderboard_and_rank.dart';
 import '../../preferences/show_pacer.dart';

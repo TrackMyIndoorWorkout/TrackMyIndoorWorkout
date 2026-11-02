@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+
 import '../utils/constants.dart';
 
 // Bluetooth SIG registered companies

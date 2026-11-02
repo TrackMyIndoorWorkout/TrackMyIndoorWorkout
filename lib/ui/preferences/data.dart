@@ -76,14 +76,12 @@ class DataPreferencesScreenState extends State<DataPreferencesScreen> {
       ),
       PrefButton(
         onTap: () async {
-          final uploadDescription = PrefService.of(
-            context,
-          ).get<String>(activityUploadDescriptionTag);
+          final uploadDescription = PrefService.of(context)
+              .get<String>(activityUploadDescriptionTag);
           if (uploadDescription != activityUploadDescriptionDefault) {
             setState(() {
-              PrefService.of(
-                context,
-              ).set(activityUploadDescriptionTag, activityUploadDescriptionDefault);
+              PrefService.of(context)
+                  .set(activityUploadDescriptionTag, activityUploadDescriptionDefault);
               _uploadDescriptionEdit++;
             });
           }

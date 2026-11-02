@@ -9,6 +9,7 @@ import 'package:track_my_indoor_exercise/devices/device_factory.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_device_info.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
+
 import 'utils.dart';
 
 class MockBasePrefService extends Mock implements BasePrefService {

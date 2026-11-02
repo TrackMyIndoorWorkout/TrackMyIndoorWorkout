@@ -34,9 +34,8 @@ void main() {
     mockMetricSpec = MockMetricSpec();
     mockPaletteSpec = MockPaletteSpec();
 
-    when(
-      () => mockThemeManager.getBlueIcon(any(), any()),
-    ).thenAnswer((invocation) => const Icon(Icons.check));
+    when(() => mockThemeManager.getBlueIcon(any(), any()))
+        .thenAnswer((invocation) => const Icon(Icons.check));
     when(() => mockMetricSpec.icon).thenReturn(Icons.speed);
     when(() => mockMetricSpec.multiLineUnit).thenReturn('km/h');
     when(() => mockMetricSpec.plotBands).thenReturn(<PlotBand>[]); // Return empty list

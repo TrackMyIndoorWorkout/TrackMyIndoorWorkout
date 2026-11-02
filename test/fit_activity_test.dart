@@ -3,6 +3,7 @@ import 'package:track_my_indoor_exercise/export/export_target.dart';
 import 'package:track_my_indoor_exercise/export/fit/definitions/fit_activity.dart';
 import 'package:track_my_indoor_exercise/export/fit/fit_message.dart';
 import 'package:tuple/tuple.dart';
+
 import 'utils.dart';
 
 void main() {
