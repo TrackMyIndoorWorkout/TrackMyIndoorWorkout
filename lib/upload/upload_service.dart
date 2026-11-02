@@ -1,15 +1,10 @@
 import 'package:get/get.dart';
-import 'package:pref/pref.dart';
 
 import '../persistence/activity.dart';
 import 'constants.dart';
-import 'strava/constants.dart';
 import 'strava/strava_service.dart';
-import 'suunto/constants.dart';
 import 'suunto/suunto_service.dart';
-import 'training_peaks/constants.dart';
 import 'training_peaks/training_peaks_service.dart';
-import 'under_armour/constants.dart';
 import 'under_armour/under_armour_service.dart';
 
 abstract class UploadService {
@@ -51,26 +46,14 @@ abstract class UploadService {
     }
   }
 
-  static bool isIntegrationEnabled(String portalType) {
-    final prefService = Get.find<BasePrefService>();
-    switch (portalType) {
-      case suuntoChoice:
-        {
-          return prefService.get<String>(suuntoAccessTokenTag)?.isNotEmpty ?? false;
-        }
-      case underArmourChoice:
-        {
-          return prefService.get<String>(underArmourAccessTokenTag)?.isNotEmpty ?? false;
-        }
-      case trainingPeaksChoice:
-        {
-          return prefService.get<String>(trainingPeaksAccessTokenTag)?.isNotEmpty ?? false;
-        }
-      case stravaChoice:
-      default:
-        {
-          return prefService.get<String>(stravaAccessTokenTag)?.isNotEmpty ?? false;
-        }
-    }
+  /// Whether [portalType] currently has a usable (non-empty) access token.
+  ///
+  /// Delegates to the portal's own [hasValidToken], which reads from the
+  /// [SecureTokenStorage]-backed store (transparently migrating any value
+  /// still sitting in the legacy `pref`/`shared_preferences` store). This
+  /// must stay async since secure storage access is inherently async - do
+  /// not reintroduce a synchronous legacy-only read here.
+  static Future<bool> isIntegrationEnabled(String portalType) {
+    return getInstance(portalType).hasValidToken();
   }
 }

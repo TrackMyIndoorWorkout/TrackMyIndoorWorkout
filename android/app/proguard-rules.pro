@@ -38,6 +38,8 @@
 -keepclassmembernames class com.kineapps.flutterarchive.** { *; }
 -keep class com.jmx.flutter_blue_plus.** { *; }
 -keepclassmembernames class com.jmx.flutter_blue_plus.* { *; }
+-keep class com.it_nomads.fluttersecurestorage.** { *; }
+-keepclassmembernames class com.it_nomads.fluttersecurestorage.** { *; }
 -keep class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keepclassmembernames class io.flutter.plugins.flutter_plugin_android_lifecycle.** { *; }
 -keep class net.wolverinebeach.flutter_timezone.** { *; }

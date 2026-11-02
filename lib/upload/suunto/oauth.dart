@@ -5,11 +5,11 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:pref/pref.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../utils/constants.dart';
+import '../secure_token_storage.dart';
 import 'constants.dart';
 import 'suunto_token.dart';
 
@@ -18,6 +18,7 @@ import 'suunto_token.dart';
 ///===========================================
 mixin Auth {
   StreamController<String> onCodeReceived = StreamController<String>.broadcast();
+  SecureTokenStorage get _secureTokenStorage => SecureTokenStorage.resolve();
 
   Future<void> registerToken(String? token, String? refreshToken, int? expire) async {
     if (Get.isRegistered<SuuntoToken>()) {
@@ -37,10 +38,12 @@ mixin Auth {
 
   /// Save the token and the expiry date
   Future<void> _saveToken(String? token, String? refreshToken, int? expire) async {
-    final prefService = Get.find<BasePrefService>();
-    await prefService.set<String>(suuntoAccessTokenTag, token ?? '');
-    await prefService.set<String>(suuntoRefreshTokenTag, refreshToken ?? '');
-    await prefService.set<int>(suuntoExpiresAtTag, expire ?? 0); // Stored in seconds
+    await _secureTokenStorage.writeOrDelete(suuntoAccessTokenTag, token);
+    await _secureTokenStorage.writeOrDelete(suuntoRefreshTokenTag, refreshToken);
+    await _secureTokenStorage.writeOrDelete(
+      suuntoExpiresAtTag,
+      expire != null && expire > 0 ? expire.toString() : null,
+    ); // Stored in seconds
     await registerToken(token, refreshToken, expire);
     debugPrint('token saved!!!');
   }
@@ -50,16 +53,16 @@ mixin Auth {
   /// And refreshToken as well
   /// Stored them in Get SuuntoToken
   ///
-  Future<SuuntoToken> _getStoredToken() async {
+  Future<SuuntoToken> _getStoredToken({String? preloadedAccessToken}) async {
     var localToken = SuuntoToken();
     debugPrint('Entering _getStoredToken');
 
     try {
-      final prefService = Get.find<BasePrefService>();
-      localToken.accessToken = prefService.get<String>(suuntoAccessTokenTag);
-      localToken.refreshToken = prefService.get<String>(suuntoRefreshTokenTag);
+      localToken.accessToken =
+          preloadedAccessToken ?? await _secureTokenStorage.read(suuntoAccessTokenTag);
+      localToken.refreshToken = await _secureTokenStorage.read(suuntoRefreshTokenTag);
       // localToken.expiresAt = prefService.get<int>('expire') * 1000; // To get in ms
-      localToken.expiresAt = prefService.get<int>(suuntoExpiresAtTag);
+      localToken.expiresAt = int.tryParse(await _secureTokenStorage.read(suuntoExpiresAtTag) ?? '');
 
       // load the data into Get
       await registerToken(localToken.accessToken, localToken.refreshToken, localToken.expiresAt);
@@ -134,14 +137,13 @@ mixin Auth {
   }
 
   Future<bool> hasValidToken() async {
-    final prefService = Get.find<BasePrefService>();
-    String? accessToken = prefService.get<String>(suuntoAccessTokenTag);
-    if (accessToken == null || accessToken.isEmpty) {
+    final String? accessToken = await _secureTokenStorage.read(suuntoAccessTokenTag);
+    if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
-    final SuuntoToken tokenStored = await _getStoredToken();
-    accessToken = tokenStored.accessToken;
-    return (accessToken?.length ?? 0) > 0;
+    final SuuntoToken tokenStored = await _getStoredToken(preloadedAccessToken: accessToken);
+    final resolvedToken = tokenStored.accessToken;
+    return resolvedToken != null && resolvedToken.isNotEmpty && resolvedToken != "null";
   }
 
   /// Do SUUNTO Authentication.
@@ -190,7 +192,7 @@ mixin Auth {
     }
 
     // Check token
-    if (token == "null" || token == null) {
+    if (token == "null" || token == null || token.isEmpty) {
       debugPrint('Doing a new authorization');
       isAuthOk = await _newAuthorization(clientId, secret);
     } else {

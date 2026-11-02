@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
 
-import '../../upload/constants.dart';
-import '../../upload/upload_service.dart';
 import '../../utils/constants.dart';
 import '../../utils/sound.dart';
 import 'athlete.dart';
@@ -42,13 +40,6 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final keyPart = portalNames
-        .asMap()
-        .entries
-        .map((e) => UploadService.isIntegrationEnabled(e.value) ? "1" : "0")
-        .toList()
-        .join("_");
-    final integrationsKey = "integrations$keyPart";
     final List<Tuple2<String, Function>> screenConfigs = [
       Tuple2(
         UserExperiencePreferencesScreen.shortTitle,
@@ -62,10 +53,7 @@ class PreferencesHubScreenState extends State<PreferencesHubScreen> {
       Tuple2(AthletePreferencesScreen.shortTitle, () => const AthletePreferencesScreen()),
       Tuple2(EquipmentPreferencesScreen.shortTitle, () => const EquipmentPreferencesScreen()),
       Tuple2(WorkoutPreferencesScreen.shortTitle, () => const WorkoutPreferencesScreen()),
-      Tuple2(
-        IntegrationPreferencesScreen.shortTitle,
-        () => IntegrationPreferencesScreen(key: Key(integrationsKey)),
-      ),
+      Tuple2(IntegrationPreferencesScreen.shortTitle, () => const IntegrationPreferencesScreen()),
       Tuple2(ExpertPreferencesScreen.shortTitle, () => const ExpertPreferencesScreen()),
     ];
 
