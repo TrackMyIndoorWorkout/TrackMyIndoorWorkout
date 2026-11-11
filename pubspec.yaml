@@ -43,13 +43,12 @@ dependencies:
     version: *isar_version
   listview_utils_plus: ^0.0.5
   loading_overlay: ^0.5.0
-  material_ui: ^1.9.0
   number_selector: ^1.0.7
   package_info_plus: ^10.2.2
   path: ^1.9.1
   path_provider: ^2.1.6
   permission_handler: ^13.0.2
-  pref: ^3.0.0
+  pref: ^2.8.0
   progress_indicators: ^1.0.0
   qr_widget: ^4.1.0
   rxdart: ^0.28.0

@@ -893,7 +893,7 @@ packages:
     source: hosted
     version: "0.13.0"
   material_ui:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: material_ui
       sha256: feb289df1e5f9ed9522f9fe3d909432a7f7bc76943f16abad09f80a16cd25196
@@ -1128,10 +1128,10 @@ packages:
     dependency: "direct main"
     description:
       name: pref
-      sha256: "5c70e449c5dc716663346b166accc4a71d8df00060975b1c18afbc4ae93fb59f"
+      sha256: c385b6239c594bfc78209eba17686bd0a156c8a216edf4b0716923fddc9b4f85
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "2.8.0"
   process:
     dependency: transitive
     description:

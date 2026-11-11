@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_ui/material_ui.dart' as modern show DropdownMenuItem;
 import 'package:pref/pref.dart';
 
 import '../../preferences/kayak_first_display_configuration.dart';
@@ -20,7 +19,7 @@ PrefDropdown getKayakFirstDisplaySlotPref(
     title: Text(prefTitle, style: Get.textTheme.headlineSmall!, maxLines: 3),
     pref: prefTag,
     items: kayakFirstDisplayChoices
-        .map((c) => modern.DropdownMenuItem<int>(value: c.item1, child: Text(c.item2)))
+        .map((c) => DropdownMenuItem<int>(value: c.item1, child: Text(c.item2)))
         .toList(growable: false),
     fullWidth: false,
   );

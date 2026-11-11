@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_ui/material_ui.dart' as modern show DropdownMenuItem;
 import 'package:pref/pref.dart';
 
 import '../../preferences/enforced_time_zone.dart';
@@ -45,7 +44,7 @@ class WorkoutPreferencesScreenState extends State<WorkoutPreferencesScreen> {
         subtitle: const Text(enforcedTimeZoneDescription),
         pref: enforcedTimeZoneTag,
         items: timeZoneChoices
-            .map((timeZone) => modern.DropdownMenuItem(value: timeZone, child: Text(timeZone)))
+            .map((timeZone) => DropdownMenuItem(value: timeZone, child: Text(timeZone)))
             .toList(growable: false),
       ),
       PrefLabel(title: Text(workoutMode, style: Get.textTheme.headlineSmall!, maxLines: 3)),
