@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -48,16 +49,29 @@ mixin Upload {
     headers.addAll({"Accept": "application/json", "Content-Type": "application/json"});
 
     if (activity.suuntoBlobUrl.isNotEmpty && activity.suuntoUploadIdentifier.isNotEmpty) {
-      return await checkStatus(headers, activity);
+      final statusResult = await checkStatus(headers, activity);
+      if (statusResult >= 200 && statusResult < 300) {
+        return statusResult;
+      }
+      // If checkStatus failed (e.g. upload expired, rejected, or blob never uploaded),
+      // clear the stalled upload so we can start a fresh upload below instead of deadlocking.
+      activity.clearSuuntoUpload();
+      if (Get.isRegistered<Isar>()) {
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+      }
     }
 
     final postUri = Uri.parse(uploadsEndpoint);
     final uploadInitResponse = await http.post(
       postUri,
       headers: headers,
-      body:
-          '{"description": "${activity.getDescription(true)}", '
-          '"comment": "${activity.getTitle(true)}"}',
+      body: jsonEncode({
+        "description": activity.getDescription(true),
+        "comment": activity.getTitle(true),
+      }),
     );
 
     // https://apizone.suunto.com/how-to-workout-upload
@@ -67,42 +81,31 @@ mixin Upload {
     String blobUrl = "";
 
     if (uploadInitResponse.statusCode < 200 || uploadInitResponse.statusCode >= 300) {
-      debugPrint('Error while initializing upload');
+      debugPrint('Error while initializing upload: ${uploadInitResponse.statusCode}');
       return uploadInitResponse.statusCode;
-    } else {
-      const idPrefixPart = '"id":"';
-      int matchBeginningIndex = initResponse.indexOf(idPrefixPart);
-      int idEndIndex = -1;
-      if (matchBeginningIndex > 0) {
-        final idBeginningIndex = matchBeginningIndex + idPrefixPart.length;
-        idEndIndex = initResponse.indexOf('"', idBeginningIndex);
-        if (idEndIndex > 0) {
-          uploadId = initResponse.substring(idBeginningIndex, idEndIndex);
-          debugPrint('uploadId: $uploadId');
-        }
-      }
+    }
 
-      const blobPrefixPart = '"url":"';
-      matchBeginningIndex = initResponse.indexOf(blobPrefixPart, idEndIndex);
-      if (matchBeginningIndex > 0) {
-        final blobBeginningIndex = matchBeginningIndex + blobPrefixPart.length;
-        final blobEndIndex = initResponse.indexOf('"', blobBeginningIndex);
-        if (blobEndIndex > 0) {
-          blobUrl = initResponse.substring(blobBeginningIndex, blobEndIndex);
-          debugPrint('blobUrl: $blobUrl');
-        }
-      }
+    try {
+      final initJson = jsonDecode(initResponse) as Map<String, dynamic>;
+      uploadId = initJson['id'] as String? ?? "";
+      blobUrl = initJson['url'] as String? ?? "";
+    } catch (e) {
+      debugPrint('Failed to decode Suunto upload init response: $e');
+      return 0;
+    }
 
-      if (uploadId.isEmpty || blobUrl.isEmpty) {
-        return 0;
-      }
+    if (uploadId.isEmpty || blobUrl.isEmpty) {
+      debugPrint('Upload ID or blob URL empty in init response');
+      return 0;
     }
 
     activity.suuntoUploadInitiated(uploadId, blobUrl);
-    final database = Get.find<Isar>();
-    database.writeTxnSync(() {
-      database.activitys.putSync(activity);
-    });
+    if (Get.isRegistered<Isar>()) {
+      final database = Get.find<Isar>();
+      database.writeTxnSync(() {
+        database.activitys.putSync(activity);
+      });
+    }
 
     final putUri = Uri.parse(blobUrl);
 
@@ -113,45 +116,88 @@ mixin Upload {
     );
 
     if (uploadBlobResponse.statusCode < 200 || uploadBlobResponse.statusCode >= 300) {
-      debugPrint('Error while uploading the workout');
+      debugPrint('Error while uploading the workout: ${uploadBlobResponse.statusCode}');
+      activity.clearSuuntoUpload();
+      if (Get.isRegistered<Isar>()) {
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+      }
+      return uploadBlobResponse.statusCode;
     } else {
-      debugPrint('$uploadBlobResponse');
+      debugPrint('Blob PUT response: ${uploadBlobResponse.statusCode}');
 
       return await checkStatus(headers, activity);
     }
-
-    return uploadBlobResponse.statusCode;
   }
 
   Future<int> checkStatus(Map<String, String> headers, Activity activity) async {
-    if (activity.suuntoWorkoutUrl.isNotEmpty) {
+    if (activity.suuntoUploaded && activity.suuntoWorkoutUrl.isNotEmpty) {
       return 200;
+    }
+
+    if (activity.suuntoUploadIdentifier.isEmpty) {
+      return 0;
     }
 
     final statusUri = Uri.parse("$uploadsEndpoint/${activity.suuntoUploadIdentifier}");
 
-    final uploadStatusResponse = await http.get(statusUri, headers: headers);
+    int lastStatusCode = 0;
+    for (int attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
 
-    if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
-      debugPrint('Error while getting upload status');
-    } else {
-      const workoutUrl = '"webUrl":"';
-      final statusBody = uploadStatusResponse.body;
-      int matchBeginningIndex = statusBody.indexOf(workoutUrl);
-      if (matchBeginningIndex > 0) {
-        final urlBeginningIndex = matchBeginningIndex + workoutUrl.length;
-        final urlEndIndex = statusBody.indexOf('"', urlBeginningIndex);
-        if (urlEndIndex > 0) {
-          final webUrl = statusBody.substring(urlBeginningIndex, urlEndIndex);
-          activity.markSuuntoUploaded(webUrl);
-          final database = Get.find<Isar>();
-          database.writeTxnSync(() {
-            database.activitys.putSync(activity);
-          });
+      final uploadStatusResponse = await http.get(statusUri, headers: headers);
+      lastStatusCode = uploadStatusResponse.statusCode;
+
+      if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
+        debugPrint('Error while getting upload status: ${uploadStatusResponse.statusCode}');
+        if (uploadStatusResponse.statusCode == 404 || uploadStatusResponse.statusCode == 400) {
+          activity.clearSuuntoUpload();
+          if (Get.isRegistered<Isar>()) {
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() {
+              database.activitys.putSync(activity);
+            });
+          }
         }
+        return uploadStatusResponse.statusCode;
+      }
+
+      try {
+        final statusJson = jsonDecode(uploadStatusResponse.body) as Map<String, dynamic>;
+        final status = statusJson['status'] as String? ?? "";
+        final webUrl = statusJson['webUrl'] as String? ?? "";
+
+        if (status == "FAILED" || status == "ERROR") {
+          debugPrint('Suunto upload status failed: $status');
+          activity.clearSuuntoUpload();
+          if (Get.isRegistered<Isar>()) {
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() {
+              database.activitys.putSync(activity);
+            });
+          }
+          return 400;
+        }
+
+        if (status == "PROCESSED" || webUrl.isNotEmpty) {
+          activity.markSuuntoUploaded(webUrl);
+          if (Get.isRegistered<Isar>()) {
+            final database = Get.find<Isar>();
+            database.writeTxnSync(() {
+              database.activitys.putSync(activity);
+            });
+          }
+          return 200;
+        }
+      } catch (e) {
+        debugPrint('Error parsing Suunto status response: $e');
       }
     }
 
-    return uploadStatusResponse.statusCode;
+    return lastStatusCode != 0 ? lastStatusCode : 200;
   }
 }

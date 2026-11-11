@@ -10,6 +10,7 @@ import '../preferences/activity_upload_description.dart';
 import '../preferences/activity_upload_title.dart';
 import '../upload/constants.dart';
 import '../upload/strava/constants.dart';
+import '../upload/suunto/constants.dart';
 import '../upload/training_peaks/constants.dart';
 import '../upload/under_armour/constants.dart';
 import '../utils/constants.dart';
@@ -158,7 +159,7 @@ class Activity {
   bool isSpecificWorkoutUrl(String portalName) {
     switch (portalName) {
       case suuntoChoice:
-        return suuntoWorkoutUrl.isNotEmpty && suuntoUploadIdentifier.isNotEmpty;
+        return suuntoWorkoutUrl.isNotEmpty || suuntoUploadIdentifier.isNotEmpty;
       case underArmourChoice:
         return uaWorkoutId > 0;
       case trainingPeaksChoice:
@@ -173,7 +174,16 @@ class Activity {
   String workoutUrl(String portalName) {
     switch (portalName) {
       case suuntoChoice:
-        return "$suuntoWorkoutUrl$suuntoUploadIdentifier";
+        if (suuntoWorkoutUrl.isNotEmpty) {
+          if (suuntoWorkoutUrl.endsWith("/")) {
+            return "$suuntoWorkoutUrl$suuntoUploadIdentifier";
+          }
+          return suuntoWorkoutUrl;
+        }
+        if (suuntoUploadIdentifier.isNotEmpty) {
+          return "https://maps.suunto.com/move/$suuntoUploadIdentifier";
+        }
+        return suuntoPortalUrl;
       case underArmourChoice:
         return "$underArmourWorkoutUrlBase$uaWorkoutId";
       case trainingPeaksChoice:
