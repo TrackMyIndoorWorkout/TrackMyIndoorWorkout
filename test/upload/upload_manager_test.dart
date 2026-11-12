@@ -215,4 +215,50 @@ void main() {
       verify(() => mockService.upload(any(), any())).called(1); // Only called once
     },
   );
+
+  test('statusMap provides reactive observable updates', () async {
+    final mockService = MockUploadService();
+    when(() => mockService.login()).thenAnswer((_) async => true);
+    when(() => mockService.upload(any(), any())).thenAnswer((_) async => 200);
+
+    final manager = UploadManager(serviceResolver: (_) => mockService);
+    final activity = createTestActivity();
+
+    expect(manager.statusMap.isEmpty, isTrue);
+
+    await manager.uploadActivity(
+      activity,
+      stravaChoice,
+      calculateGps: false,
+      showNotification: false,
+    );
+
+    expect(manager.statusMap.containsKey('${activity.id}_$stravaChoice'), isTrue);
+    expect(manager.statusMap['${activity.id}_$stravaChoice'], equals(UploadStatus.success));
+  });
+
+  test('processQueue handles empty queue and missing Isar gracefully without errors', () async {
+    final manager = UploadManager();
+    // Empty queue
+    await manager.processQueue();
+    expect(await manager.queue.hasPendingUploads(), isFalse);
+
+    // Queue has items, but no Isar registered
+    await manager.queue.enqueue(99, stravaChoice);
+    expect(await manager.queue.hasPendingUploads(), isTrue);
+    await manager.processQueue(); // Must not throw
+  });
+
+  test('processQueue skips items that have exceeded maxBackgroundUploadAttempts', () async {
+    final manager = UploadManager();
+    await manager.queue.enqueue(100, dreeveChoice);
+    for (int i = 0; i < 5; i++) {
+      await manager.queue.recordAttempt(100, dreeveChoice, "HTTP 500");
+    }
+
+    final items = await manager.queue.getItems();
+    expect(items.first.attempts, equals(5));
+
+    await manager.processQueue(); // Must skip and not throw
+  });
 }
