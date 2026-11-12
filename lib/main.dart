@@ -22,9 +22,11 @@ import 'preferences/log_level.dart';
 import 'track_my_indoor_exercise_app.dart';
 import 'ui/models/advertisement_cache.dart';
 import 'ui/models/progress_state.dart';
+import 'upload/background/workmanager_dispatcher.dart';
 import 'upload/secure_token_storage.dart';
 import 'upload/upload_manager.dart';
 import 'utils/address_names.dart';
+import 'utils/constants.dart';
 import 'utils/display.dart';
 import 'utils/init_preferences.dart';
 import 'utils/logging.dart';
@@ -66,6 +68,10 @@ void main() async {
       Get.put<ProgressState>(ProgressState(), permanent: true);
       Get.put<SecureTokenStorage>(SecureTokenStorage(), permanent: true);
       Get.put<UploadManager>(UploadManager(), permanent: true);
+
+      if (!testing) {
+        WorkmanagerService.initialize();
+      }
 
       PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
         Get.put<PackageInfo>(packageInfo, permanent: true);

@@ -55,6 +55,7 @@ dependencies:
   receive_sharing_intent: ^1.9.0
   sensors_plus: ^7.1.1
   share_plus: ^13.3.1
+  shared_preferences: ^2.5.6
   string_validator: ^1.2.0
   syncfusion_flutter_charts: ^35.1.42
   timezone: ^0.11.2
@@ -62,6 +63,7 @@ dependencies:
   url_launcher: ^6.3.3
   vector_math: ^2.4.4
   wakelock_plus: ^1.8.0
+  workmanager: ^0.10.10
   flutter:
     sdk: flutter
 
@@ -79,7 +81,6 @@ dev_dependencies:
     version: *isar_version
   mocktail: ^1.0.5
   mock_data: ^2.0.1
-  shared_preferences: ^2.5.6
   yaml: ^3.1.4
 
 flutter:

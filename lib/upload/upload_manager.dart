@@ -3,7 +3,10 @@ import 'package:isar_community/isar.dart';
 
 import '../persistence/activity.dart';
 import '../preferences/log_level.dart';
+import '../utils/constants.dart';
 import '../utils/logging.dart';
+import 'background/upload_queue.dart';
+import 'background/workmanager_dispatcher.dart';
 import 'constants.dart';
 import 'strava/strava_status_code.dart';
 import 'upload_service.dart';
@@ -16,9 +19,13 @@ class UploadManager extends GetxService {
       : Get.put<UploadManager>(UploadManager(), permanent: true);
 
   UploadService Function(String portalName) serviceResolver;
+  final BackgroundUploadQueue queue;
 
-  UploadManager({UploadService Function(String portalName)? serviceResolver})
-    : serviceResolver = serviceResolver ?? UploadService.getInstance;
+  UploadManager({
+    UploadService Function(String portalName)? serviceResolver,
+    BackgroundUploadQueue? queue,
+  }) : serviceResolver = serviceResolver ?? UploadService.getInstance,
+       queue = queue ?? BackgroundUploadQueue();
 
   /// Key format: "${activityId}_$portalName"
   final RxMap<String, UploadStatus> _portalStatus = <String, UploadStatus>{}.obs;
@@ -44,7 +51,8 @@ class UploadManager extends GetxService {
   /// Uploads [activity] to [portalName].
   ///
   /// Runs asynchronously without blocking the UI thread or holding local widget state.
-  /// Notifies the user via [Get.snackbar] and updates observable status.
+  /// If the upload fails due to network outage or temporary error, it enqueues to
+  /// [BackgroundUploadQueue] and schedules a [Workmanager] background retry.
   Future<bool> uploadActivity(
     Activity activity,
     String portalName, {
@@ -76,16 +84,32 @@ class UploadManager extends GetxService {
 
       _portalStatus[key] = success ? UploadStatus.success : UploadStatus.failed;
 
+      if (success) {
+        await queue.dequeue(activity.id, portalName);
+      } else {
+        await queue.enqueue(activity.id, portalName, calculateGps: calculateGps);
+        await queue.recordAttempt(activity.id, portalName, "HTTP $statusCode");
+        if (!testing) {
+          await WorkmanagerService.scheduleBackgroundUpload();
+        }
+      }
+
       if (showNotification) {
         final resultMessage = success
             ? "Activity ${activity.id} submitted successfully to $portalName"
-            : "Activity ${activity.id} upload to $portalName failed (status: $statusCode)";
+            : "Activity ${activity.id} upload to $portalName failed (status: $statusCode). Queued for retry.";
         Get.snackbar("Upload", resultMessage);
       }
 
       return success;
     } catch (e, stack) {
       _portalStatus[key] = UploadStatus.failed;
+      await queue.enqueue(activity.id, portalName, calculateGps: calculateGps);
+      await queue.recordAttempt(activity.id, portalName, e.toString());
+      if (!testing) {
+        await WorkmanagerService.scheduleBackgroundUpload();
+      }
+
       if (Get.isRegistered<Isar>()) {
         Logging().logException(
           logLevelError,
@@ -97,7 +121,7 @@ class UploadManager extends GetxService {
         );
       }
       if (showNotification) {
-        Get.snackbar("Upload", "Error uploading to $portalName: $e");
+        Get.snackbar("Upload", "Error uploading to $portalName: $e. Queued for retry.");
       }
       return false;
     }
@@ -123,5 +147,27 @@ class UploadManager extends GetxService {
 
     await Future.wait(futures);
     return results;
+  }
+
+  /// Processes any deferred or retried uploads from [BackgroundUploadQueue].
+  Future<void> processQueue() async {
+    final items = await queue.getItems();
+    if (items.isEmpty) return;
+
+    final isar = Get.isRegistered<Isar>() ? Get.find<Isar>() : Isar.getInstance();
+    if (isar == null) return;
+
+    for (final item in items) {
+      if (item.attempts >= maxBackgroundUploadAttempts) continue;
+      final activity = await isar.activitys.get(item.activityId);
+      if (activity != null && !activity.isUploaded(item.portalName)) {
+        await uploadActivity(
+          activity,
+          item.portalName,
+          calculateGps: item.calculateGps,
+          showNotification: false,
+        );
+      }
+    }
   }
 }

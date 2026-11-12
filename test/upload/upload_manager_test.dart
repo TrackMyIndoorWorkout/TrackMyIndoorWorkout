@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:track_my_indoor_exercise/devices/device_fourcc.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
 import 'package:track_my_indoor_exercise/upload/constants.dart';
@@ -42,6 +43,7 @@ void main() {
 
   setUp(() {
     Get.reset();
+    SharedPreferences.setMockInitialValues({});
   });
 
   test('UploadManager reports idle initially and handles successful upload', () async {
@@ -90,7 +92,7 @@ void main() {
     verifyNever(() => mockService.upload(any(), any()));
   });
 
-  test('UploadManager handles upload HTTP error status code', () async {
+  test('UploadManager handles upload HTTP error status code and queues for retry', () async {
     final mockService = MockUploadService();
     when(() => mockService.login()).thenAnswer((_) async => true);
     when(() => mockService.upload(any(), any())).thenAnswer((_) async => 500);
@@ -108,9 +110,17 @@ void main() {
     expect(result, isFalse);
     expect(manager.getStatus(activity.id, trainingPeaksChoice), equals(UploadStatus.failed));
     expect(manager.isUploading(activity.id), isFalse);
+
+    // Verify enqueued into BackgroundUploadQueue
+    final queued = await manager.queue.getItems();
+    expect(queued.length, equals(1));
+    expect(queued.first.activityId, equals(activity.id));
+    expect(queued.first.portalName, equals(trainingPeaksChoice));
+    expect(queued.first.attempts, equals(1));
+    expect(queued.first.lastError, contains("500"));
   });
 
-  test('UploadManager handles network exceptions gracefully without crashing', () async {
+  test('UploadManager handles network exceptions gracefully and queues for retry', () async {
     final mockService = MockUploadService();
     when(() => mockService.login()).thenAnswer((_) async => true);
     when(() => mockService.upload(any(), any()))
@@ -129,6 +139,37 @@ void main() {
     expect(result, isFalse);
     expect(manager.getStatus(activity.id, underArmourChoice), equals(UploadStatus.failed));
     expect(manager.isUploading(activity.id), isFalse);
+
+    // Verify enqueued into BackgroundUploadQueue
+    final queued = await manager.queue.getItems();
+    expect(queued.length, equals(1));
+    expect(queued.first.activityId, equals(activity.id));
+    expect(queued.first.portalName, equals(underArmourChoice));
+    expect(queued.first.attempts, equals(1));
+  });
+
+  test('UploadManager dequeues item on subsequent successful upload retry', () async {
+    final mockService = MockUploadService();
+    when(() => mockService.login()).thenAnswer((_) async => true);
+    when(() => mockService.upload(any(), any())).thenAnswer((_) async => 200);
+
+    final manager = UploadManager(serviceResolver: (_) => mockService);
+    final activity = createTestActivity();
+
+    // Pre-populate queue simulating a previously failed upload
+    await manager.queue.enqueue(activity.id, stravaChoice);
+    expect(await manager.queue.hasPendingUploads(), isTrue);
+
+    final result = await manager.uploadActivity(
+      activity,
+      stravaChoice,
+      calculateGps: false,
+      showNotification: false,
+    );
+
+    expect(result, isTrue);
+    expect(manager.getStatus(activity.id, stravaChoice), equals(UploadStatus.success));
+    expect(await manager.queue.hasPendingUploads(), isFalse);
   });
 
   test(
