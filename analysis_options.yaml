@@ -9,6 +9,8 @@ formatter:
   page_width: 100
 
 analyzer:
+  errors:
+    deprecated_member_use: ignore
   exclude:
     - "**.g.dart"
     - "build/**"
