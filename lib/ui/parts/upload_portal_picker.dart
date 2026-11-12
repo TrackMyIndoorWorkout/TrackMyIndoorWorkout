@@ -9,8 +9,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../persistence/activity.dart';
 import '../../preferences/calculate_gps.dart';
 import '../../upload/constants.dart';
-import '../../upload/strava/strava_status_code.dart';
-import '../../upload/upload_service.dart';
+import '../../upload/upload_manager.dart';
 import '../../utils/theme_manager.dart';
 
 class UploadPortalPickerBottomSheet extends StatefulWidget {
@@ -26,7 +25,6 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
   bool _calculateGps = calculateGpsDefault;
-  bool uploadInProgress = false;
   Map<String, bool> uploadStates = {};
 
   @override
@@ -43,126 +41,152 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   }
 
   Future<bool> uploadActivity(String portalName) async {
-    UploadService uploadService = UploadService.getInstance(portalName);
-
-    setState(() {
-      uploadInProgress = true;
-    });
-    final success = await uploadService.login();
-    if (!success) {
-      Get.snackbar("Warning", "$portalName login unsuccessful");
-      setState(() {
-        uploadInProgress = false;
-      });
+    if (UploadManager.instance.isUploading(widget.activity.id, portalName)) {
       return false;
     }
 
-    final statusCode = await uploadService.upload(widget.activity, _calculateGps);
-    final finalResult =
-        statusCode == StravaStatusCode.statusOk || statusCode >= 200 && statusCode < 300;
-    final resultMessage = finalResult
-        ? "Activity ${widget.activity.id} submitted successfully"
-        : "Activity ${widget.activity.id} upload failure";
-    Get.snackbar("Upload", resultMessage);
+    final success = await UploadManager.instance.uploadActivity(
+      widget.activity,
+      portalName,
+      calculateGps: _calculateGps,
+    );
 
-    setState(() {
-      uploadInProgress = false;
-      if (finalResult) {
-        for (final portalName in portalNames) {
-          uploadStates[portalName] = widget.activity.isUploaded(portalName);
-        }
-      }
-    });
+    if (mounted) {
+      setState(() {
+        uploadStates[portalName] = widget.activity.isUploaded(portalName);
+      });
+    }
 
-    return finalResult;
+    return success;
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaWidth = min(Get.mediaQuery.size.width, Get.mediaQuery.size.height);
-    List<Widget> choiceRows = [
-      uploadInProgress
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(semanticsLabel: "Progress indicator"),
-                JumpingText("Uploading...", style: _largerTextStyle),
-              ],
-            )
-          : Text("Integrations:", style: _largerTextStyle, textAlign: TextAlign.center),
-    ];
-    choiceRows.addAll(
-      getPortalChoices(false, _themeManager).asMap().entries.map(
-        (e) => ListTile(
-          title: Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: _largerTextStyle.fontSize! / 3,
-              horizontal: 0.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    uploadActivity(e.value.name);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        (uploadStates[e.value.name] ?? false) ? Icons.check : Icons.upload,
-                        size: _largerTextStyle.fontSize! * 1.5,
-                        color: (uploadStates[e.value.name] ?? false)
-                            ? _themeManager.getGreenColor()
-                            : _themeManager.getProtagonistColor(),
-                      ),
-                      SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.white,
-                        ),
-                        height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
-                        width: mediaWidth - 150,
-                        padding: const EdgeInsets.all(5),
-                        child: e.value.getSvg(false, _largerTextStyle.fontSize!),
-                      ),
-                    ],
-                  ),
-                ),
-                (uploadStates[e.value.name] ?? false)
-                    ? IconButton(
-                        icon: Icon(
-                          Icons.open_in_new,
-                          size: _largerTextStyle.fontSize! * 1.5,
-                          color: widget.activity.isSpecificWorkoutUrl(e.value.name)
-                              ? _themeManager.getProtagonistColor()
-                              : _themeManager.getGreyColor(),
-                        ),
-                        onPressed: () async {
-                          final workoutUrl = widget.activity.workoutUrl(e.value.name);
-                          if (await canLaunchUrlString(workoutUrl)) {
-                            launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
-                          } else {
-                            Get.snackbar("Attention", "Cannot open URL");
-                          }
-                        },
-                      )
-                    : Container(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
 
-    return Scaffold(
-      body: ListView(children: choiceRows),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
-    );
+    return Obx(() {
+      final isAnyUploading = UploadManager.instance.isUploading(widget.activity.id);
+
+      List<Widget> choiceRows = [
+        isAnyUploading
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      semanticsLabel: "Progress indicator",
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  JumpingText("Uploading in background...", style: _largerTextStyle),
+                ],
+              )
+            : Text("Integrations:", style: _largerTextStyle, textAlign: TextAlign.center),
+      ];
+
+      choiceRows.addAll(
+        getPortalChoices(false, _themeManager).asMap().entries.map((e) {
+          final isThisUploading = UploadManager.instance.isUploading(
+            widget.activity.id,
+            e.value.name,
+          );
+          final isUploaded =
+              widget.activity.isUploaded(e.value.name) || (uploadStates[e.value.name] ?? false);
+
+          Widget leadingIcon;
+          if (isThisUploading) {
+            leadingIcon = SizedBox(
+              width: _largerTextStyle.fontSize! * 1.5,
+              height: _largerTextStyle.fontSize! * 1.5,
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: CircularProgressIndicator(strokeWidth: 2.5),
+              ),
+            );
+          } else if (isUploaded) {
+            leadingIcon = Icon(
+              Icons.check,
+              size: _largerTextStyle.fontSize! * 1.5,
+              color: _themeManager.getGreenColor(),
+            );
+          } else {
+            leadingIcon = Icon(
+              Icons.upload,
+              size: _largerTextStyle.fontSize! * 1.5,
+              color: _themeManager.getProtagonistColor(),
+            );
+          }
+
+          return ListTile(
+            title: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: _largerTextStyle.fontSize! / 3,
+                horizontal: 0.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: isThisUploading
+                        ? null
+                        : () {
+                            uploadActivity(e.value.name);
+                          },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        leadingIcon,
+                        SizedBox(width: 10, height: _largerTextStyle.fontSize! * 1.5),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Colors.white,
+                          ),
+                          height: _largerTextStyle.fontSize! * e.value.heightMultiplier + 10,
+                          width: mediaWidth - 150,
+                          padding: const EdgeInsets.all(5),
+                          child: e.value.getSvg(false, _largerTextStyle.fontSize!),
+                        ),
+                      ],
+                    ),
+                  ),
+                  isUploaded
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.open_in_new,
+                            size: _largerTextStyle.fontSize! * 1.5,
+                            color: widget.activity.isSpecificWorkoutUrl(e.value.name)
+                                ? _themeManager.getProtagonistColor()
+                                : _themeManager.getGreyColor(),
+                          ),
+                          onPressed: () async {
+                            final workoutUrl = widget.activity.workoutUrl(e.value.name);
+                            if (await canLaunchUrlString(workoutUrl)) {
+                              launchUrlString(workoutUrl, mode: LaunchMode.externalApplication);
+                            } else {
+                              Get.snackbar("Attention", "Cannot open URL");
+                            }
+                          },
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          );
+        }),
+      );
+
+      return Scaffold(
+        body: ListView(children: choiceRows),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        floatingActionButton: _themeManager.getBlueFab(Icons.clear, () => Get.back()),
+      );
+    });
   }
 }

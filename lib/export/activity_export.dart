@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
 import '../track/calculator.dart';
+import '../track/track_descriptor.dart';
 import '../track/track_manager.dart';
 import '../utils/constants.dart';
 import 'export_model.dart';
@@ -92,8 +94,33 @@ abstract class ActivityExport {
   ) async {
     final descriptor = activity.deviceDescriptor();
     final track = await TrackManager().getTrack(activity.sport);
-    final calculator = TrackCalculator(track: track);
     final records = await DbUtils().getRecords(activity.id);
+
+    return await Isolate.run(() async {
+      return await exportRecords(
+        activity,
+        records,
+        descriptor,
+        track,
+        rawData,
+        calculateGps,
+        compress,
+        exportTarget,
+      );
+    });
+  }
+
+  Future<List<int>> exportRecords(
+    Activity activity,
+    List<Record> records,
+    DeviceDescriptor descriptor,
+    TrackDescriptor track,
+    bool rawData,
+    bool calculateGps,
+    bool compress,
+    int exportTarget,
+  ) async {
+    final calculator = TrackCalculator(track: track);
     final List<ExportRecord> exportRecords = [];
     Record? previousRecord;
     for (final r in records) {
