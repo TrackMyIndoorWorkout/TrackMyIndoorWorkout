@@ -143,14 +143,12 @@ mixin Upload {
 
     final statusUri = Uri.parse("$uploadsEndpoint/${activity.suuntoUploadIdentifier}");
 
-    int lastStatusCode = 0;
-    for (int attempt = 0; attempt < 3; attempt++) {
+    for (int attempt = 0; attempt < 10; attempt++) {
       if (attempt > 0) {
         await Future.delayed(const Duration(seconds: 1));
       }
 
       final uploadStatusResponse = await http.get(statusUri, headers: headers);
-      lastStatusCode = uploadStatusResponse.statusCode;
 
       if (uploadStatusResponse.statusCode < 200 || uploadStatusResponse.statusCode >= 300) {
         debugPrint('Error while getting upload status: ${uploadStatusResponse.statusCode}');
@@ -198,6 +196,7 @@ mixin Upload {
       }
     }
 
-    return lastStatusCode != 0 ? lastStatusCode : 200;
+    debugPrint('Suunto upload status polling timed out');
+    return 408;
   }
 }
