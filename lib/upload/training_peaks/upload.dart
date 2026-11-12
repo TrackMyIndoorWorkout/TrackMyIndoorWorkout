@@ -70,17 +70,21 @@ mixin Upload {
     final workoutPublic =
         prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
     final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
-    String fileContentString = base64.encode(fileContent);
-    String contentString =
-        '{"UploadClient": "$appName",'
-        '"Filename": "$fileName",'
-        '"Data": "$fileContentString",'
-        '"Title": "${activity.getTitle(false)}",'
-        '"Comment": "${activity.getDescription(false)}",'
-        '"WorkoutDay": "${DateFormat('yyyy-MM-dd').format(activity.start)}",'
-        '"StartTime": "${DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.start)}",'
-        '"SetWorkoutPublic": $workoutPublic,'
-        '"Type": "${trainingPeaksSport(activity.sport)}"}';
+    final fileContentString = base64.encode(fileContent);
+
+    final payload = {
+      "UploadClient": appName,
+      "Filename": fileName,
+      "Data": fileContentString,
+      "Title": activity.getTitle(false),
+      "Comment": activity.getDescription(false),
+      "WorkoutDay": DateFormat('yyyy-MM-dd').format(activity.start),
+      "StartTime": DateFormat('yyyy-MM-ddTHH:mm:ss').format(activity.start),
+      "SetWorkoutPublic": workoutPublic,
+      "Type": trainingPeaksSport(activity.sport),
+    };
+    final contentString = jsonEncode(payload);
+
     const uploadUrl = tpProductionApiUrlBase + uploadPath;
     final uploadResponse = await http.post(
       Uri.parse(uploadUrl),
@@ -91,99 +95,101 @@ mixin Upload {
     debugPrint('Response: ${uploadResponse.statusCode} ${uploadResponse.reasonPhrase}');
 
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
-      // response.statusCode != 202 // the new async endpoint should return 202 and a fileTrackingId
-      debugPrint('Error while uploading the activity');
-    } else {
-      // Upload is processed by the server
-      // now wait for the upload to be finished
-      //----------------------------------------
-      if (!uploadResponse.headers.containsKey("location")) {
-        // Why didn't we get a status check URL?
-        return uploadResponse.statusCode;
+      debugPrint('Error while uploading the activity to TrainingPeaks');
+      return uploadResponse.statusCode;
+    }
+
+    if (!uploadResponse.headers.containsKey("location")) {
+      // Direct success without async location polling
+      return uploadResponse.statusCode;
+    }
+
+    final statusUrl = uploadResponse.headers["location"]!;
+    final fileTrackingUuid = statusUrl.split("/").last;
+    debugPrint('trackingUUID $fileTrackingUuid');
+    if (fileTrackingUuid.isEmpty) {
+      return uploadResponse.statusCode;
+    }
+
+    activity.markTrainingPeaksUploading(fileTrackingUuid);
+    if (Get.isRegistered<Isar>()) {
+      final database = Get.find<Isar>();
+      database.writeTxnSync(() {
+        database.activitys.putSync(activity);
+      });
+    }
+
+    final uploadStatusUrl = tpProductionApiUrlBase + uploadStatusPath + fileTrackingUuid;
+    final uri = Uri.parse(uploadStatusUrl);
+    const maxPollAttempts = 10;
+    int attempts = 0;
+    bool processingFinished = false;
+
+    while (!processingFinished && attempts < maxPollAttempts) {
+      attempts++;
+      await Future<void>.delayed(const Duration(milliseconds: 1000));
+
+      final resp = await http.get(uri, headers: headers);
+      debugPrint('Check Status ${resp.statusCode} (attempt $attempts/$maxPollAttempts)');
+
+      if (resp.statusCode == 404) {
+        // The temp tracking id no longer exists (activity finished ingestion or expired)
+        debugPrint('---> 404 activity already processed or expired: ${resp.reasonPhrase}');
+        processingFinished = true;
+        break;
       }
 
-      final statusUrl = uploadResponse.headers["location"]!;
-      final fileTrackingUuid = statusUrl.split("/").last;
-      debugPrint('trackingUUID $fileTrackingUuid');
-      if (fileTrackingUuid.isNotEmpty) {
-        activity.markTrainingPeaksUploading(fileTrackingUuid);
-        final database = Get.find<Isar>();
-        database.writeTxnSync(() {
-          database.activitys.putSync(activity);
-        });
+      if (resp.statusCode >= 200 && resp.statusCode < 300) {
+        try {
+          final dynamic decoded = jsonDecode(resp.body);
+          if (decoded is Map<String, dynamic>) {
+            final completedVal = decoded['Completed'] ?? decoded['completed'];
+            final completed =
+                completedVal == true || completedVal?.toString().toLowerCase() == 'true';
+            final status = (decoded['Status'] ?? decoded['status'])?.toString();
+            debugPrint('---> Completed: $completed, Status: $status');
 
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-
-        final uploadStatusUrl = tpProductionApiUrlBase + uploadStatusPath + fileTrackingUuid;
-        final uri = Uri.parse(uploadStatusUrl);
-        bool processingFinished = false;
-        while (!processingFinished) {
-          final resp = await http.get(uri, headers: headers);
-          debugPrint('Check Status ${resp.statusCode}');
-
-          // Everything is fine the file has been loaded
-          if (resp.statusCode >= 200 && resp.statusCode < 300) {
-            // resp.statusCode == 200
-            debugPrint('Check Body: ${resp.body}');
-          }
-
-          // 404 the temp id does not exist anymore
-          // Activity has been probably already loaded
-          if (resp.statusCode == 404) {
-            debugPrint('---> 404 activity already loaded  ${resp.reasonPhrase}');
-            processingFinished = true;
-          } else {
-            final processingBody = resp.body;
-            const completedTag = '"Completed":';
-            int completedBeginningIndex = processingBody.indexOf(completedTag);
-            if (completedBeginningIndex > 0) {
-              int beginningIndex = completedBeginningIndex + completedTag.length;
-              int completedEndIndex = processingBody.indexOf(',', beginningIndex);
-              if (completedEndIndex > 0) {
-                final completedString = processingBody.substring(beginningIndex, completedEndIndex);
-                final completed = completedString.toLowerCase() == "true";
-                debugPrint('---> Completed  $completed');
-                processingFinished = completed;
-                const statusTag = '"Status":';
-                int statusBeginningIndex = processingBody.indexOf(statusTag);
-                if (statusBeginningIndex > 0) {
-                  beginningIndex = statusBeginningIndex + statusTag.length;
-                  final statusEndIndex = processingBody.indexOf(',', statusBeginningIndex);
-                  if (statusEndIndex > 0) {
-                    final statusString = processingBody.substring(beginningIndex, statusEndIndex);
-                    debugPrint('---> Status  $statusString');
-                  }
-                }
-
-                const workoutIdsTag = '"WorkoutIds":[';
-                int workoutBeginningIndex = processingBody.indexOf(workoutIdsTag);
-                if (workoutBeginningIndex > 0) {
-                  beginningIndex = workoutBeginningIndex + workoutIdsTag.length;
-                  int workoutIdsEndIndex = processingBody.indexOf(']', beginningIndex);
-                  if (workoutIdsEndIndex > 0) {
-                    final workoutIdsString = processingBody.substring(
-                      beginningIndex,
-                      workoutIdsEndIndex,
-                    );
-                    debugPrint('---> Workout IDs  $workoutIdsString');
-                    final workoutIds = workoutIdsString
-                        .split(",")
-                        .map((workoutIdString) => int.tryParse(workoutIdString))
-                        .nonNulls
-                        .toList(growable: false);
-                    if (workoutIds.isNotEmpty) {
-                      activity.markTrainingPeaksUploaded(workoutIds.first);
-                      database.writeTxnSync(() {
-                        database.activitys.putSync(activity);
-                      });
-                    }
-                  }
+            if (completed) {
+              processingFinished = true;
+              final rawWorkoutIds = decoded['WorkoutIds'] ?? decoded['workoutIds'];
+              List<int> workoutIds = [];
+              if (rawWorkoutIds is List) {
+                workoutIds = rawWorkoutIds
+                    .map((id) => int.tryParse(id.toString()))
+                    .nonNulls
+                    .toList(growable: false);
+              }
+              debugPrint('---> Workout IDs: $workoutIds');
+              if (workoutIds.isNotEmpty) {
+                activity.markTrainingPeaksUploaded(workoutIds.first);
+                if (Get.isRegistered<Isar>()) {
+                  final database = Get.find<Isar>();
+                  database.writeTxnSync(() {
+                    database.activitys.putSync(activity);
+                  });
                 }
               }
             }
           }
+        } catch (e) {
+          debugPrint('Error parsing TrainingPeaks status JSON: $e, body: ${resp.body}');
         }
+      } else {
+        debugPrint('Unexpected status code during TrainingPeaks polling: ${resp.statusCode}');
+        break;
       }
+    }
+
+    if (!activity.trainingPeaksUploaded && !processingFinished) {
+      // Ingestion timed out or failed; clear in-flight state to prevent retry deadlocks
+      activity.clearTrainingPeaksUpload();
+      if (Get.isRegistered<Isar>()) {
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+      }
+      return 408; // Request Timeout
     }
 
     return uploadResponse.statusCode;

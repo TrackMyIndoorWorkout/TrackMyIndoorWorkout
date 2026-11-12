@@ -145,6 +145,38 @@ class Activity {
     trainingPeaksUploaded = true;
   }
 
+  void clearTrainingPeaksUpload() {
+    trainingPeaksFileTrackingUuid = "";
+    trainingPeaksWorkoutId = 0;
+    trainingPeaksUploaded = false;
+  }
+
+  void clearUnderArmourUpload() {
+    uaWorkoutId = 0;
+    underArmourUploaded = false;
+  }
+
+  void clearUpload(String portalName) {
+    switch (portalName) {
+      case suuntoChoice:
+        clearSuuntoUpload();
+        break;
+      case trainingPeaksChoice:
+        clearTrainingPeaksUpload();
+        break;
+      case underArmourChoice:
+        clearUnderArmourUpload();
+        break;
+      case stravaChoice:
+        stravaActivityId = 0;
+        break;
+      case dreeveChoice:
+        dreeveUploaded = false;
+        dreeveUploadIdentifier = "";
+        break;
+    }
+  }
+
   void markDreeveUploaded([String uploadIdentifier = ""]) {
     dreeveUploaded = true;
     dreeveUploadIdentifier = uploadIdentifier;
