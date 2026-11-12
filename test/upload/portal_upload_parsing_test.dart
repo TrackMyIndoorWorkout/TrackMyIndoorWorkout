@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
 import 'package:track_my_indoor_exercise/upload/constants.dart';
+import 'package:track_my_indoor_exercise/upload/strava/upload_activity.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
 void main() {
@@ -98,19 +99,100 @@ void main() {
       expect(activity.suuntoUploaded, isFalse);
       expect(activity.suuntoWorkoutUrl, isEmpty);
 
-      activity.uploaded = true;
-      activity.stravaActivityId = 777;
+      activity.markStravaUploadInitiated(12345);
+      activity.markStravaUploaded(777);
+      expect(activity.uploaded, isTrue);
+      expect(activity.stravaId, equals(12345));
+      expect(activity.stravaActivityId, equals(777));
       activity.clearUpload(stravaChoice);
+      expect(activity.uploaded, isFalse);
+      expect(activity.stravaId, equals(0));
       expect(activity.stravaActivityId, equals(0));
 
       activity.markDreeveUploaded("dreeve-uuid");
+      expect(activity.dreeveUploaded, isTrue);
+      expect(activity.dreeveUploadIdentifier, equals("dreeve-uuid"));
       activity.clearUpload(dreeveChoice);
+      expect(activity.dreeveUploaded, isFalse);
+      expect(activity.dreeveUploadIdentifier, isEmpty);
+    });
+
+    test('clearStravaUpload and clearDreeveUpload work directly', () {
+      final activity = Activity(
+        id: 4,
+        deviceName: "Bike",
+        deviceId: "dev4",
+        hrmId: "",
+        start: DateTime.now(),
+        distance: 100.0,
+        elapsed: 10,
+        movingTime: 10000,
+        calories: 10,
+        fourCC: "TEST",
+        sport: ActivityType.ride,
+        powerFactor: 1.0,
+        calorieFactor: 1.0,
+        hrCalorieFactor: 1.0,
+        hrmCalorieFactor: 1.0,
+        hrBasedCalories: false,
+        timeZone: "UTC",
+      );
+
+      activity.markStravaUploadInitiated(987);
+      activity.markStravaUploaded(654);
+      activity.clearStravaUpload();
+      expect(activity.stravaId, equals(0));
+      expect(activity.stravaActivityId, equals(0));
+      expect(activity.uploaded, isFalse);
+
+      activity.markDreeveUploaded("test-uuid");
+      activity.clearDreeveUpload();
       expect(activity.dreeveUploaded, isFalse);
       expect(activity.dreeveUploadIdentifier, isEmpty);
     });
   });
 
   group('Response JSON parsing verification', () {
+    test('parses Strava upload and status JSON correctly', () {
+      const initJsonStr = '''{
+        "id": 16486788,
+        "id_str": "16486788",
+        "external_id": "strava_flutter",
+        "error": null,
+        "status": "Your activity is still being processed.",
+        "activity_id": null
+      }''';
+      final initMap = jsonDecode(initJsonStr) as Map<String, dynamic>;
+      final initObj = ResponseUploadActivity.fromJson(initMap);
+      expect(initObj.id, equals(16486788));
+      expect(initObj.status, equals("Your activity is still being processed."));
+      expect(initObj.activityId, equals(0));
+      expect(initObj.error, isEmpty);
+
+      const readyJsonStr = '''{
+        "id": 16486788,
+        "status": "Your activity is ready.",
+        "activity_id": 99887766,
+        "error": null
+      }''';
+      final readyMap = jsonDecode(readyJsonStr) as Map<String, dynamic>;
+      final readyObj = ResponseUploadActivity.fromJson(readyMap);
+      expect(readyObj.id, equals(16486788));
+      expect(readyObj.status, equals("Your activity is ready."));
+      expect(readyObj.activityId, equals(99887766));
+      expect(readyObj.error, isEmpty);
+
+      const errorJsonStr = '''{
+        "id": 16486788,
+        "status": "There was an error processing your activity.",
+        "activity_id": null,
+        "error": "duplicate of activity 55443322"
+      }''';
+      final errorMap = jsonDecode(errorJsonStr) as Map<String, dynamic>;
+      final errorObj = ResponseUploadActivity.fromJson(errorMap);
+      expect(errorObj.id, equals(16486788));
+      expect(errorObj.error, equals("duplicate of activity 55443322"));
+    });
     test('parses TrainingPeaks async status JSON correctly', () {
       const sampleResponse = '''{
         "Completed": true,

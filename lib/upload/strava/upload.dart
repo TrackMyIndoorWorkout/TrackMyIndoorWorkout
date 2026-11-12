@@ -33,15 +33,6 @@ mixin Upload {
   ) async {
     debugPrint('Starting to upload activity');
 
-    final postUri = Uri.parse(uploadsEndpoint);
-    var request = http.MultipartRequest("POST", postUri);
-    request.fields['data_type'] = exporter.fileExtension(true);
-    request.fields['trainer'] = 'false';
-    request.fields['commute'] = 'false';
-    request.fields['name'] = activity.getTitle(true);
-    request.fields['external_id'] = 'strava_flutter';
-    request.fields['description'] = activity.getDescription(true);
-
     if (!Get.isRegistered<StravaToken>()) {
       debugPrint('Token not yet known');
       return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
@@ -55,6 +46,28 @@ mixin Upload {
       return Fault(StravaStatusCode.statusTokenNotKnownYet, 'Token not yet known');
     }
 
+    if (activity.stravaId > 0 && activity.stravaActivityId == 0) {
+      final statusResult = await checkStatus(header, activity, activity.stravaId);
+      if (statusResult.statusCode >= 200 && statusResult.statusCode < 300) {
+        return statusResult;
+      }
+      activity.clearStravaUpload();
+      if (Get.isRegistered<Isar>()) {
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+      }
+    }
+
+    final postUri = Uri.parse(uploadsEndpoint);
+    var request = http.MultipartRequest("POST", postUri);
+    request.fields['data_type'] = exporter.fileExtension(true);
+    request.fields['trainer'] = 'false';
+    request.fields['commute'] = 'false';
+    request.fields['name'] = activity.getTitle(true);
+    request.fields['external_id'] = 'strava_flutter';
+    request.fields['description'] = activity.getDescription(true);
     request.headers.addAll(header);
 
     final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
@@ -73,103 +86,138 @@ mixin Upload {
     debugPrint('Response: ${streamedResponse.statusCode} ${streamedResponse.reasonPhrase}');
 
     if (streamedResponse.statusCode < 200 || streamedResponse.statusCode >= 300) {
-      // response.statusCode indicates problem
       debugPrint('Error while uploading the activity');
       debugPrint('${streamedResponse.statusCode} - ${streamedResponse.reasonPhrase}');
-    } else {
-      // Upload is processed by the server
-      // now wait for the upload to be finished
-      //----------------------------------------
-      // response.statusCode == 201
-      debugPrint('Activity successfully created');
-
-      final response = await http.Response.fromStream(streamedResponse);
-      final body = response.body;
-      debugPrint(body);
-      final Map<String, dynamic> bodyMap = json.decode(body);
-      final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
-
-      if (decodedResponse.id > 0) {
-        activity.markStravaUploadInitiated(decodedResponse.id);
+      activity.clearStravaUpload();
+      if (Get.isRegistered<Isar>()) {
         final database = Get.find<Isar>();
         database.writeTxnSync(() {
           database.activitys.putSync(activity);
         });
+      }
+      return Fault(streamedResponse.statusCode, streamedResponse.reasonPhrase ?? "Unknown reason");
+    }
 
-        debugPrint('id ${decodedResponse.id}');
+    debugPrint('Activity upload initiated');
+    final response = await http.Response.fromStream(streamedResponse);
+    final body = response.body;
+    debugPrint(body);
+    final Map<String, dynamic> bodyMap;
+    try {
+      bodyMap = json.decode(body) as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('Failed to decode Strava upload response: $e');
+      activity.clearStravaUpload();
+      if (Get.isRegistered<Isar>()) {
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+      }
+      return Fault(0, 'Failed to decode upload response');
+    }
 
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-        final reqCheckUpgrade = '$uploadsEndpoint/${decodedResponse.id}';
-        final uri = Uri.parse(reqCheckUpgrade);
-        String? reasonPhrase = StravaStatusText.processed;
-        http.Response? resp;
-        ResponseUploadActivity decodedStatus = ResponseUploadActivity(0, "", "", "", 0);
-        while (reasonPhrase == StravaStatusText.processed) {
-          resp = await http.get(uri, headers: header);
-          reasonPhrase = resp.reasonPhrase;
-          debugPrint('Check Status $reasonPhrase ${resp.statusCode}');
+    final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
 
-          // Everything is fine the file has been loaded
-          if (resp.statusCode >= 200 && resp.statusCode < 300) {
-            // resp.statusCode == 200
-            debugPrint('Check Body: ${resp.body}');
-            final Map<String, dynamic> bodyMap = json.decode(resp.body);
-            decodedStatus = ResponseUploadActivity.fromJson(bodyMap);
-          }
+    if (decodedResponse.id <= 0) {
+      debugPrint('Invalid upload ID from Strava');
+      activity.clearStravaUpload();
+      if (Get.isRegistered<Isar>()) {
+        final database = Get.find<Isar>();
+        database.writeTxnSync(() {
+          database.activitys.putSync(activity);
+        });
+      }
+      return Fault(0, 'Invalid upload ID');
+    }
 
-          // 404 the temp id does not exist anymore
-          // Activity has been probably already loaded
-          if (resp.statusCode == 404) {
-            debugPrint('---> 404 activity already loaded  $reasonPhrase');
-          }
+    activity.markStravaUploadInitiated(decodedResponse.id);
+    if (Get.isRegistered<Isar>()) {
+      final database = Get.find<Isar>();
+      database.writeTxnSync(() {
+        database.activitys.putSync(activity);
+      });
+    }
 
-          if (reasonPhrase != null) {
-            if (reasonPhrase.compareTo(StravaStatusText.ready) == 0) {
-              debugPrint('---> Activity successfully uploaded');
-            }
+    return await checkStatus(header, activity, decodedResponse.id);
+  }
 
-            if (reasonPhrase.compareTo(StravaStatusText.notFound) == 0 ||
-                reasonPhrase.compareTo(StravaStatusText.errorMsg) == 0) {
-              debugPrint('---> Error while checking status upload');
-            }
+  Future<Fault> checkStatus(Map<String, String> header, Activity activity, int uploadId) async {
+    final statusUri = Uri.parse('$uploadsEndpoint/$uploadId');
 
-            if (reasonPhrase.compareTo(StravaStatusText.deleted) == 0) {
-              debugPrint('---> Activity deleted');
-            }
+    for (int attempt = 0; attempt < 10; attempt++) {
+      if (attempt > 0) {
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
 
-            if (reasonPhrase.compareTo(StravaStatusText.processed) == 0) {
-              debugPrint('---> try another time');
-              await Future<void>.delayed(const Duration(milliseconds: 200));
-            }
-          } else {
-            debugPrint('---> Unknown error');
-          }
+      final resp = await http.get(statusUri, headers: header);
+      debugPrint('Check Strava Status: ${resp.statusCode}');
+
+      if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        debugPrint('Error while checking upload status: ${resp.statusCode}');
+        activity.clearStravaUpload();
+        if (Get.isRegistered<Isar>()) {
+          final database = Get.find<Isar>();
+          database.writeTxnSync(() {
+            database.activitys.putSync(activity);
+          });
         }
+        return Fault(resp.statusCode, resp.reasonPhrase ?? "Error checking upload status");
+      }
 
-        int stravaActivityId = decodedStatus.activityId;
-        while (resp != null &&
-            resp.statusCode >= 200 &&
-            resp.statusCode < 300 &&
-            reasonPhrase == StravaStatusText.ok &&
-            decodedStatus.status == StravaStatusText.processed &&
-            stravaActivityId == 0) {
-          if (stravaActivityId > 0) {
-            activity.markStravaUploaded(stravaActivityId);
-          } else {
-            await Future<void>.delayed(const Duration(seconds: 1));
-            resp = await http.get(uri, headers: header);
-            final Map<String, dynamic> bodyMap = json.decode(resp.body);
-            decodedStatus = ResponseUploadActivity.fromJson(bodyMap);
-            reasonPhrase = resp.reasonPhrase;
-            stravaActivityId = decodedStatus.activityId;
-            if (stravaActivityId > 0) {
-              activity.markStravaUploaded(stravaActivityId);
-            }
-          }
+      final Map<String, dynamic> statusMap;
+      try {
+        statusMap = json.decode(resp.body) as Map<String, dynamic>;
+      } catch (e) {
+        debugPrint('Failed to decode Strava status body: $e');
+        continue;
+      }
+
+      final decodedStatus = ResponseUploadActivity.fromJson(statusMap);
+
+      if (decodedStatus.error.isNotEmpty) {
+        debugPrint('Strava processing error: ${decodedStatus.error}');
+        activity.clearStravaUpload();
+        if (Get.isRegistered<Isar>()) {
+          final database = Get.find<Isar>();
+          database.writeTxnSync(() {
+            database.activitys.putSync(activity);
+          });
         }
+        return Fault(400, decodedStatus.error);
+      }
+
+      if (decodedStatus.activityId > 0) {
+        activity.markStravaUploaded(decodedStatus.activityId);
+        if (Get.isRegistered<Isar>()) {
+          final database = Get.find<Isar>();
+          database.writeTxnSync(() {
+            database.activitys.putSync(activity);
+          });
+        }
+        return Fault(201, StravaStatusText.ready);
+      }
+
+      if (decodedStatus.status == StravaStatusText.ready && decodedStatus.activityId > 0) {
+        activity.markStravaUploaded(decodedStatus.activityId);
+        if (Get.isRegistered<Isar>()) {
+          final database = Get.find<Isar>();
+          database.writeTxnSync(() {
+            database.activitys.putSync(activity);
+          });
+        }
+        return Fault(201, StravaStatusText.ready);
       }
     }
 
-    return Fault(streamedResponse.statusCode, streamedResponse.reasonPhrase ?? "Unknown reason");
+    debugPrint('Strava upload polling timed out');
+    activity.clearStravaUpload();
+    if (Get.isRegistered<Isar>()) {
+      final database = Get.find<Isar>();
+      database.writeTxnSync(() {
+        database.activitys.putSync(activity);
+      });
+    }
+    return Fault(408, 'Polling timed out');
   }
 }

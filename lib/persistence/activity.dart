@@ -156,6 +156,17 @@ class Activity {
     underArmourUploaded = false;
   }
 
+  void clearStravaUpload() {
+    stravaId = 0;
+    stravaActivityId = 0;
+    uploaded = false;
+  }
+
+  void clearDreeveUpload() {
+    dreeveUploaded = false;
+    dreeveUploadIdentifier = "";
+  }
+
   void clearUpload(String portalName) {
     switch (portalName) {
       case suuntoChoice:
@@ -168,11 +179,10 @@ class Activity {
         clearUnderArmourUpload();
         break;
       case stravaChoice:
-        stravaActivityId = 0;
+        clearStravaUpload();
         break;
       case dreeveChoice:
-        dreeveUploaded = false;
-        dreeveUploadIdentifier = "";
+        clearDreeveUpload();
         break;
     }
   }
