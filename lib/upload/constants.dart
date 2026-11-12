@@ -7,6 +7,7 @@ const stravaChoice = "Strava";
 const suuntoChoice = "SUUNTO";
 const underArmourChoice = "MapMyFitness";
 const trainingPeaksChoice = "TrainingPeaks";
+const dreeveChoice = "Dreeve";
 const anyChoice = "Any";
 
 const List<String> portalNames = [
@@ -14,6 +15,7 @@ const List<String> portalNames = [
   suuntoChoice,
   underArmourChoice,
   trainingPeaksChoice,
+  dreeveChoice,
 ];
 
 class PortalChoiceDescriptor {
@@ -69,6 +71,13 @@ List<PortalChoiceDescriptor> getPortalChoices(bool justAuth, ThemeManager themeM
       "assets/integration/training-peaks-logo.svg",
       "assets/integration/training-peaks-2line.svg",
       themeManager.getBlueColor(),
+      1.7,
+    ),
+    PortalChoiceDescriptor(
+      portalNames[4],
+      "assets/integration/dreeve-logo.svg",
+      "assets/integration/dreeve.svg",
+      themeManager.getDreeveColor(),
       1.7,
     ),
   ];

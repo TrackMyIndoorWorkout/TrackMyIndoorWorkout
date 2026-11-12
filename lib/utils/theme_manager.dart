@@ -72,6 +72,10 @@ class ThemeManager {
     return isDark() ? Colors.redAccent : Colors.red;
   }
 
+  Color getDreeveColor() {
+    return const Color(0xFF04A9E7);
+  }
+
   Color getGreyColor() {
     return isDark() ? Colors.grey.shade400 : Colors.grey.shade600;
   }

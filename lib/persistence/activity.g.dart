@@ -22,53 +22,59 @@ const ActivitySchema = CollectionSchema(
     r'deviceId': PropertySchema(id: 2, name: r'deviceId', type: IsarType.string),
     r'deviceName': PropertySchema(id: 3, name: r'deviceName', type: IsarType.string),
     r'distance': PropertySchema(id: 4, name: r'distance', type: IsarType.double),
-    r'elapsed': PropertySchema(id: 5, name: r'elapsed', type: IsarType.long),
-    r'elapsedString': PropertySchema(id: 6, name: r'elapsedString', type: IsarType.string),
-    r'end': PropertySchema(id: 7, name: r'end', type: IsarType.dateTime),
-    r'fourCC': PropertySchema(id: 8, name: r'fourCC', type: IsarType.string),
-    r'hrBasedCalories': PropertySchema(id: 9, name: r'hrBasedCalories', type: IsarType.bool),
-    r'hrCalorieFactor': PropertySchema(id: 10, name: r'hrCalorieFactor', type: IsarType.double),
-    r'hrmCalorieFactor': PropertySchema(id: 11, name: r'hrmCalorieFactor', type: IsarType.double),
-    r'hrmId': PropertySchema(id: 12, name: r'hrmId', type: IsarType.string),
-    r'movingTime': PropertySchema(id: 13, name: r'movingTime', type: IsarType.long),
-    r'movingTimeString': PropertySchema(id: 14, name: r'movingTimeString', type: IsarType.string),
-    r'powerFactor': PropertySchema(id: 15, name: r'powerFactor', type: IsarType.double),
-    r'sport': PropertySchema(id: 16, name: r'sport', type: IsarType.string),
-    r'start': PropertySchema(id: 17, name: r'start', type: IsarType.dateTime),
-    r'stravaActivityId': PropertySchema(id: 18, name: r'stravaActivityId', type: IsarType.long),
-    r'stravaId': PropertySchema(id: 19, name: r'stravaId', type: IsarType.long),
-    r'strides': PropertySchema(id: 20, name: r'strides', type: IsarType.long),
-    r'suuntoBlobUrl': PropertySchema(id: 21, name: r'suuntoBlobUrl', type: IsarType.string),
+    r'dreeveUploadIdentifier': PropertySchema(
+      id: 5,
+      name: r'dreeveUploadIdentifier',
+      type: IsarType.string,
+    ),
+    r'dreeveUploaded': PropertySchema(id: 6, name: r'dreeveUploaded', type: IsarType.bool),
+    r'elapsed': PropertySchema(id: 7, name: r'elapsed', type: IsarType.long),
+    r'elapsedString': PropertySchema(id: 8, name: r'elapsedString', type: IsarType.string),
+    r'end': PropertySchema(id: 9, name: r'end', type: IsarType.dateTime),
+    r'fourCC': PropertySchema(id: 10, name: r'fourCC', type: IsarType.string),
+    r'hrBasedCalories': PropertySchema(id: 11, name: r'hrBasedCalories', type: IsarType.bool),
+    r'hrCalorieFactor': PropertySchema(id: 12, name: r'hrCalorieFactor', type: IsarType.double),
+    r'hrmCalorieFactor': PropertySchema(id: 13, name: r'hrmCalorieFactor', type: IsarType.double),
+    r'hrmId': PropertySchema(id: 14, name: r'hrmId', type: IsarType.string),
+    r'movingTime': PropertySchema(id: 15, name: r'movingTime', type: IsarType.long),
+    r'movingTimeString': PropertySchema(id: 16, name: r'movingTimeString', type: IsarType.string),
+    r'powerFactor': PropertySchema(id: 17, name: r'powerFactor', type: IsarType.double),
+    r'sport': PropertySchema(id: 18, name: r'sport', type: IsarType.string),
+    r'start': PropertySchema(id: 19, name: r'start', type: IsarType.dateTime),
+    r'stravaActivityId': PropertySchema(id: 20, name: r'stravaActivityId', type: IsarType.long),
+    r'stravaId': PropertySchema(id: 21, name: r'stravaId', type: IsarType.long),
+    r'strides': PropertySchema(id: 22, name: r'strides', type: IsarType.long),
+    r'suuntoBlobUrl': PropertySchema(id: 23, name: r'suuntoBlobUrl', type: IsarType.string),
     r'suuntoUploadIdentifier': PropertySchema(
-      id: 22,
+      id: 24,
       name: r'suuntoUploadIdentifier',
       type: IsarType.string,
     ),
-    r'suuntoUploaded': PropertySchema(id: 23, name: r'suuntoUploaded', type: IsarType.bool),
-    r'suuntoWorkoutUrl': PropertySchema(id: 24, name: r'suuntoWorkoutUrl', type: IsarType.string),
-    r'timeZone': PropertySchema(id: 25, name: r'timeZone', type: IsarType.string),
+    r'suuntoUploaded': PropertySchema(id: 25, name: r'suuntoUploaded', type: IsarType.bool),
+    r'suuntoWorkoutUrl': PropertySchema(id: 26, name: r'suuntoWorkoutUrl', type: IsarType.string),
+    r'timeZone': PropertySchema(id: 27, name: r'timeZone', type: IsarType.string),
     r'trainingPeaksFileTrackingUuid': PropertySchema(
-      id: 26,
+      id: 28,
       name: r'trainingPeaksFileTrackingUuid',
       type: IsarType.string,
     ),
     r'trainingPeaksUploaded': PropertySchema(
-      id: 27,
+      id: 29,
       name: r'trainingPeaksUploaded',
       type: IsarType.bool,
     ),
     r'trainingPeaksWorkoutId': PropertySchema(
-      id: 28,
+      id: 30,
       name: r'trainingPeaksWorkoutId',
       type: IsarType.long,
     ),
-    r'uaWorkoutId': PropertySchema(id: 29, name: r'uaWorkoutId', type: IsarType.long),
+    r'uaWorkoutId': PropertySchema(id: 31, name: r'uaWorkoutId', type: IsarType.long),
     r'underArmourUploaded': PropertySchema(
-      id: 30,
+      id: 32,
       name: r'underArmourUploaded',
       type: IsarType.bool,
     ),
-    r'uploaded': PropertySchema(id: 31, name: r'uploaded', type: IsarType.bool),
+    r'uploaded': PropertySchema(id: 33, name: r'uploaded', type: IsarType.bool),
   },
 
   estimateSize: _activityEstimateSize,
@@ -100,6 +106,7 @@ int _activityEstimateSize(Activity object, List<int> offsets, Map<Type, List<int
   var bytesCount = offsets.last;
   bytesCount += 3 + object.deviceId.length * 3;
   bytesCount += 3 + object.deviceName.length * 3;
+  bytesCount += 3 + object.dreeveUploadIdentifier.length * 3;
   bytesCount += 3 + object.elapsedString.length * 3;
   bytesCount += 3 + object.fourCC.length * 3;
   bytesCount += 3 + object.hrmId.length * 3;
@@ -124,33 +131,35 @@ void _activitySerialize(
   writer.writeString(offsets[2], object.deviceId);
   writer.writeString(offsets[3], object.deviceName);
   writer.writeDouble(offsets[4], object.distance);
-  writer.writeLong(offsets[5], object.elapsed);
-  writer.writeString(offsets[6], object.elapsedString);
-  writer.writeDateTime(offsets[7], object.end);
-  writer.writeString(offsets[8], object.fourCC);
-  writer.writeBool(offsets[9], object.hrBasedCalories);
-  writer.writeDouble(offsets[10], object.hrCalorieFactor);
-  writer.writeDouble(offsets[11], object.hrmCalorieFactor);
-  writer.writeString(offsets[12], object.hrmId);
-  writer.writeLong(offsets[13], object.movingTime);
-  writer.writeString(offsets[14], object.movingTimeString);
-  writer.writeDouble(offsets[15], object.powerFactor);
-  writer.writeString(offsets[16], object.sport);
-  writer.writeDateTime(offsets[17], object.start);
-  writer.writeLong(offsets[18], object.stravaActivityId);
-  writer.writeLong(offsets[19], object.stravaId);
-  writer.writeLong(offsets[20], object.strides);
-  writer.writeString(offsets[21], object.suuntoBlobUrl);
-  writer.writeString(offsets[22], object.suuntoUploadIdentifier);
-  writer.writeBool(offsets[23], object.suuntoUploaded);
-  writer.writeString(offsets[24], object.suuntoWorkoutUrl);
-  writer.writeString(offsets[25], object.timeZone);
-  writer.writeString(offsets[26], object.trainingPeaksFileTrackingUuid);
-  writer.writeBool(offsets[27], object.trainingPeaksUploaded);
-  writer.writeLong(offsets[28], object.trainingPeaksWorkoutId);
-  writer.writeLong(offsets[29], object.uaWorkoutId);
-  writer.writeBool(offsets[30], object.underArmourUploaded);
-  writer.writeBool(offsets[31], object.uploaded);
+  writer.writeString(offsets[5], object.dreeveUploadIdentifier);
+  writer.writeBool(offsets[6], object.dreeveUploaded);
+  writer.writeLong(offsets[7], object.elapsed);
+  writer.writeString(offsets[8], object.elapsedString);
+  writer.writeDateTime(offsets[9], object.end);
+  writer.writeString(offsets[10], object.fourCC);
+  writer.writeBool(offsets[11], object.hrBasedCalories);
+  writer.writeDouble(offsets[12], object.hrCalorieFactor);
+  writer.writeDouble(offsets[13], object.hrmCalorieFactor);
+  writer.writeString(offsets[14], object.hrmId);
+  writer.writeLong(offsets[15], object.movingTime);
+  writer.writeString(offsets[16], object.movingTimeString);
+  writer.writeDouble(offsets[17], object.powerFactor);
+  writer.writeString(offsets[18], object.sport);
+  writer.writeDateTime(offsets[19], object.start);
+  writer.writeLong(offsets[20], object.stravaActivityId);
+  writer.writeLong(offsets[21], object.stravaId);
+  writer.writeLong(offsets[22], object.strides);
+  writer.writeString(offsets[23], object.suuntoBlobUrl);
+  writer.writeString(offsets[24], object.suuntoUploadIdentifier);
+  writer.writeBool(offsets[25], object.suuntoUploaded);
+  writer.writeString(offsets[26], object.suuntoWorkoutUrl);
+  writer.writeString(offsets[27], object.timeZone);
+  writer.writeString(offsets[28], object.trainingPeaksFileTrackingUuid);
+  writer.writeBool(offsets[29], object.trainingPeaksUploaded);
+  writer.writeLong(offsets[30], object.trainingPeaksWorkoutId);
+  writer.writeLong(offsets[31], object.uaWorkoutId);
+  writer.writeBool(offsets[32], object.underArmourUploaded);
+  writer.writeBool(offsets[33], object.uploaded);
 }
 
 Activity _activityDeserialize(
@@ -165,32 +174,34 @@ Activity _activityDeserialize(
     deviceId: reader.readString(offsets[2]),
     deviceName: reader.readString(offsets[3]),
     distance: reader.readDoubleOrNull(offsets[4]) ?? 0.0,
-    elapsed: reader.readLongOrNull(offsets[5]) ?? 0,
-    end: reader.readDateTimeOrNull(offsets[7]),
-    fourCC: reader.readString(offsets[8]),
-    hrBasedCalories: reader.readBool(offsets[9]),
-    hrCalorieFactor: reader.readDouble(offsets[10]),
-    hrmCalorieFactor: reader.readDouble(offsets[11]),
-    hrmId: reader.readString(offsets[12]),
+    dreeveUploadIdentifier: reader.readStringOrNull(offsets[5]) ?? "",
+    dreeveUploaded: reader.readBoolOrNull(offsets[6]) ?? false,
+    elapsed: reader.readLongOrNull(offsets[7]) ?? 0,
+    end: reader.readDateTimeOrNull(offsets[9]),
+    fourCC: reader.readString(offsets[10]),
+    hrBasedCalories: reader.readBool(offsets[11]),
+    hrCalorieFactor: reader.readDouble(offsets[12]),
+    hrmCalorieFactor: reader.readDouble(offsets[13]),
+    hrmId: reader.readString(offsets[14]),
     id: id,
-    movingTime: reader.readLongOrNull(offsets[13]) ?? 0,
-    powerFactor: reader.readDouble(offsets[15]),
-    sport: reader.readString(offsets[16]),
-    start: reader.readDateTime(offsets[17]),
-    stravaActivityId: reader.readLongOrNull(offsets[18]) ?? 0,
-    stravaId: reader.readLongOrNull(offsets[19]) ?? 0,
-    strides: reader.readLongOrNull(offsets[20]) ?? 0,
-    suuntoBlobUrl: reader.readStringOrNull(offsets[21]) ?? "",
-    suuntoUploadIdentifier: reader.readStringOrNull(offsets[22]) ?? "",
-    suuntoUploaded: reader.readBoolOrNull(offsets[23]) ?? false,
-    suuntoWorkoutUrl: reader.readStringOrNull(offsets[24]) ?? "",
-    timeZone: reader.readString(offsets[25]),
-    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[26]) ?? "",
-    trainingPeaksUploaded: reader.readBoolOrNull(offsets[27]) ?? false,
-    trainingPeaksWorkoutId: reader.readLongOrNull(offsets[28]) ?? 0,
-    uaWorkoutId: reader.readLongOrNull(offsets[29]) ?? 0,
-    underArmourUploaded: reader.readBoolOrNull(offsets[30]) ?? false,
-    uploaded: reader.readBoolOrNull(offsets[31]) ?? false,
+    movingTime: reader.readLongOrNull(offsets[15]) ?? 0,
+    powerFactor: reader.readDouble(offsets[17]),
+    sport: reader.readString(offsets[18]),
+    start: reader.readDateTime(offsets[19]),
+    stravaActivityId: reader.readLongOrNull(offsets[20]) ?? 0,
+    stravaId: reader.readLongOrNull(offsets[21]) ?? 0,
+    strides: reader.readLongOrNull(offsets[22]) ?? 0,
+    suuntoBlobUrl: reader.readStringOrNull(offsets[23]) ?? "",
+    suuntoUploadIdentifier: reader.readStringOrNull(offsets[24]) ?? "",
+    suuntoUploaded: reader.readBoolOrNull(offsets[25]) ?? false,
+    suuntoWorkoutUrl: reader.readStringOrNull(offsets[26]) ?? "",
+    timeZone: reader.readString(offsets[27]),
+    trainingPeaksFileTrackingUuid: reader.readStringOrNull(offsets[28]) ?? "",
+    trainingPeaksUploaded: reader.readBoolOrNull(offsets[29]) ?? false,
+    trainingPeaksWorkoutId: reader.readLongOrNull(offsets[30]) ?? 0,
+    uaWorkoutId: reader.readLongOrNull(offsets[31]) ?? 0,
+    underArmourUploaded: reader.readBoolOrNull(offsets[32]) ?? false,
+    uploaded: reader.readBoolOrNull(offsets[33]) ?? false,
   );
   return object;
 }
@@ -213,58 +224,62 @@ P _activityDeserializeProp<P>(
     case 4:
       return (reader.readDoubleOrNull(offset) ?? 0.0) as P;
     case 5:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 6:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 7:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 8:
       return (reader.readString(offset)) as P;
     case 9:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTimeOrNull(offset)) as P;
     case 10:
-      return (reader.readDouble(offset)) as P;
-    case 11:
-      return (reader.readDouble(offset)) as P;
-    case 12:
       return (reader.readString(offset)) as P;
+    case 11:
+      return (reader.readBool(offset)) as P;
+    case 12:
+      return (reader.readDouble(offset)) as P;
     case 13:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readDouble(offset)) as P;
     case 14:
       return (reader.readString(offset)) as P;
     case 15:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 16:
       return (reader.readString(offset)) as P;
     case 17:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 18:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readString(offset)) as P;
     case 19:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readDateTime(offset)) as P;
     case 20:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     case 21:
-      return (reader.readStringOrNull(offset) ?? "") as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 22:
-      return (reader.readStringOrNull(offset) ?? "") as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 23:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 24:
       return (reader.readStringOrNull(offset) ?? "") as P;
     case 25:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 26:
       return (reader.readStringOrNull(offset) ?? "") as P;
     case 27:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readString(offset)) as P;
     case 28:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 29:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
-    case 30:
       return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 30:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 31:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 32:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 33:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -906,6 +921,160 @@ extension ActivityQueryFilter on QueryBuilder<Activity, Activity, QFilterConditi
 
           epsilon: epsilon,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'dreeveUploadIdentifier',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'dreeveUploadIdentifier',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'dreeveUploadIdentifier',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'dreeveUploadIdentifier',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'dreeveUploadIdentifier',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'dreeveUploadIdentifier',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'dreeveUploadIdentifier',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'dreeveUploadIdentifier',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'dreeveUploadIdentifier', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadIdentifierIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'dreeveUploadIdentifier', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterFilterCondition> dreeveUploadedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'dreeveUploaded', value: value),
       );
     });
   }
@@ -3106,6 +3275,30 @@ extension ActivityQuerySortBy on QueryBuilder<Activity, Activity, QSortBy> {
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByDreeveUploadIdentifier() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploadIdentifier', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByDreeveUploadIdentifierDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploadIdentifier', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByDreeveUploaded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploaded', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> sortByDreeveUploadedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploaded', Sort.desc);
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterSortBy> sortByElapsed() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'elapsed', Sort.asc);
@@ -3492,6 +3685,30 @@ extension ActivityQuerySortThenBy on QueryBuilder<Activity, Activity, QSortThenB
     });
   }
 
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByDreeveUploadIdentifier() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploadIdentifier', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByDreeveUploadIdentifierDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploadIdentifier', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByDreeveUploaded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploaded', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QAfterSortBy> thenByDreeveUploadedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'dreeveUploaded', Sort.desc);
+    });
+  }
+
   QueryBuilder<Activity, Activity, QAfterSortBy> thenByElapsed() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'elapsed', Sort.asc);
@@ -3860,6 +4077,20 @@ extension ActivityQueryWhereDistinct on QueryBuilder<Activity, Activity, QDistin
     });
   }
 
+  QueryBuilder<Activity, Activity, QDistinct> distinctByDreeveUploadIdentifier({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dreeveUploadIdentifier', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Activity, Activity, QDistinct> distinctByDreeveUploaded() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'dreeveUploaded');
+    });
+  }
+
   QueryBuilder<Activity, Activity, QDistinct> distinctByElapsed() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'elapsed');
@@ -4065,6 +4296,18 @@ extension ActivityQueryProperty on QueryBuilder<Activity, Activity, QQueryProper
   QueryBuilder<Activity, double, QQueryOperations> distanceProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'distance');
+    });
+  }
+
+  QueryBuilder<Activity, String, QQueryOperations> dreeveUploadIdentifierProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dreeveUploadIdentifier');
+    });
+  }
+
+  QueryBuilder<Activity, bool, QQueryOperations> dreeveUploadedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'dreeveUploaded');
     });
   }
 

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../persistence/activity.dart';
 import 'constants.dart';
+import 'dreeve/dreeve_service.dart';
 import 'strava/strava_service.dart';
 import 'suunto/suunto_service.dart';
 import 'training_peaks/training_peaks_service.dart';
@@ -35,6 +36,12 @@ abstract class UploadService {
           return Get.isRegistered<TrainingPeaksService>()
               ? Get.find<TrainingPeaksService>()
               : Get.put<TrainingPeaksService>(TrainingPeaksService(), permanent: true);
+        }
+      case dreeveChoice:
+        {
+          return Get.isRegistered<DreeveService>()
+              ? Get.find<DreeveService>()
+              : Get.put<DreeveService>(DreeveService(), permanent: true);
         }
       case stravaChoice:
       default:

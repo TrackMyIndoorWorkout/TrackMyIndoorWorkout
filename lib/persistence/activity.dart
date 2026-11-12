@@ -9,6 +9,7 @@ import '../devices/device_fourcc.dart';
 import '../preferences/activity_upload_description.dart';
 import '../preferences/activity_upload_title.dart';
 import '../upload/constants.dart';
+import '../upload/dreeve/dreeve_service.dart';
 import '../upload/strava/constants.dart';
 import '../upload/suunto/constants.dart';
 import '../upload/training_peaks/constants.dart';
@@ -53,6 +54,8 @@ class Activity {
   int trainingPeaksWorkoutId;
   String trainingPeaksFileTrackingUuid;
   int stravaActivityId;
+  bool dreeveUploaded;
+  String dreeveUploadIdentifier;
 
   String get elapsedString => Duration(seconds: elapsed).toDisplay();
   String get movingTimeString => Duration(milliseconds: movingTime).toDisplay();
@@ -81,6 +84,8 @@ class Activity {
     this.trainingPeaksUploaded = false,
     this.trainingPeaksWorkoutId = 0,
     this.trainingPeaksFileTrackingUuid = "",
+    this.dreeveUploaded = false,
+    this.dreeveUploadIdentifier = "",
     required this.fourCC,
     required this.sport,
     required this.powerFactor,
@@ -140,6 +145,11 @@ class Activity {
     trainingPeaksUploaded = true;
   }
 
+  void markDreeveUploaded([String uploadIdentifier = ""]) {
+    dreeveUploaded = true;
+    dreeveUploadIdentifier = uploadIdentifier;
+  }
+
   bool isUploaded(String portalName) {
     switch (portalName) {
       case suuntoChoice:
@@ -148,8 +158,14 @@ class Activity {
         return underArmourUploaded;
       case trainingPeaksChoice:
         return trainingPeaksUploaded;
+      case dreeveChoice:
+        return dreeveUploaded;
       case anyChoice:
-        return uploaded || suuntoUploaded || underArmourUploaded || trainingPeaksUploaded;
+        return uploaded ||
+            suuntoUploaded ||
+            underArmourUploaded ||
+            trainingPeaksUploaded ||
+            dreeveUploaded;
       case stravaChoice:
       default:
         return uploaded;
@@ -164,6 +180,8 @@ class Activity {
         return uaWorkoutId > 0;
       case trainingPeaksChoice:
         return false;
+      case dreeveChoice:
+        return dreeveUploadIdentifier.isNotEmpty;
       case stravaChoice:
         return stravaActivityId > 0;
       default:
@@ -188,6 +206,12 @@ class Activity {
         return "$underArmourWorkoutUrlBase$uaWorkoutId";
       case trainingPeaksChoice:
         return trainingPeaksPortalUrl;
+      case dreeveChoice:
+        final serverUrl = DreeveService.getServerUrl();
+        if (dreeveUploadIdentifier.isNotEmpty) {
+          return "$serverUrl/activity/$dreeveUploadIdentifier";
+        }
+        return serverUrl;
       case stravaChoice:
         if (stravaActivityId > 0) {
           return "$stravaActivityUrlBase$stravaActivityId";
@@ -214,7 +238,7 @@ class Activity {
   }
 
   String uniqueIntegrationString() {
-    return "$id $stravaId $suuntoUploadIdentifier $uaWorkoutId $trainingPeaksWorkoutId";
+    return "$id $stravaId $suuntoUploadIdentifier $uaWorkoutId $trainingPeaksWorkoutId $dreeveUploadIdentifier";
   }
 
   WorkoutSummary getWorkoutSummary(String manufacturer) {

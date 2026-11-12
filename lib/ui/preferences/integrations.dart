@@ -8,9 +8,11 @@ import '../../preferences/instant_upload.dart';
 import '../../preferences/training_peaks_upload_public.dart';
 import '../../preferences/upload_display_mode.dart';
 import '../../upload/constants.dart';
+import '../../upload/dreeve/dreeve_service.dart';
 import '../../upload/upload_service.dart';
 import '../../utils/preferences.dart';
 import '../../utils/theme_manager.dart';
+import 'dreeve_dialog.dart';
 import 'preferences_screen_mixin.dart';
 
 class IntegrationPreferencesScreen extends StatefulWidget with PreferencesScreenMixin {
@@ -46,6 +48,50 @@ class IntegrationPreferencesScreenState extends State<IntegrationPreferencesScre
   }
 
   Future<bool> toggleIntegration(String portalName) async {
+    if (portalName == dreeveChoice) {
+      if (integrationStates[dreeveChoice] ?? false) {
+        final action = await showDialog<String>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Dreeve Integration"),
+            content: Text("Connected to ${DreeveService.getServerUrl()}"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, "cancel"),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, "disconnect"),
+                child: Text("Disconnect", style: TextStyle(color: _themeManager.getRedColor())),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, "edit"),
+                child: const Text("Edit Settings"),
+              ),
+            ],
+          ),
+        );
+
+        if (action == "disconnect") {
+          await UploadService.getInstance(dreeveChoice).logout();
+          Get.snackbar("Success", "Disconnected from Dreeve");
+          await _loadIntegrationStates();
+          return true;
+        } else if (action == "edit") {
+          if (mounted) {
+            await DreeveConfigDialog.show(context, onSaved: _loadIntegrationStates);
+            await _loadIntegrationStates();
+          }
+          return true;
+        }
+        return false;
+      } else {
+        await DreeveConfigDialog.show(context, onSaved: _loadIntegrationStates);
+        await _loadIntegrationStates();
+        return integrationStates[dreeveChoice] ?? false;
+      }
+    }
+
     if (!await hasInternetConnection()) {
       Get.snackbar("Warning", "No data connection detected, try again later!");
       return false;
