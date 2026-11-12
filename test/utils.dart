@@ -8,8 +8,8 @@ import 'package:track_my_indoor_exercise/export/export_record.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
 import 'package:track_my_indoor_exercise/utils/constants.dart';
 
-const smallRepetition = 10;
-const repetition = 50;
+const smallRepetition = 3;
+const repetition = 10;
 
 List<int> getRandomInts(int count, int max, Random source) {
   return List<int>.generate(count, (index) => source.nextInt(max));
