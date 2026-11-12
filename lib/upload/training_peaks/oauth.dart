@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../utils/constants.dart';
 import '../secure_token_storage.dart';
 import 'constants.dart';
+import 'training_peaks.dart';
 import 'training_peaks_token.dart';
 
 ///===========================================
@@ -158,14 +159,57 @@ mixin Auth {
     );
   }
 
-  Future<bool> hasValidToken() async {
+  Future<bool> hasValidToken([String? clientId, String? secret]) async {
     final String? accessToken = await _secureTokenStorage.read(trainingPeaksAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
     final TrainingPeaksToken tokenStored = await _getStoredToken(preloadedAccessToken: accessToken);
     final resolvedToken = tokenStored.accessToken;
-    return resolvedToken != null && resolvedToken.isNotEmpty && resolvedToken != "null";
+    if (resolvedToken == null || resolvedToken.isEmpty || resolvedToken == "null") {
+      return false;
+    }
+
+    if (!_isTokenExpired(tokenStored)) {
+      return true;
+    }
+
+    // Token is expired. Try silent refresh if refresh token and credentials are available.
+    final effectiveClientId =
+        clientId ?? (this is TrainingPeaks ? (this as TrainingPeaks).clientId : null);
+    final effectiveSecret =
+        secret ?? (this is TrainingPeaks ? (this as TrainingPeaks).secret : null);
+    final refreshToken = tokenStored.refreshToken;
+
+    if (effectiveClientId != null &&
+        effectiveSecret != null &&
+        refreshToken != null &&
+        refreshToken.isNotEmpty &&
+        refreshToken != "0" &&
+        refreshToken != "null") {
+      debugPrint('TrainingPeaks access token expired, attempting silent refresh');
+      final refreshAnswer = await _getNewAccessToken(
+        effectiveClientId,
+        effectiveSecret,
+        refreshToken,
+      );
+      if (refreshAnswer.statusCode != null &&
+          refreshAnswer.statusCode! >= 200 &&
+          refreshAnswer.statusCode! < 300 &&
+          refreshAnswer.accessToken != null &&
+          refreshAnswer.accessToken!.isNotEmpty) {
+        await _saveToken(
+          refreshAnswer.accessToken,
+          refreshAnswer.refreshToken ?? refreshToken,
+          refreshAnswer.expiresAt,
+          tokenStored.scope,
+        );
+        debugPrint('TrainingPeaks token refreshed successfully in hasValidToken');
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /// Do Training Peaks Authentication.
@@ -342,7 +386,12 @@ mixin Auth {
   /// Otherwise return false
   ///
   /// including when there is no token yet
-  bool _isTokenExpired(TrainingPeaksToken token) {
+  /// Return true if the expiry date is passed or within the clock skew window.
+  ///
+  /// Otherwise return false
+  ///
+  /// including when there is no token yet
+  bool _isTokenExpired(TrainingPeaksToken token, {int clockSkewSeconds = 60}) {
     debugPrint(
       ' current Epoch time ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
       ' exp. time: ${token.expiresAt}',
@@ -353,7 +402,7 @@ mixin Auth {
       return false;
     }
 
-    if (token.expiresAt! * 1000 < DateTime.now().millisecondsSinceEpoch) {
+    if ((token.expiresAt! - clockSkewSeconds) * 1000 < DateTime.now().millisecondsSinceEpoch) {
       return true;
     } else {
       return false;

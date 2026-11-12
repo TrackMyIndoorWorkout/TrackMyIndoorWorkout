@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../../utils/constants.dart';
 import '../secure_token_storage.dart';
 import 'constants.dart';
+import 'suunto.dart';
 import 'suunto_token.dart';
 
 ///===========================================
@@ -136,14 +137,58 @@ mixin Auth {
     );
   }
 
-  Future<bool> hasValidToken() async {
+  Future<bool> hasValidToken([String? clientId, String? secret, String? subscriptionKey]) async {
     final String? accessToken = await _secureTokenStorage.read(suuntoAccessTokenTag);
     if (accessToken == null || accessToken.isEmpty || accessToken == "null") {
       return false;
     }
     final SuuntoToken tokenStored = await _getStoredToken(preloadedAccessToken: accessToken);
     final resolvedToken = tokenStored.accessToken;
-    return resolvedToken != null && resolvedToken.isNotEmpty && resolvedToken != "null";
+    if (resolvedToken == null || resolvedToken.isEmpty || resolvedToken == "null") {
+      return false;
+    }
+
+    if (!_isTokenExpired(tokenStored)) {
+      return true;
+    }
+
+    // Token is expired. Try silent refresh if refresh token and credentials are available.
+    final effectiveClientId = clientId ?? (this is Suunto ? (this as Suunto).clientId : null);
+    final effectiveSecret = secret ?? (this is Suunto ? (this as Suunto).secret : null);
+    final effectiveSubscriptionKey =
+        subscriptionKey ?? (this is Suunto ? (this as Suunto).subscriptionKey : null);
+    final refreshToken = tokenStored.refreshToken;
+
+    if (effectiveClientId != null &&
+        effectiveSecret != null &&
+        effectiveSubscriptionKey != null &&
+        refreshToken != null &&
+        refreshToken.isNotEmpty &&
+        refreshToken != "0" &&
+        refreshToken != "null") {
+      debugPrint('Suunto access token expired, attempting silent refresh');
+      final refreshAnswer = await _getNewAccessToken(
+        effectiveClientId,
+        effectiveSecret,
+        tokenStored,
+        effectiveSubscriptionKey,
+      );
+      if (refreshAnswer.statusCode != null &&
+          refreshAnswer.statusCode! >= 200 &&
+          refreshAnswer.statusCode! < 300 &&
+          refreshAnswer.accessToken != null &&
+          refreshAnswer.accessToken!.isNotEmpty) {
+        await _saveToken(
+          refreshAnswer.accessToken,
+          refreshAnswer.refreshToken ?? refreshToken,
+          refreshAnswer.expiresAt,
+        );
+        debugPrint('Suunto token refreshed successfully in hasValidToken');
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /// Do SUUNTO Authentication.
@@ -307,12 +352,12 @@ mixin Auth {
     return (answer);
   }
 
-  /// Return true the expiry date is passed
+  /// Return true if the expiry date is passed or within the clock skew window.
   ///
   /// Otherwise return false
   ///
   /// including when there is no token yet
-  bool _isTokenExpired(SuuntoToken token) {
+  bool _isTokenExpired(SuuntoToken token, {int clockSkewSeconds = 60}) {
     debugPrint(
       ' current time in ms ${DateTime.now().millisecondsSinceEpoch ~/ 1000}'
       ' exp. time: ${token.expiresAt}',
@@ -323,7 +368,7 @@ mixin Auth {
       return false;
     }
 
-    if (token.expiresAt! * 1000 < DateTime.now().millisecondsSinceEpoch) {
+    if ((token.expiresAt! - clockSkewSeconds) * 1000 < DateTime.now().millisecondsSinceEpoch) {
       return true;
     } else {
       return false;
