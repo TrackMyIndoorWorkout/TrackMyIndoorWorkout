@@ -388,6 +388,7 @@ mixin Auth {
     // If header is "empty"
     if (header.containsKey('88')) {
       debugPrint('Access token seems to be already cleared');
+      await _saveToken(null, null, null);
       return true;
     }
 
@@ -395,15 +396,20 @@ mixin Auth {
 
     debugPrint('request $deAuthorizeUrl');
     bool success = false;
-    final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      debugPrint('DeAuthorize done');
-      debugPrint('response ${response.body}');
-      success = true;
-    } else {
-      debugPrint('Error while deauthorizing');
+    try {
+      final response = await http.post(Uri.parse(deAuthorizeUrl), headers: header);
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        debugPrint('DeAuthorize done');
+        debugPrint('response ${response.body}');
+        success = true;
+      } else {
+        debugPrint('Error while deauthorizing: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Exception while deauthorizing: $e');
+    } finally {
+      await _saveToken(null, null, null);
     }
-    await _saveToken(null, null, null);
 
     return success;
   }

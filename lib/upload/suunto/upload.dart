@@ -31,19 +31,19 @@ mixin Upload {
 
     if (!Get.isRegistered<SuuntoToken>()) {
       debugPrint('Token not yet known');
-      return 0;
+      return 401;
     }
 
     var suuntoToken = Get.find<SuuntoToken>();
     if (suuntoToken.accessToken == null) {
       // Token has not been yet stored in memory
-      return 0;
+      return 401;
     }
 
     var headers = suuntoToken.getAuthorizationHeader(suuntoSubscriptionPrimaryKey);
     if (headers.containsKey('88') == true) {
       debugPrint('Token not yet known');
-      return 0;
+      return 401;
     }
 
     headers.addAll({"Accept": "application/json", "Content-Type": "application/json"});
@@ -91,12 +91,12 @@ mixin Upload {
       blobUrl = initJson['url'] as String? ?? "";
     } catch (e) {
       debugPrint('Failed to decode Suunto upload init response: $e');
-      return 0;
+      return 400;
     }
 
     if (uploadId.isEmpty || blobUrl.isEmpty) {
       debugPrint('Upload ID or blob URL empty in init response');
-      return 0;
+      return 400;
     }
 
     activity.suuntoUploadInitiated(uploadId, blobUrl);
@@ -138,7 +138,7 @@ mixin Upload {
     }
 
     if (activity.suuntoUploadIdentifier.isEmpty) {
-      return 0;
+      return 400;
     }
 
     final statusUri = Uri.parse("$uploadsEndpoint/${activity.suuntoUploadIdentifier}");

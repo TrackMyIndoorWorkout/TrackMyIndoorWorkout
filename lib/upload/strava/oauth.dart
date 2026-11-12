@@ -447,14 +447,19 @@ mixin Auth {
     // If header is not "empty"
     if (header.containsKey('88') == false) {
       debugPrint('request $deauthorizationEndpoint');
-      final rep = await http.post(Uri.parse(deauthorizationEndpoint), headers: header);
-      if (rep.statusCode >= 200 && rep.statusCode < 300) {
-        debugPrint('DeAuthorize done');
-        debugPrint('response ${rep.body}');
-        fault.statusCode = StravaStatusCode.statusOk;
-        fault.message = 'DeAuthorize done';
-      } else {
-        debugPrint('Problem in deAuthorize request');
+      try {
+        final rep = await http.post(Uri.parse(deauthorizationEndpoint), headers: header);
+        if (rep.statusCode >= 200 && rep.statusCode < 300) {
+          debugPrint('DeAuthorize done');
+          debugPrint('response ${rep.body}');
+          fault.statusCode = StravaStatusCode.statusOk;
+          fault.message = 'DeAuthorize done';
+        } else {
+          debugPrint('Problem in deAuthorize request');
+          fault.statusCode = StravaStatusCode.statusDeAuthorizeError;
+        }
+      } catch (e) {
+        debugPrint('Exception in deAuthorize request: $e');
         fault.statusCode = StravaStatusCode.statusDeAuthorizeError;
       }
     } else {

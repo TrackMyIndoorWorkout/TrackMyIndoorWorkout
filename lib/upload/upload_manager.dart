@@ -80,7 +80,8 @@ class UploadManager extends GetxService {
 
       final statusCode = await uploadService.upload(activity, calculateGps);
       final success =
-          statusCode == StravaStatusCode.statusOk || (statusCode >= 200 && statusCode < 300);
+          (portalName == stravaChoice && statusCode == StravaStatusCode.statusOk) ||
+          (statusCode >= 200 && statusCode < 300);
 
       _portalStatus[key] = success ? UploadStatus.success : UploadStatus.failed;
 

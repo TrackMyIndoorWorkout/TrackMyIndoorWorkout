@@ -125,4 +125,58 @@ void main() {
       expect(await tp.hasValidToken(), isTrue);
     });
   });
+
+  group('OAuth deAuthorize cleans up secure storage across portals', () {
+    test('Strava deAuthorize removes stored tokens', () async {
+      await tokenStorage.write(stravaAccessTokenTag, "token");
+      await tokenStorage.write(stravaRefreshTokenTag, "refresh");
+      await tokenStorage.write(stravaExpiresAtTag, "12345");
+
+      final strava = Strava("client_id", "secret");
+      await strava.deAuthorize();
+
+      expect(await tokenStorage.read(stravaAccessTokenTag), isNull);
+      expect(await tokenStorage.read(stravaRefreshTokenTag), isNull);
+      expect(await tokenStorage.read(stravaExpiresAtTag), isNull);
+    });
+
+    test('Suunto deAuthorize removes stored tokens', () async {
+      await tokenStorage.write(suuntoAccessTokenTag, "token");
+      await tokenStorage.write(suuntoRefreshTokenTag, "refresh");
+      await tokenStorage.write(suuntoExpiresAtTag, "12345");
+
+      final suunto = Suunto("client_id", "secret", "sub_key");
+      await suunto.deAuthorize("client_id", "sub_key");
+
+      expect(await tokenStorage.read(suuntoAccessTokenTag), isNull);
+      expect(await tokenStorage.read(suuntoRefreshTokenTag), isNull);
+      expect(await tokenStorage.read(suuntoExpiresAtTag), isNull);
+    });
+
+    test('TrainingPeaks deAuthorize removes stored tokens', () async {
+      await tokenStorage.write(trainingPeaksAccessTokenTag, "token");
+      await tokenStorage.write(trainingPeaksRefreshTokenTag, "refresh");
+      await tokenStorage.write(trainingPeaksExpiresAtTag, "12345");
+
+      final tp = TrainingPeaks("client_id", "secret");
+      await tp.deAuthorize();
+
+      expect(await tokenStorage.read(trainingPeaksAccessTokenTag), isNull);
+      expect(await tokenStorage.read(trainingPeaksRefreshTokenTag), isNull);
+      expect(await tokenStorage.read(trainingPeaksExpiresAtTag), isNull);
+    });
+
+    test('UnderArmour deAuthorize removes stored tokens', () async {
+      await tokenStorage.write(underArmourAccessTokenTag, "token");
+      await tokenStorage.write(underArmourRefreshTokenTag, "refresh");
+      await tokenStorage.write(underArmourExpiresAtTag, "12345");
+
+      final ua = UnderArmour("client_id", "secret");
+      await ua.deAuthorize("client_id");
+
+      expect(await tokenStorage.read(underArmourAccessTokenTag), isNull);
+      expect(await tokenStorage.read(underArmourRefreshTokenTag), isNull);
+      expect(await tokenStorage.read(underArmourExpiresAtTag), isNull);
+    });
+  });
 }

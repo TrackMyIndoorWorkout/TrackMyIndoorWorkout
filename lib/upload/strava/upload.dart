@@ -114,7 +114,7 @@ mixin Upload {
           database.activitys.putSync(activity);
         });
       }
-      return Fault(0, 'Failed to decode upload response');
+      return Fault(StravaStatusCode.statusUnknownError, 'Failed to decode upload response');
     }
 
     final decodedResponse = ResponseUploadActivity.fromJson(bodyMap);
@@ -128,7 +128,7 @@ mixin Upload {
           database.activitys.putSync(activity);
         });
       }
-      return Fault(0, 'Invalid upload ID');
+      return Fault(StravaStatusCode.statusUnknownError, 'Invalid upload ID');
     }
 
     activity.markStravaUploadInitiated(decodedResponse.id);

@@ -1,7 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:track_my_indoor_exercise/export/activity_export.dart';
 import 'package:track_my_indoor_exercise/persistence/activity.dart';
 import 'package:track_my_indoor_exercise/upload/constants.dart';
 import 'package:track_my_indoor_exercise/upload/suunto/constants.dart';
+import 'package:track_my_indoor_exercise/upload/suunto/suunto.dart';
+import 'package:track_my_indoor_exercise/upload/suunto/suunto_token.dart';
+
+class FakeActivityExport extends Fake implements ActivityExport {
+  @override
+  String fileExtension(bool compressed) => compressed ? ".fit.gz" : ".fit";
+
+  @override
+  String mimeType(bool compressed) => "application/vnd.ant.fit";
+}
 
 Activity createTestActivity({
   String suuntoUploadIdentifier = "",
@@ -83,6 +95,42 @@ void main() {
       expect(activity.suuntoUploadIdentifier, isEmpty);
       expect(activity.suuntoBlobUrl, isEmpty);
       expect(activity.suuntoWorkoutUrl, isEmpty);
+    });
+  });
+
+  group('Suunto uploadActivity token checks', () {
+    tearDown(() {
+      Get.reset();
+    });
+
+    test('uploadActivity returns 401 when SuuntoToken not registered', () async {
+      final suunto = Suunto("client_id", "secret", "sub_key");
+      final activity = createTestActivity();
+      final status = await suunto.uploadActivity(activity, [1, 2, 3], FakeActivityExport());
+
+      expect(status, equals(401));
+    });
+
+    test('uploadActivity returns 401 when SuuntoToken accessToken is null', () async {
+      final token = SuuntoToken(accessToken: null);
+      Get.put<SuuntoToken>(token);
+
+      final suunto = Suunto("client_id", "secret", "sub_key");
+      final activity = createTestActivity();
+      final status = await suunto.uploadActivity(activity, [1, 2, 3], FakeActivityExport());
+
+      expect(status, equals(401));
+    });
+
+    test('uploadActivity returns 401 when SuuntoToken header is invalid', () async {
+      final token = SuuntoToken(accessToken: "Error");
+      Get.put<SuuntoToken>(token);
+
+      final suunto = Suunto("client_id", "secret", "sub_key");
+      final activity = createTestActivity();
+      final status = await suunto.uploadActivity(activity, [1, 2, 3], FakeActivityExport());
+
+      expect(status, equals(401));
     });
   });
 }
