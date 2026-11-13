@@ -1,8 +1,11 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pref/pref.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:workmanager/workmanager.dart';
 
 import '../../persistence/activity.dart';
@@ -13,7 +16,10 @@ import '../../persistence/power_tune.dart';
 import '../../persistence/record.dart';
 import '../../persistence/workout_summary.dart';
 import '../../preferences/database_location.dart';
+import '../../upload/secure_token_storage.dart';
 import '../../upload/upload_service.dart';
+import '../../utils/constants.dart';
+import '../../utils/init_preferences.dart';
 import 'upload_queue.dart';
 
 const String backgroundUploadTaskKey = "com.trackmyindoorworkout.background_upload";
@@ -30,14 +36,53 @@ void callbackDispatcher() {
 Future<void> ensureBackgroundServicesInitialized() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize timezone database for TrackManager / export GPS track selection
+  try {
+    final byteData = await rootBundle.load('assets/timezones_10y.tzf');
+    tz.initializeDatabase(byteData.buffer.asUint8List());
+  } catch (e) {
+    debugPrint("Background timezone init error: $e");
+  }
+
+  // Initialize preferences (needed for exporters, title/description templates, and portal flags)
+  if (!Get.isRegistered<BasePrefService>()) {
+    try {
+      await initPreferences();
+    } catch (e) {
+      debugPrint("Background preferences init error: $e");
+    }
+  }
+
+  // Initialize PackageInfo (needed for FIT/TCX/JSON ActivityExport headers)
+  if (!Get.isRegistered<PackageInfo>()) {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      Get.put<PackageInfo>(packageInfo, permanent: true);
+    } catch (_) {
+      Get.put<PackageInfo>(
+        PackageInfo(
+          appName: appName,
+          packageName: "dev.csaba.track_my_indoor_exercise",
+          version: "1.0.0",
+          buildNumber: "1",
+        ),
+        permanent: true,
+      );
+    }
+  }
+
+  if (!Get.isRegistered<SecureTokenStorage>()) {
+    Get.put<SecureTokenStorage>(SecureTokenStorage(), permanent: true);
+  }
+
   // Initialize Isar in background isolate if not already opened
-  var isar = Isar.getInstance();
+  var isar = Get.isRegistered<Isar>() ? Get.find<Isar>() : Isar.getInstance();
   if (isar == null) {
     String? dbLocation;
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      dbLocation = prefs.getString(databaseLocationTag);
-    } catch (_) {}
+    if (Get.isRegistered<BasePrefService>()) {
+      dbLocation =
+          Get.find<BasePrefService>().get<String>(databaseLocationTag) ?? databaseLocationDefault;
+    }
 
     if (dbLocation == null || dbLocation.isEmpty) {
       try {

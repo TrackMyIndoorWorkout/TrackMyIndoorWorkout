@@ -73,10 +73,9 @@ void main() async {
         WorkmanagerService.initialize();
       }
 
-      PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
-        Get.put<PackageInfo>(packageInfo, permanent: true);
-        Logging().logVersion(packageInfo);
-      });
+      final packageInfo = await PackageInfo.fromPlatform();
+      Get.put<PackageInfo>(packageInfo, permanent: true);
+      Logging().logVersion(packageInfo);
 
       runApp(TrackMyIndoorExerciseApp(prefService: prefService));
     },

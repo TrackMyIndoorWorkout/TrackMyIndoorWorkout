@@ -66,9 +66,11 @@ mixin Upload {
       "User-Agent": "$clientId/1.0",
     });
 
-    final prefService = Get.find<BasePrefService>();
     final workoutPublic =
-        prefService.get<bool>(trainingPeaksUploadPublicTag) ?? trainingPeaksUploadPublicDefault;
+        (Get.isRegistered<BasePrefService>()
+            ? Get.find<BasePrefService>().get<bool>(trainingPeaksUploadPublicTag)
+            : null) ??
+        trainingPeaksUploadPublicDefault;
     final fileName = activity.getFileNameStub() + exporter.fileExtension(true);
     final fileContentString = base64.encode(fileContent);
 

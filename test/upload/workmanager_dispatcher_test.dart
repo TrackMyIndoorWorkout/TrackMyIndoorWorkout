@@ -1,9 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:pref/pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:track_my_indoor_exercise/upload/background/upload_queue.dart';
 import 'package:track_my_indoor_exercise/upload/background/workmanager_dispatcher.dart';
 import 'package:track_my_indoor_exercise/upload/constants.dart';
+import 'package:track_my_indoor_exercise/upload/secure_token_storage.dart';
 
 void main() {
   setUp(() {
@@ -15,6 +18,18 @@ void main() {
     test('constants have expected values', () {
       expect(backgroundUploadTaskKey, equals("com.trackmyindoorworkout.background_upload"));
       expect(maxBackgroundUploadAttempts, equals(5));
+    });
+
+    test('ensureBackgroundServicesInitialized registers BasePrefService, PackageInfo, and SecureTokenStorage', () async {
+      expect(Get.isRegistered<BasePrefService>(), isFalse);
+      expect(Get.isRegistered<PackageInfo>(), isFalse);
+      expect(Get.isRegistered<SecureTokenStorage>(), isFalse);
+
+      await ensureBackgroundServicesInitialized();
+
+      expect(Get.isRegistered<BasePrefService>(), isTrue);
+      expect(Get.isRegistered<PackageInfo>(), isTrue);
+      expect(Get.isRegistered<SecureTokenStorage>(), isTrue);
     });
 
     test('executeBackgroundUploadTask returns true when queue is empty', () async {

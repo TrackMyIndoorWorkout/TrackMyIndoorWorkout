@@ -308,9 +308,12 @@ class Activity {
         .replaceAll("{time}", DateFormat.Hms().format(start));
   }
 
-  String getTitle(bool moderated) {
+  String getTitle(bool moderated, {String? customTitleTemplate}) {
     String title =
-        Get.find<BasePrefService>().get<String>(activityUploadTitleTag) ??
+        customTitleTemplate ??
+        (Get.isRegistered<BasePrefService>()
+            ? Get.find<BasePrefService>().get<String>(activityUploadTitleTag)
+            : null) ??
         activityUploadTitleDefault;
     if (title.isEmpty) {
       title = activityUploadTitleDefault;
@@ -319,9 +322,12 @@ class Activity {
     return substituteTemplate(title, moderated);
   }
 
-  String getDescription(bool moderated) {
+  String getDescription(bool moderated, {String? customDescriptionTemplate}) {
     String description =
-        Get.find<BasePrefService>().get<String>(activityUploadDescriptionTag) ??
+        customDescriptionTemplate ??
+        (Get.isRegistered<BasePrefService>()
+            ? Get.find<BasePrefService>().get<String>(activityUploadDescriptionTag)
+            : null) ??
         activityUploadDescriptionDefault;
     if (description.isEmpty) {
       description = activityUploadDescriptionDefault;

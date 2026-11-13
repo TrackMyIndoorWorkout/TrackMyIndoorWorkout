@@ -1,6 +1,8 @@
 import '../devices/device_descriptors/device_descriptor.dart';
 import '../export/export_target.dart';
 import '../persistence/activity.dart';
+import '../preferences/activity_upload_description.dart';
+import '../preferences/activity_upload_title.dart';
 import '../utils/constants.dart';
 import '../utils/statistics_accumulator.dart';
 import 'export_record.dart';
@@ -38,6 +40,8 @@ class ExportModel {
   String partNumber;
 
   int exportTarget;
+  String activityUploadTitle;
+  String activityUploadDescription;
 
   ExportModel({
     required this.activity,
@@ -54,6 +58,8 @@ class ExportModel {
     required this.partNumber,
     required this.altitude,
     this.exportTarget = ExportTarget.regular,
+    this.activityUploadTitle = activityUploadTitleDefault,
+    this.activityUploadDescription = activityUploadDescriptionDefault,
     required this.records,
   }) {
     // Assuming that points are ordered by time stamp ascending

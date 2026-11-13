@@ -10,6 +10,8 @@ import '../devices/device_descriptors/device_descriptor.dart';
 import '../persistence/activity.dart';
 import '../persistence/db_utils.dart';
 import '../persistence/record.dart';
+import '../preferences/activity_upload_description.dart';
+import '../preferences/activity_upload_title.dart';
 import '../preferences/cadence_data_gap_workaround.dart';
 import '../preferences/heart_rate_gap_workaround.dart';
 import '../preferences/heart_rate_limiting.dart';
@@ -36,22 +38,35 @@ abstract class ActivityExport {
   String heartRateGapWorkaround = heartRateGapWorkaroundDefault;
   int heartRateUpperLimit = heartRateUpperLimitDefault;
   String heartRateLimitingMethod = heartRateLimitingMethodDefault;
+  String activityUploadTitle = activityUploadTitleDefault;
+  String activityUploadDescription = activityUploadDescriptionDefault;
 
   ActivityExport({required this.nonCompressedFileExtension, required this.nonCompressedMimeType}) {
     compressedFileExtension = "$nonCompressedFileExtension.gz";
-    final prefService = Get.find<BasePrefService>();
-    _cadenceGapWorkaround =
-        prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
-    heartRateGapWorkaround =
-        prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
-    heartRateUpperLimit =
-        prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
-    heartRateLimitingMethod =
-        prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
+    if (Get.isRegistered<BasePrefService>()) {
+      final prefService = Get.find<BasePrefService>();
+      _cadenceGapWorkaround =
+          prefService.get<bool>(cadenceGapWorkaroundTag) ?? cadenceGapWorkaroundDefault;
+      heartRateGapWorkaround =
+          prefService.get<String>(heartRateGapWorkaroundTag) ?? heartRateGapWorkaroundDefault;
+      heartRateUpperLimit =
+          prefService.get<int>(heartRateUpperLimitIntTag) ?? heartRateUpperLimitDefault;
+      heartRateLimitingMethod =
+          prefService.get<String>(heartRateLimitingMethodTag) ?? heartRateLimitingMethodDefault;
+      activityUploadTitle =
+          prefService.get<String>(activityUploadTitleTag) ?? activityUploadTitleDefault;
+      activityUploadDescription =
+          prefService.get<String>(activityUploadDescriptionTag) ?? activityUploadDescriptionDefault;
+    }
 
-    final packageInfo = Get.find<PackageInfo>();
-    version = packageInfo.version;
-    buildNumber = packageInfo.buildNumber;
+    if (Get.isRegistered<PackageInfo>()) {
+      final packageInfo = Get.find<PackageInfo>();
+      version = packageInfo.version;
+      buildNumber = packageInfo.buildNumber;
+    } else {
+      version = "1.0.0";
+      buildNumber = "1";
+    }
   }
 
   String fileExtension(bool compressed) {
@@ -242,6 +257,8 @@ abstract class ActivityExport {
       partNumber: '0',
       altitude: calculator.track.altitude,
       exportTarget: exportTarget,
+      activityUploadTitle: activityUploadTitle,
+      activityUploadDescription: activityUploadDescription,
       records: exportRecords,
     );
 

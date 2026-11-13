@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../devices/device_descriptors/device_descriptor.dart';
 import '../../ui/models/measurement_counter.dart';
 import '../export_model.dart';
@@ -78,7 +80,7 @@ class JsonWorkout {
   }
 
   String toJson(ExportModel exportModel) =>
-      '{"name": "${exportModel.activity.getTitle(false)}",'
+      '{"name": ${jsonEncode(exportModel.activity.getTitle(false, customTitleTemplate: exportModel.activityUploadTitle))},'
       '"activity_type": "/v7.1/activity_type/$activityType/",'
       '"start_datetime": "${startDatetime.toUtc().toIso8601String()}",'
       '"start_locale_timezone": "$startLocaleTimezone",'
