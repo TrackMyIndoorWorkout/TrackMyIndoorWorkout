@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../export/export_manager.dart';
 import '../../persistence/activity.dart';
 import '../../persistence/calorie_tune.dart';
 import '../../persistence/device_usage.dart';
@@ -163,40 +164,12 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
             return;
           }
 
-          final Directory tempDir = await getTemporaryDirectory();
-          final fileNameStub = "DebugLogs_${DateTimeEx.namePart}";
-          final fileName = "$fileNameStub.csv";
-          final logFilePath = "${tempDir.path}/$fileName";
-          final logFile = await File(logFilePath).create();
-          await Logging().exportLogs(logFile);
+          final zipFile = await ExportManager.instance.createLogExportArchive();
+          if (zipFile == null) return;
 
           final prefService = Get.find<BasePrefService>();
           final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
           const logTag = "LOG_EXPORT";
-          final zipFilePath = "${tempDir.path}/$fileNameStub.zip";
-          debugPrint("zip file: $zipFilePath");
-          final zipFile = await File(zipFilePath).create();
-          bool zipped = false;
-          try {
-            await ZipFile.createFromFiles(sourceDir: tempDir, files: [logFile], zipFile: zipFile);
-            zipped = true;
-          } on Exception catch (e, stack) {
-            Logging().logException(
-              logLevel,
-              logTag,
-              "ZipFile.createFromFiles",
-              "error during creation",
-              e,
-              stack,
-            );
-          }
-
-          await logFile.delete();
-          if (!zipped) {
-            Get.snackbar("Log export failed", "Unsuccessful zipping");
-            return;
-          }
-
           final title = "Debug Logs ${DateTimeEx.isoDateTime}";
           final result = await SharePlus.instance.share(
             ShareParams(files: [XFile(zipFile.path)], text: title),
@@ -253,45 +226,14 @@ class ExpertPreferencesScreenState extends State<ExpertPreferencesScreen> {
         onTap: () async {
           Get.snackbar("Export started", "In progress...");
 
-          final database = Get.find<Isar>();
-          final Directory tempDir = await getTemporaryDirectory();
-          final databaseFilePath = "${tempDir.path}/${Isar.defaultName}.isar";
-          await database.copyToFile(databaseFilePath);
-          final databaseFile = await File(databaseFilePath).create();
-          final List<File> files = [databaseFile];
+          final zipFile = await ExportManager.instance.createDatabaseBackupArchive();
+          if (zipFile == null) return;
+
           final prefService = Get.find<BasePrefService>();
-          final settingsBytes = utf8.encode(jsonEncode(prefService.toMap()));
-          final settingsFile = await File("${tempDir.path}/preferences.json").create();
-          files.add(await settingsFile.writeAsBytes(settingsBytes, flush: true));
           final logLevel = prefService.get<int>(logLevelTag) ?? logLevelDefault;
           const logTag = "DATA_EXPORT";
-          final zipFilePath = "${tempDir.path}/DataExport_${DateTimeEx.namePart}.zip";
-          debugPrint("zip file: $zipFilePath");
-          final zipFile = await File(zipFilePath).create();
-          bool zipped = false;
-          try {
-            await ZipFile.createFromFiles(sourceDir: tempDir, files: files, zipFile: zipFile);
-            zipped = true;
-          } on Exception catch (e, stack) {
-            Logging().logException(
-              logLevel,
-              logTag,
-              "ZipFile.createFromFiles",
-              "error during creation",
-              e,
-              stack,
-            );
-          }
-
-          await settingsFile.delete();
-          await databaseFile.delete();
-          if (!zipped) {
-            Get.snackbar("Export failed", "Unsuccessful zipping");
-            return;
-          }
-
           final result = await SharePlus.instance.share(
-            ShareParams(files: [XFile(zipFilePath)], text: "Exported DB"),
+            ShareParams(files: [XFile(zipFile.path)], text: "Exported DB"),
           );
           Logging().log(
             logLevel,

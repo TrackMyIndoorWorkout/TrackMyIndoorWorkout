@@ -105,11 +105,12 @@ abstract class ActivityExport {
     bool rawData,
     bool calculateGps,
     bool compress,
-    int exportTarget,
-  ) async {
+    int exportTarget, [
+    List<Record>? preloadedRecords,
+  ]) async {
     final descriptor = activity.deviceDescriptor();
     final track = await TrackManager().getTrack(activity.sport);
-    final records = await DbUtils().getRecords(activity.id);
+    final records = preloadedRecords ?? await DbUtils().getRecords(activity.id);
 
     return await Isolate.run(() async {
       return await exportRecords(

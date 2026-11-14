@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
@@ -9,13 +8,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar_community/isar.dart';
 import 'package:listview_utils_plus/listview_utils_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pref/pref.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tuple/tuple.dart';
 
 import '../export/activity_export.dart';
 import '../export/csv/csv_export.dart';
+import '../export/export_manager.dart';
 import '../export/export_target.dart';
 import '../export/fit/fit_export.dart';
 import '../export/json/json_export.dart';
@@ -186,20 +185,19 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
           }
 
           ActivityExport exporter = getExporter(formatPick);
-          final fileBytes = await exporter.getExport(
+          final workoutFile = await ExportManager.instance.exportActivityToTempFile(
             activity,
-            formatPick == "CSV",
-            _calculateGps,
-            false,
-            ExportTarget.regular,
+            exporter,
+            calculateGps: _calculateGps,
+            rawData: formatPick == "CSV",
+            compress: false,
+            exportTarget: ExportTarget.regular,
           );
-          final fileName = activity.getFileNameStub() + exporter.fileExtension(false);
-          final Directory tempDir = await getTemporaryDirectory();
-          final workoutFilePath = "${tempDir.path}/$fileName";
-          final workoutFile = await File(workoutFilePath).writeAsBytes(fileBytes, flush: true);
-          SharePlus.instance.share(
-            ShareParams(files: [XFile(workoutFile.path)], text: activity.getTitle(false)),
-          );
+          if (workoutFile != null) {
+            SharePlus.instance.share(
+              ShareParams(files: [XFile(workoutFile.path)], text: activity.getTitle(false)),
+            );
+          }
         },
       ),
       IconButton(

@@ -11,7 +11,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
-import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:syncfusion_flutter_charts/charts.dart' as charts;
@@ -24,8 +23,7 @@ import '../../devices/device_descriptors/kayak_first_descriptor.dart';
 import '../../devices/gadgets/cadence_monitor_internal.dart';
 import '../../devices/gadgets/fitness_equipment.dart';
 import '../../devices/gadgets/heart_rate_monitor.dart';
-import '../../export/export_target.dart';
-import '../../export/fit/fit_export.dart';
+import '../../export/export_manager.dart';
 import '../../persistence/activity.dart';
 import '../../persistence/db_utils.dart';
 import '../../persistence/record.dart';
@@ -1347,19 +1345,15 @@ class RecordingState extends State<RecordingScreen> {
       if (_instantExportLocation.isEmpty) {
         return;
       }
+      final prefService = Get.find<BasePrefService>();
+      prefService.set<String>(instantExportLocationTag, _instantExportLocation);
     }
 
-    final exporter = FitExport();
-    final fileBytes = await exporter.getExport(
+    ExportManager.instance.runInstantExport(
       _activity!,
-      false,
-      _calculateGps,
-      false,
-      ExportTarget.regular,
+      destinationDirectory: _instantExportLocation,
+      calculateGps: _calculateGps,
     );
-    final fileName = _activity!.getFileNameStub() + exporter.fileExtension(false);
-    String fileFullPath = p.join(_instantExportLocation, fileName);
-    await File(fileFullPath).writeAsBytes(fileBytes, flush: true);
   }
 
   Future<void> _stopMeasurement(bool quick) async {
