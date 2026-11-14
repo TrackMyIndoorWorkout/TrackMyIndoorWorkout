@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -640,50 +641,11 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
       IconButton(
         icon: const Icon(Icons.build),
         onPressed: () {
-          Get.defaultDialog(
-            title: 'Warning!!!',
-            middleText: 'Are you sure to recalculate?',
-            confirm: TextButton(
-              child: const Text("Yes"),
-              onPressed: () async {
-                // final tm = TrackManager();
-                // final track = await tm.getTrack(widget.activity.sport);
-                // debugPrint(track.name);
-
-                // await DbUtils().finalizeActivity(widget.activity);
-
-                await DbUtils().bridgeDataGaps(widget.activity);
-                final prefService = Get.find<BasePrefService>();
-                final recalculateMore =
-                    prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
-                await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
-
-                // await DbUtils().deleteRecords(widget.activity, 652536, 653360);
-
-                // await DbUtils().offsetActivity(widget.activity, 1440);
-
-                // await DbUtils().splitActivity(widget.activity, 29, 87);
-
-                // widget.activity.clearSuuntoUpload();
-                // DbUtils().updateActivity(widget.activity);
-
-                // // KPro
-                // await DbUtils().appendActivities(30, 31);
-                // await DbUtils().appendActivities(30, 32);
-                // await DbUtils().appendActivities(30, 33);
-                // // PSCP
-                // await DbUtils().appendActivities(34, 35);
-                // await DbUtils().appendActivities(34, 36);
-                // await DbUtils().appendActivities(34, 37);
-                // await DbUtils().appendActivities(34, 38);
-                // await DbUtils().appendActivities(34, 39);
-                // await DbUtils().appendActivities(34, 40);
-
-                Get.close(1);
-              },
-            ),
-            cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
-          );
+          if (kDebugMode) {
+            showDebugActionsMenu();
+          } else {
+            _confirmAndRecalculate();
+          }
         },
       ),
     ];
@@ -724,4 +686,288 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
             ),
     );
   }
+
+  Future<void> _refreshDetails() async {
+    final prefService = Get.find<BasePrefService>();
+    await extraInit(prefService);
+  }
+
+  void _confirmAndRecalculate() {
+    Get.defaultDialog(
+      title: 'Warning!!!',
+      middleText: 'Are you sure to recalculate?',
+      confirm: TextButton(
+        child: const Text("Yes"),
+        onPressed: () async {
+          Get.close(1);
+          await _recalculateActivity();
+        },
+      ),
+      cancel: TextButton(child: const Text("No"), onPressed: () => Get.close(1)),
+    );
+  }
+
+  Future<void> _recalculateActivity() async {
+    await DbUtils().bridgeDataGaps(widget.activity);
+    final prefService = Get.find<BasePrefService>();
+    final recalculateMore =
+        prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
+    await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
+    await _refreshDetails();
+    Get.snackbar("Recalculate", "Activity recalculated successfully");
+  }
+
+  Future<void> _finalizeActivity() async {
+    final updated = await DbUtils().finalizeActivity(widget.activity);
+    await _refreshDetails();
+    Get.snackbar(
+      "Finalize Activity",
+      updated ? "Activity finalized successfully" : "Activity was already finalized",
+    );
+  }
+
+  Future<void> _clearSuuntoUpload() async {
+    widget.activity.clearSuuntoUpload();
+    DbUtils().updateActivity(widget.activity);
+    await _refreshDetails();
+    Get.snackbar("Suunto Upload", "Suunto upload flag cleared");
+  }
+
+  Future<void> _promptOffsetActivity() async {
+    final textController = TextEditingController(text: "1440");
+    await Get.defaultDialog(
+      title: "Offset Activity",
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            const Text("Enter offset in minutes (can be negative):"),
+            const SizedBox(height: 12),
+            TextField(
+              controller: textController,
+              keyboardType: const TextInputType.numberWithOptions(signed: true),
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: "Minutes",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      confirm: TextButton(
+        child: const Text("Apply"),
+        onPressed: () async {
+          final minutes = int.tryParse(textController.text.trim());
+          if (minutes == null) {
+            Get.snackbar("Invalid Input", "Please enter a valid integer for minutes");
+            return;
+          }
+          Get.close(1);
+          final success = await DbUtils().offsetActivity(widget.activity, minutes);
+          await _refreshDetails();
+          Get.snackbar(
+            "Offset Activity",
+            success ? "Activity offset by $minutes minutes" : "No records to offset",
+          );
+        },
+      ),
+      cancel: TextButton(child: const Text("Cancel"), onPressed: () => Get.close(1)),
+    );
+  }
+
+  Future<void> _promptSplitActivity() async {
+    final minutesController = TextEditingController(text: "30");
+    final targetIdController = TextEditingController();
+    await Get.defaultDialog(
+      title: "Split Activity",
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: minutesController,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: "Split Point (Minutes from start)",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: targetIdController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Target Activity ID",
+                hintText: "Enter existing ID or new ID",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      confirm: TextButton(
+        child: const Text("Split"),
+        onPressed: () async {
+          final minutes = int.tryParse(minutesController.text.trim());
+          final targetId = int.tryParse(targetIdController.text.trim());
+          if (minutes == null || minutes <= 0) {
+            Get.snackbar("Invalid Input", "Please enter a positive integer for split minutes");
+            return;
+          }
+          if (targetId == null || targetId <= 0) {
+            Get.snackbar("Invalid Input", "Please enter a valid target activity ID");
+            return;
+          }
+          Get.close(1);
+          final success = await DbUtils().splitActivity(widget.activity, minutes, targetId);
+          await _refreshDetails();
+          Get.snackbar(
+            "Split Activity",
+            success
+                ? "Activity split at $minutes min into activity #$targetId"
+                : "Failed to split activity (check records and target ID)",
+          );
+        },
+      ),
+      cancel: TextButton(child: const Text("Cancel"), onPressed: () => Get.close(1)),
+    );
+  }
+
+  Future<void> _promptAppendActivity() async {
+    final laterIdController = TextEditingController();
+    await Get.defaultDialog(
+      title: "Append Activity",
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            Text("Append another activity's records to Activity #${widget.activity.id}:"),
+            const SizedBox(height: 12),
+            TextField(
+              controller: laterIdController,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: "Later Activity ID to append",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
+      confirm: TextButton(
+        child: const Text("Append"),
+        onPressed: () async {
+          final laterId = int.tryParse(laterIdController.text.trim());
+          if (laterId == null || laterId <= 0) {
+            Get.snackbar("Invalid Input", "Please enter a valid activity ID to append");
+            return;
+          }
+          if (laterId == widget.activity.id) {
+            Get.snackbar("Invalid Input", "Cannot append an activity to itself");
+            return;
+          }
+          Get.close(1);
+          final success = await DbUtils().appendActivities(widget.activity.id, laterId);
+          await _refreshDetails();
+          Get.snackbar(
+            "Append Activity",
+            success
+                ? "Appended activity #$laterId into #${widget.activity.id}"
+                : "Failed to append activities (verify activity IDs, records, and timestamps)",
+          );
+        },
+      ),
+      cancel: TextButton(child: const Text("Cancel"), onPressed: () => Get.close(1)),
+    );
+  }
+
+  @visibleForTesting
+  void showDebugActionsMenu() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Material(
+            color: Theme.of(sheetContext).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                    child: Text(
+                      "Activity Debug Actions (#${widget.activity.id})",
+                      style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.build),
+                    title: const Text("Recalculate Activity"),
+                    subtitle: const Text("Bridge data gaps and recalculate cumulative stats"),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _confirmAndRecalculate();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.check_circle_outline),
+                    title: const Text("Finalize Activity"),
+                    subtitle: const Text("Populate missing end, calories, distance, elapsed, strides"),
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      await _finalizeActivity();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.cloud_off),
+                    title: const Text("Clear Suunto Upload Flag"),
+                    subtitle: const Text("Reset Suunto upload ID, blob URL, and uploaded status"),
+                    onTap: () async {
+                      Navigator.of(sheetContext).pop();
+                      await _clearSuuntoUpload();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.schedule),
+                    title: const Text("Offset Activity..."),
+                    subtitle: const Text("Shift activity start, end, and all record timestamps by N minutes"),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _promptOffsetActivity();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.call_split),
+                    title: const Text("Split Activity..."),
+                    subtitle: const Text("Split activity at minute mark into another activity ID"),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _promptSplitActivity();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.merge),
+                    title: const Text("Append Activity..."),
+                    subtitle: const Text("Merge records of a later activity ID into this one"),
+                    onTap: () {
+                      Navigator.of(sheetContext).pop();
+                      _promptAppendActivity();
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
+
