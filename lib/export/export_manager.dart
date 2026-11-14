@@ -32,11 +32,9 @@ class ExportManager extends GetxService {
   /// Key is activity ID -> ExportStatus
   final RxMap<int, ExportStatus> _activityStatus = <int, ExportStatus>{}.obs;
 
-  ExportStatus getStatus(int activityId) =>
-      _activityStatus[activityId] ?? ExportStatus.idle;
+  ExportStatus getStatus(int activityId) => _activityStatus[activityId] ?? ExportStatus.idle;
 
-  bool isExporting(int activityId) =>
-      getStatus(activityId) == ExportStatus.exporting;
+  bool isExporting(int activityId) => getStatus(activityId) == ExportStatus.exporting;
 
   /// Observable access to the status map for reactive UI widgets.
   RxMap<int, ExportStatus> get statusMap => _activityStatus;
@@ -88,13 +86,10 @@ class ExportManager extends GetxService {
       if (destinationPath != null && destinationPath.isNotEmpty) {
         targetPath = destinationPath;
       } else if (destinationDirectory != null && destinationDirectory.isNotEmpty) {
-        final fileName =
-            activity.getFileNameStub() + actualExporter.fileExtension(compress);
+        final fileName = activity.getFileNameStub() + actualExporter.fileExtension(compress);
         targetPath = p.join(destinationDirectory, fileName);
       } else {
-        throw ArgumentError(
-          "Either destinationPath or destinationDirectory must be provided",
-        );
+        throw ArgumentError("Either destinationPath or destinationDirectory must be provided");
       }
 
       // Generate export payload in background isolate

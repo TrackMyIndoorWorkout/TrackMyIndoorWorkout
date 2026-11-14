@@ -710,8 +710,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
   Future<void> _recalculateActivity() async {
     await DbUtils().bridgeDataGaps(widget.activity);
     final prefService = Get.find<BasePrefService>();
-    final recalculateMore =
-        prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
+    final recalculateMore = prefService.get<bool>(recalculateMoreTag) ?? recalculateMoreDefault;
     await DbUtils().recalculateCumulative(widget.activity, recalculateMore);
     await _refreshDetails();
     Get.snackbar("Recalculate", "Activity recalculated successfully");
@@ -747,10 +746,7 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
               controller: textController,
               keyboardType: const TextInputType.numberWithOptions(signed: true),
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: "Minutes",
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: "Minutes", border: OutlineInputBorder()),
             ),
           ],
         ),
@@ -902,7 +898,8 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
                     child: Text(
                       "Activity Debug Actions (#${widget.activity.id})",
-                      style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(sheetContext).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   const Divider(height: 1),
@@ -918,7 +915,9 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                   ListTile(
                     leading: const Icon(Icons.check_circle_outline),
                     title: const Text("Finalize Activity"),
-                    subtitle: const Text("Populate missing end, calories, distance, elapsed, strides"),
+                    subtitle: const Text(
+                      "Populate missing end, calories, distance, elapsed, strides",
+                    ),
                     onTap: () async {
                       Navigator.of(sheetContext).pop();
                       await _finalizeActivity();
@@ -936,7 +935,9 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
                   ListTile(
                     leading: const Icon(Icons.schedule),
                     title: const Text("Offset Activity..."),
-                    subtitle: const Text("Shift activity start, end, and all record timestamps by N minutes"),
+                    subtitle: const Text(
+                      "Shift activity start, end, and all record timestamps by N minutes",
+                    ),
                     onTap: () {
                       Navigator.of(sheetContext).pop();
                       _promptOffsetActivity();
@@ -970,4 +971,3 @@ class ActivityDetailsScreenState extends State<ActivityDetailsScreen> with Widge
     );
   }
 }
-

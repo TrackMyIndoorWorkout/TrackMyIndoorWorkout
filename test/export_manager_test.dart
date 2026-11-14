@@ -38,8 +38,7 @@ void main() {
   setUp(() async {
     tempDir = await Directory.systemTemp.createTemp('export_manager_test_');
 
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       const MethodChannel('plugins.flutter.io/path_provider'),
       (MethodCall methodCall) async {
         if (methodCall.method == 'getTemporaryDirectory') {
@@ -212,10 +211,7 @@ void main() {
     isar.activities.putSync(activity);
 
     final manager = ExportManager.instance;
-    final exportedFile = await manager.runInstantExport(
-      activity,
-      showNotification: false,
-    );
+    final exportedFile = await manager.runInstantExport(activity, showNotification: false);
 
     expect(exportedFile, isNotNull);
     expect(await exportedFile!.exists(), isTrue);
@@ -246,10 +242,7 @@ void main() {
     );
 
     final manager = ExportManager.instance;
-    final result = await manager.exportActivityToFile(
-      activity,
-      showNotification: false,
-    );
+    final result = await manager.exportActivityToFile(activity, showNotification: false);
     expect(result, isNull);
     expect(manager.getStatus(activity.id), equals(ExportStatus.failed));
   });
