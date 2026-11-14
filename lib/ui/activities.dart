@@ -170,9 +170,13 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
         iconSize: size,
         onPressed: () async {
           final formatPick = await Get.bottomSheet(
-            const SafeArea(
+            SafeArea(
               child: Column(
-                children: [Expanded(child: Center(child: ExportFormatPickerBottomSheet()))],
+                children: [
+                  Expanded(
+                    child: Center(child: ExportFormatPickerBottomSheet(sport: activity.sport)),
+                  ),
+                ],
               ),
             ),
             isScrollControlled: true,
@@ -184,14 +188,27 @@ class ActivitiesScreenState extends State<ActivitiesScreen> with WidgetsBindingO
             return;
           }
 
-          ActivityExport exporter = getExporter(formatPick);
+          final String format;
+          final bool virtualWorkout;
+          if (formatPick is ExportFormatResult) {
+            format = formatPick.format;
+            virtualWorkout = formatPick.virtualWorkout;
+          } else if (formatPick is String) {
+            format = formatPick;
+            virtualWorkout = false;
+          } else {
+            return;
+          }
+
+          ActivityExport exporter = getExporter(format);
           final workoutFile = await ExportManager.instance.exportActivityToTempFile(
             activity,
             exporter,
             calculateGps: _calculateGps,
-            rawData: formatPick == "CSV",
+            rawData: format == "CSV",
             compress: false,
             exportTarget: ExportTarget.regular,
+            virtualWorkout: virtualWorkout,
           );
           if (workoutFile != null) {
             SharePlus.instance.share(

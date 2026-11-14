@@ -82,6 +82,7 @@ import '../preferences/upload_display_mode.dart';
 import '../preferences/use_heart_rate_based_calorie_counting.dart';
 import '../preferences/use_hr_monitor_reported_calories.dart';
 import '../preferences/use_long_track.dart';
+import '../preferences/virtual_workout.dart';
 import '../preferences/water_wheel_circumference.dart';
 import '../preferences/welcome_presented.dart';
 import '../preferences/wheel_circumference.dart';
@@ -206,6 +207,7 @@ Future<Map<String, dynamic>> getPrefDefaults() async {
     useHeartRateBasedCalorieCountingTag: useHeartRateBasedCalorieCountingDefault,
     useHrMonitorReportedCaloriesTag: useHrMonitorReportedCaloriesDefault,
     useLongTrackTag: useLongTrackDefault,
+    virtualWorkoutTag: virtualWorkoutDefault,
     waterWheelCircumferenceTag: waterWheelCircumferenceDefault,
     wheelCircumferenceTag: wheelCircumferenceDefault,
     welcomePresentedTag: welcomePresentedDefault,

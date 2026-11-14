@@ -8,6 +8,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:isar_community/isar.dart';
 
 import '../../export/activity_export.dart';
+import '../../export/virtual_sport.dart';
 import '../../persistence/activity.dart';
 import 'constants.dart';
 import 'fault.dart';
@@ -29,8 +30,9 @@ mixin Upload {
   Future<Fault> uploadActivity(
     Activity activity,
     List<int> fileContent,
-    ActivityExport exporter,
-  ) async {
+    ActivityExport exporter, {
+    bool virtualWorkout = false,
+  }) async {
     debugPrint('Starting to upload activity');
 
     if (!Get.isRegistered<StravaToken>()) {
@@ -68,6 +70,8 @@ mixin Upload {
     request.fields['name'] = activity.getTitle(true);
     request.fields['external_id'] = 'strava_flutter';
     request.fields['description'] = activity.getDescription(true);
+    final effectiveSport = VirtualSport.resolveSport(activity.sport, virtualWorkout);
+    request.fields['sport_type'] = effectiveSport;
     request.headers.addAll(header);
 
     final fileName = activity.getFileNameStub() + exporter.fileExtension(true);

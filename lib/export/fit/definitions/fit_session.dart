@@ -3,6 +3,7 @@ import 'dart:math';
 import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../../export_target.dart';
+import '../../virtual_sport.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
 import '../enums/fit_session_trigger.dart';
@@ -86,7 +87,10 @@ class FitSession extends FitDefinitionMessage {
     data.addByte(FitEventType.stop);
     data.addLong(FitSerializable.fitTimeStamp(first?.record.timeStamp));
 
-    final fitSport = toFitSport(model.activity.sport);
+    final effectiveSport = exportTarget == ExportTarget.suunto
+        ? model.activity.sport
+        : VirtualSport.resolveSport(model.activity.sport, model.virtualWorkout);
+    final fitSport = toFitSport(effectiveSport);
     data.addByte(fitSport.item1);
     if (exportTarget == ExportTarget.regular) {
       data.addByte(fitSport.item2);

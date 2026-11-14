@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
+import 'package:pref/pref.dart';
 
 import '../persistence/activity.dart';
 import '../preferences/log_level.dart';
+import '../preferences/virtual_workout.dart';
 import '../utils/constants.dart';
 import '../utils/logging.dart';
 import 'background/upload_queue.dart';
@@ -57,6 +59,7 @@ class UploadManager extends GetxService {
     Activity activity,
     String portalName, {
     bool calculateGps = false,
+    bool? virtualWorkout,
     bool showNotification = true,
   }) async {
     final key = _key(activity.id, portalName);
@@ -66,6 +69,12 @@ class UploadManager extends GetxService {
     }
 
     _portalStatus[key] = UploadStatus.uploading;
+
+    final bool isVirtual =
+        virtualWorkout ??
+        (Get.isRegistered<BasePrefService>()
+            ? (Get.find<BasePrefService>().get<bool>(virtualWorkoutTag) ?? virtualWorkoutDefault)
+            : virtualWorkoutDefault);
 
     try {
       final uploadService = serviceResolver(portalName);
@@ -78,7 +87,7 @@ class UploadManager extends GetxService {
         return false;
       }
 
-      final statusCode = await uploadService.upload(activity, calculateGps);
+      final statusCode = await uploadService.upload(activity, calculateGps, isVirtual);
       final success =
           (portalName == stravaChoice && statusCode == StravaStatusCode.statusOk) ||
           (statusCode >= 200 && statusCode < 300);
@@ -88,7 +97,12 @@ class UploadManager extends GetxService {
       if (success) {
         await queue.dequeue(activity.id, portalName);
       } else {
-        await queue.enqueue(activity.id, portalName, calculateGps: calculateGps);
+        await queue.enqueue(
+          activity.id,
+          portalName,
+          calculateGps: calculateGps,
+          virtualWorkout: isVirtual,
+        );
         await queue.recordAttempt(activity.id, portalName, "HTTP $statusCode");
         if (!testing) {
           await WorkmanagerService.scheduleBackgroundUpload();
@@ -132,6 +146,7 @@ class UploadManager extends GetxService {
   Future<Map<String, bool>> uploadToAllEnabled(
     Activity activity, {
     bool calculateGps = false,
+    bool? virtualWorkout,
   }) async {
     final results = <String, bool>{};
     final List<Future<void>> futures = [];
@@ -140,7 +155,12 @@ class UploadManager extends GetxService {
       final isEnabled = await UploadService.isIntegrationEnabled(portalName);
       if (isEnabled) {
         futures.add(() async {
-          final res = await uploadActivity(activity, portalName, calculateGps: calculateGps);
+          final res = await uploadActivity(
+            activity,
+            portalName,
+            calculateGps: calculateGps,
+            virtualWorkout: virtualWorkout,
+          );
           results[portalName] = res;
         }());
       }
@@ -166,6 +186,7 @@ class UploadManager extends GetxService {
           activity,
           item.portalName,
           calculateGps: item.calculateGps,
+          virtualWorkout: item.virtualWorkout,
           showNotification: false,
         );
       }

@@ -103,7 +103,7 @@ class DreeveService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, bool calculateGps) async {
+  Future<int> upload(Activity activity, bool calculateGps, [bool virtualWorkout = false]) async {
     if (!DbUtils().hasRecords(activity.id)) {
       return 400;
     }
@@ -122,6 +122,8 @@ class DreeveService implements UploadService {
       calculateGps,
       false,
       ExportTarget.regular,
+      null,
+      virtualWorkout,
     );
 
     try {

@@ -170,7 +170,11 @@ Future<bool> executeBackgroundUploadTask({
 
       try {
         final uploadService = UploadService.getInstance(item.portalName);
-        final statusCode = await uploadService.upload(activity, item.calculateGps);
+        final statusCode = await uploadService.upload(
+          activity,
+          item.calculateGps,
+          item.virtualWorkout,
+        );
 
         final isSuccess = statusCode == 200 || statusCode == 201 || statusCode == 202;
         if (isSuccess) {

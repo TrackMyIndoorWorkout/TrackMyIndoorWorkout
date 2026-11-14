@@ -27,7 +27,7 @@ class SuuntoService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, bool calculateGps) async {
+  Future<int> upload(Activity activity, bool calculateGps, [bool virtualWorkout = false]) async {
     if (!DbUtils().hasRecords(activity.id)) {
       return 400;
     }

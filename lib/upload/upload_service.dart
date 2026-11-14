@@ -15,7 +15,7 @@ abstract class UploadService {
 
   Future<int> logout();
 
-  Future<int> upload(Activity activity, bool calculateGps);
+  Future<int> upload(Activity activity, bool calculateGps, [bool virtualWorkout = false]);
 
   static UploadService getInstance(String portalType) {
     switch (portalType) {

@@ -107,6 +107,7 @@ abstract class ActivityExport {
     bool compress,
     int exportTarget, [
     List<Record>? preloadedRecords,
+    bool virtualWorkout = false,
   ]) async {
     final descriptor = activity.deviceDescriptor();
     final track = await TrackManager().getTrack(activity.sport);
@@ -122,6 +123,7 @@ abstract class ActivityExport {
         calculateGps,
         compress,
         exportTarget,
+        virtualWorkout,
       );
     });
   }
@@ -134,8 +136,9 @@ abstract class ActivityExport {
     bool rawData,
     bool calculateGps,
     bool compress,
-    int exportTarget,
-  ) async {
+    int exportTarget, [
+    bool virtualWorkout = false,
+  ]) async {
     final calculator = TrackCalculator(track: track);
     final List<ExportRecord> exportRecords = [];
     Record? previousRecord;
@@ -260,6 +263,7 @@ abstract class ActivityExport {
       exportTarget: exportTarget,
       activityUploadTitle: activityUploadTitle,
       activityUploadDescription: activityUploadDescription,
+      virtualWorkout: virtualWorkout,
       records: exportRecords,
     );
 

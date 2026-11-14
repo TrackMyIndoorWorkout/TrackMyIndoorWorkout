@@ -4,6 +4,7 @@ import '../activity_export.dart';
 import '../export_model.dart';
 import '../export_record.dart';
 import '../export_target.dart';
+import '../virtual_sport.dart';
 import 'definitions/fit_activity.dart';
 import 'definitions/fit_data_record.dart';
 import 'definitions/fit_device_info.dart';
@@ -76,7 +77,11 @@ class FitExport extends ActivityExport {
       // 6. Sport
       final fitSport = FitSport(localMessageType);
       body.output.addAll(fitSport.binarySerialize());
-      body.output.addAll(fitSport.serializeData(exportModel.activity.sport));
+      final effectiveSport = VirtualSport.resolveSport(
+        exportModel.activity.sport,
+        exportModel.virtualWorkout,
+      );
+      body.output.addAll(fitSport.serializeData(effectiveSport));
       localMessageType++;
     } else {
       // 1. Data Records

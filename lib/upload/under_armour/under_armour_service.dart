@@ -25,7 +25,7 @@ class UnderArmourService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, bool calculateGps) async {
+  Future<int> upload(Activity activity, bool calculateGps, [bool virtualWorkout = false]) async {
     if (!DbUtils().hasRecords(activity.id)) {
       return 404;
     }
@@ -37,6 +37,8 @@ class UnderArmourService implements UploadService {
       calculateGps,
       true,
       ExportTarget.regular,
+      null,
+      virtualWorkout,
     );
     return await _underArmour.uploadActivity(activity, fileGzip, exporter, _underArmour.clientId);
   }

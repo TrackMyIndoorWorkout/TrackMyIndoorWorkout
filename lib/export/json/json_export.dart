@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../activity_export.dart';
 import '../export_model.dart';
+import '../virtual_sport.dart';
 import 'json_aggregates.dart';
 import 'json_workout.dart';
 import 'under_armour_sport.dart';
@@ -28,11 +29,15 @@ class JsonExport extends ActivityExport {
       exportModel.maximumHeartRate,
       exportModel.averageHeartRate,
     );
+    final effectiveSport = VirtualSport.resolveSport(
+      exportModel.activity.sport,
+      exportModel.virtualWorkout,
+    );
     final jsonWorkout = JsonWorkout(
       exportModel.activity.start,
       jsonAggregates,
       exportModel.activity.timeZone,
-      toUnderArmourSport(exportModel.activity.sport),
+      toUnderArmourSport(effectiveSport),
     );
 
     return utf8.encode(jsonWorkout.toJson(exportModel));

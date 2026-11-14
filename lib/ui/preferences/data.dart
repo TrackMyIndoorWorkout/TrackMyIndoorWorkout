@@ -16,6 +16,7 @@ import '../../preferences/sound_effects.dart';
 import '../../preferences/stationary_workout.dart';
 import '../../preferences/stroke_rate_smoothing.dart';
 import '../../preferences/use_long_track.dart';
+import '../../preferences/virtual_workout.dart';
 import '../../utils/sound.dart';
 import 'pref_integer.dart';
 import 'preferences_screen_mixin.dart';
@@ -92,6 +93,11 @@ class DataPreferencesScreenState extends State<DataPreferencesScreen> {
         title: Text(stationaryWorkout),
         subtitle: Text(stationaryWorkoutDescription),
         pref: stationaryWorkoutTag,
+      ),
+      const PrefCheckbox(
+        title: Text(virtualWorkout),
+        subtitle: Text(virtualWorkoutDescription),
+        pref: virtualWorkoutTag,
       ),
       const PrefTitle(title: Text("Tuning")),
       const PrefCheckbox(

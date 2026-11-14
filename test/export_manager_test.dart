@@ -297,4 +297,57 @@ void main() {
     expect(tempFile.lengthSync(), greaterThan(0));
     await tempFile.delete();
   });
+
+  test('exportActivityToFile exports with virtualWorkout flag set', () async {
+    final startTime = DateTime(2026, 11, 13, 10, 0, 0);
+    final activity = Activity(
+      id: 206,
+      deviceName: "Schwinn IC4",
+      deviceId: "dev_6",
+      hrmId: "hrm_6",
+      start: startTime,
+      end: startTime.add(const Duration(minutes: 5)),
+      distance: 2000.0,
+      elapsed: 300,
+      movingTime: 300000,
+      calories: 100,
+      fourCC: schwinnICBikeFourCC,
+      sport: ActivityType.ride,
+      powerFactor: 1.0,
+      calorieFactor: 1.0,
+      hrCalorieFactor: 1.0,
+      hrmCalorieFactor: 1.0,
+      hrBasedCalories: false,
+      timeZone: "America/Los_Angeles",
+    );
+
+    final preloadedRecords = <Record>[
+      Record(
+        id: 1,
+        activityId: activity.id,
+        timeStamp: startTime,
+        elapsed: 0,
+        distance: 0,
+        speed: 10.0,
+        cadence: 60,
+        power: 100,
+        heartRate: 110,
+        calories: 0,
+      ),
+    ];
+
+    final manager = ExportManager.instance;
+    final exportedFile = await manager.exportActivityToFile(
+      activity,
+      preloadedRecords: preloadedRecords,
+      destinationDirectory: tempDir.path,
+      virtualWorkout: true,
+      showNotification: false,
+    );
+
+    expect(exportedFile, isNotNull);
+    expect(await exportedFile!.exists(), isTrue);
+    expect(exportedFile.lengthSync(), greaterThan(0));
+    expect(manager.getStatus(activity.id), equals(ExportStatus.success));
+  });
 }

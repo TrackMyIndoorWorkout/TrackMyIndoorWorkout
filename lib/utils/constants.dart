@@ -69,6 +69,7 @@ class ActivityType {
   static const String velomobile = "Velomobile";
   static const String virtualRide = "VirtualRide";
   static const String virtualRun = "VirtualRun";
+  static const String virtualRow = "VirtualRow";
   static const String walk = "Walk";
   static const String weightTraining = "WeightTraining";
   static const String wheelchair = "Wheelchair";

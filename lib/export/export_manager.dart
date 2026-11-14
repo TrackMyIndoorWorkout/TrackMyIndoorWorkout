@@ -14,6 +14,7 @@ import '../persistence/activity.dart';
 import '../persistence/record.dart';
 import '../preferences/instant_export.dart';
 import '../preferences/log_level.dart';
+import '../preferences/virtual_workout.dart';
 import '../utils/date_time_ex.dart';
 import '../utils/logging.dart';
 import 'activity_export.dart';
@@ -70,6 +71,7 @@ class ExportManager extends GetxService {
     bool rawData = false,
     bool compress = false,
     int exportTarget = ExportTarget.regular,
+    bool? virtualWorkout,
     bool showNotification = true,
   }) async {
     final activityId = activity.id;
@@ -82,6 +84,11 @@ class ExportManager extends GetxService {
 
     try {
       final actualExporter = exporter ?? FitExport();
+      final bool isVirtual =
+          virtualWorkout ??
+          (Get.isRegistered<BasePrefService>()
+              ? (Get.find<BasePrefService>().get<bool>(virtualWorkoutTag) ?? virtualWorkoutDefault)
+              : virtualWorkoutDefault);
       final String targetPath;
       if (destinationPath != null && destinationPath.isNotEmpty) {
         targetPath = destinationPath;
@@ -100,6 +107,7 @@ class ExportManager extends GetxService {
         compress,
         exportTarget,
         preloadedRecords,
+        isVirtual,
       );
 
       // Write bytes to disk in background isolate
@@ -143,6 +151,7 @@ class ExportManager extends GetxService {
     bool rawData = false,
     bool compress = false,
     int exportTarget = ExportTarget.regular,
+    bool? virtualWorkout,
   }) async {
     final Directory tempDir = await getTemporaryDirectory();
     return await exportActivityToFile(
@@ -154,6 +163,7 @@ class ExportManager extends GetxService {
       rawData: rawData,
       compress: compress,
       exportTarget: exportTarget,
+      virtualWorkout: virtualWorkout,
       showNotification: false,
     );
   }
@@ -167,6 +177,7 @@ class ExportManager extends GetxService {
     List<Record>? preloadedRecords,
     String? destinationDirectory,
     bool calculateGps = false,
+    bool? virtualWorkout,
     bool showNotification = true,
   }) async {
     String? targetDir = destinationDirectory;
@@ -191,6 +202,7 @@ class ExportManager extends GetxService {
       rawData: false,
       compress: false,
       exportTarget: ExportTarget.regular,
+      virtualWorkout: virtualWorkout,
       showNotification: showNotification,
     );
   }

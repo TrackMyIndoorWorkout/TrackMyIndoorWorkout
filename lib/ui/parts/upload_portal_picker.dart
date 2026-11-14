@@ -6,8 +6,10 @@ import 'package:pref/pref.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../export/virtual_sport.dart';
 import '../../persistence/activity.dart';
 import '../../preferences/calculate_gps.dart';
+import '../../preferences/virtual_workout.dart';
 import '../../upload/constants.dart';
 import '../../upload/upload_manager.dart';
 import '../../utils/theme_manager.dart';
@@ -25,6 +27,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
   final ThemeManager _themeManager = Get.find<ThemeManager>();
   TextStyle _largerTextStyle = const TextStyle();
   bool _calculateGps = calculateGpsDefault;
+  bool _virtualWorkout = virtualWorkoutDefault;
   Map<String, bool> uploadStates = {};
 
   @override
@@ -35,6 +38,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
     );
     final prefService = Get.find<BasePrefService>();
     _calculateGps = prefService.get<bool>(calculateGpsTag) ?? calculateGpsDefault;
+    _virtualWorkout = prefService.get<bool>(virtualWorkoutTag) ?? virtualWorkoutDefault;
     for (final portalName in portalNames) {
       uploadStates[portalName] = widget.activity.isUploaded(portalName);
     }
@@ -49,6 +53,7 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
       widget.activity,
       portalName,
       calculateGps: _calculateGps,
+      virtualWorkout: _virtualWorkout,
     );
 
     if (mounted) {
@@ -87,6 +92,22 @@ class UploadPortalPickerBottomSheetState extends State<UploadPortalPickerBottomS
               )
             : Text("Integrations:", style: _largerTextStyle, textAlign: TextAlign.center),
       ];
+
+      if (VirtualSport.hasVirtualCounterpart(widget.activity.sport)) {
+        choiceRows.add(
+          SwitchListTile(
+            title: const Text("Virtual Workout"),
+            subtitle: Text("Upload as ${VirtualSport.getVirtualSport(widget.activity.sport)}"),
+            value: _virtualWorkout,
+            activeTrackColor: _themeManager.getProtagonistColor(),
+            onChanged: (bool value) {
+              setState(() {
+                _virtualWorkout = value;
+              });
+            },
+          ),
+        );
+      }
 
       choiceRows.addAll(
         getPortalChoices(false, _themeManager).asMap().entries.map((e) {

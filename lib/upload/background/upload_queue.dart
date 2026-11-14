@@ -6,6 +6,7 @@ class BackgroundUploadItem {
   final int activityId;
   final String portalName;
   final bool calculateGps;
+  final bool virtualWorkout;
   final DateTime enqueuedAt;
   int attempts;
   String lastError;
@@ -14,6 +15,7 @@ class BackgroundUploadItem {
     required this.activityId,
     required this.portalName,
     this.calculateGps = true,
+    this.virtualWorkout = false,
     DateTime? enqueuedAt,
     this.attempts = 0,
     this.lastError = "",
@@ -23,6 +25,7 @@ class BackgroundUploadItem {
     'activityId': activityId,
     'portalName': portalName,
     'calculateGps': calculateGps,
+    'virtualWorkout': virtualWorkout,
     'enqueuedAt': enqueuedAt.toIso8601String(),
     'attempts': attempts,
     'lastError': lastError,
@@ -32,6 +35,7 @@ class BackgroundUploadItem {
     activityId: json['activityId'] as int,
     portalName: json['portalName'] as String,
     calculateGps: json['calculateGps'] as bool? ?? true,
+    virtualWorkout: json['virtualWorkout'] as bool? ?? false,
     enqueuedAt: DateTime.tryParse(json['enqueuedAt'] as String? ?? "") ?? DateTime.now(),
     attempts: json['attempts'] as int? ?? 0,
     lastError: json['lastError'] as String? ?? "",
@@ -64,7 +68,12 @@ class BackgroundUploadQueue {
     return items;
   }
 
-  Future<void> enqueue(int activityId, String portalName, {bool calculateGps = true}) async {
+  Future<void> enqueue(
+    int activityId,
+    String portalName, {
+    bool calculateGps = true,
+    bool virtualWorkout = false,
+  }) async {
     final prefs = await _getPrefs();
     final items = await getItems();
 
@@ -78,6 +87,7 @@ class BackgroundUploadQueue {
         activityId: activityId,
         portalName: portalName,
         calculateGps: calculateGps,
+        virtualWorkout: virtualWorkout,
         enqueuedAt: items[existingIndex].enqueuedAt,
         attempts: items[existingIndex].attempts,
         lastError: items[existingIndex].lastError,
@@ -88,6 +98,7 @@ class BackgroundUploadQueue {
           activityId: activityId,
           portalName: portalName,
           calculateGps: calculateGps,
+          virtualWorkout: virtualWorkout,
         ),
       );
     }

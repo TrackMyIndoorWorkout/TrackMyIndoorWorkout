@@ -3,6 +3,7 @@ import 'dart:math';
 import '../../../utils/constants.dart';
 import '../../export_model.dart';
 import '../../export_target.dart';
+import '../../virtual_sport.dart';
 import '../enums/fit_event.dart';
 import '../enums/fit_event_type.dart';
 import '../enums/fit_lap_trigger.dart';
@@ -94,7 +95,10 @@ class FitLap extends FitDefinitionMessage {
     data.addShort(model.averagePower > eps ? model.averagePower.round() : 0);
     data.addShort(model.maximumPower > eps ? model.maximumPower.round() : 0);
     data.addByte(FitLapTrigger.sessionEnd);
-    final fitSport = toFitSport(model.activity.sport);
+    final effectiveSport = exportTarget == ExportTarget.suunto
+        ? model.activity.sport
+        : VirtualSport.resolveSport(model.activity.sport, model.virtualWorkout);
+    final fitSport = toFitSport(effectiveSport);
     data.addByte(fitSport.item1);
 
     if (exportTarget == ExportTarget.regular) {

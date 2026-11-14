@@ -47,9 +47,10 @@ const Map<String, Tuple2<int, int>> fitSport = {
   "TrackRide": Tuple2(cyclingSportId, 13),
   "TrackRun": Tuple2(runningSportId, 4),
   ActivityType.velomobile: Tuple2(genericSportId, 0),
-  ActivityType.virtualRide: Tuple2(cyclingSportId, 6), // Cycling, Indoor Cycling
-  ActivityType.virtualRun: Tuple2(runningSportId, 1), // Treadmill running
-  "VirtualRowing": Tuple2(paddlingSportId, 14), // Indoor Rowing
+  ActivityType.virtualRide: Tuple2(cyclingSportId, 58), // Cycling, Virtual Activity (#564)
+  ActivityType.virtualRun: Tuple2(runningSportId, 58), // Running, Virtual Activity (#564)
+  ActivityType.virtualRow: Tuple2(15, 58), // Rowing, Virtual Activity (#564)
+  "VirtualRowing": Tuple2(15, 58), // Rowing, Virtual Activity (#564)
   ActivityType.walk: Tuple2(11, 0),
   ActivityType.weightTraining: Tuple2(trainingSportId, 0), // Training
   ActivityType.wheelchair: Tuple2(genericSportId, 0),

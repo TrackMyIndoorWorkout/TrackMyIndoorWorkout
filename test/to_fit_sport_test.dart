@@ -23,6 +23,10 @@ void main() {
       const TestPair(input: ActivityType.ride, expected: ActivityType.ride),
       const TestPair(input: ActivityType.elliptical, expected: ActivityType.elliptical),
       const TestPair(input: ActivityType.nordicSki, expected: ActivityType.nordicSki),
+      const TestPair(input: ActivityType.virtualRide, expected: ActivityType.virtualRide),
+      const TestPair(input: ActivityType.virtualRun, expected: ActivityType.virtualRun),
+      const TestPair(input: ActivityType.virtualRow, expected: ActivityType.virtualRow),
+      const TestPair(input: "VirtualRowing", expected: "VirtualRowing"),
     ]) {
       test("${testPair.input} -> ${testPair.expected}", () async {
         expect(toFitSport(testPair.input), fitSport[testPair.expected]);

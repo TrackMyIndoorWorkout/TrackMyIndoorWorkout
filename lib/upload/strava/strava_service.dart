@@ -29,7 +29,7 @@ class StravaService implements UploadService {
   }
 
   @override
-  Future<int> upload(Activity activity, bool calculateGps) async {
+  Future<int> upload(Activity activity, bool calculateGps, [bool virtualWorkout = false]) async {
     if (!DbUtils().hasRecords(activity.id)) {
       return StravaStatusCode.statusJsonIsEmpty;
     }
@@ -41,8 +41,15 @@ class StravaService implements UploadService {
       calculateGps,
       true,
       ExportTarget.regular,
+      null,
+      virtualWorkout,
     );
-    Fault fault = await _strava.uploadActivity(activity, fileGzip, exporter);
+    Fault fault = await _strava.uploadActivity(
+      activity,
+      fileGzip,
+      exporter,
+      virtualWorkout: virtualWorkout,
+    );
 
     return fault.statusCode;
   }

@@ -42,6 +42,7 @@ class ExportModel {
   int exportTarget;
   String activityUploadTitle;
   String activityUploadDescription;
+  bool virtualWorkout;
 
   ExportModel({
     required this.activity,
@@ -60,6 +61,7 @@ class ExportModel {
     this.exportTarget = ExportTarget.regular,
     this.activityUploadTitle = activityUploadTitleDefault,
     this.activityUploadDescription = activityUploadDescriptionDefault,
+    this.virtualWorkout = false,
     required this.records,
   }) {
     // Assuming that points are ordered by time stamp ascending
